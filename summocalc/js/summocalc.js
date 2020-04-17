@@ -133,3 +133,6 @@ function splitCharaNames(s){
 onload = function(){
   calc.init();
 };
+onhashchange = function(){
+  location.reload();
+};
