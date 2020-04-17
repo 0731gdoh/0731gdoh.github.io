@@ -1,16 +1,16 @@
 {
-  name: "summocalc",
-  start_url: "index.html",
-  disply: "standalone",
-  icons: [{
-    src: "/img/icon192.png",
-    sizes: "192x192",
-    type: "image/png"
+  "name": "summocalc",
+  "start_url": ".",
+  "disply": "standalone",
+  "icons": [{
+    "src": "/img/icon192.png",
+    "sizes": "192x192",
+    "type": "image/png"
   }, {
-    src: "/img/icon512.png",
-    sizes: "512x512",
-    type: "image/png"
+    "src": "/img/icon512.png",
+    "sizes": "512x512",
+    "type": "image/png"
   }],
-  theme_color: "#def",
-  background_color: "#def"
+  "theme_color": "#def",
+  "background_color": "#def"
 }
