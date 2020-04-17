@@ -121,7 +121,7 @@ var calc = {
       c.update();
     };
     _("rs").onclick = function(){
-      if(confirm(t("リセットしますか？/Are you sure you want to reset?"))) this.load(this.defaultHash);
+      if(confirm(t("リセットしますか？/Are you sure you want to reset?"))) c.load(c.defaultHash);
     };
     setBlobURL("dj", Card.csv(CARD, 0), "text/csv", "housamo_card_ja.csv");
     setBlobURL("de", Card.csv(CARD, 1), "text/csv", "housamo_card_en.csv");
