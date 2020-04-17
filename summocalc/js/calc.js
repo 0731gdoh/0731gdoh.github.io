@@ -223,23 +223,21 @@ var calc = {
         tmp.push(n);
       }
       n = tmp.shift();
-      if(n){
-        this.es.forEach(function(v, i){
-          if(i === n){
-            var e = EFFECT[i];
-            v.loop = 1;
-            if(e.type !== TYPE.BONUS) v.lv = s.read();
-            if(e.isStackable()) v.loop = s.read();
-            if(e.type === TYPE.LIMIT && v.lv){
-              v.hp = s.read();
-              v.maxHp = s.read();
-            }
-            if(tmp.length) n += tmp.shift();
-          }else{
-            v.clear();
+      this.es.forEach(function(v, i){
+        if(i === n && n){
+          var e = EFFECT[i];
+          v.loop = 1;
+          if(e.type !== TYPE.BONUS) v.lv = s.read();
+          if(e.isStackable()) v.loop = s.read();
+          if(e.type === TYPE.LIMIT && v.lv){
+            v.hp = s.read();
+            v.maxHp = s.read();
           }
-        });
-      }
+          if(tmp.length) n += tmp.shift();
+        }else{
+          v.clear();
+        }
+      });
       this.active = 1;
     }
     if(s === this.defaultHash){
