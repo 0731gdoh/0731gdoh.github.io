@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name=robots content="noindex,nofollow">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<link rel=apple-touch-icon href="/img/icon180.png">
+<link rel=stylesheet href="css/style.css">
+<link rel=manifest href="manifest.json">
+<script>
+"use strict";
+onerror = (m, s, l, c, e) => {alert(`${m}\n\n${e.stack}`)};
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+<script src="js/summocalc.js"></script>
+<script src="js/fraction.js"></script>
+<script src="js/listitem.js"></script>
+<script src="js/effect.js"></script>
+<script src="js/card.js"></script>
+<script src="js/ar.js"></script>
+<script src="js/codec.js"></script>
+<script src="js/calc.js"></script>
+<title>summocalc</title>
+<form>
+  <div class=sp>
+    <label for=sv id=lsv></label><select id=sv></select>
+    <button type=button id=sl></button>
+  </div>
+  <hr>
+  <div class=ib><div class=sp>
+    <label for=pc id=lpc></label><select id=pc></select>
+    <button type=button id=rd></button><button type=button id=fv>▼</button>
+    <br>
+    <div id=sw>
+      <table>
+        <caption id=fc></caption>
+        <tr>
+          <td><label for=ef id=lef></label>
+          <td><select id=ef></select>
+        <tr>
+          <td><label for=wf id=lwf></label>
+          <td><select id=wf></select>
+        <tr>
+          <td><label for=cf id=lcf></label>
+          <td><select id=cf></select>
+        <tr>
+          <td><label for=rf id=lrf></label>
+          <td><select id=rf></select>
+        <tr>
+          <td><label for=vf id=lvf></label>
+          <td><select id=vf></select>
+
+        <tr>
+          <td><label for=af1 id=laf1></label>
+          <td><select id=af1></select>
+        <tr>
+          <td><label for=af2 id=laf2></label>
+          <td><select id=af2></select>
+        <tr>
+          <td><label for=df1 id=ldf1></label>
+          <td><select id=df1></select>
+        <tr>
+          <td><label for=df2 id=ldf2></label>
+          <td><select id=df2></select>
+
+      </table>
+      <button type=button id=fr></button>
+    </div>
+    <label for=pl id=lpl></label><input type=number min=1 max=80 value=1 id=pl>
+    <button type=button id=ly>-10</button><button type=button id=lm>MAX</button><button type=button id=lx>+10</button>
+    <hr>
+    <label for=a>ATK</label><input type=number min=1 max=99999 value=1 id=a>
+    <label for=w id=lw></label><select id=w></select>
+    <br>
+    <label for=cs>CS</label><select id=cs></select>
+    <label for=cl id=lcl></label><input type=number min=1 max=100 value=1 id=cl>
+    <input type=checkbox id=uc><label for=uc id=luc></label>
+    <br>
+    <label for=rc id=lrc></label><select id=rc></select>
+    <label for=rl id=lrl></label><input type=number min=1 max=100 value=1 id=rl>
+    <hr>
+    <label for=os id=los></label><select id=os></select>
+    <button type=button id=oa></button><button type=button id=or></button>
+    <br>
+    <label for=ds id=lds></label><select id=ds></select>
+    <button type=button id=da></button><button type=button id=dr></button>
+    <br>
+    <label for=el id=lel></label><input type=number min=1 max=100 value=100 id=el><label for=ua id=lua></label><select id=ua></select>
+    <hr>
+    <label for=am id=lam></label><select id=am></select>
+    <hr>
+    </div></div><div class=ib><div class=sp>
+    <textarea id=o></textarea>
+    <br>
+    <button type=button id=rs></button>
+    <button type=button id=cc></button>
+    <span id=ss><button type=button id=sr></button>
+    <button type=button id=su></button></span>
+    <div id=dl>
+      <span id=dd></span>
+      <a id=dj>日本語</a>/<a id=de>English</a>
+      <br>
+      <span id=ad></span>
+      <a id=aj>日本語</a>/<a id=ae>English</a>
+      <br>
+    </div>
+  </div></div>
+</form>
