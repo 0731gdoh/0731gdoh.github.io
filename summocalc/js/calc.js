@@ -613,7 +613,7 @@ var calc = {
       var attr = MULTIPLIER[i];
       if(!this.multiplier || i === this.multiplier){
         x = (dmg > 0) ? Math.ceil(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg) : 0;
-        if(i === 1 || this.multiplier) document.title = "summocalc - " + x + t("ダメージ/ dmg");
+        if(i === 3 || this.multiplier) document.title = "summocalc - " + x + t("ダメージ/ dmg");
         result.push("　[" + attr + "]: " + (x || "-"));
       }
     }
