@@ -1,5 +1,6 @@
 {
   "name": "summocalc",
+  "short_name": "summocalc",
   "start_url": ".",
   "display": "standalone",
   "icons": [{
@@ -11,6 +12,6 @@
     "sizes": "512x512",
     "type": "image/png"
   }],
-  "theme_color": "#def",
-  "background_color": "#def"
+  "theme_color": "#000000",
+  "background_color": "#ddeeff"
 }
