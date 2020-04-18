@@ -29,6 +29,9 @@ label, caption, #dl{
   font-size: smaller;
 }
 button{
+  -webkit-appearance: button;
+  -moz-appearance: button;
+  appearance: button;
   margin-right: 0.5em;
 }
 input[type="number"], select{
@@ -38,6 +41,10 @@ input[type="number"], select{
 }
 input[type="number"]{
   text-align: right;
+  width: 2em;
+}
+#a{
+  width: 3em;
 }
 input[type="checkbox"]{
   margin: 0.5em;
@@ -49,7 +56,7 @@ textarea{
   white-space: pre;
 }
 #rs, #cc, #sr, #su{
-  width: 10em;
+  width: 9em;
   height: 2.5em;
 }
 #sl{
@@ -85,7 +92,7 @@ table{
 .ib{
   display: inline-block;
   width: 100%;
-  max-width: 25em;
+  max-width: 28em;
   vertical-align: top;
 }
 .sp{
