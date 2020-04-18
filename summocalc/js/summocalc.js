@@ -87,7 +87,7 @@ function pad(n, length){
 }
 function setBlobURL(id, data, mime, name){
   var a = _(id);
-  var blob = new Blob([new Uint8Array(0xEF, 0xBB, 0xBF), data], {type: mime});
+  var blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), data], {type: mime});
   if(navigator.msSaveOrOpenBlob){
     a.href = "javascript:void(0)";
     a.onclick = function(){
