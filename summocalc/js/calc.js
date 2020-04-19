@@ -48,7 +48,6 @@ var calc = {
     }else{
       _("ss").style.display = "none";
     }
-    if(!navigator.userAgent.match(/iP(hone|[ao]d)/) || isStandalone()) _("ms").style.display = "none";
     this.cardfilter.init();
     this.setLanguage(-1);
     linkInput(c, "atk", "a");
@@ -408,7 +407,6 @@ var calc = {
     setText("rd", "ランダム/Random");
     setText("dd", "カードデータ: /Card Data: ");
     setText("ad", "ARデータ: /AR Data: ");
-    setText("ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'.");
     this.cardfilter.update();
     this.active = 1;
     if(x >= 0) this.update();
