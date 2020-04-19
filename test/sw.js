@@ -1,6 +1,6 @@
 var CACHE_NAME = "cache-20200419-1";
 var urlsToCache = [
-  "index.html"
+  "."
 ];
 
 self.addEventListener("install", function(e){
