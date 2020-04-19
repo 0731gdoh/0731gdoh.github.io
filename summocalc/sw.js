@@ -19,7 +19,7 @@ self.addEventListener("install", function(e){
     });
   );
 });
-
+/*
 self.addEventListener("activate", function(e){
   e.waitUntil(
     caches.keys().then(function(keyList){
@@ -31,7 +31,7 @@ self.addEventListener("activate", function(e){
     });
   );
 });
-
+*/
 self.addEventListener("fetch", function(e){
   e.respondWith(
     caches.match(e.request).then(function(response){
