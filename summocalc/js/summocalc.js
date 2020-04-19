@@ -129,10 +129,6 @@ function splitCharaNames(s){
   });
   return r;
 }
-function isStandalone(){
-  if(matchMedia("(display-mode: standalone)").matches || navigator.standalone) return true;
-  return false;
-}
 
 onload = function(){
   calc.init();
