@@ -1,5 +1,6 @@
 var CACHE_NAME = "cache-20200419-1";
 var urlsToCache = [
+  ".",
   "index.html"
 ];
 
@@ -27,6 +28,6 @@ self.addEventListener("fetch", function(e){
   e.respondWith(
     caches.match(e.request).then(function(response){
       return response || fetch(e.request);
-    });
+    })
   );
 });
