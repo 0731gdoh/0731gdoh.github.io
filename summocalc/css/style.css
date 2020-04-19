@@ -23,7 +23,7 @@ form{
   line-height: 2;
   margin: 0 auto;
 }
-label, caption, #dl{
+label, caption, #dl, #ms{
   text-align: left;
   font-family: "Courier", monospace;
   font-size: smaller;
@@ -98,4 +98,12 @@ table{
 .sp{
   position: relative;
   padding: 0 0.5em;
+}
+#ms{
+  color: #666;
+  border: solid 1px #666;
+  border-radius: 0.2em;
+  background-color: #eee;
+  margin: 0.2em;
+  padding: 0.5em;
 }
