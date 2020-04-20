@@ -12,8 +12,8 @@
 "use strict";
 onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
 if("serviceWorker" in navigator){
-  navigator.serviceWorker.onmessage = function(o){
-    alert(o.txt);
+  navigator.serviceWorker.onmessage = function(e){
+    alert(e.data.txt);
   };
   navigator.serviceWorker.register("sw.js").then(function(r){
     alert(r.origin);
