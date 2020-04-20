@@ -12,10 +12,14 @@
 "use strict";
 onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
 if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-  navigator.serviceWorker.onmessage = function(txt){
-    alert(txt);
+  navigator.serviceWorker.onmessage = function(o){
+    alert(o.txt);
   };
+  navigator.serviceWorker.register("sw.js").then(function(r){
+    alert(r.origin);
+  }).catch(function(e){
+    alert(e);
+  });
 }
 </script>
 <h1>テスト用ページです</h1>

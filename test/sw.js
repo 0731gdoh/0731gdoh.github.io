@@ -8,7 +8,7 @@ var urlsToCache = [
 function message(txt){
   clients.matchAll().then(function(list){
     list.forEach(function(c){
-      c.postMessage(txt);
+      c.postMessage({"txt": txt});
     });
   });
 }
