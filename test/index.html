@@ -16,7 +16,12 @@ if("serviceWorker" in navigator){
     alert(e.data.txt);
   };
   navigator.serviceWorker.register("sw.js").then(function(r){
-    alert(r.origin);
+    alert(
+      "scope " + r.scope +
+      "\ninstalling " + r.installing +
+      "\nwaiting" + r.waiting +
+      "\nactive" + r.active
+    );
   }).catch(function(e){
     alert(e);
   });
