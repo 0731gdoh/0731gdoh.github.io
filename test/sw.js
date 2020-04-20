@@ -1,14 +1,16 @@
-var CACHE_NAME = "test-cache-v3";
+var CACHE_NAME = "test-cache-v4";
 var urlsToCache = [
   ".",
   "index.html",
   "style.css"
 ];
+var q = [];
 
 function msg(txt){
+  q.push("☆" + txt);
   clients.matchAll().then(function(list){
     list.forEach(function(c){
-      c.postMessage({"txt": txt});
+      c.postMessage({"txt": q.join("\n")});
     });
   });
 }
@@ -31,7 +33,7 @@ self.addEventListener("activate", function(e){
 
 self.addEventListener("fetch", function(e){
   msg("fetch event " + e.request.url);
-  e.respondWith(caches.match(e.request).then(function(response){
-    return response || fetch(e.request);
+  e.respondWith(fetch(e.request).catch(function(){
+    return caches.match(e.request);
   }));
 });
