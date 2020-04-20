@@ -14,15 +14,15 @@ function message(txt){
 }
 
 self.addEventListener("install", function(e){
-  message("install event " + CACHE_NAME);
   e.waitUntil(caches.open(CACHE_NAME).then(function(cache){
+    message("install event " + CACHE_NAME);
     return cache.addAll(urlsToCache);
   }));
 });
 
 self.addEventListener("activate", function(e){
-  message("activate event " + CACHE_NAME);
   e.waitUntil(caches.keys().then(function(keyList){
+    message("activate event " + CACHE_NAME);
     return Promise.all(keyList.map(function(name){
       if(CACHE_NAME.indexOf(name) === -1) return caches.delete(name);
     }));
@@ -30,7 +30,7 @@ self.addEventListener("activate", function(e){
 });
 
 self.addEventListener("fetch", function(e){
-  message("fetch event " + e.request);
+  message("fetch event " + e.request.url);
   e.respondWith(caches.match(e.request).then(function(response){
     return response || fetch(e.request);
   }));
