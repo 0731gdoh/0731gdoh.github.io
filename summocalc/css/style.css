@@ -107,3 +107,18 @@ table{
   margin: 0.2em;
   padding: 0.5em;
 }
+#un{
+  text-align: center;
+  font-family: "Courier", monospace;
+  font-weight: bold;
+  color: #f00;
+  border: solid 1px #f00;
+  border-radius: 0.2em;
+  background-color: #fdd;
+  margin: 0.2em;
+  padding: 0.5em;
+  display: none;
+}
+#um{
+  margin-right: 1em;
+}

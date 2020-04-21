@@ -11,9 +11,6 @@
 <script>
 "use strict";
 onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
 </script>
 <script src="js/summocalc.js"></script>
 <script src="js/fraction.js"></script>
@@ -24,6 +21,9 @@ if("serviceWorker" in navigator){
 <script src="js/codec.js"></script>
 <script src="js/calc.js"></script>
 <title>summocalc</title>
+<div id=un>
+  <span id=um></span><button id=ub></button>
+</div>
 <form>
   <div class=sp>
     <label for=sv id=lsv></label><select id=sv></select>

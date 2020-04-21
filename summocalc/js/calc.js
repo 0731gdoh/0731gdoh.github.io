@@ -122,7 +122,10 @@ var calc = {
       c.update();
     };
     _("rs").onclick = function(){
-      if(confirm(t("リセットしますか？/Are you sure you want to reset?"))) c.load(c.defaultHash);
+      if(confirm(t("リセットしますか？/Are you sure you want to reset?"))){
+        c.load(c.defaultHash);
+        checkUpdate();
+      }
     };
     setBlobURL("dj", Card.csv(CARD, 0), "text/csv", "housamo_card_ja.csv");
     setBlobURL("de", Card.csv(CARD, 1), "text/csv", "housamo_card_en.csv");
@@ -372,7 +375,7 @@ var calc = {
     setOptions("df2", EFFECT, FILTER.DEF_DOWN, EFFECT_ORDER);
     this.setEffectOptions();
     this.checkCardSelected();
-    setText("lsv", "計算モード/Calculation Mode");
+    setText("lsv", "モード/Mode");
     setText("lpc", "カード/Card");
     setText("lpl", "カードLv/Card Lv");
     setText("lrc", "AR");
@@ -409,6 +412,8 @@ var calc = {
     setText("dd", "カードデータ: /Card Data: ");
     setText("ad", "ARデータ: /AR Data: ");
     setText("ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'.");
+    setText("um", "新しいデータがあります/New data is available.");
+    setText("ub", "更新/Update");
     this.cardfilter.update();
     this.active = 1;
     if(x >= 0) this.update();

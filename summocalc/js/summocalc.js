@@ -133,8 +133,38 @@ function isStandalone(){
   if(matchMedia("(display-mode: standalone)").matches || navigator.standalone) return true;
   return false;
 }
+function register(url){
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.register(url).then(function(reg){
+      if(reg.waiting) showUpdateMessage(reg);
+      reg.onupdatefound = function(){
+        reg.installing.onstatechange = function(){
+          if(this.state === "installed" && navigator.serviceWorker.controller) showUpdateMessage(reg);
+        };
+      };
+    });
+  }
+}
+function showUpdateMessage(reg){
+  var o = _("un");
+  _("ub").onclick = function(){
+    o.style.display = "none";
+    if(!reg.waiting) return;
+    reg.waiting.postMessage("skipWaiting");
+    location.reload();
+  };
+  o.style.display = "block";
+}
+function checkUpdate(){
+  if("serviceWorker" in navigator){
+    navigator.serviceWorker.getRegistration().then(function(reg){
+      if(reg) reg.update();
+    });
+  }
+}
 
 onload = function(){
+  register("sw.js");
   calc.init();
 };
 onhashchange = function(){
