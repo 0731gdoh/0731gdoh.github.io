@@ -1,4 +1,4 @@
-var CACHE_NAME = "test-cache-v5";
+var CACHE_NAME = "test-cache-v6";
 var urlsToCache = [
   ".",
   "index.html",
@@ -36,4 +36,11 @@ self.addEventListener("fetch", function(e){
   e.respondWith(fetch(e.request).catch(function(){
     return caches.match(e.request);
   }));
+});
+
+self.addEventListener("message", function(e){
+  switch(e.data){
+    case "skipWaiting":
+      skipWaiting();
+  }
 });
