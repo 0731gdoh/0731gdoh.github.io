@@ -56,7 +56,11 @@ function checkUpdate(){
 }
 onload = function(){
   register("sw.js");
+  _("cu").onclick = function(){
+    checkUpdate();
+  };
 };
 </script>
 <h1>テスト用ページです</h1>
 <div id=un><span id=um>New data is available.</span><button id=ub>Update</button></div>
+<button id=cu>Check update</button>
