@@ -34,6 +34,9 @@ function register(url){
     });
   }
 }
+function _(id){
+  return document.getElementById(id);
+}
 function showUpdateMessage(reg){
   var o = _("un");
   _("ub").onclick = function(){
@@ -56,3 +59,4 @@ onload = function(){
 };
 </script>
 <h1>テスト用ページです</h1>
+<div id=un><span id=um>New data is available.</span><button id=ub>Update</button></div>
