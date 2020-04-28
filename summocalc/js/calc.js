@@ -160,7 +160,7 @@ var calc = {
         var e = EFFECT[i];
         s.write(i - n);
         n = i;
-        if(e.type !== TYPE.BONUS) tmp.push(v.lv);
+        if(!e.isFixed() || !e.isStackable()) tmp.push(v.lv);
         if(e.isStackable()) tmp.push(v.loop);
         if(e.type === TYPE.LIMIT && v.lv){
           tmp.push(v.hp);
@@ -231,7 +231,7 @@ var calc = {
         if(i === n && n){
           var e = EFFECT[i];
           v.loop = 1;
-          if(e.type !== TYPE.BONUS) v.lv = s.read();
+          if(!e.isFixed() || !e.isStackable()) v.lv = s.read();
           if(e.isStackable()) v.loop = s.read();
           if(e.type === TYPE.LIMIT && v.lv){
             v.hp = s.read();
@@ -243,11 +243,6 @@ var calc = {
         }
       });
       this.active = 1;
-    }
-    if(s === this.defaultHash){
-      history.replaceState(null, null, location.pathname);
-    }else{
-      history.replaceState(null, null, location.pathname + "#" + s);
     }
     this.update();
   },
