@@ -146,5 +146,5 @@ var AR = Record.createList(
   ,["砂漠のプライベート・レッスン", , "", 100, 0, FLAG.VALIANT|FLAG.WATER, 0, "セト/ゴウリョウ"]
   ,["蒲田ギルドの師弟", , "攻撃力微増", 500, 0, FLAG.FIRE|FLAG.WOOD, 0, "アマツマラ/クロガネ"]
   ,["サバイバルリゾート", , "特攻[1.6]", 100, 0, 0, FLAG.SHOT|FLAG.SNIPE, "ハヌマン/ツァトグァ"]
-  ,["剣豪と刀鍛冶の攻防", , "", 300, 0, FLAG.ALL|FLAG.FIRE, 0, "ムサシ/アマツマラ"]
+  ,["剣豪と刀鍛冶の攻防", , "", 300, 0, FLAG.ALLROUND|FLAG.FIRE, FLAG.SLASH, "ムサシ/アマツマラ"]
 ]);
