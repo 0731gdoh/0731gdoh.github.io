@@ -73,14 +73,14 @@ Effect.prototype = {
   },
   isFixed: function(){
     switch(this.type){
+      case TYPE.ATK:
+      case TYPE.BONUS:
+      case TYPE.COMBO:
+      case TYPE.CSWEAPON:
+      case TYPE.FIXED:
+      case TYPE.IGNORE:
       case TYPE.SEED:
       case TYPE.WEAPON:
-      case TYPE.CSWEAPON:
-      case TYPE.COMBO:
-      case TYPE.ATK:
-      case TYPE.IGNORE:
-      case TYPE.FIXED:
-      case TYPE.BONUS:
         return true;
       default:
         return false;
@@ -88,8 +88,9 @@ Effect.prototype = {
   },
   isStackable: function(){
     switch(this.type){
-      case TYPE.STACK:
       case TYPE.BONUS:
+      case TYPE.IGNORE:
+      case TYPE.STACK:
         return true;
       default:
         return false;
@@ -184,9 +185,9 @@ var EFFECT = Effect.createList(
   ,["無窮/Infinitude", "むき", 0, 1.3]
   ,["烙印/Stigma", "らく", 1, 1.15]
   ,["連撃/Combo", "れん", 0, 0.6, , TYPE.COMBO]
-  ,["[宝船]攻撃力小UP/[T.Ship]攻撃力小UP", "こうけきり1", 0, 0, 250]
-  ,["[宝船]攻撃力中UP/[T.Ship]攻撃力中UP", "こうけきり2", 0, 0, 500]
-  ,["[宝船]攻撃力大UP/[T.Ship]攻撃力大UP", "こうけきり3", 0, 0, 1000]
+  ,["[宝船]攻撃力小UP/[T.Ship]攻撃力小UP", "こうけきりよく1", 0, 0, 250]
+  ,["[宝船]攻撃力中UP/[T.Ship]攻撃力中UP", "こうけきりよく2", 0, 0, 500]
+  ,["[宝船]攻撃力大UP/[T.Ship]攻撃力大UP", "こうけきりよく3", 0, 0, 1000]
   ,["CS変更：全域/CS変更：All", "CS", 0, 0, 8, TYPE.CSWEAPON]
   ,["[子]おせち/[Osechi]おせち", "おせ", 0, 1.2, 50, TYPE.STACK, , 0]
   ,["[子]おせち/[Osechi]おせち", "おせ", 1, 0.8, , TYPE.BONUS]
@@ -207,9 +208,10 @@ var EFFECT = Effect.createList(
   ,["ATKボーナス[100%]", "", 0, 1, , TYPE.ATK, 1]
   ,["強化反転", "きよう", 0, 0.25, , TYPE.FIXED]
   ,["強化反転", "きよう", 1, 2.5, , TYPE.FIXED]
-  ,["攻撃力減少", "こうけきり", 0, 0.01, , TYPE.FIXED]
+  ,["攻撃力減少", "こうけきりよくけ", 0, 0.01, , TYPE.FIXED]
   ,["特攻[6.0]/Bonus[6.0]", "とつ", 0, 6, , TYPE.BONUS]
   ,["CS変更：魔法/CS変更：Magic", "CS", 0, 0, 5, TYPE.CSWEAPON]
+  ,["攻撃力微増", "こうけきりよくひ", 0, 1.13, , TYPE.BONUS]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
