@@ -9,6 +9,18 @@ EffectStatus.prototype = {
     this.loop = 0;
     this.hp = 1;
     this.maxHp = 1;
+    this.c = 0;
+    this.a = 0;
+  },
+  setCustom: function(n, d, a){
+    this.c = new Fraction(n, d);
+    this.a = a;
+  },
+  getCustomMul: function(){
+    return this.c || new Fraction(1);
+  },
+  getCustomAdd: function(){
+    return new Fraction(this.a);
   }
 };
 
@@ -162,9 +174,14 @@ var calc = {
         n = i;
         if(!e.isFixed() || !e.isStackable()) tmp.push(v.lv);
         if(e.isStackable()) tmp.push(v.loop);
-        if(e.type === TYPE.LIMIT && v.lv){
+        if(e.type === TYPE.LIMIT){
           tmp.push(v.hp);
           tmp.push(v.maxHp);
+        }
+        if(e.type === TYPE.CUSTOM){
+          tmp.push(v.c.n);
+          tmp.push(v.c.d);
+          tmp.push(v.a);
         }
       }
     });
@@ -233,9 +250,15 @@ var calc = {
           v.loop = 1;
           if(!e.isFixed() || !e.isStackable()) v.lv = s.read();
           if(e.isStackable()) v.loop = s.read();
-          if(e.type === TYPE.LIMIT && v.lv){
+          if(e.type === TYPE.LIMIT){
             v.hp = s.read();
             v.maxHp = s.read();
+          }
+          if(e.type === TYPE.CUSTOM){
+            var cn = s.read();
+            var cd = s.read();
+            var ca = s.read();
+            v.setCustom(cn, cd, ca);
           }
           if(tmp.length) n += tmp.shift();
         }else{
@@ -256,7 +279,7 @@ var calc = {
           while(tLv < 1 || tLv > 100){
             tLv = prompt(t("/Add ") + EFFECT[e.link] + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
             if(tLv !== 0 && !tLv) break;
-            tLv = parseInt(tLv) || 0;
+            tLv = parseInt(tLv, 10) || 0;
           }
           if(tLv) this.addStatus(e.link, tLv, 1);
         }
@@ -267,7 +290,7 @@ var calc = {
           while(lv < 1 || lv > 100){
             lv = prompt(t("効果Lv (※1〜100)/Effect Lv\n(1-100)"), "");
             if(lv !== 0 && !lv) return;
-            lv = parseInt(lv) || 0;
+            lv = parseInt(lv, 10) || 0;
           }
         }
         //イベント
@@ -285,27 +308,52 @@ var calc = {
           this.es[this.csc].clear();
           this.csc = index;
         }
+
+        if(e.type === TYPE.CUSTOM && !es.loop){
+          var n = 0;
+          var d = 0;
+          var a = -1;
+          while(n < 1){
+            n = prompt(t("ダメージ倍率の分子 (※1以上の整数)/Numerator of damage multiplier\n(Enter an integer greater than or equal to 1.)"), 1);
+            if(n !== 0 && !n) return;
+            n = parseInt(n, 10) || 0;
+          }
+          while(d < 1){
+            d = prompt(t("ダメージ倍率の分母 (※1以上の整数)/Denominator of damage multiplier\n(Enter an integer greater than or equal to 1.)"), 1);
+            if(d !== 0 && !d) return;
+            d = parseInt(d, 10) || 0;
+          }
+          while(a < 0){
+            a = prompt(t("追加ダメージ (※0以上の整数)/Additional damage\n(Enter an integer greater than or equal to 0.)"), 0);
+            if(a !== 0 && !a) return;
+            a = parseInt(a, 10);
+            if(a === undefined) a = -1;
+          }
+          if(n === d && !a) return;
+          es.setCustom(n, d, a);
+        }
+
         if(e.type === TYPE.LIMIT){
           var hp = 0;
           var maxHp = 0;
           while(hp < 1){
             hp = prompt(t("現在HP (※1以上の整数)/Current HP\n(Enter an integer greater than or equal to 1.)"), es.hp);
             if(hp !== 0 && !hp) return;
-            hp = parseInt(hp) || 0;
+            hp = parseInt(hp, 10) || 0;
           }
           while(maxHp < hp){
             maxHp = prompt(t("最大HP (※/Max HP\n(Enter an integer greater than or equal to ") + hp + t("以上の整数)/.)"), Math.max(es.maxHp, hp));
             if(maxHp !== 0 && !maxHp) return;
-            maxHp = parseInt(maxHp) || 0;
+            maxHp = parseInt(maxHp, 10) || 0;
           }
           es.hp = hp || 1;
           es.maxHp = maxHp || 1;
         }else if(e.type === TYPE.SEED){
           lv = 0;
           while(lv < 1 || lv > 1000){
-            lv = prompt(t("ATKの種 (※1〜1000)/ATK Seed\n(1-1000)"), this.es[index].lv || 1000);
+            lv = prompt(t("ATKの種 (※1〜1000)/ATK Seed\n(1-1000)"), es.lv || 1000);
             if(lv !== 0 && !lv) return;
-            lv = parseInt(lv) || 0;
+            lv = parseInt(lv, 10) || 0;
           }
         }else if(e.isFixed() || e.type === TYPE.AFFINITY){
           lv = 1;
@@ -329,7 +377,7 @@ var calc = {
   setLanguage: function(x){
     if(x < 0){
       try{
-        language = parseInt(localStorage.getItem("language") || -1);
+        language = parseInt(localStorage.getItem("language") || -1, 10);
       }catch(e){}
       if(language < 0) language = (
         navigator.language ||
@@ -545,11 +593,15 @@ var calc = {
             x = x.mul(2 * es.maxHp - es.hp, es.maxHp);
             desc[0] += "[HP:" + es.hp + "/" + es.maxHp + "]";
           }
+          //カスタム
+          if(e.type === TYPE.CUSTOM) x = es.getCustomMul();
 
           if(x - 0){switch(e.type){
             default:
-              dmg = dmg.mul(x);
-              desc.push("x" + x);
+              if(x.n !== x.d){
+                dmg = dmg.mul(x);
+                desc.push("x" + x);
+              }
               break;
 
             case TYPE.ATK:
@@ -568,6 +620,8 @@ var calc = {
           if(e.type === TYPE.WEAPON && !this.usecs) weapon = x.round();
           //CS変更
           if(e.type === TYPE.CSWEAPON && this.usecs) weapon = x.round();
+          //カスタム
+          if(e.type === TYPE.CUSTOM) x = es.getCustomAdd();
 
           if(x - 0){switch(e.type){
             default:
@@ -615,7 +669,7 @@ var calc = {
       var attr = MULTIPLIER[i];
       if(!this.multiplier || i === this.multiplier){
         x = (dmg > 0) ? Math.ceil(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg) : 0;
-        if(i === 3 || this.multiplier) document.title = "summocalc - " + x + t("ダメージ/ dmg");
+        if(i === 3 || this.multiplier) this.setTitle(x);
         result.push("　[" + attr + "]: " + (x || "-"));
       }
     }
@@ -625,6 +679,9 @@ var calc = {
     );
     _("o").value = result.filter(function(x){return x}).join("\n");
     this.save();
+  },
+  setTitle: function(damage){
+    document.title = "summocalc - " + (this.card ? CARD[this.card] + " " : "") + damage + t("ダメージ/ damage");
   },
   cardfilter: {
     attribute: 0,

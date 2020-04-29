@@ -11,7 +11,8 @@ var TYPE = {
   SEED: 9,
   CSWEAPON: 10,
   BONUS: 11,
-  STACK: 12
+  STACK: 12,
+  CUSTOM: 13
 };
 
 function Effect(index, x, link){
@@ -21,7 +22,7 @@ function Effect(index, x, link){
   this.reading = x[1];
   this.group = x[2];
   this.value = [
-    new Fraction(x[3] * 100, 100),
+    new Fraction((x[3] || 0) * 100, 100),
     new Fraction((x[4] || 0) * 100, 100),
   ];
   this.type = x[5] || TYPE.NORMAL;
@@ -47,6 +48,8 @@ function Effect(index, x, link){
   }
   this.sortkey = 1;
   if(this.event){
+    this.sortkey = 4;
+  }else if(this.type === TYPE.CUSTOM){
     this.sortkey = 3;
   }else if(!this.reading){
     this.sortkey = 0;
@@ -79,6 +82,7 @@ Effect.prototype = {
       case TYPE.CSWEAPON:
       case TYPE.FIXED:
       case TYPE.IGNORE:
+      case TYPE.CUSTOM:
       case TYPE.SEED:
       case TYPE.WEAPON:
         return true;
@@ -90,6 +94,7 @@ Effect.prototype = {
     switch(this.type){
       case TYPE.BONUS:
       case TYPE.IGNORE:
+      case TYPE.CUSTOM:
       case TYPE.STACK:
         return true;
       default:
@@ -212,6 +217,8 @@ var EFFECT = Effect.createList(
   ,["特攻[6.0]/Bonus[6.0]", "とつ", 0, 6, , TYPE.BONUS]
   ,["CS変更：魔法/CS変更：Magic", "CS", 0, 0, 5, TYPE.CSWEAPON]
   ,["攻撃力微増", "こうけきりよくひ", 0, 1.13, , TYPE.BONUS]
+  ,["[カスタム]/[Customizable]", "", 0, 1, , TYPE.CUSTOM]
+  ,["[カスタム]/[Customizable]", "", 1, 1, , TYPE.CUSTOM]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
