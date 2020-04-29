@@ -179,8 +179,9 @@ var calc = {
           tmp.push(v.maxHp);
         }
         if(e.type === TYPE.CUSTOM){
-          tmp.push(v.c.n);
-          tmp.push(v.c.d);
+          var c = v.getCustomMul();
+          tmp.push(c.n);
+          tmp.push(c.d);
           tmp.push(v.a);
         }
       }
