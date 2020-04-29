@@ -268,7 +268,7 @@ var calc = {
       });
       this.active = 1;
     }
-    this.update();
+    this.update(true);
   },
   addStatus: function(index, lv, group, mode){
     if(index > 0){
@@ -506,7 +506,7 @@ var calc = {
       return false;
     });
   },
-  update: function(){
+  update: function(skipSave){
     var dmg = new Fraction(1);
     var exdmg = 0;
     var atk = this.atk;
@@ -679,7 +679,7 @@ var calc = {
       t("　モード: /　Mode: ") + VERSION[this.version]
     );
     _("o").value = result.filter(function(x){return x}).join("\n");
-    this.save();
+    if(!skipSave) this.save();
   },
   setTitle: function(damage){
     document.title = "summocalc - " + (this.card ? CARD[this.card] + " " : "") + damage + t("ダメージ/ damage");
