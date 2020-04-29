@@ -9,7 +9,7 @@ function gcd(n, m){
 }
 
 function Fraction(n, d){
-  if(d < 0){
+  if(d && d < 0){
     d = -d;
     n = -n;
   }
