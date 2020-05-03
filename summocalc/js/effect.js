@@ -222,3 +222,22 @@ var EFFECT = Effect.createList(
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
+
+function splitEffects(s){
+  return s.split("/").map(function(x){
+    var c = 1;
+    var s = 1;
+    if(x[0] === "c"){
+      x = x.slice(1);
+      s = -1;
+    }
+    if(x[0] === "*"){
+      x = x.slice(1);
+      c = 0;
+    }
+    for(var i = 1; i < EFFECT.length; i++){
+      if(t(EFFECT[i].name, 0) === x && c++) return s * i;
+    }
+    return 0;
+  }).filter(function(x){return x});
+}
