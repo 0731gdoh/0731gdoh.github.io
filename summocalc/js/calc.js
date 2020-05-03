@@ -271,6 +271,10 @@ var calc = {
     this.update(true);
   },
   addStatus: function(index, lv, group, mode){
+    if(index < 0){
+      index = -index;
+      mode = 1;
+    }
     if(index > 0){
       var e = EFFECT[index];
       var es = this.es[index];
@@ -463,6 +467,7 @@ var calc = {
     if(x >= 0) this.update();
   },
   setEffectOptions: function(){
+    var p = "{CS}";
     var s = [0].concat(
       CARD[this.card].effects
     );
@@ -470,8 +475,8 @@ var calc = {
       if(s.indexOf(v) === -1) s.push(v);
     });
     s = s.concat(EFFECT_ORDER);
-    setOptions("os", EFFECT, FILTER.OFFENSE, s);
-    setOptions("ds", EFFECT, FILTER.DEFENSE, s);
+    setOptions("os", EFFECT, FILTER.OFFENSE, s, p);
+    setOptions("ds", EFFECT, FILTER.DEFENSE, s, p);
   },
   checkCardSelected: function(){
     if(this.card){
@@ -718,9 +723,12 @@ var calc = {
       this.update();
     },
     reset: function(){
+      this.active = 0;
       ["ef", "wf", "cf", "rf", "vf", "af1", "af2", "df1", "df2"].forEach(function(x){
         setValue(x, 0);
       });
+      this.active = 1;
+      this.update();
     },
     update: function(){
       var p = this;
@@ -742,10 +750,11 @@ var calc = {
         if(p.attribute && (1 << x.attribute & av) === 0) return false;
         if(pl > -1 && x.limited !== pl) return false;
         if(vv && x.variant.indexOf(vv)) return false;
-        if(p.atk1 && x.effects.indexOf(p.atk1) === -1) return false;
-        if(p.atk2 && x.effects.indexOf(p.atk2) === -1) return false;
-        if(p.def1 && x.effects.indexOf(p.def1) === -1) return false;
-        if(p.def2 && x.effects.indexOf(p.def2) === -1) return false;
+        if([p.atk1, p.atk2, p.def1, p.def2].some(function(te){
+          return te && x.effects.every(function(ie){
+            return te !== Math.abs(ie);
+          });
+        })) return false;
         return true;
       });
     }
