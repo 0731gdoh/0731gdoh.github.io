@@ -378,6 +378,7 @@ var calc = {
       });
     }
     this.update();
+    this.setEffectOptions();
   },
   setLanguage: function(x){
     if(x < 0){
@@ -471,8 +472,12 @@ var calc = {
     var s = [0].concat(
       CARD[this.card].effects
     );
-    AR[this.ar].effects.forEach(function(v){
-      if(s.indexOf(v) === -1) s.push(v);
+    AR[this.ar].effects.forEach(function(x){
+      if(s.indexOf(x) === -1) s.push(x);
+    });
+    s.push(0);
+    this.es.forEach(function(x, i){
+      if(x.loop) s.push(i);
     });
     s = s.concat(EFFECT_ORDER);
     setOptions("os", EFFECT, FILTER.OFFENSE, s, p);
