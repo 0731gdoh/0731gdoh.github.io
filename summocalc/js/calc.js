@@ -266,10 +266,10 @@ var calc = {
           v.clear();
         }
       });
-      this.setEffectOptions();
       this.active = 1;
     }
     this.update(true);
+    this.setEffectOptions();
   },
   addStatus: function(index, lv, group, mode){
     if(index < 0){
