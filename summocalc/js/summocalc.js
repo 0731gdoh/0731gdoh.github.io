@@ -14,17 +14,21 @@ function v(x, y){
   if(o.min) return o.value = Math.max(Math.min(value, o.max), o.min);
   return value;
 }
-function setValue(id, value){
+function setValue(id, value, zeroCount){
   if(value === v(id)) return;
   var o = _(id);
   var p = o.options;
+  var checkZero = (zeroCount !== undefined);
+  zeroCount = zeroCount || 0;
   if(p){
     var index = 0;
     for(var i = 0; i < p.length; i++){
-      if(parseInt(p[i].value) === value){
+      var x = parseInt(p[i].value);
+      if(x === value && zeroCount === 0){
         index = i;
         break;
       }
+      if(x === 0 && checkZero) zeroCount--;
     }
     o.selectedIndex = index;
   }else if(o.type === "checkbox"){
@@ -38,8 +42,16 @@ function setOptions(id, list, k, s, p){
   //id, リスト[, フィルタ関数[, ソート順[, マイナス時接頭辞]]]
   var elem = _(id);
   var value = v(id);
-  while(elem.firstChild) elem.removeChild(elem.firstChild);
-  
+  var zeroCount = 0;
+  var n = elem.selectedIndex;
+  while(elem.firstChild){
+    var fc = elem.firstChild;
+    if(n){
+      n--;
+      if(parseInt(fc.value) === 0) zeroCount++;
+    }
+    elem.removeChild(fc);
+  }
   if(!s) s = list.map(function(v, i){return i});
   s.forEach(function(v){
     var x = list[Math.abs(v)];
@@ -52,22 +64,8 @@ function setOptions(id, list, k, s, p){
       elem.appendChild(o);
     }
   });
-  /*
-  if(s) list = s.map(function(v){
-    return list[v];
-  });
-  if(k) list = list.filter(k);
-  list.forEach(function(v){
-    var o = document.createElement("option");
-    o.appendChild(
-      document.createTextNode(v)
-    );
-    o.setAttribute("value", v.index);
-    elem.appendChild(o);
-  });
-  */
   elem.selectedIndex = 0;
-  setValue(id, value);
+  setValue(id, value, zeroCount);
 }
 function setText(id, str){
   _(id).innerHTML = t(str);
