@@ -266,6 +266,7 @@ var calc = {
           v.clear();
         }
       });
+      this.setEffectOptions();
       this.active = 1;
     }
     this.update(true);
