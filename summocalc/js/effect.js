@@ -5,7 +5,6 @@ var TYPE = {
   FIXED: 3,
   AFFINITY: 4,
   WEAPON: 5,
-  IGNORE: 6,
   COMBO: 7,
   LIMIT: 8,
   SEED: 9,
@@ -81,7 +80,6 @@ Effect.prototype = {
       case TYPE.COMBO:
       case TYPE.CSWEAPON:
       case TYPE.FIXED:
-      case TYPE.IGNORE:
       case TYPE.CUSTOM:
       case TYPE.SEED:
       case TYPE.WEAPON:
@@ -93,7 +91,6 @@ Effect.prototype = {
   isStackable: function(){
     switch(this.type){
       case TYPE.BONUS:
-      case TYPE.IGNORE:
       case TYPE.CUSTOM:
       case TYPE.STACK:
         return true;
@@ -107,10 +104,10 @@ Effect.createList = function(a){
   return a.map(function(v, i){
     var link = 0;
     table[t(v[0], 0)] = i;
-    if(v[5] === TYPE.IGNORE){
-      var n = v[0].indexOf("に貫通");
-      if(n !== -1) link = table[v[0].slice(0, n)] || 0;
-    }
+    v[0] = v[0].replace(/<([^>]+)>/, function(match, p1){
+      link = table[p1] || 0;
+      return p1;
+    });
     return new Effect(i, v, link);
   });
 };
@@ -122,9 +119,9 @@ var EFFECT = Effect.createList(
   ,["怒/Anger", "いか", 0, 1.1, , TYPE.AFFINITY]
   ,["意気/Spirit", "いき", 0, 0, 400]
   ,["回避/Evasion", "かい", 1, 0.01]
-  ,["回避に貫通/Ignore Evasion", "かい", 0, 100, , TYPE.IGNORE]
+  ,["<回避>に貫通/Ignore Evasion", "かい", 0, 100, , TYPE.BONUS]
   ,["頑強/Tenacity", "かん", 1, 0.9]
-  ,["頑強に貫通/Ignore Tenacity", "かん", 0, 2.22, , TYPE.IGNORE]
+  ,["<頑強>に貫通/Ignore Tenacity", "かん", 0, 2.22, , TYPE.BONUS]
   ,["極限/Limit", "きよく", 0, 1, , TYPE.LIMIT]
   ,["崩し/Break", "くす", 1, 1.2]
   ,["暗闇", "くら", 0, 0.9]
@@ -139,15 +136,15 @@ var EFFECT = Effect.createList(
   ,["攻撃強化/ATK Up", "こうけきき", 0, 1.1]
   ,["剛力/Brawn", "こうり", 0, 1.15]
   ,["金剛/Adamantine", "こん", 1, 0.9]
-  ,["金剛に貫通/Ignore Adamantine", "こん", 0, 2.22, , TYPE.IGNORE]
+  ,["<金剛>に貫通/Ignore Adamantine", "こん", 0, 2.22, , TYPE.BONUS]
   ,["弱点/Weakness", "しや", 1, 1.2]
   ,["集中/Concentration", "しゆう", 0, 1.1]
   ,["守護/Protection", "しゆこ", 1, 0.9]
-  ,["守護に貫通/Ignore Protection", "しゆこ", 0, 2.22, , TYPE.IGNORE]
+  ,["<守護>に貫通/Ignore Protection", "しゆこ", 0, 2.22, , TYPE.BONUS]
   ,["滋養/Nourishment", "しよ", 0, 1.1, , , , 0.4]
   ,["聖油/Unction", "せい", 1, 0.85]
-  ,["聖油に貫通/Ignore Unction", "せい", 0, 2.35, , TYPE.IGNORE]
-  ,["束縛/Bind", "そく", 0, 0.9]
+  ,["<聖油>に貫通/Ignore Unction", "せい", 0, 2.35, , TYPE.BONUS]
+  ,["束縛/Bind", "そくはく", 0, 0.9]
   ,["凍結/Freeze", "とうけ", 1, 1.1]
   ,["闘志/Vigor", "とうし", 0, 1.2]
   ,["毒反転", "とくは", 0, 2, , TYPE.FIXED]
@@ -181,7 +178,7 @@ var EFFECT = Effect.createList(
   ,["武器種変更：全域/CWT：All", "ふき", 0, 0, 8, TYPE.WEAPON]
   ,["武器種変更：無/CWT：None", "ふき", 0, 0, 9, TYPE.WEAPON]
   ,["防御強化/DEF Up", "ほうき", 1, 0.9]
-  ,["防御強化に貫通/Ignore DEF Up", "ほうき", 0, 2.22, , TYPE.IGNORE]
+  ,["<防御強化>に貫通/Ignore DEF Up", "ほうき", 0, 2.22, , TYPE.BONUS]
   ,["暴走/Berserk", "ほうそ", 0, 1.3]
   ,["暴走/Berserk", "ほうそ", 1, 1.3]
   ,["暴走+/Berserk+", "ほうそ", 0, 1.3]
@@ -219,6 +216,7 @@ var EFFECT = Effect.createList(
   ,["攻撃力微増", "こうけきりよくひ", 0, 1.13, , TYPE.BONUS]
   ,["[カスタム]/[Customizable]", "", 0, 1, , TYPE.CUSTOM]
   ,["[カスタム]/[Customizable]", "", 1, 1, , TYPE.CUSTOM]
+  ,["<束縛>時強化", "そくはくし", 0, 10, , TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
