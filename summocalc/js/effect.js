@@ -105,7 +105,7 @@ Effect.createList = function(a){
     var link = 0;
     table[t(v[0], 0)] = i;
     v[0] = v[0].replace(/<([^>]+)>/, function(match, p1){
-      link = table[p1];
+      link = table[p1] || 0;
       return p1;
     });
     return new Effect(i, v, link);
