@@ -144,7 +144,7 @@ var calc = {
     setBlobURL("aj", Record.csv(AR, 0), "text/csv", "housamo_ar_ja.csv");
     setBlobURL("ae", Record.csv(AR, 1), "text/csv", "housamo_ar_en.csv");
     this.save();
-    this.load(location.hash.slice(1));
+    this.load(location.hash.slice(1), true);
   },
   save: function(){
     var s = new Encoder();
@@ -199,7 +199,7 @@ var calc = {
       history.replaceState(null, null, location.pathname + "#" + s);
     }
   },
-  load: function(x){
+  load: function(x, skipSave){
     var s = new Decoder(x);
     if(s.data){
       var tmp = [];
@@ -268,7 +268,7 @@ var calc = {
       });
       this.active = 1;
     }
-    this.update(true);
+    this.update(skipSave);
     this.setEffectOptions();
   },
   addStatus: function(index, lv, group, mode){
@@ -280,7 +280,7 @@ var calc = {
       var e = EFFECT[index];
       var es = this.es[index];
       if(lv){
-        if(e.type === TYPE.IGNORE && !this.es[e.link].loop){
+        if(e.link && !this.es[e.link].loop){
           var tLv = 0;
           while(tLv < 1 || tLv > 100){
             tLv = prompt(t("/Add ") + EFFECT[e.link] + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
@@ -402,7 +402,7 @@ var calc = {
       var y = EFFECT[b];
       if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
       if(x.sortkey !== 1) return x.index - y.index;
-      if(x.type === TYPE.BONUS && y.type === TYPE.BONUS && x.group === y.group) return x.value[0] - y.value[0];
+      if(x.reading === y.reading && x.type === TYPE.BONUS && y.type === TYPE.BONUS) return x.value[0] - y.value[0];
       if(x.type === TYPE.WEAPON && y.type === TYPE.WEAPON || x.type === TYPE.CSWEAPON && y.type === TYPE.CSWEAPON) return x.value[1] - y.value[1];
       if(language) return ("" + x).toUpperCase() < ("" + y).toUpperCase() ? -1 : 1;
       if(x.reading === y.reading) return x.index - y.index;
@@ -469,7 +469,8 @@ var calc = {
     if(x >= 0) this.update();
   },
   setEffectOptions: function(){
-    var p = "{CS}";
+    var p = "{CS} ";
+    var es = this.es;
     var s = [0].concat(
       CARD[this.card].effects
     );
@@ -477,8 +478,8 @@ var calc = {
       if(s.indexOf(x) === -1) s.push(x);
     });
     s.push(0);
-    this.es.forEach(function(x, i){
-      if(x.loop) s.push(i);
+    EFFECT_ORDER.forEach(function(x){
+      if(es[x].loop) s.push(x);
     });
     s = s.concat(EFFECT_ORDER);
     setOptions("os", EFFECT, FILTER.OFFENSE, s, p);
@@ -597,7 +598,7 @@ var calc = {
           desc[0] += e;
           x = e.getMulValue(eLv, !this.version);
           //貫通
-          if(e.type === TYPE.IGNORE && !this.es[e.link].loop) x = new Fraction(1);
+          if(e.link && !this.es[e.link].loop) x = new Fraction(1);
           //連撃
           if(e.type === TYPE.COMBO && this.usecs) x = new Fraction(1);
           //極限
