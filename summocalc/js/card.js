@@ -28,6 +28,14 @@ Card.prototype = {
   },
   getValue: function(lv){
     return this.growth.mul((lv || 1) - 1, 1).add(this.baseAtk, 1).round();
+  },
+  canEquip: function(x){
+    if(!this.index || !x.index) return true;
+    if(x.chara.length && x.chara.indexOf(this.index) !== -1) return true;
+    if(x.rarity & (1 << this.rarity)) return true;
+    if(x.weapon & (1 << this.weapon[0])) return true;
+    if(x.attribute & (1 << this.attribute)) return true;
+    return false;
   }
 };
 Card.createList = function(a){
@@ -426,12 +434,12 @@ var CARD = Card.createList(
   ,["シュウイチ/Shuichi", "弱点", 3, 4, 1, 5, 197, 5501]
   ,["", "", 4, 4, 5, 5, 396, 5406]
   ,["スズカ/Suzuka", "c特攻[2.0]/c連撃/闘志/特攻[1.5]", 3, 5, 1, 7, 268, 5870]
-  ,["", "", 4, 5, 7, 7, 452, 6063]
+  ,["", "c特攻[2.0]/c連撃/闘志/特攻[1.5]/クリティカル+", 4, 5, 7, 7, 452, 6063]
   ,["@渚19/Fashionista19", "c崩し/集中", 4, 3, 3, 3, 726, 6474]
   ,["タヂカラオ/Tajikarao", "集中/剛力", 3, 4, 2, 2, 164, 6548]
-  ,["", "", 5, 4, 2, 2, 826, 6212]
+  ,["", "集中/剛力/回避に貫通/頑強に貫通/金剛に貫通/守護に貫通/聖油に貫通/防御強化に貫通", 5, 4, 2, 2, 826, 6212]
   ,["ギョウブ/Gyobu", "闘志", 3, 4, 5, 5, 153, 5155]
-  ,["", "", 4, 4, 5, 5, 412, 5195]
+  ,["", "弱点/特攻[1.6]/闘志", 4, 4, 5, 5, 412, 5195]
   ,["テンジン/Deity", "-", 2, 2, 3, 3, 98, 4888]
   ,["", "", 2, 3, 3, 3, 98, 4888]
   ,["", "", 2, 4, 3, 3, 98, 4888]

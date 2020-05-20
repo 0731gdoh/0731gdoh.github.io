@@ -423,6 +423,7 @@ var calc = {
     setOptions("af2", EFFECT, FILTER.ATK_UP, EFFECT_ORDER);
     setOptions("df1", EFFECT, FILTER.DEF_DOWN, EFFECT_ORDER);
     setOptions("df2", EFFECT, FILTER.DEF_DOWN, EFFECT_ORDER);
+    setOptions("qf", AR);
     this.setEffectOptions();
     this.checkCardSelected();
     setText("lsv", "モード/Mode");
@@ -453,10 +454,11 @@ var calc = {
     setText("lcf", "CSタイプ/CS Type");
     setText("lrf", "レア度/Rarity");
     setText("lvf", "バージョン/Variant");
-    setText("laf1", "攻撃上昇効果1/ATK Up Effect 1");
-    setText("laf2", "攻撃上昇効果2/ATK Up Effect 2");
-    setText("ldf1", "防御低下効果1/DEF Down Effect 1");
-    setText("ldf2", "防御低下効果2/DEF Down Effect 2");
+    setText("laf1", "攻撃上昇効果1/ATK Up 1");
+    setText("laf2", "攻撃上昇効果2/ATK Up 2");
+    setText("ldf1", "防御低下効果1/DEF Down 1");
+    setText("ldf2", "防御低下効果2/DEF Down 2");
+    setText("lqf", "装備可能AR/Equipable AR");
     setText("fr", "リセット/Reset");
     setText("rd", "ランダム/Random");
     setText("dd", "カードデータ: /Card Data: ");
@@ -510,12 +512,7 @@ var calc = {
   filterAR: function(){
     var c = CARD[this.card];
     setOptions("rc", AR, function(x){
-      if(!c.index || !x.index) return true;
-      if(x.chara.length && x.chara.indexOf(c.index) !== -1) return true;
-      if(x.rarity & (1 << c.rarity)) return true;
-      if(x.weapon & (1 << c.weapon[0])) return true;
-      if(x.attribute & (1 << c.attribute)) return true;
-      return false;
+      return c.canEquip(x);
     });
   },
   update: function(skipSave){
@@ -706,6 +703,7 @@ var calc = {
     atk2: 0,
     def1: 0,
     def2: 0,
+    ar: 0,
     active: 0,
     init: function(){
       var c = this;
@@ -718,6 +716,7 @@ var calc = {
       linkInput(c, "atk2", "af2");
       linkInput(c, "def1", "df1");
       linkInput(c, "def2", "df2");
+      linkInput(c, "ar", "qf");
     },
     toggle: function(){
       if(this.active = 1 - this.active){
@@ -757,6 +756,7 @@ var calc = {
         if(p.attribute && (1 << x.attribute & av) === 0) return false;
         if(pl > -1 && x.limited !== pl) return false;
         if(vv && x.variant.indexOf(vv)) return false;
+        if(p.ar && !x.canEquip(AR[p.ar])) return false;
         if([p.atk1, p.atk2, p.def1, p.def2].some(function(te){
           return te && x.effects.every(function(ie){
             return te !== Math.abs(ie);
