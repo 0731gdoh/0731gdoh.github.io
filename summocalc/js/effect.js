@@ -144,7 +144,7 @@ var EFFECT = Effect.createList(
   ,["滋養/Nourishment", "しよ", 0, 1.1, , , , 0.4]
   ,["聖油/Unction", "せい", 1, 0.85]
   ,["<聖油>に貫通/Ignore Unction", "せい", 0, 2.35, , TYPE.BONUS]
-  ,["束縛/Bind", "そくはく", 0, 0.9]
+  ,["束縛/Bind", "そく", 0, 0.9]
   ,["凍結/Freeze", "とうけ", 1, 1.1]
   ,["闘志/Vigor", "とうし", 0, 1.2]
   ,["毒反転", "とくは", 0, 2, , TYPE.FIXED]
@@ -216,7 +216,10 @@ var EFFECT = Effect.createList(
   ,["攻撃力微増", "こうけきりよくひ", 0, 1.13, , TYPE.BONUS]
   ,["[カスタム]/[Customizable]", "", 0, 1, , TYPE.CUSTOM]
   ,["[カスタム]/[Customizable]", "", 1, 1, , TYPE.CUSTOM]
-  ,["<束縛>時強化", "そくはくし", 0, 10, , TYPE.FIXED]
+  ,["<束縛>時強化", "そく", 0, 10, , TYPE.FIXED]
+  ,["特攻[1.3]/Bonus[1.3]", "とつ", 0, 1.3, , TYPE.BONUS]
+  ,["<守護>を無効化", "しゆこ", 1, 2.22, , TYPE.FIXED]
+  ,["<防御強化>を無効化", "ほうき", 1, 2.22, , TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
