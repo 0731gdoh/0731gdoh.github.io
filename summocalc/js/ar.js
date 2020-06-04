@@ -150,6 +150,6 @@ var AR = Record.createList(
   ,["寂しがりの猛牛たち", , "", 500, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ワカン・タンカ/テツギュウ", 2]
   ,["流れ者の集う街", , "", 100, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "スズカ/テツギュウ"]
   ,["いつかどうして夢の鬼", , "", 100, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "スズカ/イバラキ"]
-  ,["剣の道は尚遙か", , "特攻[1.4]", 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ"]
+  ,["剣の道は尚遙か", , "特攻[1.3]", 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ"]
   ,["歓楽の鬼", , "", 0, 0, 0, EQUIP.BLOW|EQUIP.SHOT, "スズカ/イバラキ"]
 ]);
