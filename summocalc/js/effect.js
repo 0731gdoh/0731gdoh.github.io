@@ -220,6 +220,7 @@ var EFFECT = Effect.createList(
   ,["特攻[1.3]/Bonus[1.3]", "とつ", 0, 1.3, , TYPE.BONUS]
   ,["<守護>を無効化", "しゆこ", 1, 2.22, , TYPE.FIXED]
   ,["<防御強化>を無効化", "ほうき", 1, 2.22, , TYPE.FIXED]
+  ,["劫火", "こうか", 1, 0, 3000, TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
