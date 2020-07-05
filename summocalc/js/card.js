@@ -82,7 +82,7 @@ Card.csv = function(list, x){
       v.getValue(v.maxLv),
       v.getValue(v.maxLv + 10),
       v.effects.map(function(n){
-        return (n < 0 ? "{CS}" : "") + t(EFFECT[Math.abs(n)].name, x)
+        return (n > EFFECT_MAX ? "{CS}" : "") + t(EFFECT[n % EFFECT_MAX].name, x)
         }).join("/")
     ].join(",");
   }).join("\n");

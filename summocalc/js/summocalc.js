@@ -38,8 +38,8 @@ function setValue(id, value, zeroCount){
   }
   if(!o.disabled && o.onchange) o.onchange();
 }
-function setOptions(id, list, k, s, p){
-  //id, リスト[, フィルタ関数[, ソート順[, マイナス時接頭辞]]]
+function setOptions(id, list, k, s, d, p){
+  //id, リスト[, フィルタ関数[, ソート順[, 除数, 接頭辞リスト]]]
   var elem = _(id);
   var value = v(id);
   var zeroCount = 0;
@@ -54,11 +54,11 @@ function setOptions(id, list, k, s, p){
   }
   if(!s) s = list.map(function(v, i){return i});
   s.forEach(function(v){
-    var x = list[Math.abs(v)];
+    var x = list[d ? v % d : v];
     if(!k || k(x)){
       var o = document.createElement("option");
       o.appendChild(
-        document.createTextNode(v < 0 ? t(p) + x : x)
+        document.createTextNode(d ? p[Math.floor(v / d)] + x : x)
       );
       o.setAttribute("value", v);
       elem.appendChild(o);

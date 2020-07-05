@@ -112,6 +112,8 @@ Effect.createList = function(a){
   });
 };
 
+var EFFECT_MAX = 10000;
+
 var EFFECT = Effect.createList(
   //名前, 読み, グループ, 乗算基本値, 加算基本値, タイプ=TYPE.NORMAL, イベント=0, 乗算成長率=undefined, 加算成長率=undefined
   [["", "", -1, 1, 0]
@@ -228,17 +230,17 @@ var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
 function splitEffects(s){
   return s.split("/").map(function(x){
     var c = 1;
-    var s = 1;
+    var g = 0;
     if(x[0] === "c"){
       x = x.slice(1);
-      s = -1;
+      g = EFFECT_MAX;
     }
     if(x[0] === "*"){
       x = x.slice(1);
       c = 0;
     }
     for(var i = 1; i < EFFECT.length; i++){
-      if(t(EFFECT[i].name, 0) === x && c++) return s * i;
+      if(t(EFFECT[i].name, 0) === x && c++) return g + i;
     }
     return 0;
   }).filter(function(x){return x});
