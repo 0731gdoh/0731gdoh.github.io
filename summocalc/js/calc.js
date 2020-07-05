@@ -272,9 +272,9 @@ var calc = {
     this.setEffectOptions();
   },
   addStatus: function(index, lv, group, mode){
-    if(index < 0){
-      index = -index;
-      mode = 1;
+    if(index > EFFECT_MAX){
+      mode = Math.floor(index / EFFECT_MAX);
+      index = index % EFFECT_MAX;
     }
     if(index > 0){
       var e = EFFECT[index];
@@ -471,21 +471,21 @@ var calc = {
     if(x >= 0) this.update();
   },
   setEffectOptions: function(){
-    var p = "{CS} ";
+    var p = ["", "{CS} ", "[AR] "];
     var es = this.es;
     var s = [0].concat(
       CARD[this.card].effects
     );
     AR[this.ar].effects.forEach(function(x){
-      if(s.indexOf(x) === -1) s.push(x);
+      s.push(EFFECT_MAX * 2 + x);
     });
     s.push(0);
     EFFECT_ORDER.forEach(function(x){
       if(es[x].loop) s.push(x);
     });
     s = s.concat(EFFECT_ORDER);
-    setOptions("os", EFFECT, FILTER.OFFENSE, s, p);
-    setOptions("ds", EFFECT, FILTER.DEFENSE, s, p);
+    setOptions("os", EFFECT, FILTER.OFFENSE, s, EFFECT_MAX, p);
+    setOptions("ds", EFFECT, FILTER.DEFENSE, s, EFFECT_MAX, p);
   },
   checkCardSelected: function(){
     if(this.card){
