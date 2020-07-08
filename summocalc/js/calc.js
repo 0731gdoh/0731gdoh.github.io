@@ -759,7 +759,7 @@ var calc = {
         if(p.ar && !x.canEquip(AR[p.ar])) return false;
         if([p.atk1, p.atk2, p.def1, p.def2].some(function(te){
           return te && x.effects.every(function(ie){
-            return te !== Math.abs(ie);
+            return te !== ie % EFFECT_MAX;
           });
         })) return false;
         return true;
