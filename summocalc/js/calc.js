@@ -28,9 +28,7 @@ var FILTER = {
   VALUE: function(x){return x.getValue() - 0},
   OFFENSE: function(x){return x.group === 0 || x.group < 0},
   DEFENSE: function(x){return x.group === 1 || x.group < 0},
-  NAME: function(x){return x.name},
-  ATK_UP: function(x){return (x.group === 0 && (x.value[0] >= 1 || x.value[1] > 0) && !x.event && x.name[0] !== "[" && x.type !== TYPE.AFFINITY) || x.group < 0},
-  DEF_DOWN: function(x){return (x.group === 1 && (x.value[0] >= 1 || x.value[1] > 0) && !x.event && x.name[0] !== "[" && x.type !== TYPE.BONUS) || x.group < 0}
+  NAME: function(x){return x.name}
 };
 
 var calc = {
@@ -117,9 +115,6 @@ var calc = {
     };
     _("fv").onclick = function(){
       c.cardfilter.toggle();
-    };
-    _("fr").onclick = function(){
-      c.cardfilter.reset();
     };
     _("lm").onclick = function(){
       setValue("pl", CARD[c.card].maxLv);
@@ -419,10 +414,12 @@ var calc = {
     setOptions("cf", WEAPON);
     setOptions("rf", RARITY);
     setOptions("vf", VARIANT);
-    setOptions("af1", EFFECT, FILTER.ATK_UP, EFFECT_ORDER);
-    setOptions("af2", EFFECT, FILTER.ATK_UP, EFFECT_ORDER);
-    setOptions("df1", EFFECT, FILTER.DEF_DOWN, EFFECT_ORDER);
-    setOptions("df2", EFFECT, FILTER.DEF_DOWN, EFFECT_ORDER);
+    ["sf1", "af1", "df1", "baf", "bdf", "nf", "pf", "sf2", "af2", "df2"].forEach(function(key, i){
+      var flag = 1 << i % 7;
+      setOptions(key, TAG, function(x){
+        return !x.index || x.flag & flag;
+      }, TAG_ORDER);
+    });
     setOptions("qf", AR);
     this.setEffectOptions();
     this.checkCardSelected();
@@ -448,18 +445,24 @@ var calc = {
     setText("su", "URLを共有/Share URL");
     setText("rs", "リセット/Reset");
     setText("sl", "English/日本語");
-    setText("fc", "カードフィルタ/Filter");
+    setText("fc", "カードフィルタ/Filter ");
     setText("lef", "属性/Attribute");
     setText("lwf", "武器タイプ/Weapon Type");
     setText("lcf", "CSタイプ/CS Type");
     setText("lrf", "レア度/Rarity");
     setText("lvf", "バージョン/Variant");
-    setText("laf1", "攻撃上昇効果1/ATK Up 1");
-    setText("laf2", "攻撃上昇効果2/ATK Up 2");
-    setText("ldf1", "防御低下効果1/DEF Down 1");
-    setText("ldf2", "防御低下効果2/DEF Down 2");
+    setText("lsf1", "効果(自身)/Effect(Self)");
+    setText("lsf2", "効果(自身)/Effect(Self)");
+    setText("laf1", "効果(味方)/Effect(Ally)");
+    setText("laf2", "効果(味方)/Effect(Ally)");
+    setText("ldf1", "効果(敵)/Effect(Enemy)");
+    setText("ldf2", "効果(敵)/Effect(Enemy)");
+    setText("lpf", "パッシブ/Passive");
+    setText("lbaf", "特攻対象/Bonus To");
+    setText("lbdf", "特防対象/Bonus From");
+    setText("lnf", "状態無効/Nullify");
     setText("lqf", "装備可能AR/Equipable AR");
-    setText("fr", "リセット/Reset");
+    setText("lccf", "CSの効果を除外する/Exclude CS Effects");
     setText("rd", "ランダム/Random");
     setText("dd", "カードデータ: /Card Data: ");
     setText("ad", "ARデータ: /AR Data: ");
@@ -699,11 +702,18 @@ var calc = {
     cs: 0,
     rarity: 0,
     variant: 0,
-    atk1: 0,
-    atk2: 0,
-    def1: 0,
-    def2: 0,
+    self1: 0,
+    self2: 0,
+    ally1: 0,
+    ally2: 0,
+    enemy1: 0,
+    enemy2: 0,
+    passive: 0,
+    bonus_a: 0,
+    bonus_b: 0,
+    nullify: 0,
     ar: 0,
+    exclude: 0,
     active: 0,
     init: function(){
       var c = this;
@@ -712,11 +722,18 @@ var calc = {
       linkInput(c, "cs", "cf");
       linkInput(c, "rarity", "rf");
       linkInput(c, "variant", "vf");
-      linkInput(c, "atk1", "af1");
-      linkInput(c, "atk2", "af2");
-      linkInput(c, "def1", "df1");
-      linkInput(c, "def2", "df2");
+      linkInput(c, "self1", "sf1");
+      linkInput(c, "self2", "sf2");
+      linkInput(c, "ally1", "af1");
+      linkInput(c, "ally2", "af2");
+      linkInput(c, "enemy1", "df1");
+      linkInput(c, "enemy2", "df2");
+      linkInput(c, "passive", "pf");
+      linkInput(c, "bonus_a", "baf");
+      linkInput(c, "bonus_d", "bdf");
+      linkInput(c, "nullify", "nf");
       linkInput(c, "ar", "qf");
+      linkInput(c, "exclude", "ccf");
     },
     toggle: function(){
       if(this.active = 1 - this.active){
@@ -725,16 +742,14 @@ var calc = {
       }else{
         _("sw").style.display = "none";
         setText("fv", "▼");
+        this.reset();
       }
       this.update();
     },
     reset: function(){
-      this.active = 0;
-      ["ef", "wf", "cf", "rf", "vf", "af1", "af2", "df1", "df2"].forEach(function(x){
+      ["ef", "wf", "cf", "rf", "vf", "sf1", "sf2", "af1", "af2", "df1", "df2", "pf", "baf", "bdf", "nf", "qf", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
-      this.active = 1;
-      this.update();
     },
     update: function(){
       var p = this;
@@ -742,6 +757,7 @@ var calc = {
       var rv = RARITY[p.rarity].getValue();
       var vv = VARIANT[p.variant].name;
       var pl = ["[恒常]", "[期間限定]"].indexOf(t(vv, 0));
+      var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
       if(!vv || vv[0] === "["){
         vv = "";
       }else{
@@ -757,13 +773,14 @@ var calc = {
         if(pl > -1 && x.limited !== pl) return false;
         if(vv && x.variant.indexOf(vv)) return false;
         if(p.ar && !x.canEquip(AR[p.ar])) return false;
-        if([p.atk1, p.atk2, p.def1, p.def2].some(function(te){
-          return te && x.effects.every(function(ie){
-            return te !== ie % EFFECT_MAX;
+        if([p.self1, p.ally1, p.enemy1, p.bonus_a, p.bonus_d, p.nullify, p.passive, p.self2, p.ally2, p.enemy2].some(function(te, i){
+          return te && x.tag[i % 7 % 6].every(function(ie){
+            return te !== ie % d;
           });
         })) return false;
         return true;
       });
+      _("cx").innerHTML = "(" + (_("pc").length - 1) + "/" + (CARD.length - 1) + ")";
     }
   }
 };

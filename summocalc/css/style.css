@@ -28,6 +28,9 @@ label, caption, #dl, #ms{
   font-family: "Courier", monospace;
   font-size: smaller;
 }
+table{
+  margin: 0.2em 0;
+}
 button{
   -webkit-appearance: button;
   -moz-appearance: button;

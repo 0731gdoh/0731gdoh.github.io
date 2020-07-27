@@ -100,12 +100,12 @@ Effect.prototype = {
   }
 };
 Effect.createList = function(a){
-  var table = {};
+  var table = new Map();
   return a.map(function(v, i){
     var link = 0;
-    table[t(v[0], 0)] = i;
+    table.set(t(v[0], 0), i);
     v[0] = v[0].replace(/<([^>]+)>/, function(match, p1){
-      link = table[p1] || 0;
+      link = table.get(p1) || 0;
       return p1;
     });
     return new Effect(i, v, link);
@@ -220,27 +220,22 @@ var EFFECT = Effect.createList(
   ,["[カスタム]/[Customizable]", "", 1, 1, , TYPE.CUSTOM]
   ,["<束縛>時強化", "そく", 0, 10, , TYPE.FIXED]
   ,["特攻[1.3]/Bonus[1.3]", "とつ", 0, 1.3, , TYPE.BONUS]
-  ,["<守護>を無効化", "しゆこ", 1, 2.22, , TYPE.FIXED]
-  ,["<防御強化>を無効化", "ほうき", 1, 2.22, , TYPE.FIXED]
+  ,["<守護>無効化", "しゆこ", 1, 2.22, , TYPE.FIXED]
+  ,["<防御強化>無効化", "ほうき", 1, 2.22, , TYPE.FIXED]
   ,["劫火", "こうか", 1, 0, 3000, TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
 
-function splitEffects(s){
+function splitEffects(s, group){
   return s.split("/").map(function(x){
-    var c = 1;
     var g = 0;
     if(x[0] === "c"){
       x = x.slice(1);
       g = EFFECT_MAX;
     }
-    if(x[0] === "*"){
-      x = x.slice(1);
-      c = 0;
-    }
     for(var i = 1; i < EFFECT.length; i++){
-      if(t(EFFECT[i].name, 0) === x && c++) return g + i;
+      if(t(EFFECT[i].name, 0) === x && (group === undefined || EFFECT[i].group === group)) return g + i;
     }
     return 0;
   }).filter(function(x){return x});
