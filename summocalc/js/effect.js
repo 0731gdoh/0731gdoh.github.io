@@ -103,10 +103,12 @@ Effect.createList = function(a){
   var table = new Map();
   return a.map(function(v, i){
     var link = 0;
-    table.set(t(v[0], 0), i);
+    var key = t(v[0], 0);
+    while(table.get(key)) key = "*" + key;
+    table.set(key, i);
     v[0] = v[0].replace(/<([^>]+)>/, function(match, p1){
       link = table.get(p1) || 0;
-      return p1;
+      return p1.replace(/\*+/, "");
     });
     return new Effect(i, v, link);
   });
@@ -223,6 +225,8 @@ var EFFECT = Effect.createList(
   ,["<守護>無効化", "しゆこ", 1, 2.22, , TYPE.FIXED]
   ,["<防御強化>無効化", "ほうき", 1, 2.22, , TYPE.FIXED]
   ,["劫火", "こうか", 1, 0, 3000, TYPE.FIXED]
+  ,["<暴走+>時強化", "ほうそ", 0, 2.6, , TYPE.FIXED]
+  ,["<*暴走+>時強化", "ほうそ", 1, 0.77, , TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
