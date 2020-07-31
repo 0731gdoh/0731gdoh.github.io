@@ -71,7 +71,7 @@ Card.createList = function(a){
 Card.csv = function(list, x){
   return list.map(function(v){
     if(!v.name){
-      return t("#,レア度,名前,バージョン,限定,属性,武器タイプ,CSタイプ,CS倍率,基礎ATK,成長率*98,最大Lv,ATK(最大Lv),ATK(最大Lv+10),ダメージ補正,効果(自身),効果(味方),効果(敵),特攻,特防,状態無効/#,Rarity,Name,Variant,Limited,Attribute,WeaponType,CSType,CSRate,BaseATK,GrowthRate*98,MaxLv,ATK(MaxLv),ATK(MaxLv+10),DamageModifier,Effects(Self),Effects(Ally),Effects(Enemy),BonusTo,BonusFrom,NullifyStatus", x);
+      return t("#,レア度,名前,バージョン,限定,属性,武器タイプ,CSタイプ,CS倍率,基礎ATK,成長率*98,最大Lv,ATK(最大Lv),ATK(最大Lv+10),ダメージ補正,効果(自身),効果(味方),効果(敵),特攻,特防,状態無効/#,Rarity,Name,Variant,Limited,Attribute,WeaponType,CSType,CSRate,BaseATK,GrowthRate*98,MaxLv,ATK(MaxLv),ATK(MaxLv+10),DamageModifier,Effects(Self),Effects(Ally),Effects(Enemy),AttackBonus,DefenseBonus,NullifyStatus", x);
     }else{
       var r = [
         v.index,
@@ -238,7 +238,7 @@ var CARD = Card.createList(
   ,["", "*", "*", "*", "", "", "", 4, 2, 2, 2, 401, 5799]
   ,["@秘島17/Island17", "c加速/cCP増加/根性/集中/特防[0.8]/極限/回避/吹き飛ばし(1マス)/移動力増加(縦)", "c加速/cCP増加/根性", "", "", "射撃", "", 4, 3, 2, 2, 563, 6165]
   ,["スノウ/Snow", "頑強/HP回復/根性/守護/CP増加", "HP回復/守護/CP増加", "c強化解除(単)", "", "", "", 3, 3, 3, 1, 197, 5306]
-  ,["", "*", "*", "*", "", "", "", 5, 3, 1, 1, 799, 4201]
+  ,["", "頑強/HP回復/滋養/特攻[2.5]/暴走+時強化/根性/守護/CP増加", "HP回復/滋養/守護/CP増加", "*", "熱情", "", "", 5, 3, 1, 1, 799, 4201]
   ,["@バレ20/Valentine20", "c集中/c連撃/闘志/弱体解除(単)/クリティカル/弱体無効/HP回復/CP増加", "HP回復", "強化解除(全)", "", "", "", 5, 5, 2, 4, 578, 6432]
   ,["ガンダルヴァ/Gandharva", "c暴走/クリティカル++/CP増加/移動力増加(横)/守護", "c暴走/守護/CP増加", "", "", "", "", 3, 3, 3, 5, 202, 5402]
   ,["", "*", "*", "", "", "", "", 4, 3, 5, 5, 402, 5297]
@@ -340,7 +340,7 @@ var CARD = Card.createList(
   ,["", "根性/守護/弱体無効/特攻[1.5]", "", "*", "告死", "", "", 5, 6, 1, 1, 960, 6275]
   ,["@海家19/SeaHouse19", "cクリティカル/不動/弱体無効/聖油/祝福/CP増加", "cクリティカル/cHP回復/HP回復/聖油/熱情/祝福/CP増加", "火傷/凍結/HP減少", "", "", "", 5, 2, 6, 4, 840, 6280]
   ,["メリュジーヌ/Melusine", "クリティカル/移動力増加(横)", "CP増加", "cCP減少", "", "", "", 3, 3, 4, 4, 258, 6253]
-  ,["", "*", "*", "*", "", "", "", 4, 3, 4, 4, 416, 6434]
+  ,["", "クリティカル/強化を貼付(敵から)/特攻[1.6]/移動力増加(横)", "*", "cCP減少/威圧/強化奪取(単)", "威圧", "", "", 4, 3, 4, 4, 416, 6434]
   ,["@聖夜18/Xmas18", "祝福", "cHP回復/CP増加/祝福", "cCP減少/弱点/威圧/幻惑/脱力", "", "", "", 4, 2, 4, 4, 550, 6450]
   ,["ヒリュウ/Wyvern", "クリティカル/特攻[1.4]/移動力増加(横)/根性", "", "c火傷", "火傷", "", "", 2, 2, 2, 4, 105, 7010]
   ,["", "*", "", "*", "*", "", "", 2, 3, 2, 4, 108, 7013]

@@ -277,10 +277,14 @@ var calc = {
       if(lv){
         if(e.link && !this.es[e.link].loop){
           var tLv = 0;
-          while(tLv < 1 || tLv > 100){
-            tLv = prompt(t("/Add ") + EFFECT[e.link] + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
-            if(tLv !== 0 && !tLv) break;
-            tLv = parseInt(tLv, 10) || 0;
+          if(EFFECT[e.link].isFixed()){
+            if(confirm(t("/Add ") + EFFECT[e.link] + t("を追加/"))) tLv = 1;
+          }else{
+            while(tLv < 1 || tLv > 100){
+              tLv = prompt(t("/Add ") + EFFECT[e.link] + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
+              if(tLv !== 0 && !tLv) break;
+              tLv = parseInt(tLv, 10) || 0;
+            }
           }
           if(tLv) this.addStatus(e.link, tLv, 1);
         }
@@ -458,8 +462,8 @@ var calc = {
     setText("ldf1", "効果(敵)/Effect(Enemy)");
     setText("ldf2", "効果(敵)/Effect(Enemy)");
     setText("lpf", "パッシブ/Passive");
-    setText("lbaf", "特攻対象/Bonus To");
-    setText("lbdf", "特防対象/Bonus From");
+    setText("lbaf", "特攻対象/Attack Bonus");
+    setText("lbdf", "特防対象/Defense Bonus");
     setText("lnf", "状態無効/Nullify");
     setText("lqf", "装備可能AR/Equipable AR");
     setText("lccf", "CSの効果を除外する/Exclude CS Effects");
