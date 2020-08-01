@@ -60,8 +60,8 @@ Card.createList = function(a){
       });
     }
     e = v.slice(0, 6);
-    if(v[1] < 3){
-      idL = v[2];
+    if(v[6] < 3){
+      idL = v[7];
     }else{
       idL++;
     }
