@@ -115,7 +115,7 @@ var TAG = Tag.createList(
   ,["クリティカル+", 1, "攻撃増加系"]
   ,["クリティカル++", 1, "攻撃増加系"]
   ,["係留", 1, ""]
-  ,["激怒", 1, "攻撃増加系/防御減少系"]
+  ,["激怒", 1, "攻撃増加系/防御減少系", "激怒+"]
   ,["激怒+", 1, "攻撃増加系/防御減少系"]
   ,["幻惑", 2, "攻撃減少系"]
   ,["劫火", 2, "防御減少系"]
@@ -155,6 +155,7 @@ var TAG = Tag.createList(
   ,["束縛時強化", 1, "攻撃増加系"]
   ,["脱力", 2, "CP減少系/発動率減少系"]
   ,["注目", 1, ""]
+  ,["注目時強化", 1, "発動率増加系"]
   ,["凍結", 2, "防御減少系/HP減少系"]
   ,["闘志", 1, "攻撃増加系"]
   ,["毒", 2, "HP減少系"]
@@ -317,9 +318,9 @@ function splitTagNames(s, flag){
     }
     if(x.slice(0, 3) === "全ての") sf = false;
     var e = TAG.some(function(tag, i){
-      var f = flag;
       if(tag.type && t(tag.name, 0) === x){
-        if(tag.type === TAG_TYPE.PASSIVE) f = TAG_FLAG.PASSIVE;
+        var f = (tag.type === TAG_TYPE.PASSIVE) ? TAG_FLAG.PASSIVE : flag;
+        if(r.indexOf(g + i) !== -1) throw new Error("タグ「" + x + "」が重複しています\n（" + s + "）");
         if(tag.type !== TAG_TYPE.SKIP){
           r.push(g + i);
           tag.setFlag(f);
@@ -332,6 +333,7 @@ function splitTagNames(s, flag){
       }
       return false;
     });
+    if(!e) throw new Error("タグ「" + x + "」は有効なタグとして登録されていません\n（" + s + "）");
   });
   return r;
 }
