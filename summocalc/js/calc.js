@@ -53,6 +53,7 @@ var calc = {
   defaultHash: "",
   init: function(){
     var c = this;
+    var nums = document.querySelectorAll('input[type="number"]');
     if(navigator.share){
       _("cc").style.display = "none";
     }else{
@@ -134,6 +135,18 @@ var calc = {
         checkUpdate();
       }
     };
+    for(var i = 0; i < nums.length; i++){
+      nums[i].onfocus = function(){
+        var elem = this;
+        setTimeout(function(){
+          try{
+            elem.setSelectionRange(0, elem.value.length);
+          }catch(e){
+            elem.select();
+          }
+        }, 0);
+      };
+    }
     setBlobURL("dj", Card.csv(CARD, 0), "text/csv", "housamo_card_ja.csv");
     setBlobURL("de", Card.csv(CARD, 1), "text/csv", "housamo_card_en.csv");
     setBlobURL("aj", Record.csv(AR, 0), "text/csv", "housamo_ar_ja.csv");
