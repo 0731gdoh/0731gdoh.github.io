@@ -152,7 +152,6 @@ var AR = Record.createList(
   ,["いつかどうして夢の鬼", , "", 100, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "スズカ/イバラキ"]
   ,["剣の道は尚遙か", , "特攻[1.3]", 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ"]
   ,["歓楽の鬼", , "", 0, 0, 0, EQUIP.BLOW|EQUIP.SHOT, "スズカ/イバラキ"]
-
   ,["おお温泉の喜びよ", , "", 0, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "ザオウ/チェルノボーグ"]
   ,["法の代行者たち", , "特攻[1.5]", 300, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.VALIANT, 0, "ザバーニーヤ/アルスラーン"]
   ,["きょうだい弟子の組手", , "連撃", 300, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "イクトシ/カグツチ", 1]
