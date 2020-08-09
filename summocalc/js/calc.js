@@ -117,6 +117,9 @@ var calc = {
     _("fv").onclick = function(){
       c.cardfilter.toggle();
     };
+    _("fr").onclick = function(){
+      c.cardfilter.reset();
+    };
     _("lm").onclick = function(){
       setValue("pl", CARD[c.card].maxLv);
       c.update();
@@ -480,7 +483,9 @@ var calc = {
     setText("lnf", "状態無効/Nullify");
     setText("lqf", "装備可能AR/Equipable AR");
     setText("lccf", "CSの効果を除外する/Exclude CS Effects");
-    setText("rd", "ランダム/Random");
+    setText("lfv", "フィルタ/Filter ");
+    setText("rd", "ランダムカード/Random Card");
+    setText("fr", "フィルタをリセット/Reset Filter");
     setText("dd", "カードデータ: /Card Data: ");
     setText("ad", "ARデータ: /AR Data: ");
     setText("ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'.");
@@ -576,7 +581,7 @@ var calc = {
         if(this.usecs) weapon = ar.csWeapon;
         passive.push(WEAPON[ar.csWeapon] + "CS");
       }
-      result[2] = "　[Lv." + pad(this.arLv, 3) + "]　" + ar;
+      result[2] = "　[Lv." + pad(this.arLv, 3) + "]　" + (card.canEquip(ar) ? "" : "×") + ar;
       if(passive.length) result[2] += "（" + passive.join(",") + "）";
     }
     if(this.usecs){
@@ -755,18 +760,22 @@ var calc = {
     toggle: function(){
       if(this.active = 1 - this.active){
         _("sw").style.display = "block";
-        setText("fv", "▲");
+        setText("tfv", "▲");
+        this.update();
       }else{
         _("sw").style.display = "none";
-        setText("fv", "▼");
+        setText("tfv", "▼");
         this.reset();
       }
-      this.update();
     },
     reset: function(){
+      var active = this.active;
+      this.active = 0;
       ["ef", "wf", "cf", "rf", "vf", "sf1", "sf2", "af1", "af2", "df1", "df2", "pf", "baf", "bdf", "nf", "qf", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
+      this.active = active;
+      this.update();
     },
     update: function(){
       var p = this;

@@ -33,7 +33,7 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
   <hr>
   <div class=ib><div class=sp>
     <label for=pc id=lpc></label><select id=pc></select>
-    <button type=button id=rd></button><button type=button id=fv>▼</button>
+    <button type=button id=fv><span id=lfv></span><span id=tfv>▼</span></button>
     <br>
     <div id=sw>
       <table>
@@ -90,6 +90,10 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
           <td><select id=nf></select>
       </table>
       <input type=checkbox id=ccf><label for=ccf id=lccf></label>
+      <hr>
+      <div id=bs>
+        <button type=button id=rd></button><button type=button id=fr></button>
+      </div>
     </div>
     <label for=pl id=lpl></label><input type=number min=1 max=80 value=1 id=pl>
     <button type=button id=ly>-10</button><button type=button id=lm>MAX</button><button type=button id=lx>+10</button>
