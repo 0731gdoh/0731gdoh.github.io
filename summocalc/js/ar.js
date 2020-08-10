@@ -13,7 +13,7 @@ function Record(index, id, x){
 }
 Record.prototype = {
   toString: function(){
-    return t(this.name) || "－－－－－－－－－－－－－－－－－";
+    return t(this.name) || "－－－－－－－－－－－－－－－－";
   },
   getValue: function(lv){
     return this.value.mul(100 + lv, 100);
@@ -97,7 +97,7 @@ var AR = Record.createList(
   ,["魔王と魔王/Dark Lords", 103, "", 150, EQUIP.ANY, 0, 0, ""]
   ,["仰げば尊し", 104, "", 100, EQUIP.ANY, 0, 0, ""]
   ,["聖夜のダブル・ヒーロー！", 105, "", 150, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.BLOW, "タウラスマスク/クランプス"]
-  ,["ギュウマオウ式OJT！", 106, "", 0, 0, 0, EQUIP.LONGSLASH|EQUIP.MAGIC, "ギュウマオウ/セト"]
+  ,["ギュウマオウ式OJT！/OJT: The Gyumao Way", 106, "", 0, 0, 0, EQUIP.LONGSLASH|EQUIP.MAGIC, "ギュウマオウ/セト"]
   ,["開拓の誓い", , "", 100, 0, EQUIP.NETHER, 0, "主人公/シロウ"]
   ,["無窮の誓い", , "クリティカル", 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ"]
   ,["豊穣の誓い", , "", 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ"]
@@ -143,15 +143,15 @@ var AR = Record.createList(
   ,["ショコラは深淵より来たり", , "特攻[1.6]", 0, 0, EQUIP.FIRE|EQUIP.NETHER, 0, "シロウ/シトリー"]
   ,["硬派を気取ったあの頃は", , "", 400, 0, EQUIP.AETHER, EQUIP.BLOW, "ケンゴ/シトリー"]
   ,["チョコレート・ダイナマイト！", , "", 0, 0, 0, EQUIP.MAGIC|EQUIP.SNIPE, "チョウジ/エビス"]
-  ,["砂漠のプライベート・レッスン", , "", 100, 0, EQUIP.VALIANT|EQUIP.WATER, 0, "セト/ゴウリョウ"]
-  ,["蒲田ギルドの師弟", , "攻撃力微増", 500, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "アマツマラ/クロガネ"]
-  ,["サバイバルリゾート", , "特攻[1.6]", 100, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ハヌマン/ツァトグァ"]
-  ,["剣豪と刀鍛冶の攻防", , "", 300, 0, EQUIP.ALLROUND|EQUIP.FIRE, EQUIP.SLASH, "ムサシ/アマツマラ"]
-  ,["寂しがりの猛牛たち", , "", 500, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ワカン・タンカ/テツギュウ", 2]
-  ,["流れ者の集う街", , "", 100, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "スズカ/テツギュウ"]
-  ,["いつかどうして夢の鬼", , "", 100, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "スズカ/イバラキ"]
-  ,["剣の道は尚遙か", , "特攻[1.3]", 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ"]
-  ,["歓楽の鬼", , "", 0, 0, 0, EQUIP.BLOW|EQUIP.SHOT, "スズカ/イバラキ"]
+  ,["砂漠のプライベート・レッスン/Private Lesson in the Desert?", , "", 100, 0, EQUIP.VALIANT|EQUIP.WATER, 0, "セト/ゴウリョウ"]
+  ,["蒲田ギルドの師弟/A Teacher and Student from Kamata", , "攻撃力微増", 500, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "アマツマラ/クロガネ"]
+  ,["サバイバルリゾート/Survival Resort", , "特攻[1.6]", 100, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ハヌマン/ツァトグァ"]
+  ,["剣豪と刀鍛冶の攻防/Battle between Swordsmith and Swordsman", , "", 300, 0, EQUIP.ALLROUND|EQUIP.FIRE, EQUIP.SLASH, "ムサシ/アマツマラ"]
+  ,["寂しがりの猛牛たち/Single Bulls Club", , "", 500, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ワカン・タンカ/テツギュウ", 2]
+  ,["流れ者の集う街/City of Drifters", , "", 100, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "スズカ/テツギュウ"]
+  ,["いつかどうして夢の鬼/Ogresses' Dream - A Different Time, A Different Place", , "", 100, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "スズカ/イバラキ"]
+  ,["剣の道は尚遙か/The Way of the Sword Has Just Begun", , "特攻[1.3]", 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ"]
+  ,["歓楽の鬼/Ogres' Nightlife", , "", 0, 0, 0, EQUIP.BLOW|EQUIP.SHOT, "スズカ/イバラキ"]
   ,["おお温泉の喜びよ", , "", 0, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "ザオウ/チェルノボーグ"]
   ,["法の代行者たち", , "特攻[1.5]", 300, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.VALIANT, 0, "ザバーニーヤ/アルスラーン"]
   ,["きょうだい弟子の組手", , "連撃", 300, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "イクトシ/カグツチ", 1]

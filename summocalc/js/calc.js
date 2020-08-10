@@ -57,7 +57,8 @@ var calc = {
     if(navigator.share){
       _("cc").style.display = "none";
     }else{
-      _("ss").style.display = "none";
+      _("sr").style.display = "none";
+      _("su").style.display = "none";
     }
     if(!navigator.userAgent.match(/iP(hone|[ao]d)/) || isStandalone()) _("ms").style.display = "none";
     this.cardfilter.init();
