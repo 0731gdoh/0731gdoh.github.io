@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 body {
@@ -40,6 +41,9 @@ button + button {
   margin-left: 0.3rem;
 }
 select {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
   padding: 0.2rem;
   margin-left: 0.3rem;
   margin-right: 0.8rem;
@@ -143,5 +147,5 @@ table {
 }
 #rc,
 #qf {
-  width: 13rem;
+  width: 12.5rem;
 }
