@@ -22,19 +22,17 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
 <script src="js/codec.js"></script>
 <script src="js/calc.js"></script>
 <title>summocalc</title>
-<div id=un>
-  <span id=um></span><button id=ub></button>
-</div>
 <form>
+  <div id=un>
+    <span id=um></span><button id=ub></button>
+  </div>
   <div class=sp>
     <label for=sv id=lsv></label><select id=sv></select>
     <button type=button id=sl></button>
   </div>
   <hr>
   <div class=ib><div class=sp>
-    <label for=pc id=lpc></label><select id=pc></select>
-    <button type=button id=fv><span id=lfv></span><span id=tfv>▼</span></button>
-    <br>
+    <label for=pc id=lpc></label><select id=pc></select><button type=button id=fv><span id=lfv></span><span id=tfv>▼</span></button><br>
     <div id=sw>
       <table>
         <caption><span id=fc></span><span id=cx></span></caption>
@@ -95,36 +93,25 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
         <button type=button id=rd></button><button type=button id=fr></button>
       </div>
     </div>
-    <label for=pl id=lpl></label><input type=number min=1 max=80 value=1 id=pl>
-    <button type=button id=ly>-10</button><button type=button id=lm>MAX</button><button type=button id=lx>+10</button>
+    <label for=pl id=lpl></label><input type=number min=1 max=80 value=1 id=pl><button type=button id=ly>-10</button><button type=button id=lm>MAX</button><button type=button id=lx>+10</button>
     <hr>
-    <label for=a>ATK</label><input type=number min=1 max=99999 value=1 id=a>
-    <label for=w id=lw></label><select id=w></select>
-    <br>
-    <label for=cs>CS</label><select id=cs></select>
-    <label for=cl id=lcl></label><input type=number min=1 max=100 value=1 id=cl>
-    <input type=checkbox id=uc><label for=uc id=luc></label>
-    <br>
-    <label for=rc id=lrc></label><select id=rc></select>
-    <label for=rl id=lrl></label><input type=number min=1 max=100 value=1 id=rl>
+    <label for=a>ATK</label><input type=number min=1 max=99999 value=1 id=a><label for=w id=lw></label><select id=w></select><br>
+    <label for=cs>CS</label><select id=cs></select><label for=cl id=lcl></label><input type=number min=1 max=100 value=1 id=cl><input type=checkbox id=uc><label for=uc id=luc></label><br>
+    <label for=rc id=lrc></label><select id=rc></select><label for=rl id=lrl></label><input type=number min=1 max=100 value=1 id=rl>
     <hr>
-    <label for=os id=los></label><select id=os></select>
-    <button type=button id=oa></button><button type=button id=or></button>
-    <br>
-    <label for=ds id=lds></label><select id=ds></select>
-    <button type=button id=da></button><button type=button id=dr></button>
-    <br>
+    <label for=os id=los></label><select id=os></select><button type=button id=oa></button><button type=button id=or></button><br>
+    <label for=ds id=lds></label><select id=ds></select><button type=button id=da></button><button type=button id=dr></button><br>
     <label for=el id=lel></label><input type=number min=1 max=100 value=100 id=el><label for=ua id=lua></label><select id=ua></select>
     <hr>
     <label for=am id=lam></label><select id=am></select>
     <hr>
-    </div></div><div class=ib><div class=sp>
+  </div></div><div class=ib><div class=sp>
     <textarea id=o></textarea>
     <br>
     <button type=button id=rs></button>
     <button type=button id=cc></button>
-    <span id=ss><button type=button id=sr></button>
-    <button type=button id=su></button></span>
+    <button type=button id=sr></button>
+    <button type=button id=su></button>
     <div id=dl>
       <span id=dd></span>
       <a id=dj>日本語</a>/<a id=de>English</a>
@@ -134,5 +121,5 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
       <br>
     </div>
   </div></div>
+  <div id=ms></div>
 </form>
-<div id=ms></div>
