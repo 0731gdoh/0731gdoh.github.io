@@ -11,7 +11,8 @@ var TYPE = {
   CSWEAPON: 10,
   BONUS: 11,
   STACK: 12,
-  CUSTOM: 13
+  CUSTOM: 13,
+  ZERO: 14
 };
 
 function Effect(index, x, link){
@@ -227,6 +228,7 @@ var EFFECT = Effect.createList(
   ,["劫火", "こうか", 1, 0, 3000, TYPE.FIXED]
   ,["<暴走+>時強化", "ほうそ", 0, 2.6, , TYPE.FIXED]
   ,["<*暴走+>時強化", "ほうそ", 1, 0.77, , TYPE.FIXED]
+  ,["ダメージ無効", "ため", 1, 0, , TYPE.ZERO]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
