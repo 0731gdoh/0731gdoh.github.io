@@ -13,7 +13,7 @@ function Record(index, id, x){
 }
 Record.prototype = {
   toString: function(){
-    return t(this.name) || "－－－－－－－－－－－－－－－－";
+    return t(this.name) || "－－－－－－－－－－－－－－－";
   },
   getValue: function(lv){
     return this.value.mul(100 + lv, 100);

@@ -41,6 +41,7 @@ function setValue(id, value, zeroCount){
 function setOptions(id, list, k, s, d, p){
   //id, リスト[, フィルタ関数[, ソート順[, 除数, 接頭辞リスト]]]
   var elem = _(id);
+  var fragment = document.createDocumentFragment();
   var value = v(id);
   var zeroCount = 0;
   var n = elem.selectedIndex;
@@ -57,18 +58,17 @@ function setOptions(id, list, k, s, d, p){
     var x = list[d ? v % d : v];
     if(!k || k(x)){
       var o = document.createElement("option");
-      o.appendChild(
-        document.createTextNode(d ? p[Math.floor(v / d)] + x : x)
-      );
-      o.setAttribute("value", v);
-      elem.appendChild(o);
+      o.textContent = d ? p[Math.floor(v / d)] + x : x;
+      o.value = v;
+      fragment.appendChild(o);
     }
   });
+  elem.appendChild(fragment);
   elem.selectedIndex = 0;
   setValue(id, value, zeroCount);
 }
 function setText(id, str){
-  _(id).innerHTML = t(str);
+  _(id).textContent = t(str);
 }
 function linkInput(obj, key, id, onchange){
   setValue(id, obj[key]);

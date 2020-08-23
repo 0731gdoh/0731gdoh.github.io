@@ -151,6 +151,7 @@ var calc = {
         }, 0);
       };
     }
+    nums = null;
     setBlobURL("dj", Card.csv(CARD, 0), "text/csv", "housamo_card_ja.csv");
     setBlobURL("de", Card.csv(CARD, 1), "text/csv", "housamo_card_en.csv");
     setBlobURL("aj", Record.csv(AR, 0), "text/csv", "housamo_ar_ja.csv");
@@ -632,30 +633,33 @@ var calc = {
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomMul();
 
-          if(x - 0){switch(e.type){
+          switch(e.type){
             default:
-              if(x.n !== x.d){
+              if(x - 0 && x.n !== x.d){
                 dmg = dmg.mul(x);
                 desc.push("x" + x);
               }
               break;
 
             case TYPE.ATK:
-              atkbonus = atkbonus.add(x);
-              desc.push("ATK+" + x.mul(100, 1) + "%");
+              if(x - 0){
+                atkbonus = atkbonus.add(x);
+                desc.push("ATK+" + x.mul(100, 1) + "%");
+              }
+              break;
+
+            case TYPE.ZERO:
+              dmg = new Fraction(0);
+              desc.push("x0");
               break;
 
             case TYPE.NONE:
             case TYPE.WEAPON:
             case TYPE.CSWEAPON:
               break;
-          }}
+          }
 
-          x = e.getAddValue(eLv, !this.version);
-          //武器種変更
-          if(e.type === TYPE.WEAPON && !this.usecs) weapon = x.round();
-          //CS変更
-          if(e.type === TYPE.CSWEAPON && this.usecs) weapon = x.round();
+          x = e.getAddValue(eLv, !this.version); 
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomAdd();
 
@@ -673,9 +677,15 @@ var calc = {
               desc.push("ATK" + (x < 0 ? "" : "+") + x);
               break;
 
-            case TYPE.NONE:
             case TYPE.WEAPON:
+              if(!this.usecs) weapon = x.round();
+              break;
+              
             case TYPE.CSWEAPON:
+              if(this.usecs) weapon = x.round();
+              break;
+
+            case TYPE.NONE:
               break;
           }}
           if(!loop){
@@ -700,13 +710,13 @@ var calc = {
     result[6] += WEAPON[weapon];
     result.push(t("【ダメージ】/【Damage】"));
     dmg = dmg.mul(WEAPON[weapon].getValue());
-    if(dmg > 0) result[6] += "（x" + WEAPON[weapon].getValue() + "）";
+    result[6] += "（x" + WEAPON[weapon].getValue() + "）";
     for(i = 1; i < MULTIPLIER.length; i++){
       var attr = MULTIPLIER[i];
       if(!this.multiplier || i === this.multiplier){
-        x = (dmg > 0) ? Math.ceil(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg) : 0;
+        x = Math.ceil(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg);
         if(i === 3 || this.multiplier) this.setTitle(x);
-        result.push("　[" + attr + "]: " + (x || "-"));
+        result.push("　[" + attr + "]: " + x);
       }
     }
     result.push(
