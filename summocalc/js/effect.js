@@ -84,6 +84,7 @@ Effect.prototype = {
       case TYPE.CUSTOM:
       case TYPE.SEED:
       case TYPE.WEAPON:
+      case TYPE.ZERO:
         return true;
       default:
         return false;
