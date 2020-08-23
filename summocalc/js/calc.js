@@ -659,7 +659,7 @@ var calc = {
               break;
           }
 
-          x = e.getAddValue(eLv, !this.version); 
+          x = e.getAddValue(eLv, !this.version);
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomAdd();
 
