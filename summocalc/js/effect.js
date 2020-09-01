@@ -187,8 +187,8 @@ var EFFECT = Effect.createList(
   ,["<防御強化>に貫通/Ignore DEF Up", "ほうき", 0, 2.22, , TYPE.BONUS]
   ,["暴走/Berserk", "ほうそ", 0, 1.3]
   ,["暴走/Berserk", "ほうそ", 1, 1.3]
-  ,["暴走+/Berserk+", "ほうそ", 0, 1.3]
-  ,["暴走+/Berserk+", "ほうそ", 1, 1.3, , TYPE.FIXED]
+  ,["暴走+/Berserk+", "ほうそ+", 0, 1.3]
+  ,["暴走+/Berserk+", "ほうそ+", 1, 1.3, , TYPE.FIXED]
   ,["マヒ/Paralysis", "まひ", 0, 0.9]
   ,["無窮/Infinitude", "むき", 0, 1.3]
   ,["烙印/Stigma", "らく", 1, 1.15]
@@ -227,11 +227,13 @@ var EFFECT = Effect.createList(
   ,["<守護>無効化", "しゆこむ", 1, 2.22, , TYPE.FIXED]
   ,["<防御強化>無効化", "ほうき", 1, 2.22, , TYPE.FIXED]
   ,["劫火", "こうか", 1, 0, 3000, TYPE.FIXED]
-  ,["<暴走+>時強化", "ほうそ", 0, 2.6, , TYPE.FIXED]
-  ,["<*暴走+>時強化", "ほうそ", 1, 0.77, , TYPE.FIXED]
+  ,["<暴走+>時強化", "ほうそ+", 0, 2.6, , TYPE.FIXED]
+  ,["<*暴走+>時強化", "ほうそ+", 1, 0.77, , TYPE.FIXED]
   ,["ダメージ無効", "ため", 1, 0, , TYPE.ZERO]
   ,["[竜宮]<守護>時強化", "しゆこし", 1, 0.01, , TYPE.FIXED]
   ,["[竜宮]熱情時強化", "ねつ", 1, 0.01, , TYPE.FIXED]
+  ,["<*暴走>時防御強化", "ほうそ", 1, 0.7, , TYPE.FIXED]
+  ,["<*暴走+>時防御強化", "ほうそ+", 1, 0.7, , TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
