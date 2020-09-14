@@ -727,7 +727,7 @@ var calc = {
     if(!skipSave) this.save();
   },
   setTitle: function(damage){
-    document.title = "summocalc - " + (this.card ? CARD[this.card] + " " : "") + damage + t("ダメージ/ damage");
+    document.title = "放サモ ダメージ計算機 - " + (this.card ? CARD[this.card] + " " : "") + damage + t("ダメージ/ damage");
   },
   cardfilter: {
     attribute: 0,
