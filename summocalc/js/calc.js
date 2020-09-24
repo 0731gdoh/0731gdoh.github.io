@@ -102,8 +102,7 @@ var calc = {
     };
     _("sr").onclick = function(){
       share({
-        text: _("o").value,
-        title: document.title
+        text: _("o").value
       });
     };
     _("su").onclick = function(){

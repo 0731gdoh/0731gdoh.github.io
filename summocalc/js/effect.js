@@ -148,8 +148,8 @@ var EFFECT = Effect.createList(
   ,["守護/Protection", "しゆこ", 1, 0.9]
   ,["<守護>に貫通/Ignore Protection", "しゆこに", 0, 2.22, , TYPE.BONUS]
   ,["滋養/Nourishment", "しよ", 0, 1.1, , , , 0.4]
-  ,["聖油/Unction", "せい", 1, 0.85]
-  ,["<聖油>に貫通/Ignore Unction", "せい", 0, 2.35, , TYPE.BONUS]
+  ,["聖油/Unction", "せいゆ", 1, 0.85]
+  ,["<聖油>に貫通/Ignore Unction", "せいゆに", 0, 2.35, , TYPE.BONUS]
   ,["束縛/Bind", "そく", 0, 0.9]
   ,["凍結/Freeze", "とうけ", 1, 1.1]
   ,["闘志/Vigor", "とうし", 0, 1.2]
@@ -234,6 +234,7 @@ var EFFECT = Effect.createList(
   ,["[竜宮]熱情時強化", "ねつ", 1, 0.01, , TYPE.FIXED]
   ,["<*暴走>時防御強化", "ほうそ", 1, 0.7, , TYPE.FIXED]
   ,["<*暴走+>時防御強化", "ほうそ+", 1, 0.7, , TYPE.FIXED]
+  ,["<聖油>時弱体", "せいゆし", 1, 0, 10000, TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
