@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name=robots content="noindex,nofollow">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<script>
+const _ = (id) => document.getElementById(id);
+
+const val = (id) => {
+  const o = _(id);
+  const value = parseInt(o.value) || 0;
+  if(o.min) return o.value = Math.max(Math.min(value, o.max), o.min);
+  return value;
+}
+
+const choose = (a, n) => {
+  const x = a.map((v, i) => i);
+  const r = [];
+  while(x.length && n--){
+    let i = x.splice(Math.floor(Math.random() * x.length), 1);
+    r.push(i[0]);
+  }
+  r.sort();
+  return r.map((v) => a[v]).join("");
+};
+
+const gacha = (n) => {
+  const a = Array.from(_("t").value);
+  const r = [];
+  const o = _("o");
+  while(n--){
+    r.push(choose(a, val("n")));
+  }
+  r.sort();
+  while(o.firstChild){
+    o.removeChild(o.firstChild);
+  }
+  r.forEach((v) => {
+    const d = document.createElement("div");
+    d.textContent = v;
+    o.appendChild(d);
+  });
+};
+
+onload = () => {
+  _("s").onclick = () => gacha(1);
+  _("m").onclick = () => gacha(10);
+  ["t", "n"].forEach((id) => {
+    _(id).onfocus = (evt) => {
+      const elem = evt.currentTarget;
+      setTimeout(() => {
+        try{
+          elem.setSelectionRange(0, elem.value.length);
+        }catch(e){
+          elem.select();
+        }
+      }, 0);
+    };
+  });
+};
+</script>
+<style>
+*{
+  font-family: monospace;
+}
+input{
+  border: #00F solid;
+  border-radius: 0;
+  border-width: 0 0 1px 0;
+  background-color: #EEF;
+  font-size: medium;
+  text-align: center;
+}
+button{
+  width: 6rem;
+  height: 2rem;
+  margin: 1rem;
+}
+#t{
+  width: 10rem;
+}
+#n{
+  width: 1rem;
+}
+#o div{
+  display: inline-block;
+  padding: 1rem;
+  margin: 0.1rem;
+  border: #CCC 1px solid;
+  background-color: #EEE;
+  background-image: linear-gradient(#EFE, #CFC);
+}
+</style>
+<title>略称ガチャ</title>
+<input type=text value="ライブアヒーロー" id=t>の略称<input type=number min=1 max=9 value=4 id=n>文字<br>
+<button id=s>単発</button><button id=m>10連</button><br>
+<div id=o></div>
