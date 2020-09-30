@@ -5,6 +5,13 @@
 <script>
 const _ = (id) => document.getElementById(id);
 
+const SSR = new Map([
+  ["ライブアヒーロー", ["ラブヒロ"]],
+  ["LIVE A HERO", ["LAH"]],
+  ["東京放課後サモナーズ", ["放サモ"]],
+  ["召喚勇者とＦ系彼氏", ["Ｆ彼"]]
+]);
+
 const val = (id) => {
   const o = _(id);
   const value = parseInt(o.value) || 0;
@@ -24,9 +31,11 @@ const choose = (a, n) => {
 };
 
 const gacha = (n) => {
-  const a = Array.from(_("t").value);
+  const t = _("t").value;
+  const a = Array.from(t.replace(/\s/g, ""));
   const r = [];
   const o = _("o");
+  const s = SSR.get(t) || [];
   while(n--){
     r.push(choose(a, val("n")));
   }
@@ -37,25 +46,46 @@ const gacha = (n) => {
   r.forEach((v) => {
     const d = document.createElement("div");
     d.textContent = v;
+    d.className = (s.indexOf(v) === -1) ? "r" : "ssr";
     o.appendChild(d);
   });
 };
 
 onload = () => {
+  for(const s of SSR){
+    const o = document.createElement("option");
+    o.textContent = s[0];
+    if(!_("t").value){
+      _("t").value = s[0];
+      _("n").value = s[1][0].length;
+    }
+    _("d").appendChild(o);
+  }
   _("s").onclick = () => gacha(1);
   _("m").onclick = () => gacha(10);
-  ["t", "n"].forEach((id) => {
-    _(id).onfocus = (evt) => {
-      const elem = evt.currentTarget;
-      setTimeout(() => {
-        try{
-          elem.setSelectionRange(0, elem.value.length);
-        }catch(e){
-          elem.select();
-        }
-      }, 0);
-    };
-  });
+  _("t").onfocus = () => {
+    _("t").value = "";
+  };
+  _("t").onchange = () => {
+    const v = _("t").value;
+    _("n").value = 4;
+    for(const s of SSR){
+      if(s[0] === v){
+        _("n").value = s[1][0].length;
+        break;
+      }
+    }
+  };
+  _("n").onfocus = (evt) => {
+    const elem = evt.currentTarget;
+    setTimeout(() => {
+      try{
+        elem.setSelectionRange(0, elem.value.length);
+      }catch(e){
+        elem.select();
+      }
+    }, 0);
+  };
 };
 </script>
 <style>
@@ -76,7 +106,7 @@ button{
   margin: 1rem;
 }
 #t{
-  width: 10rem;
+  width: 15rem;
 }
 #n{
   width: 1rem;
@@ -85,12 +115,22 @@ button{
   display: inline-block;
   padding: 1rem;
   margin: 0.1rem;
+}
+.r{
   border: #CCC 1px solid;
-  background-color: #EEE;
+  background-color: #EFE;
   background-image: linear-gradient(#EFE, #CFC);
+}
+.ssr{
+  border: #CB0 1px solid;
+  background-color: #FFE;
+  background-image: linear-gradient(#FFE, #FEC);
+}
+datalist{
+  display: none;
 }
 </style>
 <title>略称ガチャ</title>
-<input type=text value="ライブアヒーロー" id=t>の略称<input type=number min=1 max=9 value=4 id=n>文字<br>
+<input type=text value="" id=t list=d><datalist id=d></datalist>の略称<input type=number min=1 max=9 value=4 id=n>文字<br>
 <button id=s>単発</button><button id=m>10連</button><br>
 <div id=o></div>
