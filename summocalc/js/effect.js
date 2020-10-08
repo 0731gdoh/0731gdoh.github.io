@@ -236,7 +236,7 @@ var EFFECT = Effect.createList(
   ,["<*暴走+>時防御強化", "ほうそ+", 1, 0.7, , TYPE.FIXED]
   ,["<聖油>時弱体", "せいゆし", 1, 0, 10000, TYPE.FIXED]
   ,["根性時強化", "こんし", 0, 2, , TYPE.FIXED]
-  ,["非根性時時強化", "こんし", 1, 0.5, , TYPE.FIXED]
+  ,["非根性時時強化", "ひこ", 1, 0.5, , TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
