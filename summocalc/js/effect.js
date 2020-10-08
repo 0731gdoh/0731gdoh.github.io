@@ -141,8 +141,8 @@ var EFFECT = Effect.createList(
   ,["幻惑/Dazzle", "けん", 0, 0.7]
   ,["攻撃強化/ATK Up", "こうけきき", 0, 1.1]
   ,["剛力/Brawn", "こうり", 0, 1.15]
-  ,["金剛/Adamantine", "こん", 1, 0.9]
-  ,["<金剛>に貫通/Ignore Adamantine", "こん", 0, 2.22, , TYPE.BONUS]
+  ,["金剛/Adamantine", "こんこ", 1, 0.9]
+  ,["<金剛>に貫通/Ignore Adamantine", "こんこ", 0, 2.22, , TYPE.BONUS]
   ,["弱点/Weakness", "しや", 1, 1.2]
   ,["集中/Concentration", "しゆう", 0, 1.1]
   ,["守護/Protection", "しゆこ", 1, 0.9]
@@ -235,6 +235,8 @@ var EFFECT = Effect.createList(
   ,["<*暴走>時防御強化", "ほうそ", 1, 0.7, , TYPE.FIXED]
   ,["<*暴走+>時防御強化", "ほうそ+", 1, 0.7, , TYPE.FIXED]
   ,["<聖油>時弱体", "せいゆし", 1, 0, 10000, TYPE.FIXED]
+  ,["根性時強化", "こんし", 0, 2, , TYPE.FIXED]
+  ,["非根性時時強化", "こんし", 1, 0.5, , TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
