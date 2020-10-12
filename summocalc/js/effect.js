@@ -237,6 +237,9 @@ var EFFECT = Effect.createList(
   ,["<聖油>時弱体", "せいゆし", 1, 0, 10000, TYPE.FIXED]
   ,["根性時強化", "こんし", 0, 2, , TYPE.FIXED]
   ,["非根性時時強化", "ひこ", 1, 0.5, , TYPE.FIXED]
+  ,["CS変更：打撃/CS変更：Blow", "CS", 0, 0, 3, TYPE.CSWEAPON]
+  ,["CS変更：横一文字/CS変更：Long Slash", "CS", 0, 0, 7, TYPE.CSWEAPON]
+  ,["本格コルク銃", "", 0, 1, , TYPE.ATK, 1]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});

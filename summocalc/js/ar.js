@@ -159,5 +159,5 @@ var AR = Record.createList(
   ,["嵐を呼ぶMCバトル！/An Electrifying MC Battle!", , "", 250, 0, 0, EQUIP.BLOW|EQUIP.THRUST, "ベンテン/エーギル"]
   ,["制御できるならやってみろ！/Stop Me if You Can!", , "", 300, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "フェンリル/ジャンバヴァン"]
   ,["打ち上げLIVE！/Celebration Live!", , "意気", 150, 0, EQUIP.WATER, EQUIP.BLOW|EQUIP.LONGSLASH, "ベンテン/エビス"]
-  ,["奪取Theサマー", , "", 100, 0, EQUIP.WATER, 0, "テュポーン/ベンテン"]
+  ,["奪取Theサマー/Seize the Summer!", , "", 100, 0, EQUIP.WATER, 0, "テュポーン/ベンテン"]
 ]);
