@@ -66,6 +66,57 @@ const quests = [
       }
     ],
     eventRate: 6
+  }, {
+    name: "更なる力を求めて",
+    stamina: 20,
+    heroExp: 1000,
+    heroBand: 420,
+    drops: [
+      {
+        label: "固定",
+        expItems: [1000, 700, 450],
+        bandItems: [],
+        coins: [400],
+        eventItems: [],
+        otherItems: [],
+        probability: 0
+      }
+    ],
+    eventRate: 1
+  }, {
+    name: "更なる絆を求めて",
+    stamina: 20,
+    heroExp: 420,
+    heroBand: 1000,
+    drops: [
+      {
+        label: "固定",
+        expItems: [],
+        bandItems: [1000, 700, 450],
+        coins: [400],
+        eventItems: [],
+        otherItems: [],
+        probability: 0
+      }
+    ],
+    eventRate: 1
+  }, {
+    name: "次なるランクへ（金）",
+    stamina: 30,
+    heroExp: 0,
+    heroBand: 0,
+    drops: [
+      {
+        label: "固定",
+        expItems: [],
+        bandItems: [],
+        coins: [1800],
+        eventItems: [],
+        otherItems: [1000],
+        probability: 0
+      }
+    ],
+    eventRate: 6
   }
 ];
 
@@ -205,7 +256,7 @@ form {
 }
 #o {
   width: 25rem;
-  height: 25rem;
+  height: 30rem;
   padding: 0.5rem;
   line-height: 2;
 }
