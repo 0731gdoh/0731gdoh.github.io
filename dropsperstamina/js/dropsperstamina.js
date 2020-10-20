@@ -103,15 +103,14 @@ const createQuestCheckbox = (quest) => {
 };
 
 const init = () => {
-  const f = _("f");
-  const o = _("o");
+  const div = _("q");
   const r = Array.from({length: 31}, (v, i) => `${i}%`);
   setOptions("x", r);
   setOptions("g", r);
   setOptions("e", Array.from({length: 9}, (v, i) => `${i * 10}%`));
   setOptions("u", ["秒", "分", "時間", "Exp", "ラフ"]);
   for(const q of quests){
-    f.insertBefore(createQuestCheckbox(q), o);
+    div.appendChild(createQuestCheckbox(q));
   };
   output();
   setEventHandler();
