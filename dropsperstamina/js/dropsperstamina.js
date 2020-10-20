@@ -62,6 +62,7 @@ const output = () => {
       }
     }
   }
+  result.push("");
   _("o").value = result.join("\n");
 };
 
