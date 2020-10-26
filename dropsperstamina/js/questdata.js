@@ -131,5 +131,39 @@ const quests = [
       }
     ],
     eventRate: 6
+  }, {
+    id: 6,
+    name: "更なる（属性）への挑戦",
+    stamina: 22,
+    heroExp: 250,
+    heroBand: 250,
+    drops: [
+      {
+        label: "MSSS",
+        expItems: [],
+        bandItems: [],
+        coins: [],
+        eventItems: [],
+        otherItems: [120, 60, 60, 60],
+        probability: 0
+      }, {
+        label: "MMSSS",
+        expItems: [],
+        bandItems: [],
+        coins: [],
+        eventItems: [],
+        otherItems: [120, 120, 60, 60, 60],
+        probability: 0
+      }, {
+        label: "LMMSSS",
+        expItems: [],
+        bandItems: [],
+        coins: [],
+        eventItems: [],
+        otherItems: [240, 120, 120, 60, 60, 60],
+        probability: 0
+      }
+    ],
+    eventRate: 6
   }
 ];
