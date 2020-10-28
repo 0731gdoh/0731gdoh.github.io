@@ -1,7 +1,7 @@
 const quests = [
   {
     id: 0,
-    name: "力を求めてA級",
+    name: "力を求めて A級",
     stamina: 18,
     heroExp: 810,
     heroBand: 360,
@@ -35,7 +35,7 @@ const quests = [
     eventRate: 1
   }, {
     id: 1,
-    name: "強制捜査！A級",
+    name: "強制捜査！/裏路地探索！ A級",
     stamina: 16,
     heroExp: 420,
     heroBand: 300,
