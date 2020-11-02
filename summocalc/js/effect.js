@@ -241,6 +241,7 @@ var EFFECT = Effect.createList(
   ,["CS変更：横一文字/CS変更：Long Slash", "CS", 0, 0, 7, TYPE.CSWEAPON]
   ,["本格コルク銃", "", 0, 1, , TYPE.ATK, 1]
   ,["[福祭]イカ焼き/[Illusion]イカ焼き", "いか", 0, 37, , TYPE.FIXED]
+  ,["CS変更：無/CS変更：None", "CS", 0, 0, 9, TYPE.CSWEAPON]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
