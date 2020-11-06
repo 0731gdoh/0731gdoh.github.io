@@ -242,6 +242,7 @@ var EFFECT = Effect.createList(
   ,["本格コルク銃", "", 0, 1, , TYPE.ATK, 1]
   ,["[福祭]イカ焼き/[Illusion]イカ焼き", "いか", 0, 37, , TYPE.FIXED]
   ,["CS変更：無/CS変更：None", "CS", 0, 0, 9, TYPE.CSWEAPON]
+  ,["魅了時弱化", "みり", 1, 3, , TYPE.FIXED]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});

@@ -160,4 +160,8 @@ var AR = Record.createList(
   ,["制御できるならやってみろ！/Stop Me if You Can!", , "", 300, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "フェンリル/ジャンバヴァン"]
   ,["打ち上げLIVE！/Celebration Live!", , "意気", 150, 0, EQUIP.WATER, EQUIP.BLOW|EQUIP.LONGSLASH, "ベンテン/エビス"]
   ,["奪取Theサマー/Seize the Summer!", , "", 100, 0, EQUIP.WATER, 0, "テュポーン/ベンテン"]
+  ,["成果は現場にあり！/Success Must Be Sought After", , "特攻[2.0]", 100, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "アリス/ヴォーロス"]
+  ,["ジェノサイド・ハロウィン/Genociders' Halloween", , "クリティカル+", 500, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ハーロット/スルト"]
+  ,["今月の得真道学園/The Theme of the Month", , "", 400, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.MAGIC, "リチョウ/サナト・クマラ"]
+  ,["ウマミチカンフージェネレーション/Umamichi Kung-Fu Generation", , "特攻[1.6]", 300, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "ハヌマン/ナタ"]
 ]);
