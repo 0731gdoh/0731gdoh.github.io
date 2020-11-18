@@ -234,7 +234,7 @@ var EFFECT = Effect.createList(
   ,["[竜宮]熱情時強化", "ねつ", 1, 0.01, , TYPE.FIXED]
   ,["<*暴走>時防御強化", "ほうそ", 1, 0.7, , TYPE.FIXED]
   ,["<*暴走+>時防御強化", "ほうそ+", 1, 0.7, , TYPE.FIXED]
-  ,["<聖油>時弱体", "せいゆし", 1, 0, 10000, TYPE.FIXED]
+  ,["<聖油>時弱化", "せいゆし", 1, 0, 10000, TYPE.FIXED]
   ,["根性時強化", "こんし", 0, 2, , TYPE.FIXED]
   ,["非根性時時強化", "ひこ", 1, 0.5, , TYPE.FIXED]
   ,["CS変更：打撃/CS変更：Blow", "CS", 0, 0, 3, TYPE.CSWEAPON]
