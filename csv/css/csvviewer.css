@@ -1,1 +1,27 @@
-
+* {
+  font-family: monospace;
+}
+table {
+  text-align: center;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+thead {
+  background: #ccc;
+}
+tr.odd {
+  background: #eee;
+}
+th, td {
+  border: 1px solid #ccc;
+  min-width: 1rem;
+}
+th:hover {
+  background: #0ff4;
+}
+td.highlight {
+  background: #ff04;
+}
+tr.hide {
+  display: none;
+}
