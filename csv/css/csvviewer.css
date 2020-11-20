@@ -18,7 +18,6 @@ tr.odd {
 th, td {
   border: 1px solid #ccc;
   min-width: 1rem;
-  max-width: 10rem;
 }
 th:hover {
   background: #0ff4;
