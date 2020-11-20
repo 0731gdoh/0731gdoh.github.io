@@ -61,7 +61,7 @@ const csv2table = (text, s) => {
   }
   table.appendChild(thead);
   table.appendChild(tbody);
-  table.createCaption.textContent = `${tbody.rows.length}件`;
+  table.createCaption().textContent = `${tbody.rows.length}件`;
   thead.addEventListener("click", _sorter(table));
   tbody.addEventListener("click", _filter(table));
   return table;
