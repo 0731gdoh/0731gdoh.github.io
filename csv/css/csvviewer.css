@@ -1,6 +1,9 @@
 * {
   font-family: monospace;
 }
+body {
+  -webkit-text-size-adjust: 100%;
+}
 table {
   text-align: center;
   border-collapse: collapse;
@@ -15,6 +18,7 @@ tr.odd {
 th, td {
   border: 1px solid #ccc;
   min-width: 1rem;
+  max-width: 10rem;
 }
 th:hover {
   background: #0ff4;
@@ -22,6 +26,13 @@ th:hover {
 td.highlight {
   background: #ff04;
 }
+td.highlight span.highlight {
+  font-weight: bold;
+  color: #F00;
+}
 tr.hide {
   display: none;
+}
+span.time {
+  margin-left: 1rem;
 }
