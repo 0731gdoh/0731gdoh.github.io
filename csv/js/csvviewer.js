@@ -140,14 +140,6 @@ const csvViewer = (parent, url, s) => {
   parent.appendChild(p);
   fetch(url).then((response) => {
     if(response.ok){
-      const lm = response.headers.get("Last-Modified");
-      if(lm){
-        const date = new Date(lm).toLocaleDateString();
-        const span = document.createElement("span");
-        span.textContent = `最終更新：${date}`;
-        span.className = "time";
-        p.insertBefore(span, hr);
-      }
       return response.text();
     }else{
       throw new Error(`${response.status} ${response.statusText}`);
