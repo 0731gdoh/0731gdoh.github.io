@@ -242,7 +242,13 @@ var EFFECT = Effect.createList(
   ,["本格コルク銃", "", 0, 1, , TYPE.ATK, 1]
   ,["[福祭]イカ焼き/[Illusion]イカ焼き", "いか", 0, 37, , TYPE.FIXED]
   ,["CS変更：無/CS変更：None", "CS", 0, 0, 9, TYPE.CSWEAPON]
-  ,["魅了時弱化", "みり", 1, 3, , TYPE.FIXED]
+  ,["魅了時弱化[防御]", "みり", 1, 3, , TYPE.FIXED]
+  ,["[11章]特殊耐性/[Ch.11]特殊耐性", "とくし", 1, 0.05, , TYPE.FIXED]
+  ,["<暗闇>時強化", "くら", 0, 2.5, , TYPE.FIXED]
+  ,["暗闇時強化", "くら", 1, 0.7, , TYPE.FIXED]
+  ,["憑依時強化", "ひよ", 0, 91, , TYPE.FIXED]
+  ,["非憑依時弱化", "ひひ", 0, 0.1, , TYPE.FIXED]
+  ,["特攻[0.25]/Bonus[0.25]", "とつ", 0, 0.25, , TYPE.BONUS]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
