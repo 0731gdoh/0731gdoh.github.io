@@ -417,7 +417,7 @@ var calc = {
       var x = EFFECT[a];
       var y = EFFECT[b];
       if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
-      if(x.sortkey !== 1) return x.index - y.index;
+      if(x.sortkey > 2 || !x.sortkey) return x.index - y.index;
       if(x.reading === y.reading && x.type === TYPE.BONUS && y.type === TYPE.BONUS) return x.value[0] - y.value[0];
       if(x.type === TYPE.WEAPON && y.type === TYPE.WEAPON || x.type === TYPE.CSWEAPON && y.type === TYPE.CSWEAPON) return x.value[1] - y.value[1];
       if(language) return ("" + x).toUpperCase() < ("" + y).toUpperCase() ? -1 : 1;
