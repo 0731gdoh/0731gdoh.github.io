@@ -48,12 +48,14 @@ function Effect(index, x, link){
   }
   this.sortkey = 1;
   if(this.event){
-    this.sortkey = 4;
+    this.sortkey = 5;
   }else if(this.type === TYPE.CUSTOM){
-    this.sortkey = 3;
+    this.sortkey = 4;
   }else if(!this.reading){
     this.sortkey = 0;
   }else if(this.name[0] === "["){
+    this.sortkey = 3;
+  }else if(/時.*[強弱]化/.test(this.name)){
     this.sortkey = 2;
   }
 }
@@ -236,7 +238,7 @@ var EFFECT = Effect.createList(
   ,["<*暴走+>時防御強化", "ほうそ+", 1, 0.7, , TYPE.FIXED]
   ,["<聖油>時弱化", "せいゆし", 1, 0, 10000, TYPE.FIXED]
   ,["根性時強化", "こんし", 0, 2, , TYPE.FIXED]
-  ,["非根性時時強化", "ひこ", 1, 0.5, , TYPE.FIXED]
+  ,["非根性時強化", "ひこ", 1, 0.5, , TYPE.FIXED]
   ,["CS変更：打撃/CS変更：Blow", "CS", 0, 0, 3, TYPE.CSWEAPON]
   ,["CS変更：横一文字/CS変更：Long Slash", "CS", 0, 0, 7, TYPE.CSWEAPON]
   ,["本格コルク銃", "", 0, 1, , TYPE.ATK, 1]
@@ -248,7 +250,7 @@ var EFFECT = Effect.createList(
   ,["暗闇時強化", "くら", 1, 0.7, , TYPE.FIXED]
   ,["憑依時強化", "ひよ", 0, 91, , TYPE.FIXED]
   ,["非憑依時弱化", "ひひ", 0, 0.1, , TYPE.FIXED]
-  ,["特攻[0.25]/Bonus[0.25]", "とつ", 0, 0.25, , TYPE.BONUS]
+  ,["デメリット[0.25]", "てめ", 0, 0.25, , TYPE.BONUS]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
