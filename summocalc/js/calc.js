@@ -125,7 +125,7 @@ var calc = {
       c.update();
     };
     _("lx").onclick = function(){
-      setValue("pl", v("pl") + 10);
+      setValue("pl", v("pl") + 15);
       c.update();
     };
     _("ly").onclick = function(){
@@ -377,7 +377,7 @@ var calc = {
             if(lv !== 0 && !lv) return;
             lv = parseInt(lv, 10) || 0;
           }
-        }else if(e.isFixed() || e.type === TYPE.AFFINITY){
+        }else if(e.isFixed() || e.isLv1()){
           lv = 1;
         }
         es.lv = lv;
@@ -417,7 +417,7 @@ var calc = {
       var x = EFFECT[a];
       var y = EFFECT[b];
       if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
-      if(x.sortkey > 2 || !x.sortkey) return x.index - y.index;
+      if(x.sortkey > 3 || !x.sortkey) return x.index - y.index;
       if(x.reading === y.reading && x.type === TYPE.BONUS && y.type === TYPE.BONUS) return x.value[0] - y.value[0];
       if(x.type === TYPE.WEAPON && y.type === TYPE.WEAPON || x.type === TYPE.CSWEAPON && y.type === TYPE.CSWEAPON) return x.value[1] - y.value[1];
       if(language) return ("" + x).toUpperCase() < ("" + y).toUpperCase() ? -1 : 1;
@@ -652,7 +652,6 @@ var calc = {
               desc.push("x0");
               break;
 
-            case TYPE.NONE:
             case TYPE.WEAPON:
             case TYPE.CSWEAPON:
               break;
@@ -682,9 +681,6 @@ var calc = {
               
             case TYPE.CSWEAPON:
               if(this.usecs) weapon = x.round();
-              break;
-
-            case TYPE.NONE:
               break;
           }}
           if(!loop){
@@ -718,8 +714,8 @@ var calc = {
         result.push("　[" + attr + "]: " + x);
       }
     }
-    result.push(
-      LINE,
+    result.push(LINE);
+    if(!this.version) result.push(
       t("　モード: /　Mode: ") + VERSION[this.version]
     );
     _("o").value = result.filter(function(x){return x}).join("\n");
