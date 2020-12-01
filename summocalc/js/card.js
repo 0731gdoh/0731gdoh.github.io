@@ -66,7 +66,7 @@ Card.createList = function(a){
 Card.csv = function(list, x){
   return list.map(function(v){
     if(!v.name){
-      return t("#,レア度,名前,バージョン,限定,属性,武器タイプ,CSタイプ,CS倍率,基礎ATK,成長率*98,最大Lv,ATK(最大Lv),ATK(最大Lv+10),ダメージ補正,効果(自身),効果(味方),効果(敵),特攻,特防,状態無効/#,Rarity,Name,Variant,Limited,Attribute,WeaponType,CSType,CSRate,BaseATK,GrowthRate*98,MaxLv,ATK(MaxLv),ATK(MaxLv+10),DamageModifier,Effects(Self),Effects(Ally),Effects(Enemy),AttackBonus,DefenseBonus,NullifyStatus", x);
+      return t("#,レア度,名前,バージョン,限定,属性,武器タイプ,CSタイプ,CS倍率,基礎ATK,成長率*98,最大Lv,ATK(最大Lv),ATK(最大Lv+15),ダメージ補正,効果(自身),効果(味方),効果(敵),特攻,特防,状態無効/#,Rarity,Name,Variant,Limited,Attribute,WeaponType,CSType,CSRate,BaseATK,GrowthRate*98,MaxLv,ATK(MaxLv),ATK(MaxLv+10),DamageModifier,Effects(Self),Effects(Ally),Effects(Enemy),AttackBonus,DefenseBonus,NullifyStatus", x);
     }else{
       var r = [
         v.index,
@@ -77,12 +77,12 @@ Card.csv = function(list, x){
         t(ATTRIBUTE[v.attribute].name, x),
         t(WEAPON[v.weapon[0]].name, x),
         t(WEAPON[v.weapon[1]].name, x),
-        ["(-1)", "", "(+1)"][v.csBoost + 1],
+        v.csBoost ? ("(+" + v.csBoost + ")").replace("+-", "-") : "",
         v.baseAtk,
         v.growth.muln(98),
         v.maxLv,
         v.getValue(v.maxLv),
-        v.getValue(v.maxLv + 10),
+        v.getValue(v.maxLv + 15),
         v.effects.map(function(n){
           return (n > EFFECT_MAX ? "{CS}" : "") + t(EFFECT[n % EFFECT_MAX].name, x)
         }).join("/")
@@ -603,7 +603,7 @@ var CARD = Card.createList(
   ,[1722, "", "c極限/熱情/攻撃力減少/剛力/攻撃強化/CP減少/強化転写(全)/強化を貼付(味方から)", "*", "*", "", "", "*", 4, 8, 6, 8, 579, 7040]
   ,[1731, "バロール", "c特攻[3.0]/HP減少/CP増加/CS変更：魔法/金剛/剛力/頑強", "", "c告死/cHP減少/吹き飛ばし(1マス)/CP減少/マヒ/烙印", "c告死", "", "", 3, 8, 3, 9, 235, 6305]
   ,[1732, "", "c特攻[6.0]/HP減少/CP増加/CS変更：全域/金剛/剛力/頑強", "", "c告死/cHP減少/吹き飛ばし(1マス)/CP減少/告死/マヒ/烙印", "*", "", "", 4, 8, 3, 9, 550, 6430]
-  ,[1741, "ナタ", "c全方向移動力増加/c弱体解除(単)/移動力増加(横)/加速/熱情/特攻[2.0]/吹き飛ばし(左)/CP増加", "", "吹き飛ばし(右)/火傷", "竜を継ぐ者", "", "恐怖/魅了/威圧", 3, 2, 3, 2, 374, 6356]
+  ,[1741, "ナタ/Nezha", "c全方向移動力増加/c弱体解除(単)/移動力増加(横)/加速/熱情/特攻[2.0]/吹き飛ばし(左)/CP増加", "", "吹き飛ばし(右)/火傷", "竜を継ぐ者", "", "恐怖/魅了/威圧", 3, 2, 3, 2, 374, 6356]
   ,[1742, "", "c全方向移動力増加/cクリティカル/c弱体解除(全)/移動力増加(横)/加速/熱情/特攻[2.0]/吹き飛ばし(左)/CP増加/特攻[1.5]", "", "吹き飛ばし(右)/マヒ/火傷", "竜を継ぐ者/火傷", "", "*", 4, 4, 3, 5, 867, 6313]
   ,[1751, "勇者", "c特攻[1.5]/cHP回復/攻撃強化/闘志/HP回復/CP増加", "cHP回復/意気/閃き/弱体解除(単)", "強化解除(単)", "c魔王系スキル", "", "呪い", 3, 5, 1, 4, 160, 5950]
   ,[1752, "", "c特攻[2.0]/cHP回復/攻撃強化/闘志/熱情/クリティカル+/HP回復", "cHP回復/HP回復/弱体解除(単)", "*", "*", "", "*", 4, 5, 4, 8, 670, 5650]
