@@ -243,6 +243,7 @@ var EFFECT = Effect.createList(
   ,["憑依時強化", "ひよ", 0, 91, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["非憑依時弱化", "ひひ", 0, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["デメリット[0.25]", "", 0, 0.25, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
+  ,["友情時強化", "ゆう", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
