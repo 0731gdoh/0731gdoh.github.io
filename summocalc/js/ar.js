@@ -21,9 +21,12 @@ Record.prototype = {
 };
 Record.createList = function(a){
   var c = 1000;
+  var ids = [];
   return a.map(function(v, i){
     var id = v.splice(1, 1)[0];
     if(id === undefined) id = ++c;
+    if(ids.indexOf(id) !== -1) throw new Error("AR IDが重複しています（" + id + "）");
+    ids.push(id);
     return new Record(i, id, v);
   });
 };
@@ -93,11 +96,14 @@ var AR = Record.createList(
   ,["深淵の門番の破片/Shard of the Abyssal Gatekeeper", 2, "", 75, 0, EQUIP.NETHER, 0, ""]
   ,["遠雷の闘士の破片", 3, "", 200, 0, EQUIP.AETHER, 0, ""]
   ,["今、ここだけにしかない物語", 101, "", 300, EQUIP.ANY, 0, 0, ""]
+  ,["お宝目指して何処までも", 107, "", 200, EQUIP.ANY, 0, 0, ""]
+  ,["教えの庭にも", 108, "", 200, EQUIP.ANY, 0, 0, ""]
   ,["拮抗の例外処理？/Exception of Antagonism?", 102, "", 150, 0, EQUIP.WATER, 0, ""]
   ,["魔王と魔王/Dark Lords", 103, "", 150, EQUIP.ANY, 0, 0, ""]
   ,["仰げば尊し", 104, "", 100, EQUIP.ANY, 0, 0, ""]
   ,["聖夜のダブル・ヒーロー！", 105, "", 150, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.BLOW, "タウラスマスク/クランプス"]
   ,["ギュウマオウ式OJT！/OJT: The Gyumao Way", 106, "", 0, 0, 0, EQUIP.LONGSLASH|EQUIP.MAGIC, "ギュウマオウ/セト"]
+  ,["友情のコンビネーション！", 109, "友情時強化", 200, EQUIP.ANY, 0, 0, ""]
   ,["開拓の誓い", , "", 100, 0, EQUIP.NETHER, 0, "主人公/シロウ"]
   ,["無窮の誓い", , "クリティカル", 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ"]
   ,["豊穣の誓い", , "", 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ"]
