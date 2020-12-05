@@ -125,6 +125,10 @@ var calc = {
       c.update();
     };
     _("lx").onclick = function(){
+      setValue("pl", v("pl") + 10);
+      c.update();
+    };
+    _("lz").onclick = function(){
       setValue("pl", v("pl") + 15);
       c.update();
     };
