@@ -568,7 +568,7 @@ var calc = {
       LINE
     ];
     if(this.card){
-      atk = card.getValue(this.lv);
+      atk = card.getValue(this.lv, this.version === 2);
       weapon = card.weapon[this.usecs];
       cs = CS_ORDER[card.rarity] + card.csBoost;
       setValue("a", atk);
@@ -719,7 +719,7 @@ var calc = {
       }
     }
     result.push(LINE);
-    if(!this.version) result.push(
+    if(this.version !== 1) result.push(
       t("　モード: /　Mode: ") + VERSION[this.version]
     );
     _("o").value = result.filter(function(x){return x}).join("\n");
