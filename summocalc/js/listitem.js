@@ -104,6 +104,7 @@ var CS_ORDER = [0, 2, 7, 12, 17, 22, 18, 23, 1, 21, 28];
 var VERSION = ListItem.createList(
   [["旧計算式/Old Formula"]
   ,["通常/Normal"]
+  ,["エネミー/Enemy"]
 ]);
 
 var ELV_MODE = ListItem.createList(

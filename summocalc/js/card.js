@@ -29,7 +29,8 @@ Card.prototype = {
     if(this.variant) return name + "(" + t(this.variant).slice(0, -2) + ")";
     return name + "☆" + this.rarity;
   },
-  getValue: function(lv){
+  getValue: function(lv, enemy){
+    if(enemy) return this.growth.add(this.baseAtk, 98).mul((lv || 1) - 1, 1).add(this.baseAtk, 1).round();
     return this.growth.mul((lv || 1) - 1, 1).add(this.baseAtk, 1).round();
   },
   canEquip: function(x){
