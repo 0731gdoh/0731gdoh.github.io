@@ -13,7 +13,7 @@ function Record(index, id, x){
 }
 Record.prototype = {
   toString: function(){
-    return t(this.name) || "－－－－－－－－－－－－－－－";
+    return t(this.name) || "－－－－－－－－－－－－－－－－－";
   },
   getValue: function(lv){
     return this.value.mul(100 + lv, 100);
@@ -104,6 +104,7 @@ var AR = Record.createList(
   ,["聖夜のダブル・ヒーロー！", 105, "", 150, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.BLOW, "タウラスマスク/クランプス"]
   ,["ギュウマオウ式OJT！/OJT: The Gyumao Way", 106, "", 0, 0, 0, EQUIP.LONGSLASH|EQUIP.MAGIC, "ギュウマオウ/セト"]
   ,["友情のコンビネーション！", 109, "友情時強化", 200, EQUIP.ANY, 0, 0, ""]
+  ,["はぐれ者の幕間", 110, "", 0, 0, EQUIP.FIRE|EQUIP.WATER|EQUIP.AETHER, 0, "トムテ/テツヤ"]
   ,["開拓の誓い", , "", 100, 0, EQUIP.NETHER, 0, "主人公/シロウ"]
   ,["無窮の誓い", , "クリティカル", 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ"]
   ,["豊穣の誓い", , "", 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ"]
