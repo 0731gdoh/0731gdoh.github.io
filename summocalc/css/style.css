@@ -51,7 +51,7 @@ select {
 input[type="number"] {
   padding: 0.2rem 0.3rem;
   margin-left: 0.3rem;
-  margin-right: 1rem;
+  margin-right: 0.8rem;
   text-align: right;
   width: 2.2rem;
 }
@@ -60,6 +60,9 @@ input[type="number"] {
 }
 input[type="checkbox"] {
   margin: 0 0.3rem;
+}
+button + input[type="checkbox"] {
+  margin-left: 1rem;
 }
 textarea {
   width: 100%;
@@ -145,5 +148,5 @@ table {
 }
 #rc,
 #qf {
-  width: 11rem;
+  width: 13rem;
 }
