@@ -107,12 +107,6 @@ var VERSION = ListItem.createList(
   ,["エネミー/Enemy"]
 ]);
 
-var ELV_MODE = ListItem.createList(
-  [["スキルLvを使用/Use Skill Lv"]
-  ,["神器Lvを使用/Use Artifact Lv"]
-  ,["毎回尋ねる/Ask Each Time"]
-]);
-
 var VARIANT = ListItem.createList(
   [[""]
   ,["バレ/Valentine"]
@@ -143,6 +137,7 @@ var VARIANT = ListItem.createList(
   ,["野営/Jamboree"]
   ,["竜宮/Virtual"]
   ,["福祭/Illusion"]
+  ,["聖夜20/Xmas20"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);

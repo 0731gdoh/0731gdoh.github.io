@@ -83,16 +83,22 @@ var calc = {
         c.setLanguage(1 - language);
     };
     _("oa").onclick = function(){
-      c.addStatus(v("os"), v("el"), 0, v("ua"));
+      c.addStatus(v("os"), v("el"), 0, v("al") * 2);
     };
     _("or").onclick = function(){
       c.addStatus(v("os"), 0, 0);
     };
     _("da").onclick = function(){
-      c.addStatus(v("ds"), v("el"), 1, v("ua"));
+      c.addStatus(v("ds"), v("el"), 1, v("al") * 2);
     };
     _("dr").onclick = function(){
       c.addStatus(v("ds"), 0, 1);
+    };
+    _("ea").onclick = function(){
+      setValue("el", 1);
+    };
+    _("em").onclick = function(){
+      setValue("el", 100);
     };
     _("uc").onclick = function(){
       this.blur();
@@ -432,7 +438,6 @@ var calc = {
     setOptions("sv", VERSION);
     setOptions("w", WEAPON, FILTER.NAME);
     setOptions("cs", CS, FILTER.VALUE, CS_ORDER);
-    setOptions("ua", ELV_MODE);
     setOptions("am", MULTIPLIER);
     setOptions("ef", ATTRIBUTE);
     setOptions("wf", WEAPON);
@@ -451,19 +456,20 @@ var calc = {
     setText("lsv", "モード/Mode");
     setText("lpc", "カード/Card");
     setText("lpl", "カードLv/Card Lv");
-    setText("lrc", "AR");
-    setText("lrl", "AR Lv");
     setText("lw", "武器タイプ/Weapon Type");
     setText("lcl", "神器Lv/Artifact Lv");
+    setText("luc", "CSを使用/Use CS");
+    setText("lrc", "AR");
+    setText("lrl", "AR Lv");
     setText("los", "攻撃側/Offense");
     setText("oa", "追加/Add");
     setText("or", "削除/Remove");
     setText("lds", "防御側/Defense");
     setText("da", "追加/Add");
     setText("dr", "削除/Remove");
-    setText("lel", "スキルLv/Skill Lv");
-    setText("luc", "CSを使用/Use CS");
-    setText("lua", "効果Lv/Effect Lv");
+    setText("lel", "効果Lv/Effect Lv");
+//    setText("lua", "神器Lvを使用/Use Artifact Lv");
+    setText("lal", "毎回尋ねる/Ask Each Time");
     setText("lam", "属性相性/Attribute");
     setText("cc", "コピー/Copy");
     setText("sr", "結果を共有/Share Result" );
