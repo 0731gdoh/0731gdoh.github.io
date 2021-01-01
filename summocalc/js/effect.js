@@ -254,7 +254,7 @@ var EFFECT = Effect.createList(
   ,["[聖夜]悪い子弱体/[Xmas]悪い子弱体", "わる", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<クリティカル>強化", "くり", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["[聖夜]被ダメージ増加/[Xmas]被ダメージ増加", "ひだ", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
-  ,["滋養時強化", "しよ", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["滋養時強化", "しよ", 1, 0.8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["根性時強化[1.5]", "こんし1", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ]);
 
