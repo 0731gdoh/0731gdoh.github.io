@@ -105,6 +105,8 @@ var AR = Record.createList(
   ,["ギュウマオウ式OJT！/OJT: The Gyumao Way", 106, "", 0, 0, 0, EQUIP.LONGSLASH|EQUIP.MAGIC, "ギュウマオウ/セト"]
   ,["友情のコンビネーション！", 109, "友情時強化", 200, EQUIP.ANY, 0, 0, ""]
   ,["はぐれ者の幕間", 110, "", 0, 0, EQUIP.FIRE|EQUIP.WATER|EQUIP.AETHER, 0, "トムテ/テツヤ"]
+  ,["初湯のひととき", 111, "", 0, 0, 0, EQUIP.THRUST|EQUIP.LONGSLASH|EQUIP.NONE, "ギュウマオウ/シンノウ"]
+  ,["曙光に燃える", 112, "", 400, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.WORLD, 0, "タウラスマスク/ワカン・タンカ", 1]
   ,["開拓の誓い", , "", 100, 0, EQUIP.NETHER, 0, "主人公/シロウ"]
   ,["無窮の誓い", , "クリティカル", 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ"]
   ,["豊穣の誓い", , "", 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ"]
@@ -171,4 +173,8 @@ var AR = Record.createList(
   ,["ジェノサイド・ハロウィン/Genociders' Halloween", , "クリティカル+", 500, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ハーロット/スルト"]
   ,["今月の得真道学園/The Theme of the Month", , "", 400, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.MAGIC, "リチョウ/サナト・クマラ"]
   ,["ウマミチカンフージェネレーション/Umamichi Kung-Fu Generation", , "特攻[1.6]", 300, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "ハヌマン/ナタ"]
+  ,["コリーダ・デ・トーロス", , "", 250, 0, EQUIP.WOOD|EQUIP.AETHER, 0, "アステリオス/タウラスマスク"]
+  ,["上質の一杯", , "滋養", 200, 0, 0, EQUIP.BLOW|EQUIP.SLASH|EQUIP.LONGSLASH, "スノウ/ギュウマオウ"]
+  ,["浅草ダウンタウンボーイズ/Asakusa Downtown Boys", , "根性時強化[1.5]", 200, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "テツギュウ/ハヌマン"]
+  ,["昼休みの購買部闘争！/School Lunchtime Battle!", , "", 400, 0, 0, EQUIP.BLOW, "ナタ/テツギュウ"]
 ]);
