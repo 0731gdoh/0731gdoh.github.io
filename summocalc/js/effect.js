@@ -257,6 +257,7 @@ var EFFECT = Effect.createList(
   ,["滋養時強化", "しよ", 1, 0.8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["根性時強化[1.5]", "こんし1", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特殊耐性[0.1]", "とくし", 1, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["<剛力>時強化", "こうり", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
