@@ -177,4 +177,8 @@ var AR = Record.createList(
   ,["上質の一杯", , "滋養", 200, 0, 0, EQUIP.BLOW|EQUIP.SLASH|EQUIP.LONGSLASH, "スノウ/ギュウマオウ"]
   ,["浅草ダウンタウンボーイズ/Asakusa Downtown Boys", , "根性時強化[1.5]", 200, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "テツギュウ/ハヌマン"]
   ,["昼休みの購買部闘争！/School Lunchtime Battle!", , "", 400, 0, 0, EQUIP.BLOW, "ナタ/テツギュウ"]
+  ,["鬼も、福も/Ogres and Fortune", , "特攻[2.0]", 100, 0, EQUIP.FIRE|EQUIP.INFERNAL, 0, "タケマル/モトスミ"]
+  ,["禅の心/Spirit of Zen", , "集中", 0, 0, EQUIP.VALIANT, EQUIP.THRUST, "オニワカ/シュテン"]
+  ,["浅草の愚連隊/Asakusa Gang", , "剛力時強化", 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "モトスミ/リチョウ"]
+  ,["フィスト・ファイト！/Fist Fight!", , "特攻[1.4]", 400, 0, 0, EQUIP.BLOW, "オニワカ/イバラキ"]
 ]);
