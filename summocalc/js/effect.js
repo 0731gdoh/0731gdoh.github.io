@@ -97,11 +97,13 @@ Effect.prototype = {
 };
 Effect.createList = function(a){
   var table = new Map();
-  return a.map(function(v, i){
-    var link = 0;
+  a.forEach(function(v, i){
     var key = t(v[0], 0);
     while(table.get(key)) key = "*" + key;
     table.set(key, i);
+  });
+  return a.map(function(v, i){
+    var link = 0;
     v[0] = v[0].replace(/<([^>]+)>/, function(match, p1){
       link = table.get(p1) || 0;
       return p1.replace(/\*+/, "");
