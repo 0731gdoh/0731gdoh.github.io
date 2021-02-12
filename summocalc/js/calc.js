@@ -269,7 +269,7 @@ var calc = {
       n = tmp.shift();
       this.es.forEach(function(v){
         v.clear();
-      }
+      });
       this.es.forEach(function(v, i){
         if(i === n && n){
           var e = EFFECT[i];
