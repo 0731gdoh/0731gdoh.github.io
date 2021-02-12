@@ -267,6 +267,9 @@ var calc = {
         tmp.push(n);
       }
       n = tmp.shift();
+      this.es.forEach(function(v){
+        v.clear();
+      });
       this.es.forEach(function(v, i){
         if(i === n && n){
           var e = EFFECT[i];
@@ -285,8 +288,6 @@ var calc = {
             v.setCustom(cn, cd, ca);
           }
           if(tmp.length) n += tmp.shift();
-        }else{
-          v.clear();
         }
       });
       this.active = 1;
