@@ -138,6 +138,7 @@ var VARIANT = ListItem.createList(
   ,["竜宮/Virtual"]
   ,["福祭/Illusion"]
   ,["聖夜20/Xmas20"]
+  ,["バレ21/Valentine21"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);

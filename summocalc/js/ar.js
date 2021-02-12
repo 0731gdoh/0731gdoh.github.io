@@ -153,7 +153,7 @@ var AR = Record.createList(
   ,["硬派を気取ったあの頃は", , "", 400, 0, EQUIP.AETHER, EQUIP.BLOW, "ケンゴ/シトリー"]
   ,["チョコレート・ダイナマイト！", , "", 0, 0, 0, EQUIP.MAGIC|EQUIP.SNIPE, "チョウジ/エビス"]
   ,["砂漠のプライベート・レッスン/Private Lesson in the Desert?", , "", 100, 0, EQUIP.VALIANT|EQUIP.WATER, 0, "セト/ゴウリョウ"]
-  ,["蒲田ギルドの師弟/A Teacher and Student from Kamata", , "攻撃力微増", 500, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "アマツマラ/クロガネ"]
+  ,["蒲田ギルドの師弟/A Teacher and Student from Kamata", , "攻撃力微増[1.13]", 500, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "アマツマラ/クロガネ"]
   ,["サバイバルリゾート/Survival Resort", , "特攻[1.6]", 100, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ハヌマン/ツァトグァ"]
   ,["剣豪と刀鍛冶の攻防/Battle between Swordsmith and Swordsman", , "", 300, 0, EQUIP.ALLROUND|EQUIP.FIRE, EQUIP.SLASH, "ムサシ/アマツマラ"]
   ,["寂しがりの猛牛たち/Single Bulls Club", , "", 500, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ワカン・タンカ/テツギュウ", 2]
@@ -181,4 +181,11 @@ var AR = Record.createList(
   ,["禅の心/Spirit of Zen", , "集中", 0, 0, EQUIP.VALIANT, EQUIP.THRUST, "オニワカ/シュテン"]
   ,["浅草の愚連隊/Asakusa Gang", , "剛力時強化", 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "モトスミ/リチョウ"]
   ,["フィスト・ファイト！/Fist Fight!", , "特攻[1.4]", 400, 0, 0, EQUIP.BLOW, "オニワカ/イバラキ"]
+  
+  ,["父の思い出", , "特攻[2.0]", 100, 0, 0, EQUIP.SLASH|EQUIP.MAGIC|EQUIP.LONGSLASH, "マルコシアス/タダトモ"]
+  ,["バレンタイン・ライブ！", , "", 200, 0, EQUIP.WATER|EQUIP.AETHER, 0, "ジブリール/マーナガルム", 2]
+  ,["愛の牢獄", , "", 200, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.AETHER, 0, "ショロトル/ハクメン"]
+  ,["鉄血のバージンロード", , "", 300, 0, 0, EQUIP.MAGIC, "クロード/スノウ"]
+  ,["再生のキャンバス", , "", 0, 0, 0, EQUIP.SHOT|EQUIP.SNIPE|EQUIP.NONE, "リヒト/イツァムナー"]
+  ,["神宿学園の食いしん坊番長", , "特攻[1.4]", 150, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ベヒモス/リョウタ"]
 ]);

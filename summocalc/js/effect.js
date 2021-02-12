@@ -184,7 +184,7 @@ var EFFECT = Effect.createList(
   ,["暴走+/Berserk+", "ほうそ+", 0, 1.3]
   ,["暴走+/Berserk+", "ほうそ+", 1, 1.3, , EFFECT_FLAG.FIXED]
   ,["マヒ/Paralysis", "まひ", 0, 0.9]
-  ,["無窮/Infinitude", "むき", 0, 1.3]
+  ,["×<無窮>", "むき", 2, 1.3]
   ,["烙印/Stigma", "らく", 1, 1.15]
   ,["連撃/Combo", "れん", 0, 0.6, , EFFECT_FLAG.FIXED, TYPE.COMBO]
   ,["[宝船]攻撃力小UP/[T.Ship]攻撃力小UP", "こうけきりよく1", 0, 0, 250]
@@ -213,7 +213,7 @@ var EFFECT = Effect.createList(
   ,["攻撃力減少", "こうけきりよくけ", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特攻[6.0]/Bonus[6.0]", "とつ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["CS変更：魔法/CS変更：Magic", "CS", 0, 0, 5, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
-  ,["攻撃力微増", "こうけきりよくひ", 0, 1.13, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
+  ,["攻撃力微増[1.13]", "こうけきりよくひ", 0, 1.13, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,["[カスタム]/[Customizable]", "", 0, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.CUSTOM]
   ,["[カスタム]/[Customizable]", "", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.CUSTOM]
   ,["<束縛>時強化", "そく", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
@@ -258,6 +258,8 @@ var EFFECT = Effect.createList(
   ,["根性時強化[1.5]", "こんし1", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特殊耐性[0.1]", "とくし", 1, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<剛力>時強化", "こうり", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["攻撃力微増[1.2]", "こうけきりよくひ", 0, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
+  ,["無窮/Infinitude", "むき", 0, 1.3, , EFFECT_FLAG.STACKABLE]
 ]);
 
 var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
