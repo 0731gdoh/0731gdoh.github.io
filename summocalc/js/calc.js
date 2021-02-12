@@ -227,6 +227,7 @@ var calc = {
       var tmp = [];
       var n = s.read();
       var index = 1;
+      var es = this.es;
       CARD.some(function(v, i){
         if(v.id === n){
           index = i;
@@ -267,13 +268,13 @@ var calc = {
         tmp.push(n);
       }
       n = tmp.shift();
-      this.es.forEach(function(v){
+      es.forEach(function(v){
         v.clear();
       });
-      this.es.forEach(function(v, i){
+      es.forEach(function(v, i){
         if(i === n && n){
           var e = EFFECT[i];
-          if(e.group === 2 && e.link) v = this.es[e.link];
+          if(e.group === 2 && e.link) v = es[e.link];
           v.loop = 1;
           if(!e.isFixed() || !e.isStackable()) v.lv = s.read();
           if(e.isStackable()) v.loop = s.read();
