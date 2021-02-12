@@ -273,7 +273,7 @@ var calc = {
       this.es.forEach(function(v, i){
         if(i === n && n){
           var e = EFFECT[i];
-          if(e.group === 2 && e.link) v = es[e.link];
+          if(e.group === 2 && e.link) v = this.es[e.link];
           v.loop = 1;
           if(!e.isFixed() || !e.isStackable()) v.lv = s.read();
           if(e.isStackable()) v.loop = s.read();
