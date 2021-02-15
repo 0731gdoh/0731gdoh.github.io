@@ -227,7 +227,6 @@ var calc = {
       var tmp = [];
       var n = s.read();
       var index = 1;
-      var es = this.es;
       CARD.some(function(v, i){
         if(v.id === n){
           index = i;
@@ -268,10 +267,10 @@ var calc = {
         tmp.push(n);
       }
       n = tmp.shift();
-      es.forEach(function(v){
+      this.es.forEach(function(v){
         v.clear();
       });
-      es.forEach(function(v, i){
+      this.es.forEach(function(v, i, es){
         if(i === n && n){
           var e = EFFECT[i];
           if(e.group === 2 && e.link) v = es[e.link];
