@@ -304,7 +304,7 @@ var calc = {
       var e = EFFECT[index];
       var es = this.es[index];
       if(lv){
-        if(e.link && !this.es[e.link].loop){
+        if(e.link && this.es[e.link].loop <= es.loop){
           var tLv = 0;
           if(EFFECT[e.link].isFixed()){
             if(confirm(t("/Add ") + EFFECT[e.link] + t("を追加/"))) tLv = 1;
