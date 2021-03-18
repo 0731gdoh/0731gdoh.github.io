@@ -61,8 +61,8 @@ var calc = {
       _("su").style.display = "none";
     }
     if(!navigator.userAgent.match(/iP(hone|[ao]d)/) || isStandalone()) _("ms").style.display = "none";
-    this.cardfilter.init();
     this.setLanguage(-1);
+    this.cardfilter.init();
     linkInput(c, "atk", "a");
     linkInput(c, "weapon", "w");
     linkInput(c, "cs", "cs");
@@ -71,12 +71,12 @@ var calc = {
     linkInput(c, "version", "sv");
     linkInput(c, "multiplier", "am");
     linkInput(c, "card", "pc", function(){
-      c.setEffectOptions();
+      c.updateEffectOptions();
       c.checkCardSelected();
     });
     linkInput(c, "lv", "pl");
     linkInput(c, "ar", "rc", function(){
-      c.setEffectOptions();
+      c.updateEffectOptions();
     });
     linkInput(c, "arLv", "rl");
     _("sl").onclick = function(){
@@ -293,7 +293,7 @@ var calc = {
       this.active = 1;
     }
     this.update(skipSave);
-    this.setEffectOptions();
+    this.updateEffectOptions();
   },
   addStatus: function(index, lv, group, mode){
     if(index > EFFECT_MAX){
@@ -407,7 +407,7 @@ var calc = {
       });
     }
     this.update();
-    this.setEffectOptions();
+    this.updateEffectOptions();
   },
   setLanguage: function(x){
     if(x < 0){
@@ -425,18 +425,17 @@ var calc = {
     try{
       localStorage.setItem("language", language);
     }catch(e){}
-    EFFECT_ORDER.sort(function(a, b){
-      var x = EFFECT[a];
-      var y = EFFECT[b];
-      if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
-      if(x.sortkey > 3 || !x.sortkey) return x.index - y.index;
-      if(x.reading === y.reading && x.type === TYPE.BONUS && y.type === TYPE.BONUS) return x.value[0] - y.value[0];
-      if(x.type === TYPE.WEAPON && y.type === TYPE.WEAPON || x.type === TYPE.CSWEAPON && y.type === TYPE.CSWEAPON) return x.value[1] - y.value[1];
-      if(language) return ("" + x).toUpperCase() < ("" + y).toUpperCase() ? -1 : 1;
-      if(x.reading === y.reading) return x.index - y.index;
-      return x.reading < y.reading ? -1 : 1;
-    });
+    this.updateTexts();
+    if(x >= 0){
+      this.cardfilter.update();
+      this.update();
+    }
+  },
+  updateTexts: function(){
+    var cf = this.cardfilter;
+    var b = cf.active;
     this.active = 0;
+    cf.active = 0;
     setOptions("sv", VERSION);
     setOptions("w", WEAPON, FILTER.NAME);
     setOptions("cs", CS, FILTER.VALUE, CS_ORDER);
@@ -446,14 +445,17 @@ var calc = {
     setOptions("cf", WEAPON);
     setOptions("rf", RARITY);
     setOptions("vf", VARIANT);
-    ["sf1", "af1", "df1", "baf", "bdf", "nf", "pf", "sf2", "af2", "df2"].forEach(function(key, i){
-      var flag = 1 << i % 7;
+    ["srf1", "srf2"].forEach(function(key, i){
+      setOptions(key, RANGE);
+      cf.updateEffectFilterOptions(i);
+    });
+    ["baf", "bdf", "nf", "pf"].forEach(function(key, i){
       setOptions(key, TAG, function(x){
-        return !x.index || x.flag & flag;
-      }, TAG_ORDER);
+        return !x.index || x.checkFlag(i + 3, TIMING.ANY);
+      }, TAG.ORDER[language]);
     });
     setOptions("qf", AR);
-    this.setEffectOptions();
+    this.updateEffectOptions();
     this.checkCardSelected();
     setText("lsv", "モード/Mode");
     setText("lpc", "カード/Card");
@@ -470,7 +472,6 @@ var calc = {
     setText("da", "追加/Add");
     setText("dr", "削除/Remove");
     setText("lel", "効果Lv/Effect Lv");
-//    setText("lua", "神器Lvを使用/Use Artifact Lv");
     setText("lal", "毎回尋ねる/Ask Each Time");
     setText("lam", "属性相性/Attribute");
     setText("cc", "コピー/Copy");
@@ -484,15 +485,13 @@ var calc = {
     setText("lcf", "CSタイプ/CS Type");
     setText("lrf", "レア度/Rarity");
     setText("lvf", "バージョン/Variant");
-    setText("lsf1", "効果(自身)/Effect(Self)");
-    setText("lsf2", "効果(自身)/Effect(Self)");
-    setText("laf1", "効果(味方)/Effect(Ally)");
-    setText("laf2", "効果(味方)/Effect(Ally)");
-    setText("ldf1", "効果(敵)/Effect(Enemy)");
-    setText("ldf2", "効果(敵)/Effect(Enemy)");
-    setText("lpf", "パッシブ/Passive");
-    setText("lbaf", "特攻対象/Attack Bonus");
-    setText("lbdf", "特防対象/Defense Bonus");
+    setText("lsf1", "効果1/Effect 1");
+    setCheckGroup("stf1", TIMING_LABELS, 14);
+    setText("lsf2", "効果2/Effect 2");
+    setCheckGroup("stf2", TIMING_LABELS, 14);
+    setText("lpf", "常時/Static");
+    setText("lbaf", "特攻対象/A.Bonus");
+    setText("lbdf", "特防対象/D.Bonus");
     setText("lnf", "状態無効/Nullify");
     setText("lqf", "装備可能AR/Equipable AR");
     setText("lccf", "CSの効果を除外する/Exclude CS Effects");
@@ -504,11 +503,10 @@ var calc = {
     setText("ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'.");
     setText("um", "新しいデータがあります/New data is available.");
     setText("ub", "更新/Update");
-    this.cardfilter.update();
+    cf.active = b;
     this.active = 1;
-    if(x >= 0) this.update();
   },
-  setEffectOptions: function(){
+  updateEffectOptions: function(){
     var p = ["", "{CS} ", "[AR] "];
     var es = this.es;
     var s = [0].concat(
@@ -518,10 +516,10 @@ var calc = {
       s.push(EFFECT_MAX * 2 + x);
     });
     s.push(0);
-    EFFECT_ORDER.forEach(function(x){
+    EFFECT.ORDER[language].forEach(function(x){
       if(es[x].loop) s.push(x);
     });
-    s = s.concat(EFFECT_ORDER);
+    s = s.concat(EFFECT.ORDER[language]);
     setOptions("os", EFFECT, FILTER.OFFENSE, s, EFFECT_MAX, p);
     setOptions("ds", EFFECT, FILTER.DEFENSE, s, EFFECT_MAX, p);
   },
@@ -585,17 +583,17 @@ var calc = {
       result[1] = "　[Lv." + pad(this.lv, 3) + "]　" + card;
     }
     if(this.ar){
-      var passive = [];
+      var static = [];
       exatk = ar.getValue(this.arLv);
       cs += ar.csBoost;
-      if(exatk > 0) passive.push("ATK+" + exatk);
-      if(ar.csBoost > 0) passive.push("CS威力" + ["増加", "大増"][ar.csBoost - 1]);
+      if(exatk > 0) static.push("ATK+" + exatk);
+      if(ar.csBoost > 0) static.push(t("CS威力" + ["増加/I", "大増/Greatly i"][ar.csBoost - 1] + "ncrease CS Damage"));
       if(ar.csWeapon){
         if(this.usecs) weapon = ar.csWeapon;
-        passive.push(WEAPON[ar.csWeapon] + "CS");
+        static.push(WEAPON[ar.csWeapon] + "CS");
       }
       result[2] = "　[Lv." + pad(this.arLv, 3) + "]　" + (card.canEquip(ar) ? "" : "×") + ar;
-      if(passive.length) result[2] += "（" + passive.join(",") + "）";
+      if(static.length) result[2] += "（" + static.join(", ") + "）";
     }
     if(this.usecs){
       csrate = CS[cs].getValue() * (1 + Math.LOG10E * Math.log(this.cLv) / 2);
@@ -613,7 +611,7 @@ var calc = {
       ][group]));
       for(var i = 1; i < EFFECT.length; i++){
         var count = 0;
-        var e = EFFECT[EFFECT_ORDER[i]];
+        var e = EFFECT[EFFECT.ORDER[language][i]];
         var es = this.es[e.index];
         var eLv = es.lv;
         var loop = es.loop;
@@ -696,7 +694,7 @@ var calc = {
               break;
           }}
           if(!loop){
-            if(desc.length > 1) desc = [desc[0], "（" + desc.slice(1).join(",") + "）"];
+            if(desc.length > 1) desc = [desc[0], "（" + desc.slice(1).join(", ") + "）"];
             result.push(desc.join(""));
           }
         }
@@ -713,7 +711,7 @@ var calc = {
     desc = [];
     if(exatk.n) desc.push((exatk < 0 ? "" : "+") + exatk);
     if(atkbonus.n) desc.push("+" + atkbonus.mul(100, 1) + "%");
-    if(desc.length) result[5] += "（" + desc.join(",") + "）";
+    if(desc.length) result[5] += "（" + desc.join(", ") + "）";
     result[6] += WEAPON[weapon];
     result.push(t("【ダメージ】/【Damage】"));
     dmg = dmg.mul(WEAPON[weapon].getValue());
@@ -742,13 +740,13 @@ var calc = {
     cs: 0,
     rarity: 0,
     variant: 0,
-    self1: 0,
-    self2: 0,
-    ally1: 0,
-    ally2: 0,
-    enemy1: 0,
-    enemy2: 0,
-    passive: 0,
+    timing1: 0x7FFF,
+    timing2: 0x7FFF,
+    range1: 0,
+    range2: 0,
+    effect1: 0,
+    effect2: 0,
+    static: 0,
     bonus_a: 0,
     bonus_b: 0,
     nullify: 0,
@@ -762,18 +760,35 @@ var calc = {
       linkInput(c, "cs", "cf");
       linkInput(c, "rarity", "rf");
       linkInput(c, "variant", "vf");
-      linkInput(c, "self1", "sf1");
-      linkInput(c, "self2", "sf2");
-      linkInput(c, "ally1", "af1");
-      linkInput(c, "ally2", "af2");
-      linkInput(c, "enemy1", "df1");
-      linkInput(c, "enemy2", "df2");
-      linkInput(c, "passive", "pf");
+      linkInput(c, "static", "pf");
       linkInput(c, "bonus_a", "baf");
       linkInput(c, "bonus_d", "bdf");
       linkInput(c, "nullify", "nf");
       linkInput(c, "ar", "qf");
       linkInput(c, "exclude", "ccf");
+      linkCheckGroup(c, "timing1", "stf1", function(){
+        c.updateEffectFilterOptions(0);
+      });
+      linkCheckGroup(c, "timing2", "stf2", function(){
+        c.updateEffectFilterOptions(1);
+      });
+      linkInput(c, "range1", "srf1", function(){
+        c.updateEffectFilterOptions(0);
+      });
+      linkInput(c, "range2", "srf2", function(){
+        c.updateEffectFilterOptions(1);
+      });
+      linkInput(c, "effect1", "sef1");
+      linkInput(c, "effect2", "sef2");
+      this.update();
+    },
+    updateEffectFilterOptions: function(n){
+      var id = n ? "sef2" : "sef1";
+      var r = n ? this.range2 : this.range1;
+      var b = (n ? this.timing2 : this.timing1) || TIMING.ANY;
+      setOptions(id, TAG, function(x){
+        return !x.index || x.checkFlag(r, b);
+      }, TAG.ORDER[language]);
     },
     toggle: function(){
       if(this.active = 1 - this.active){
@@ -789,9 +804,11 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["ef", "wf", "cf", "rf", "vf", "sf1", "sf2", "af1", "af2", "df1", "df2", "pf", "baf", "bdf", "nf", "qf", "ccf"].forEach(function(x){
+      ["ef", "wf", "cf", "rf", "vf", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
+      setValue("stf1", 0x7FFF);
+      setValue("stf2", 0x7FFF);
       this.active = active;
       this.update();
     },
@@ -817,9 +834,15 @@ var calc = {
         if(pl > -1 && x.limited !== pl) return false;
         if(vv && x.variant.indexOf(vv)) return false;
         if(p.ar && !x.canEquip(AR[p.ar])) return false;
-        if([p.self1, p.ally1, p.enemy1, p.bonus_a, p.bonus_d, p.nullify, p.passive, p.self2, p.ally2, p.enemy2].some(function(te, i){
-          return te && x.tag[i % 7 % 6].every(function(ie){
-            return te !== ie % d;
+        if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
+          return (p.effect1 !== ie[0] % d) || !(ie[1] & p.timing1);
+        })) return false;
+        if(p.timing2 && p.effect2 && x.tag[p.range2].every(function(ie){
+          return (p.effect2 !== ie[0] % d) || !(ie[1] & p.timing2);
+        })) return false;
+        if([p.bonus_a, p.bonus_d, p.nullify, p.static].some(function(te, i){
+          return te && x.tag[(i + 3) % 6].every(function(ie){
+            return te !== ie[0] % d;
           });
         })) return false;
         return true;

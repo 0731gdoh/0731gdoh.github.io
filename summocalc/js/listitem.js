@@ -107,6 +107,12 @@ var VERSION = ListItem.createList(
   ,["エネミー/Enemy"]
 ]);
 
+var RANGE = ListItem.createList(
+  [["自身に/to self"]
+  ,["味方に/to ally"]
+  ,["敵に/to enemy"]
+]);
+
 var VARIANT = ListItem.createList(
   [[""]
   ,["バレ/Valentine"]

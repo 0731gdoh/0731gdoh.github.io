@@ -150,3 +150,23 @@ table {
 #qf {
   width: 13rem;
 }
+.cb {
+  display: inline-block;
+  margin-right: 0.8rem;
+}
+td:first-child {
+  white-space: nowrap;
+}
+#sef1,
+#sef2,
+#pf,
+#baf,
+#bdf,
+#nf {
+  width: 10rem;
+  margin-right: 0;
+}
+#os,
+#ds {
+  width: 9.5rem;
+}

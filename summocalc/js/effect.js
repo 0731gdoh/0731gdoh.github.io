@@ -97,19 +97,42 @@ Effect.prototype = {
 };
 Effect.createList = function(a){
   var table = new Map();
+  var result = [];
+  var order = [[], []];
+  var k = [];
+  var en = false;
+  var f = function(a, b){
+    var x = result[a];
+    var y = result[b];
+    if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
+    if(x.sortkey > 3 || !x.sortkey) return x.index - y.index;
+    if(k[a] === k[b] && x.group === y.group) return x.value[0] - y.value[0];
+    if((x.type === TYPE.WEAPON || x.type === TYPE.CSWEAPON) && x.type === y.type) return x.value[1] - y.value[1];
+    if(en) return t(x.name, 1).toUpperCase() < t(y.name, 1).toUpperCase() ? -1 : 1;
+    if(x.reading === y.reading) return x.index - y.index;
+    return x.reading < y.reading ? -1 : 1;
+  };
   a.forEach(function(v, i){
     var key = t(v[0], 0);
     while(table.get(key)) key = "*" + key;
     table.set(key, i);
+    order[0].push(i);
+    order[1].push(i);
   });
-  return a.map(function(v, i){
+  a.forEach(function(v, i){
     var link = 0;
     v[0] = v[0].replace(/<([^>]+)>/, function(match, p1){
       link = table.get(p1) || 0;
       return p1.replace(/\*+/, "");
     });
-    return new Effect(i, v, link);
+    result.push(new Effect(i, v, link));
+    k.push(t(v[0], 0).replace(/\[\d+\.\d+\]$/, ""))
   });
+  order[0].sort(f);
+  en = true;
+  order[1].sort(f);
+  result.ORDER = order;
+  return result;
 };
 
 var EFFECT_MAX = 10000;
@@ -126,7 +149,7 @@ var EFFECT = Effect.createList(
   ,["<頑強>に貫通/Ignore Tenacity", "かん", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
   ,["極限/Limit", "きよく", 0, 1, , , TYPE.LIMIT]
   ,["崩し/Break", "くす", 1, 1.2]
-  ,["暗闇", "くら", 0, 0.9]
+  ,["暗闇/Darkness", "くら", 0, 0.9]
   ,["クリティカル/Crit", "くり", 0, 2]
   ,["クリティカル+/Crit+", "くり", 0, 2.5]
   ,["クリティカル++/Crit++", "くり", 0, 3]
@@ -171,14 +194,14 @@ var EFFECT = Effect.createList(
   ,["特攻[4.0]/Bonus[4.0]", "とつ", 0, 4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["熱情/Ardor", "ねつ", 0, 1.2]
   ,["呪い/Curse", "のろ", 0, 0.8]
-  ,["武器種変更：斬撃/CWT：Slash", "ふき", 0, 0, 1, EFFECT_FLAG.FIXED, TYPE.WEAPON]
-  ,["武器種変更：突撃/CWT：Thrust", "ふき", 0, 0, 2, EFFECT_FLAG.FIXED, TYPE.WEAPON]
-  ,["武器種変更：打撃/CWT：Blow", "ふき", 0, 0, 3, EFFECT_FLAG.FIXED, TYPE.WEAPON]
-  ,["武器種変更：魔法/CWT：Magic", "ふき", 0, 0, 5, EFFECT_FLAG.FIXED, TYPE.WEAPON]
-  ,["武器種変更：狙撃/CWT：Snipe", "ふき", 0, 0, 6, EFFECT_FLAG.FIXED, TYPE.WEAPON]
-  ,["武器種変更：横一文字/CWT：Long Slash", "ふき", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.WEAPON]
-  ,["武器種変更：全域/CWT：All", "ふき", 0, 0, 8, EFFECT_FLAG.FIXED, TYPE.WEAPON]
-  ,["武器種変更：無/CWT：None", "ふき", 0, 0, 9, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：斬撃/Change Weapon Type: Slash", "ふき", 0, 0, 1, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：突撃/Change Weapon Type: Thrust", "ふき", 0, 0, 2, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：打撃/Change Weapon Type: Blow", "ふき", 0, 0, 3, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：魔法/Change Weapon Type: Magic", "ふき", 0, 0, 5, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：狙撃/Change Weapon Type: Snipe", "ふき", 0, 0, 6, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：横一文字/Change Weapon Type: Long Slash", "ふき", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：全域/Change Weapon Type: All", "ふき", 0, 0, 8, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：無/Change Weapon Type: None", "ふき", 0, 0, 9, EFFECT_FLAG.FIXED, TYPE.WEAPON]
   ,["防御強化/DEF Up", "ほうき", 1, 0.9]
   ,["<防御強化>に貫通/Ignore DEF Up", "ほうき", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
   ,["暴走/Berserk", "ほうそ", 0, 1.3]
@@ -192,7 +215,7 @@ var EFFECT = Effect.createList(
   ,["[宝船]攻撃力小UP/[T.Ship]攻撃力小UP", "こうけきりよく1", 0, 0, 250]
   ,["[宝船]攻撃力中UP/[T.Ship]攻撃力中UP", "こうけきりよく2", 0, 0, 500]
   ,["[宝船]攻撃力大UP/[T.Ship]攻撃力大UP", "こうけきりよく3", 0, 0, 1000]
-  ,["CS変更：全域/CS変更：All", "CS", 0, 0, 8, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
+  ,["CS変更：全域/Change CS Type: All", "CS", 0, 0, 8, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,["[子]おせち/[Osechi]おせち", "おせ", 0, 1.2, 50, EFFECT_FLAG.STACKABLE, , 0]
   ,["[子]おせち/[Osechi]おせち", "おせ", 1, 0.8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
   ,["[第10章]負傷/[Ch.10]負傷", "ふし", 0, 0.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
@@ -214,7 +237,7 @@ var EFFECT = Effect.createList(
   ,["強化反転", "きようかは", 1, 2.5, , EFFECT_FLAG.FIXED]
   ,["攻撃力減少", "こうけきりよくけ", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特攻[6.0]/Bonus[6.0]", "とつ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
-  ,["CS変更：魔法/CS変更：Magic", "CS", 0, 0, 5, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
+  ,["CS変更：魔法/Change CS Type: Magic", "CS", 0, 0, 5, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,["攻撃力微増[1.13]", "こうけきりよくひ", 0, 1.13, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,["[カスタム]/[Customizable]", "", 0, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.CUSTOM]
   ,["[カスタム]/[Customizable]", "", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.CUSTOM]
@@ -233,12 +256,12 @@ var EFFECT = Effect.createList(
   ,["<聖油>時弱化", "せいゆし", 1, 0, 10000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["根性時強化[2.0]", "こんし2", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["非根性時強化", "ひこ", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["CS変更：打撃/CS変更：Blow", "CS", 0, 0, 3, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
-  ,["CS変更：横一文字/CS変更：Long Slash", "CS", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
+  ,["CS変更：打撃/Change CS Type: Blow", "CS", 0, 0, 3, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
+  ,["CS変更：横一文字/Change CS Type: Long Slash", "CS", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,["本格コルク銃", "", 0, 1, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED, TYPE.ATK]
   ,["[福祭]イカ焼き/[Illusion]イカ焼き", "いか", 0, 37, , EFFECT_FLAG.FIXED]
-  ,["CS変更：無/CS変更：None", "CS", 0, 0, 9, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
-  ,["魅了時弱化[防御]", "みり", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["CS変更：無/Change CS Type: None", "CS", 0, 0, 9, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
+  ,["魅了時弱化[防御]/魅了時弱化[Defense]", "みり", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特殊耐性[0.05]", "とくし", 1, 0.05, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<暗闇>時強化", "くら", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["暗闇時強化", "くら", 1, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
@@ -269,18 +292,21 @@ var EFFECT = Effect.createList(
   ,["特殊耐性[0.12]", "とくし", 1, 0.12, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ]);
 
-var EFFECT_ORDER = EFFECT.map(function(v, i){return i});
-
-function splitEffects(s, group){
-  return s.split("/").map(function(x){
-    var g = 0;
-    if(x[0] === "c"){
-      x = x.slice(1);
-      g = EFFECT_MAX;
-    }
+function generateEffectData(s, group){
+  var result = [];
+  s.forEach(function(value){
+    var name = value[0];
+    var g = (value[2] & TIMING.CS) ? EFFECT_MAX : 0;
     for(var i = 1; i < EFFECT.length; i++){
-      if(t(EFFECT[i].name, 0) === x && (group === undefined || EFFECT[i].group === group)) return g + i;
+      if(t(EFFECT[i].name, 0) === name && (group === undefined || EFFECT[i].group === group)){
+        result.push(i + g);
+        break;
+      }
     }
-    return 0;
-  }).filter(function(x){return x});
+  });
+  return result;
+}
+
+function splitEffects(s){
+  return generateEffectData(splitSkills(s));
 }
