@@ -18,10 +18,10 @@ function setValue(id, value, zeroCount){
   if(value === v(id)) return;
   var o = _(id);
   var p = o.options;
-  var checkZero = (zeroCount !== undefined);
-  zeroCount = zeroCount || 0;
   if(p){
     var index = 0;
+    var checkZero = (zeroCount !== undefined);
+    zeroCount = zeroCount || 0;
     for(var i = 0; i < p.length; i++){
       var x = parseInt(p[i].value);
       if(x === value && zeroCount === 0){
@@ -33,6 +33,13 @@ function setValue(id, value, zeroCount){
     o.selectedIndex = index;
   }else if(o.type === "checkbox"){
     o.checked = !!value;
+  }else if(o.tagName === "FIELDSET"){
+    var r = o.querySelectorAll("div > input");
+    var m = (1 << r.length) - 1;
+    for(var i = 0; i < r.length; i++){
+      r[i].checked = !!(value & (1 << i));
+    }
+    o.querySelector("legend > input").checked = (m === (value & m));
   }else{
     o.value = value;
   }
@@ -74,6 +81,57 @@ function linkInput(obj, key, id, onchange){
   setValue(id, obj[key]);
   _(id).onchange = function(){
     obj[key] = v(id);
+    if(onchange) onchange();
+    if(obj.active) obj.update();
+  };
+}
+function setCheckGroup(id, list, br){
+  var fieldset = _(id);
+  if(fieldset.hasChildNodes()){
+    var r = _(id).querySelectorAll("div > label");
+    list.forEach(function(v, i){
+      r[i].textContent = t(v);
+    });
+  }else{
+    var legend = document.createElement("legend");
+    list = ["ALL"].concat(list);
+    list.forEach(function(v, i){
+      var container = document.createElement(i ? "div" : "legend");
+      var check = document.createElement("input");
+      var label = document.createElement("label");
+      if(i) container.className = "cb";
+      check.type = "checkbox";
+      check.id = id + i;
+      check.checked = true;
+      label.htmlFor = check.id;
+      label.textContent = t(v);
+      container.appendChild(check);
+      container.appendChild(label);
+      if(i === br){
+        fieldset.appendChild(document.createElement("br"));
+      }
+      fieldset.appendChild(container);
+    });
+  }
+}
+function linkCheckGroup(obj, key, id, onchange){
+  setValue(id, obj[key]);
+  _(id).onchange = function(evt){
+    var a = _(id).querySelector("legend > input");
+    var r = _(id).querySelectorAll("div > input");
+    var n = 0;
+    if(evt && evt.target === a){
+      n = a.checked ? (1 << r.length) - 1 : 0
+      for(var i = 0; i < r.length; i++){
+        r[i].checked = !!n;
+      }
+    }else{
+      for(var i = 0; i < r.length; i++){
+        if(r[i].checked) n += 1 << i;
+      }
+      a.checked = (n + 1 === 1 << r.length);
+    }
+    obj[key] = n;
     if(onchange) onchange();
     if(obj.active) obj.update();
   };
