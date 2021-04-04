@@ -34,7 +34,7 @@ function Tag(index, x, category, subset){
 }
 Tag.prototype = {
   toString: function(){
-    if(this.type) return t(this.name);
+    if(this.type !== TAG_TYPE.CATEGORY) return t(this.name);
     if(this.name) return t("[カテゴリ：/[Category: ") + t(this.name) + "]";
     return LINE;
   },
@@ -48,7 +48,7 @@ Tag.prototype = {
 Tag.createList = function(a){
   var table = new Map();
   var f = function(x){
-    return table.get(t(x, 0));
+    return table.get(x);
   };
   var buff = [];
   var debuff = [];
@@ -98,6 +98,7 @@ Tag.createList = function(a){
     return k[a] < k[b] ? -1 : 1;
   });
   result.ORDER = order;
+  result.table = table;
   return result;
 };
 
@@ -122,6 +123,7 @@ var TAG = Tag.createList(
   ,["CS変更：全域/Change CS Type: All", TAG_TYPE.CCT, "CS変更"]
   ,["HP回復/Restore HP", TAG_TYPE.ONE_SHOT, "HP回復系"]
   ,["HP減少/Decrease HP", TAG_TYPE.ONE_SHOT, "HP減少系"]
+  ,["悪魔の契約", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系/防御増加系/CP増加系"]
   ,["威圧/Oppression", TAG_TYPE.DEBUFF, "移動封印系"]
   ,["意気/Spirit", TAG_TYPE.BUFF, "攻撃増加系"]
   ,["移動力増加/Increase movement", TAG_TYPE.STATIC]
@@ -165,6 +167,7 @@ var TAG = Tag.createList(
   ,["クリティカル強化", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["クリティカル+/Crit+", TAG_TYPE.BUFF, "攻撃増加系"]
   ,["クリティカル++/Crit++", TAG_TYPE.BUFF, "攻撃増加系"]
+  ,["契約の代償", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系/発動率減少系"]
   ,["係留/Anchor", TAG_TYPE.BUFF, ""]
   ,["激怒/Rage", TAG_TYPE.BUFF, "攻撃増加系/防御減少系", "激怒+"]
   ,["激怒+/Rage+", TAG_TYPE.BUFF, "攻撃増加系/防御減少系"]
@@ -173,6 +176,7 @@ var TAG = Tag.createList(
   ,["劫火", TAG_TYPE.DEBUFF, "防御減少系"]
   ,["攻撃強化/ATK Up", TAG_TYPE.BUFF, "攻撃増加系"]
   ,["攻撃力減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃減少系"]
+  ,["攻撃力低下", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃減少系"]
   ,["攻撃力微増[1.13]", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["攻撃力微増[1.2]", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["剛力/Brawn", TAG_TYPE.BUFF, "攻撃増加系"]
@@ -189,7 +193,8 @@ var TAG = Tag.createList(
   ,["弱体解除(単)/Remove debuff (single)", TAG_TYPE.ONE_SHOT, "弱体解除"]
   ,["弱体解除(複)/Remove debuff (multiple)", TAG_TYPE.ONE_SHOT, "弱体解除"]
   ,["弱体解除(全)/Remove debuff (all)", TAG_TYPE.ONE_SHOT, "弱体解除"]
-  ,["弱体時強化", TAG_TYPE.IRREMOVABLE_BUFF, "HP回復系/CP増加系"]
+  ,["弱体時強化[HP&CP]", TAG_TYPE.IRREMOVABLE_BUFF, "HP回復系/CP増加系"]
+  ,["弱体時強化[防御]/弱体時強化[Defense]", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["弱体奪取/Steal debuff", TAG_TYPE.ONE_SHOT]
   ,["弱体奪取(複)/Steal debuff (multiple)", TAG_TYPE.ONE_SHOT, "弱体奪取/弱体解除/弱体解除(複)/弱体を複製(味方に)"]
   ,["弱体転写(全)/Transfer debuff (all)", TAG_TYPE.ONE_SHOT, "弱体を貼付"]
@@ -202,6 +207,7 @@ var TAG = Tag.createList(
   ,["集中/Concentration", TAG_TYPE.BUFF, "攻撃増加系/発動率増加系"]
   ,["祝福/Blessing", TAG_TYPE.BUFF, "HP回復系"]
   ,["祝福時強化", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["祝福時弱化", TAG_TYPE.IRREMOVABLE_DEBUFF, "HP減少系"]
   ,["守護/Protection", TAG_TYPE.BUFF, "防御増加系"]
   ,["守護に貫通/Ignore Protection", TAG_TYPE.STATIC, "特攻/貫通系"]
   ,["守護無効化", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
@@ -222,7 +228,7 @@ var TAG = Tag.createList(
   ,["凍結時弱化", TAG_TYPE.IRREMOVABLE_DEBUFF, "発動率減少系"]
   ,["闘志/Vigor", TAG_TYPE.BUFF, "攻撃増加系"]
   ,["毒/Poison", TAG_TYPE.DEBUFF, "HP減少系"]
-  ,["毒反転", TAG_TYPE.BUFF, "攻撃増加系/防御増加系/HP回復系"]
+  ,["毒反転/Poison Reversal", TAG_TYPE.BUFF, "攻撃増加系/防御増加系/HP回復系"]
   ,["特防/D.Bonus", TAG_TYPE.STATIC]
   ,["特防[0.3]/D.Bonus[0.3]", TAG_TYPE.STATIC, "特防"]
   ,["特防[0.5]/D.Bonus[0.5]", TAG_TYPE.STATIC, "特防"]
@@ -243,6 +249,7 @@ var TAG = Tag.createList(
   ,["二重封印/Double Lock", TAG_TYPE.DEBUFF, "スキル封印系/CS封印系"]
   ,["熱情/Ardor", TAG_TYPE.BUFF, "攻撃増加系/CP増加系"]
   ,["呪い/Curse", TAG_TYPE.DEBUFF, "攻撃減少系"]
+  ,["呪い時強化", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["非加速時強化", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["引き寄せ/Draw", TAG_TYPE.ONE_SHOT]
   ,["引き寄せ(1マス)/Draw (1 square)", TAG_TYPE.ONE_SHOT, "強制移動系/引き寄せ"]
@@ -250,6 +257,7 @@ var TAG = Tag.createList(
   ,["引き寄せ(4マス)/Draw (4 squares)", TAG_TYPE.ONE_SHOT, "強制移動系/引き寄せ"]
   ,["非根性時強化", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["非弱体時強化", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
+  ,["非弱体時弱化", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃減少系/防御減少系"]
   ,["非憑依時弱化", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃減少系"]
   ,["憑依/Possession", TAG_TYPE.DEBUFF, ""]
   ,["憑依時強化", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
@@ -322,7 +330,7 @@ var TAG = Tag.createList(
   ,["支配者/Ruler", TAG_TYPE.SKILL, "", "大筒の支配者"]
   ,["島に生きる者/Islander", TAG_TYPE.SKILL]
   ,["獣皮を巻く者/In Beast's Clothing", TAG_TYPE.SKILL]
-  ,["須弥山に篭る者", TAG_TYPE.SKILL]
+  ,["須弥山に篭る者/Mt.Meru Dweller", TAG_TYPE.SKILL]
   ,["戦争屋/Warmonger", TAG_TYPE.SKILL]
   ,["大雪山に篭る者", TAG_TYPE.SKILL]
   ,["退廃の魔王", TAG_TYPE.SKILL]
@@ -397,7 +405,7 @@ function generateTagData(s, flagNum){
         timing = timing & TIMING.NOT_CS;
       }
     }
-    if(tag.type){
+    if(tag.type !== TAG_TYPE.CATEGORY){
       var f = (tag.type === TAG_TYPE.STATIC) ? TAG_FLAG_NUM.STATIC : flagNum;
       var b = (f < 3) ? timing : 1;
       if(tag.type !== TAG_TYPE.SKIP){

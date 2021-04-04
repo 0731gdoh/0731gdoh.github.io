@@ -304,19 +304,6 @@ var calc = {
       var e = EFFECT[index];
       var es = this.es[index];
       if(lv){
-        if(e.link && this.es[e.link].loop <= es.loop){
-          var tLv = 0;
-          if(EFFECT[e.link].isFixed()){
-            if(confirm(t("/Add ") + EFFECT[e.link] + t("を追加/"))) tLv = 1;
-          }else{
-            while(tLv < 1 || tLv > 100){
-              tLv = prompt(t("/Add ") + EFFECT[e.link] + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
-              if(tLv !== 0 && !tLv) break;
-              tLv = parseInt(tLv, 10) || 0;
-            }
-          }
-          if(tLv) this.addStatus(e.link, tLv, 1);
-        }
         if(mode == 1){
           lv = 0;
         }else if(mode == 2 && !e.isFixed()){
@@ -384,8 +371,8 @@ var calc = {
           es.maxHp = maxHp || 1;
         }else if(e.type === TYPE.SEED){
           lv = 0;
-          while(lv < 1 || lv > 1000){
-            lv = prompt(t("ATKの種 (※1〜1000)/ATK Seed\n(1-1000)"), es.lv || 1000);
+          while(lv < 1 || lv > 2000){
+            lv = prompt(t("ATKの種 (※1〜2000)/ATK Seed\n(1-2000)"), es.lv || 1000);
             if(lv !== 0 && !lv) return;
             lv = parseInt(lv, 10) || 0;
           }
@@ -397,6 +384,19 @@ var calc = {
           es.loop++;
         }else{
           es.loop = 1;
+        }
+        if(e.link && this.es[e.link].loop < es.loop){
+          var tLv = 0;
+          if(EFFECT[e.link].isFixed()){
+            if(confirm(t("/Add ") + EFFECT[e.link] + t("を追加/"))) tLv = 1;
+          }else{
+            while(tLv < 1 || tLv > 100){
+              tLv = prompt(t("/Add ") + EFFECT[e.link] + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
+              if(tLv !== 0 && !tLv) break;
+              tLv = parseInt(tLv, 10) || 0;
+            }
+          }
+          if(tLv) this.addStatus(e.link, tLv, 1);
         }
       }else{
         if(--es.loop < 1) es.clear();
@@ -445,6 +445,8 @@ var calc = {
     setOptions("cf", WEAPON);
     setOptions("rf", RARITY);
     setOptions("vf", VARIANT);
+    setOptions("gf", GUILD, undefined, GUILD.ORDER[language]);
+    setOptions("sf", SCHOOL, undefined, SCHOOL.ORDER[language]);
     ["srf1", "srf2"].forEach(function(key, i){
       setOptions(key, RANGE);
       cf.updateEffectFilterOptions(i);
@@ -485,9 +487,11 @@ var calc = {
     setText("lcf", "CSタイプ/CS Type");
     setText("lrf", "レア度/Rarity");
     setText("lvf", "バージョン/Variant");
-    setText("lsf1", "効果1/Effect 1");
+    setText("lgf", "ギルド/Guild");
+    setText("lsf", "学園/School");
+    setText("lsef1", "効果1/Effect 1");
     setCheckGroup("stf1", TIMING_LABELS, 14);
-    setText("lsf2", "効果2/Effect 2");
+    setText("lsef2", "効果2/Effect 2");
     setCheckGroup("stf2", TIMING_LABELS, 14);
     setText("lpf", "常時/Static");
     setText("lbaf", "特攻対象/A.Bonus");
@@ -583,17 +587,17 @@ var calc = {
       result[1] = "　[Lv." + pad(this.lv, 3) + "]　" + card;
     }
     if(this.ar){
-      var static = [];
+      var stef = [];
       exatk = ar.getValue(this.arLv);
       cs += ar.csBoost;
-      if(exatk > 0) static.push("ATK+" + exatk);
-      if(ar.csBoost > 0) static.push(t("CS威力" + ["増加/I", "大増/Greatly i"][ar.csBoost - 1] + "ncrease CS Damage"));
+      if(exatk > 0) stef.push("ATK+" + exatk);
+      if(ar.csBoost > 0) stef.push(t("CS威力" + ["増加/I", "大増/Greatly i"][ar.csBoost - 1] + "ncrease CS Damage"));
       if(ar.csWeapon){
         if(this.usecs) weapon = ar.csWeapon;
-        static.push(WEAPON[ar.csWeapon] + "CS");
+        stef.push(WEAPON[ar.csWeapon] + "CS");
       }
       result[2] = "　[Lv." + pad(this.arLv, 3) + "]　" + (card.canEquip(ar) ? "" : "×") + ar;
-      if(static.length) result[2] += "（" + static.join(", ") + "）";
+      if(stef.length) result[2] += "（" + stef.join(", ") + "）";
     }
     if(this.usecs){
       csrate = CS[cs].getValue() * (1 + Math.LOG10E * Math.log(this.cLv) / 2);
@@ -604,6 +608,10 @@ var calc = {
       );
     }
     for(var group = 0; group < 2; group++){
+      var debuffed = this.es.some(function(es, i){
+        if(es.loop && EFFECT[i].group === group) return EFFECT[i].isDebuff();
+        return false;
+      });
       desc = [];
       result.push(t([
         "【攻撃側補正】/【Offense】",
@@ -630,8 +638,8 @@ var calc = {
           if(count > 1) desc[0] += "《x" + count + "》";
           desc[0] += e;
           x = e.getMulValue(eLv, !this.version);
-          //貫通
-          if(e.link && !this.es[e.link].loop) x = new Fraction(1);
+          //Link
+          if(e.link && (!this.es[e.link].loop === !e.isReverse())) x = new Fraction(1);
           //連撃
           if(e.type === TYPE.COMBO && this.usecs) x = new Fraction(1);
           //極限
@@ -641,6 +649,8 @@ var calc = {
           }
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomMul();
+          //非弱体時
+          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(1);
 
           switch(e.type){
             default:
@@ -668,8 +678,12 @@ var calc = {
           }
 
           x = e.getAddValue(eLv, !this.version);
+          //Link
+          if(e.link && (!this.es[e.link].loop === !e.isReverse())) x = new Fraction(0);
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomAdd();
+          //非弱体時
+          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(0);
 
           if(x - 0){switch(e.type){
             default:
@@ -740,13 +754,15 @@ var calc = {
     cs: 0,
     rarity: 0,
     variant: 0,
-    timing1: 0x7FFF,
-    timing2: 0x7FFF,
+    guild: 0,
+    school: 0,
+    timing1: TIMING.ANY,
+    timing2: TIMING.ANY,
     range1: 0,
     range2: 0,
     effect1: 0,
     effect2: 0,
-    static: 0,
+    stef: 0,
     bonus_a: 0,
     bonus_b: 0,
     nullify: 0,
@@ -760,7 +776,9 @@ var calc = {
       linkInput(c, "cs", "cf");
       linkInput(c, "rarity", "rf");
       linkInput(c, "variant", "vf");
-      linkInput(c, "static", "pf");
+      linkInput(c, "guild", "gf");
+      linkInput(c, "school", "sf");
+      linkInput(c, "stef", "pf");
       linkInput(c, "bonus_a", "baf");
       linkInput(c, "bonus_d", "bdf");
       linkInput(c, "nullify", "nf");
@@ -804,11 +822,11 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["ef", "wf", "cf", "rf", "vf", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
+      ["ef", "wf", "cf", "rf", "vf", "gf", "sf", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
-      setValue("stf1", 0x7FFF);
-      setValue("stf2", 0x7FFF);
+      setValue("stf1", TIMING.ANY);
+      setValue("stf2", TIMING.ANY);
       this.active = active;
       this.update();
     },
@@ -817,6 +835,8 @@ var calc = {
       var av = ATTRIBUTE[p.attribute].getValue();
       var rv = RARITY[p.rarity].getValue();
       var vv = VARIANT[p.variant].name;
+      var gv = GUILD[p.guild].getValue();
+      var sv = SCHOOL[p.school].getValue();
       var pl = ["[恒常]", "[期間限定]"].indexOf(t(vv, 0));
       var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
       if(!vv || vv[0] === "["){
@@ -833,6 +853,8 @@ var calc = {
         if(p.attribute && (1 << x.attribute & av) === 0) return false;
         if(pl > -1 && x.limited !== pl) return false;
         if(vv && x.variant.indexOf(vv)) return false;
+        if(p.guild && !(x.guilds & gv)) return false;
+        if(p.school && !(x.schools & sv)) return false;
         if(p.ar && !x.canEquip(AR[p.ar])) return false;
         if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
           return (p.effect1 !== ie[0] % d) || !(ie[1] & p.timing1);
@@ -840,7 +862,7 @@ var calc = {
         if(p.timing2 && p.effect2 && x.tag[p.range2].every(function(ie){
           return (p.effect2 !== ie[0] % d) || !(ie[1] & p.timing2);
         })) return false;
-        if([p.bonus_a, p.bonus_d, p.nullify, p.static].some(function(te, i){
+        if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[(i + 3) % 6].every(function(ie){
             return te !== ie[0] % d;
           });

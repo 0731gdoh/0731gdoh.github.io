@@ -39,16 +39,11 @@ function splitSkills(s){
       acc = acc | (1 << n);
       return acc;
     }, 0);
-    var e = TAG.some(function(tag, i){
-      if(t(tag.name, 0) === match[2]){
-        var key = (timing & TIMING.CS) ? i + TAG_MAX : i;
-        if(result.has(key)) throw new Error("タグ「" + match[2] + "」が重複しています\n（" + s + "）");
-        result.set(key, [match[2], i, timing]);
-        return true;
-      }
-      return false;
-    });
-    if(!e) throw new Error("タグ「" + match[2] + "」は有効なタグとして登録されていません\n（" + s + "）");
+    var i = TAG.table.get(match[2]);
+    var key = (timing & TIMING.CS) ? i + TAG_MAX : i;
+    if(!key) throw new Error("タグ「" + match[2] + "」は未登録です\n（" + s + "）");
+    if(result.has(key)) throw new Error("タグ「" + match[2] + "」が重複しています\n（" + s + "）");
+    result.set(key, [match[2], i, timing]);
   });
   return result;
 }

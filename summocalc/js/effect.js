@@ -8,7 +8,8 @@ var TYPE = {
   CSWEAPON: 10,
   BONUS: 11,
   CUSTOM: 13,
-  ZERO: 14
+  ZERO: 14,
+  NOT_DEBUFFED: 15
 };
 
 var EFFECT_FLAG = {
@@ -16,7 +17,10 @@ var EFFECT_FLAG = {
   FIXED: 1 << 1,
   STACKABLE: 1 << 2,
   IRREMOVABLE: 1 << 3,
-  LV1: 1 << 4
+  LV1: 1 << 4,
+  REVERSE: 1 << 5,
+  BUFF: 1 << 6,
+  DEBUFF: 1 << 7
 };
 
 function Effect(index, x, link){
@@ -93,6 +97,15 @@ Effect.prototype = {
   },
   isLv1: function(){
     return this.flag & EFFECT_FLAG.LV1;
+  },
+  isReverse: function(){
+    return this.flag & EFFECT_FLAG.REVERSE;
+  },
+  isBuff: function(){
+    return this.flag & EFFECT_FLAG.BUFF;
+  },
+  isDebuff: function(){
+    return this.flag & EFFECT_FLAG.DEBUFF;
   }
 };
 Effect.createList = function(a){
@@ -113,17 +126,30 @@ Effect.createList = function(a){
     return x.reading < y.reading ? -1 : 1;
   };
   a.forEach(function(v, i){
-    var key = t(v[0], 0);
+    var key = t(v[0], 0).replace(/-<[^>]+>/, "");
+    var tagIndex = TAG.table.get(key);
     while(table.get(key)) key = "*" + key;
     table.set(key, i);
     order[0].push(i);
     order[1].push(i);
+    if(tagIndex){
+      switch(TAG[tagIndex].type){
+        case TAG_TYPE.BUFF:
+        case TAG_TYPE.CCT:
+        case TAG_TYPE.CWT:
+          v[5] = (v[5] || 0) | EFFECT_FLAG.BUFF;
+          break;
+        case TAG_TYPE.DEBUFF:
+          v[5] = (v[5] || 0) | EFFECT_FLAG.DEBUFF;
+      }
+    }
   });
   a.forEach(function(v, i){
     var link = 0;
-    v[0] = v[0].replace(/<([^>]+)>/, function(match, p1){
-      link = table.get(p1) || 0;
-      return p1.replace(/\*+/, "");
+    v[0] = v[0].replace(/(-?)<([^>]+)>/, function(match, p1, p2){
+      link = table.get(p2) || 0;
+      if(p1.length) return "";
+      return p2.replace(/\*+/, "");
     });
     result.push(new Effect(i, v, link));
     k.push(t(v[0], 0).replace(/\[\d+\.\d+\]$/, ""))
@@ -162,7 +188,7 @@ var EFFECT = Effect.createList(
   ,["剛力/Brawn", "こうり", 0, 1.15]
   ,["金剛/Adamantine", "こんこ", 1, 0.9]
   ,["<金剛>に貫通/Ignore Adamantine", "こんこ", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
-  ,["弱点/Weakness", "しや", 1, 1.2]
+  ,["弱点/Weakness", "しやくて", 1, 1.2]
   ,["集中/Concentration", "しゆう", 0, 1.1]
   ,["守護/Protection", "しゆこ", 1, 0.9]
   ,["<守護>に貫通/Ignore Protection", "しゆこに", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
@@ -172,8 +198,8 @@ var EFFECT = Effect.createList(
   ,["束縛/Bind", "そく", 0, 0.9]
   ,["凍結/Freeze", "とうけ", 1, 1.1]
   ,["闘志/Vigor", "とうし", 0, 1.2]
-  ,["毒反転", "とくは", 0, 2, , EFFECT_FLAG.FIXED]
-  ,["毒反転", "とくは", 1, 0.6, , EFFECT_FLAG.FIXED]
+  ,["毒反転/Poison Reversal", "とくは", 0, 2, , EFFECT_FLAG.FIXED]
+  ,["毒反転/Poison Reversal", "とくは", 1, 0.6, , EFFECT_FLAG.FIXED]
   ,["特防[0.01]/Bonus[0.01]", "とくほ", 1, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["特防[0.1]/Bonus[0.1]", "とくほ", 1, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["特防[0.2]/Bonus[0.2]", "とくほ", 1, 0.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
@@ -245,7 +271,7 @@ var EFFECT = Effect.createList(
   ,["特攻[1.3]/Bonus[1.3]", "とつ", 0, 1.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["<守護>無効化", "しゆこむ", 1, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<防御強化>無効化", "ほうき", 1, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["劫火", "こうか", 1, 0, 3000, EFFECT_FLAG.FIXED]
+  ,["劫火/Conflagration", "こうか", 1, 0, 3000, EFFECT_FLAG.FIXED]
   ,["<暴走+>時強化", "ほうそ+", 0, 2.6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<*暴走+>時強化", "ほうそ+", 1, 0.77, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["ダメージ無効", "ため", 1, 0, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.ZERO]
@@ -290,6 +316,14 @@ var EFFECT = Effect.createList(
   ,["<*[コロッセオ]チョコ>特攻", "ちよ", 0, 100, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["特防[0.05]/Bonus[0.05]", "とくほ", 1, 0.05, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["特殊耐性[0.12]", "とくし", 1, 0.12, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["悪魔の契約", "あく", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["悪魔の契約-<契約の代償>", "あく", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["契約の代償-<*悪魔の契約>", "けい", 1, 0, 10000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.REVERSE]
+  ,["弱体時強化[防御]/弱体時強化[Defense]", "しやくた", 1, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["<呪い>時強化", "のろ", 0, 5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["攻撃力低下", "こうけきりよくて", 0, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
+  ,["非弱体時弱化", "ひし", 0, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
+  ,["非弱体時弱化", "ひし", 1, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
 ]);
 
 function generateEffectData(s, group){
