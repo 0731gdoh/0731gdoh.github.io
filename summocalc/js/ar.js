@@ -99,6 +99,7 @@ var AR = Record.createList(
   ,["見習い使い魔の応援/Support of the Apprentice Familiar", 1, "", 50, 0, EQUIP.ALLROUND, 0, "", "", ""]
   ,["深淵の門番の破片/Shard of the Abyssal Gatekeeper", 2, "", 75, 0, EQUIP.NETHER, 0, "", "", ""]
   ,["遠雷の闘士の破片", 3, "", 200, 0, EQUIP.AETHER, 0, "", "", ""]
+  ,["長途の待人の破片", 4, "", 0, 0, EQUIP.WOOD, 0, "", "", ""]
   ,["今、ここだけにしかない物語", 101, "", 300, EQUIP.ANY, 0, 0, "", "", ""]
   ,["お宝目指して何処までも", 107, "", 200, EQUIP.ANY, 0, 0, "", "", ""]
   ,["教えの庭にも", 108, "", 200, EQUIP.ANY, 0, 0, "", "", ""]
