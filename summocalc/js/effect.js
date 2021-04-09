@@ -324,6 +324,7 @@ var EFFECT = Effect.createList(
   ,["攻撃力低下", "こうけきりよくて", 0, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,["非弱体時弱化", "ひし", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
   ,["非弱体時弱化", "ひし", 1, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
+  ,["特殊耐性[0.01]", "とくし", 1, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ]);
 
 function generateEffectData(s, group){
