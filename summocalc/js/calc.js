@@ -490,9 +490,9 @@ var calc = {
     setText("lgf", "ギルド/Guild");
     setText("lsf", "学園/School");
     setText("lsef1", "効果1/Effect 1");
-    setCheckGroup("stf1", TIMING_LABELS, 14);
+    setCheckGroup("stf1", TIMING_LABELS, 15);
     setText("lsef2", "効果2/Effect 2");
-    setCheckGroup("stf2", TIMING_LABELS, 14);
+    setCheckGroup("stf2", TIMING_LABELS, 15);
     setText("lpf", "常時/Static");
     setText("lbaf", "特攻対象/A.Bonus");
     setText("lbdf", "特防対象/D.Bonus");
@@ -637,9 +637,8 @@ var calc = {
           }
           if(count > 1) desc[0] += "《x" + count + "》";
           desc[0] += e;
-          x = e.getMulValue(eLv, !this.version);
-          //Link
-          if(e.link && (!this.es[e.link].loop === !e.isReverse())) x = new Fraction(1);
+          x = e.getMulValue(eLv, !this.version, this.es);
+
           //連撃
           if(e.type === TYPE.COMBO && this.usecs) x = new Fraction(1);
           //極限
@@ -677,9 +676,8 @@ var calc = {
               break;
           }
 
-          x = e.getAddValue(eLv, !this.version);
-          //Link
-          if(e.link && (!this.es[e.link].loop === !e.isReverse())) x = new Fraction(0);
+          x = e.getAddValue(eLv, !this.version, this.es);
+
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomAdd();
           //非弱体時
