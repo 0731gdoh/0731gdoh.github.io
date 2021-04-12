@@ -18,7 +18,7 @@ var EFFECT_FLAG = {
   STACKABLE: 1 << 2,
   IRREMOVABLE: 1 << 3,
   LV1: 1 << 4,
-  NO_MULTIPLIER: 1 << 5,
+  TOKEN: 1 << 5,
   BUFF: 1 << 6,
   DEBUFF: 1 << 7
 };
