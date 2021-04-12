@@ -1,6 +1,6 @@
-var TIMING_LABELS = ["登場時/Joining Battle", "フェーズ開始時/Phase Start", "ターン開始時/Turn Start", "移動後/Post-Move", "攻撃時/Attacking", "攻撃後/Post-Attack", "空振り時/Missed Attack", "ダメージ時/Attacked", "対ダメージ/Counter", "ダメージ後/Post-Damage", "強化後/Buffed", "弱体後/Debuffed", "退場時/Defeat", "CS", "CS発動後/After CS"];
+var TIMING_LABELS = ["登場時/Joining Battle", "フェーズ開始時/Phase Start", "ターン開始時/Turn Start", "敵ターン開始時/Enemy Turn Start", "移動後/Post-Move", "攻撃時/Attacking", "攻撃後/Post-Attack", "空振り時/Missed Attack", "ダメージ時/Attacked", "対ダメージ/Counter", "ダメージ後/Post-Damage", "強化後/Buffed", "弱体後/Debuffed", "退場時/Defeat", "CS", "CS発動後/After CS"];
 
-var TIMING_KEYWORDS = ["j", "p", "t", "pm", "a", "pa", "ma", "ba", "cd", "pd", "b", "d", "ud", "c", "cx"];
+var TIMING_KEYWORDS = ["j", "p", "t", "et", "pm", "a", "pa", "ma", "ba", "cd", "pd", "b", "d", "ud", "c", "cx"];
 
 var TIMING = {
   ANY: (1 << TIMING_KEYWORDS.length) - 1,
