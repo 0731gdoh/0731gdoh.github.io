@@ -9,7 +9,8 @@ var TYPE = {
   BONUS: 11,
   CUSTOM: 13,
   ZERO: 14,
-  NOT_DEBUFFED: 15
+  NOT_BUFFED: 15,
+  NOT_DEBUFFED: 16
 };
 
 var EFFECT_FLAG = {
@@ -343,6 +344,9 @@ var EFFECT = Effect.createList(
   ,["憑依", "ひよ", 0, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["疑念-<憑依>", "きね", 0, [10, 0.1], , EFFECT_FLAG.FIXED]
   ,["非祈り時強化", "ひい", 0, 4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["非強化時弱化", "ひき", 1, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_BUFFED]
+  ,["<怒>時強化", "いか", 0, [1.5, 1], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["特攻[1.67]/Bonus[1.67]", "とつ", 0, 1.67, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
 ]);
 
 function generateEffectData(s, group){

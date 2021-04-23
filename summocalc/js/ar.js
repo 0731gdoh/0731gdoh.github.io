@@ -198,4 +198,10 @@ var AR = Record.createList(
   ,["お宝にはご用心/Eyes on the Prize", , "", 200, 0, 0, EQUIP.MAGIC|EQUIP.NONE, "アンドヴァリ/コタロウ", "", "", 2]
   ,["アタックオブザウォーターメロン/Attack of the Killer Watermelons", , "", 400, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "チョウジ/ヴォーロス", "", ""]
   ,["Surf the wave/Surfing the Wave", , "特攻[1.6]", 200, 0, 0, EQUIP.BLOW, "セト/ゴエモン", "", ""]
+  ,["青春は君をおって/In the Flower of Youth", , "", 300, 0, EQUIP.FIRE|EQUIP.INFERNAL, 0, "ドゥルガー/グンゾウ", "", "", 2]
+  ,["おいでよぼくらのもふもふ王国/Welcome to the Furry Kingdom!", , "", 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "クニヨシ/カーシー", "", ""]
+  ,["出会いは決定的に/Treasure Every Meeting", , "怒時強化", 400, 0, EQUIP.WATER|EQUIP.WOOD|EQUIP.NETHER, 0, "クニヨシ/ベンテン", "", "", 1]
+  ,["寂しがりのプランクスター/The Lonely Prankster", , "", 100, 0, 0, EQUIP.BLOW, "アールプ/カーシー", "", ""]
+  ,["夢のもふもふ大激突！/The Great Fluffy Clash of Dreams!", , "特攻[1.5]", 300, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "クニヨシ/アールプ", "", ""]
+  ,["芸術は光と陰に/All in Art is Light and Dark", , "", 150, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "クニヨシ/リヒト", "", ""]
 ]);
