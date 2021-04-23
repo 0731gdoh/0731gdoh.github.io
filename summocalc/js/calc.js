@@ -253,7 +253,6 @@ var calc = {
       if(this.card){
         setValue("pl", s.read());
       }else{
-        setValue("pl", 1);
         setValue("a", s.read());
         setValue("w", s.read());
         setValue("cs", s.read());
@@ -388,7 +387,7 @@ var calc = {
         }
         if(e.link && this.es[e.link].loop < es.loop){
           var tLv = 0;
-          if(EFFECT[e.link].isFixed() || EFFECT[e.link].isLv1()){
+          if(EFFECT[e.link].isFixed()){
             if(confirm(t("/Add ") + EFFECT[e.link] + t("を追加/"))) tLv = 1;
           }else{
             while(tLv < 1 || tLv > 100){
@@ -609,10 +608,6 @@ var calc = {
       );
     }
     for(var group = 0; group < 2; group++){
-      var buffed = this.es.some(function(es, i){
-        if(es.loop && EFFECT[i].group === group) return EFFECT[i].isBuff();
-        return false;
-      });
       var debuffed = this.es.some(function(es, i){
         if(es.loop && EFFECT[i].group === group) return EFFECT[i].isDebuff();
         return false;
@@ -653,8 +648,6 @@ var calc = {
           }
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomMul();
-          //非強化時
-          if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(1);
           //非弱体時
           if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(1);
 
@@ -687,8 +680,6 @@ var calc = {
 
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomAdd();
-          //非強化時
-          if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(0);
           //非弱体時
           if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(0);
 
