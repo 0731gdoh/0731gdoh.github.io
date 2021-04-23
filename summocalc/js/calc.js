@@ -253,6 +253,7 @@ var calc = {
       if(this.card){
         setValue("pl", s.read());
       }else{
+        setValue("pl", 1);
         setValue("a", s.read());
         setValue("w", s.read());
         setValue("cs", s.read());
