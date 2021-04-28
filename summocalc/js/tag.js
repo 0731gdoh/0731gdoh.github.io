@@ -292,6 +292,7 @@ var TAG = Tag.createList(
   ,["防御強化無効化", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["暴走/Berserk", TAG_TYPE.BUFF, "攻撃増加系/防御減少系", "暴走+"]
   ,["暴走+/Berserk+", TAG_TYPE.BUFF, "攻撃増加系/防御減少系"]
+  ,["暴走時強化", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
   ,["暴走+時強化", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系/防御増加系"]
   ,["マヒ/Paralysis", TAG_TYPE.DEBUFF, "攻撃減少系/移動封印系"]
   ,["魅了/Charm", TAG_TYPE.DEBUFF, ""]
