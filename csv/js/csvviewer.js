@@ -137,7 +137,12 @@ const csvViewer = (parent, url, s, data) => {
   p.appendChild(document.createElement("br"));
   p.appendChild(document.createTextNode("データセルをクリックでフィルタ"));
   parent.appendChild(p);
-  if(url){
+  if(data){
+    const table = csv2table(data, s);
+    parent.appendChild(table);
+    link.href = createURL(data);
+    link.download = url;
+  }else{
     fetchCsv(url).then((text) => {
       const table = csv2table(parseCsv(text), s);
       parent.appendChild(table);
@@ -145,10 +150,6 @@ const csvViewer = (parent, url, s, data) => {
       parent.appendChild(document.createTextNode(e));
     });
     link.href = url;
-  }else{
-    const table = csv2table(data, s);
-    parent.appendChild(table);
-    link.href = createURL(data);
   }
 };
 
