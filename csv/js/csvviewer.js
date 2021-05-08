@@ -1,4 +1,4 @@
-const csv = (text) => {
+const parseCsv = (text) => {
   const ex = /,|\r?\n|"(?:[^"]|"")*"|[^,"\r\n][^,\r\n]*/g
   const data = [];
   let row = [""];
@@ -26,13 +26,13 @@ const csv = (text) => {
   return data;
 }
 
-const csv2table = (text, s) => {
+const csv2table = (data, s) => {
   const table = document.createElement("table");
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
   let header = true;
   let n = 0;
-  for(const row of csv(text)){
+  for(const row of data){
     const tr = document.createElement("tr");
     if(header){
       for(const v of row){
@@ -126,11 +126,10 @@ const _filter = (table) => {
   };
 };
 
-const csvViewer = (parent, url, s) => {
+const csvViewer = (parent, url, s, data) => {
   const p = document.createElement("p");
   const link = document.createElement("a");
   const hr = document.createElement("hr");
-  link.href = url;
   link.textContent = "Download CSV";
   p.appendChild(link);
   p.appendChild(hr);
@@ -138,16 +137,39 @@ const csvViewer = (parent, url, s) => {
   p.appendChild(document.createElement("br"));
   p.appendChild(document.createTextNode("データセルをクリックでフィルタ"));
   parent.appendChild(p);
-  fetch(url).then((response) => {
+  if(url){
+    fetchCsv(url).then((text) => {
+      const table = csv2table(parseCsv(text), s);
+      parent.appendChild(table);
+    }).catch((e) => {
+      parent.appendChild(document.createTextNode(e));
+    });
+    link.href = url;
+  }else{
+    const table = csv2table(data, s);
+    parent.appendChild(table);
+    link.href = createURL(data);
+  }
+};
+
+const fetchCsv = (url) => {
+  return fetch(url).then((response) => {
     if(response.ok){
       return response.text();
     }else{
       throw new Error(`${response.status} ${response.statusText}`);
     }
-  }).then((text) => {
-    const table = csv2table(text, s);
-    parent.appendChild(table);
-  }).catch((e) => {
-    parent.appendChild(document.createTextNode(e));
   });
+};
+
+const createURL = (data) => {
+  const text = data.map((row) => {
+    return row.map((cell) => {
+      cell = cell.replace(/"/g, '""');
+      if(/[",\n]/.test(cell)) return `"${cell}"`;
+      return cell;
+    }).join(",");
+  }).join("\r\n");
+  const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), text], {type: "text/csv"});
+  return URL.createObjectURL(blob);
 };
