@@ -4,7 +4,8 @@ var TIMING_KEYWORDS = ["j", "p", "t", "et", "pm", "a", "pa", "ma", "ba", "cd", "
 
 var TIMING = {
   ANY: (1 << TIMING_KEYWORDS.length) - 1,
-  CS: (1 << TIMING_KEYWORDS.indexOf("c")) | (1 << TIMING_KEYWORDS.indexOf("cx"))
+  CS: (1 << TIMING_KEYWORDS.indexOf("c")) | (1 << TIMING_KEYWORDS.indexOf("cx")),
+  AR: 1 << TIMING_KEYWORDS.length
 }
 TIMING.NOT_CS = TIMING.ANY - TIMING.CS;
 
