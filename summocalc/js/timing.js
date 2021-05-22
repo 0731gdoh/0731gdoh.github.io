@@ -30,21 +30,29 @@ function timing2str(timing, lang, cs){
 
 function splitSkills(s){
   var re = /^([a-z&]*)(.+)$/;
+  var bo = /^(.+)に((?:特攻|デメリット)\[\d+\.\d+\])$/;
   var result = new Map();
   if(s) s.split("/").forEach(function(x){
     var match = x.match(re);
     var timing = 0;
+    var target = 0;
+    var tname = "";
     if(match[1]) timing = match[1].split("&").reduce(function(acc, cur){
       var n = TIMING_KEYWORDS.indexOf(cur);
       if(n < 0) throw new Error("キーワード「" + cur + "」は未定義です\n（" + s + "）");
       acc = acc | (1 << n);
       return acc;
     }, 0);
-    var i = TAG.table.get(match[2]);
-    var key = (timing & TIMING.CS) ? i + TAG_MAX : i;
-    if(!key) throw new Error("タグ「" + match[2] + "」は未登録です\n（" + s + "）");
-    if(result.has(key)) throw new Error("タグ「" + match[2] + "」が重複しています\n（" + s + "）");
-    result.set(key, [match[2], i, timing]);
+    var name = match[2].replace(bo, function(m, p1, p2){
+      target = TAG.table.get(p1);
+      tname = p1;
+      return p2;
+    });
+    var i = TAG.table.get(name);
+    var key = (timing & TIMING.CS) ? "c" + match[2] : match[2];
+    if(!i) throw new Error("タグ「" + name + "」は未登録です\n（" + s + "）");
+    if(result.has(key)) throw new Error("スキル「" + match[2] + "」が重複しています\n（" + s + "）");
+    result.set(key, [name, i, timing, target, tname]);
   });
   return result;
 }

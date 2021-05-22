@@ -172,6 +172,7 @@ var calc = {
     var s = new Encoder();
     var n = 0;
     var tmp = [];
+    var bonus = [];
     s.write(CARD[this.card].id);
     s.write(AR[this.ar].id);
     s.write(this.usecs);
@@ -189,27 +190,41 @@ var calc = {
     s.write(this.evt);
     s.write(this.wc);
     s.write(this.csc);
-    this.es.forEach(function(v, i){
+    this.es.some(function(v, i){
       if(v.loop){
         var e = EFFECT[i];
-        s.write(i - n);
-        n = i;
-        if(!e.isFixed() || !e.isStackable()) tmp.push(v.lv);
-        if(e.isStackable()) tmp.push(v.loop);
-        if(e.type === TYPE.LIMIT){
-          tmp.push(v.hp);
-          tmp.push(v.maxHp);
-        }
-        if(e.type === TYPE.CUSTOM){
-          var c = v.getCustomMul();
-          tmp.push(c.n);
-          tmp.push(c.d);
-          tmp.push(v.a);
+        if(e.sp){
+          bonus.push(e.sp[0]);
+          bonus.push(e.sp[1]);
+          bonus.push(v.loop);
+        }else{
+          if(bonus.length) return true;
+          s.write(i - n);
+          n = i;
+          if(!e.isFixed() || !e.isStackable()){
+            tmp.push(v.lv);
+          }
+          if(e.isStackable()) tmp.push(v.loop);
+          if(e.type === TYPE.LIMIT){
+            tmp.push(v.hp);
+            tmp.push(v.maxHp);
+          }
+          if(e.type === TYPE.CUSTOM){
+            var c = v.getCustomMul();
+            tmp.push(c.n);
+            tmp.push(c.d);
+            tmp.push(v.a);
+          }
         }
       }
+      return false;
     });
     s.write(0);
     tmp.forEach(function(v){
+      s.write(v);
+    });
+    s.write(bonus.length);
+    bonus.forEach(function(v){
       s.write(v);
     });
     s = s.toString();
@@ -224,6 +239,7 @@ var calc = {
   load: function(x, skipSave){
     var s = new Decoder(x);
     if(s.data){
+      var complete = false;
       var tmp = [];
       var n = s.read();
       var index = 1;
@@ -271,13 +287,14 @@ var calc = {
       this.es.forEach(function(v){
         v.clear();
       });
-      this.es.forEach(function(v, i, es){
-        if(i === n && n){
+      if(n) this.es.some(function(v, i, es){
+        if(i === n){
           var e = EFFECT[i];
+          if(e.sp) return true;
           if(e.group === 2 && e.link) v = es[e.link];
           v.loop = 1;
           if(!e.isFixed() || !e.isStackable()) v.lv = s.read();
-          if(e.isStackable()) v.loop = s.read();
+          if(e.isStackable()) v.loop = Math.min(s.read(), 15);
           if(e.type === TYPE.LIMIT){
             v.hp = s.read();
             v.maxHp = s.read();
@@ -288,9 +305,35 @@ var calc = {
             var ca = s.read();
             v.setCustom(cn, cd, ca);
           }
-          if(tmp.length) n += tmp.shift();
+          if(!tmp.length){
+            complete = true;
+            return true;
+          }
+          n += tmp.shift();
         }
+        return false;
       });
+      n = s.read();
+      if(complete && n){
+        var bonus = [];
+        var es = this.es;
+        while(n > 0){
+          var be = s.read();
+          var bt = s.read();
+          var bl = s.read();
+          if(!be || !bt || !bl) break;
+          bonus.push([be, bt, bl]);
+          n -= 3;
+        }
+        if(!n) bonus.forEach(function(v){
+          var e = EFFECT[v[0]];
+          if(!e || !e.subset) return;
+          n = e.subset.get(v[1]);
+          if(!n || !es[n]) return;
+          es[n].loop = Math.min(v[2], 15);
+          es[n].lv = 1;
+        });
+      }
       this.active = 1;
     }
     this.update(skipSave);
@@ -317,17 +360,17 @@ var calc = {
         }
         //イベント
         if(e.event && index !== this.evt){
-          this.es[this.evt].clear();
+          if(this.es[this.evt]) this.es[this.evt].clear();
           this.evt = index;
         }
         //武器種変更
         if(e.type === TYPE.WEAPON && index !== this.wc){
-          this.es[this.wc].clear();
+          if(this.es[this.wc]) this.es[this.wc].clear();
           this.wc = index;
         }
         //CS変更
         if(e.type === TYPE.CSWEAPON && index !== this.csc){
-          this.es[this.csc].clear();
+          if(this.es[this.csc]) this.es[this.csc].clear();
           this.csc = index;
         }
 
@@ -381,23 +424,27 @@ var calc = {
           lv = 1;
         }
         es.lv = lv;
-        if(e.isStackable()){
-          es.loop++;
-        }else{
+        if(!e.isStackable()){
           es.loop = 1;
+        }else if(es.loop < 15){
+          es.loop++;
         }
-        if(e.link && this.es[e.link].loop < es.loop){
-          var tLv = 0;
-          if(EFFECT[e.link].isFixed() || EFFECT[e.link].isLv1()){
-            if(confirm(t("/Add ") + EFFECT[e.link] + t("を追加/"))) tLv = 1;
-          }else{
-            while(tLv < 1 || tLv > 100){
-              tLv = prompt(t("/Add ") + EFFECT[e.link] + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
-              if(tLv !== 0 && !tLv) break;
-              tLv = parseInt(tLv, 10) || 0;
+        if(e.link){
+          var tLoop = this.es[e.link].loop;
+          var tE = EFFECT[e.link];
+          if((!tLoop || tE.isStackable() && tLoop < es.loop) && !e.isNonStatus()){
+            var tLv = 0;
+            if(tE.isFixed() || tE.isLv1()){
+              if(confirm(t("/Add ") + tE + t("を追加/"))) tLv = 1;
+            }else{
+              while(tLv < 1 || tLv > 100){
+                tLv = prompt(t("/Add ") + tE + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
+                if(tLv !== 0 && !tLv) break;
+                tLv = parseInt(tLv, 10) || 0;
+              }
             }
+            if(tLv) this.addStatus(e.link, tLv, 1);
           }
-          if(tLv) this.addStatus(e.link, tLv, 1);
         }
       }else{
         if(--es.loop < 1) es.clear();
@@ -483,6 +530,7 @@ var calc = {
     setText("rs", "リセット/Reset");
     setText("sl", "English/日本語");
     setText("fc", "カードフィルタ/Filter ");
+    setText("lxf", "名前/Name");
     setText("lef", "属性/Attribute");
     setText("lwf", "武器タイプ/Weapon Type");
     setText("lcf", "CSタイプ/CS Type");
@@ -522,7 +570,12 @@ var calc = {
     });
     s.push(0);
     EFFECT.ORDER[language].forEach(function(x){
+      var subset = EFFECT[x].subset;
       if(es[x].loop) s.push(x);
+      if(subset) TAG.ORDER[language].forEach(function(z){
+        var x = subset.get(z);
+        if(x && es[x].loop) s.push(x);
+      });
     });
     s = s.concat(EFFECT.ORDER[language]);
     setOptions("os", EFFECT, FILTER.OFFENSE, s, EFFECT_MAX, p);
@@ -568,6 +621,7 @@ var calc = {
     var card = CARD[this.card];
     var ar = AR[this.ar];
     var desc = [];
+    var effects = [];
     var result = [
       t("【カード】/【Card】"),
       "　[Lv.---]",
@@ -608,13 +662,23 @@ var calc = {
         LINE
       );
     }
+    EFFECT.ORDER[language].forEach(function(v){
+      var e = EFFECT[v];
+      effects.push(e);
+      if(e.subset){
+        TAG.ORDER[language].forEach(function(x){
+          var v = e.subset.get(x);
+          if(v) effects.push(EFFECT[v]);
+        });
+      }
+    });
     for(var group = 0; group < 2; group++){
       var buffed = this.es.some(function(es, i){
-        if(es.loop && EFFECT[i].group === group) return EFFECT[i].isBuff();
+        if(es.loop) return EFFECT[i].isBuff(group);
         return false;
       });
       var debuffed = this.es.some(function(es, i){
-        if(es.loop && EFFECT[i].group === group) return EFFECT[i].isDebuff();
+        if(es.loop) return EFFECT[i].isDebuff(group);
         return false;
       });
       desc = [];
@@ -622,9 +686,9 @@ var calc = {
         "【攻撃側補正】/【Offense】",
         "【防御側補正】/【Defense】"
       ][group]));
-      for(var i = 1; i < EFFECT.length; i++){
+      for(var i = 1; i < effects.length; i++){
         var count = 0;
-        var e = EFFECT[EFFECT.ORDER[language][i]];
+        var e = effects[i];
         var es = this.es[e.index];
         var eLv = es.lv;
         var loop = es.loop;
@@ -632,16 +696,23 @@ var calc = {
         if(e.isStackable()) count = loop;
         while(loop--){
           var x;
-          if(e.isFixed()){
-            desc = ["　[Lv.---]　"];
-          }else if(!eLv){
-            eLv = this.cLv;
-            desc = ["　{Lv." + pad(eLv, 3) + "}　"];
+          var label = [];
+          if(eLv){
+            label.push("　[Lv.");
+            label.push("]　");
           }else{
-            desc = ["　[Lv." + pad(eLv, 3) + "]　"];
+            eLv = this.cLv;
+            label.push("　{Lv.");
+            label.push("}　")
           }
-          if(count > 1) desc[0] += "《x" + count + "》";
-          desc[0] += e;
+          if(e.isFixed()){
+            label.splice(1, 0, "---");
+          }else{
+            label.splice(1, 0, pad(eLv, 3));
+          }
+          if(count > 1) label.push("《x" + count + "》");
+          label.push(e);
+          desc = [label.join("")];
           x = e.getMulValue(eLv, !this.version, this.es);
 
           //連撃
@@ -756,6 +827,7 @@ var calc = {
     document.title = "放サモ ダメージ計算機 - " + (this.card ? CARD[this.card] + " " : "") + damage + t("ダメージ/ damage");
   },
   cardfilter: {
+    name: "",
     attribute: 0,
     weapon: 0,
     cs: 0,
@@ -778,6 +850,7 @@ var calc = {
     active: 0,
     init: function(){
       var c = this;
+      linkTextInput(c, "name", "xf");
       linkInput(c, "attribute", "ef");
       linkInput(c, "weapon", "wf");
       linkInput(c, "cs", "cf");
@@ -832,6 +905,7 @@ var calc = {
       ["ef", "wf", "cf", "rf", "vf", "gf", "sf", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
+      setValue("xf", "");
       setValue("stf1", TIMING.ANY);
       setValue("stf2", TIMING.ANY);
       this.active = active;
@@ -839,6 +913,9 @@ var calc = {
     },
     update: function(){
       var p = this;
+      var nv = p.name.toLowerCase().replace(/[\u3041-\u3094]/g, function(match){
+        return String.fromCharCode(match.charCodeAt(0) + 0x60);
+      });
       var av = ATTRIBUTE[p.attribute].getValue();
       var rv = RARITY[p.rarity].getValue();
       var vv = VARIANT[p.variant].name;
@@ -854,6 +931,7 @@ var calc = {
       setOptions("pc", CARD, function(x){
         if(!p.active) return true;
         if(!x.index) return true;
+        if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
         if(p.rarity && (1 << x.rarity & rv) === 0) return false;
         if(p.weapon && x.weapon[0] !== p.weapon) return false;
         if(p.cs && x.weapon[1] !== p.cs) return false;

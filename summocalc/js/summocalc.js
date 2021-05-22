@@ -43,7 +43,10 @@ function setValue(id, value, zeroCount){
   }else{
     o.value = value;
   }
-  if(!o.disabled && o.onchange) o.onchange();
+  if(!o.disabled){
+    if(o.onchange) o.onchange();
+    if(o.oninput) o.oninput();
+  }
 }
 function setOptions(id, list, k, s, d, p){
   //id, リスト[, フィルタ関数[, ソート順[, 除数, 接頭辞リスト]]]
@@ -82,6 +85,14 @@ function linkInput(obj, key, id, onchange){
   _(id).onchange = function(){
     obj[key] = v(id);
     if(onchange) onchange();
+    if(obj.active) obj.update();
+  };
+}
+function linkTextInput(obj, key, id, oninput){
+  setValue(id, obj[key]);
+  _(id).oninput = function(){
+    obj[key] = _(id).value;
+    if(oninput) oninput();
     if(obj.active) obj.update();
   };
 }
