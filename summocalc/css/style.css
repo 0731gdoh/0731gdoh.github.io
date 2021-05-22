@@ -48,6 +48,12 @@ select {
   margin-left: 0.3rem;
   margin-right: 0.8rem;
 }
+input[type="text"] {
+  padding: 0.2rem 0.3rem;
+  margin-left: 0.3rem;
+  margin-right: 0;
+  width: 10rem;
+}
 input[type="number"] {
   padding: 0.2rem 0.3rem;
   margin-left: 0.3rem;
