@@ -109,9 +109,9 @@ var TAG = Tag.createList(
   ,["全ての強化/All buffs", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["全ての弱体/All debuffs", TAG_TYPE.IRREMOVABLE_DEBUFF]
   ,["移動不能状態", TAG_TYPE.SKIP, "", "威圧/恐怖/崩し/不動/マヒ"]
-  ,["攻撃力低下状態", TAG_TYPE.SKIP, "", "強化反転/暗闇/幻惑/束縛/呪い/マヒ"]
+  ,["攻撃力低下状態", TAG_TYPE.SKIP, "", "疑念/強化反転/暗闇/幻惑/束縛/呪い/マヒ"]
   ,["スキル封印状態", TAG_TYPE.SKIP, "", "スキル封印/束縛/二重封印"]
-  ,["被ダメージ増加状態", TAG_TYPE.SKIP, "", "強化反転/崩し/激怒/激怒+/弱点/凍結/暴走/暴走+/烙印"]
+  ,["被ダメージ増加状態", TAG_TYPE.SKIP, "", "強化反転/崩し/契約の代償/激怒/激怒+/劫火/弱点/凍結/発狂/暴走/暴走+/烙印"]
   ,["防御力増加状態", TAG_TYPE.SKIP, "", "頑強/金剛/守護/聖油/防御強化"]
   ,["CP減少/Deplete CP", TAG_TYPE.ONE_SHOT, "CP減少系"]
   ,["CP増加/Increase CP", TAG_TYPE.ONE_SHOT, "CP増加系"]
@@ -320,8 +320,8 @@ var TAG = Tag.createList(
 
   ,["鬼系スキル", TAG_TYPE.SKIP, "", "鬼道の衆/鬼道を束ねる者/鬼気迫る者"]
   ,["獣系スキル", TAG_TYPE.SKIP, "", "首狩りの獣/獣の末裔/獣皮を巻く者/黄昏に弾く獣/忠玉の八犬士"]
-  ,["チート系スキル", TAG_TYPE.SKIP, "", "チート系勇者/チートなる者"]
-  ,["魔王系スキル", TAG_TYPE.SKIP, "", "僥倖の魔王/混沌の魔王/退廃の魔王/第四天魔王の子/大力の魔王/常闇の魔王/墓場の魔王/魔王"]
+  ,["チートと名の付くスキル", TAG_TYPE.SKIP, "", "チート系勇者/チートなる者"]
+  ,["魔王と名の付くスキル", TAG_TYPE.SKIP, "", "僥倖の魔王/混沌の魔王/退廃の魔王/第四天魔王の子/大力の魔王/常闇の魔王/墓場の魔王/魔王"]
 
   ,["愛を囚う者/Love Trapper", TAG_TYPE.SKILL]
   ,["アスリート/Athlete", TAG_TYPE.SKILL, "", "歓呼のアスリート/直感のアスリート"]
