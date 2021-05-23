@@ -10,7 +10,9 @@ var TAG_TYPE = {
   IRREMOVABLE_BUFF: 8,
   IRREMOVABLE_DEBUFF: 9,
   CCT: 10,
-  CWT: 11
+  CWT: 11,
+  ALL_BUFFS: 12,
+  ALL_DEBUFFS: 13
 };
 
 function Tag(index, x, category, subset){
@@ -65,11 +67,11 @@ Tag.createList = function(a){
   a.forEach(function(v, i){
     var c = [];
     var s = [];
-    switch(v[0]){
-      case "全ての強化/All buffs":
+    switch(v[1]){
+      case TAG_TYPE.ALL_BUFFS:
         s = buff;
         break;
-      case "全ての弱体/All debuffs":
+      case TAG_TYPE.ALL_DEBUFFS:
         s = debuff;
         break;
       default:
@@ -86,6 +88,7 @@ Tag.createList = function(a){
       case TAG_TYPE.DEBUFF:
       case TAG_TYPE.IRREMOVABLE_DEBUFF:
         c.push(table.get("弱体"));
+        break;
     }
     result.push(new Tag(i, v, c, s));
     k.push(t(v[0], 1).replace(/ *[\(:].+/, ""));
@@ -106,8 +109,8 @@ var TAG_MAX = 10000;
 
 var TAG = Tag.createList(
   [["", TAG_TYPE.CATEGORY]
-  ,["全ての強化/All buffs", TAG_TYPE.IRREMOVABLE_BUFF]
-  ,["全ての弱体/All debuffs", TAG_TYPE.IRREMOVABLE_DEBUFF]
+  ,["全ての強化/All buffs", TAG_TYPE.ALL_BUFFS]
+  ,["全ての弱体/All debuffs", TAG_TYPE.ALL_DEBUFFS]
   ,["移動不能状態", TAG_TYPE.SKIP, "", "威圧/恐怖/崩し/不動/マヒ"]
   ,["攻撃力低下状態", TAG_TYPE.SKIP, "", "疑念/強化反転/暗闇/幻惑/束縛/呪い/マヒ"]
   ,["スキル封印状態", TAG_TYPE.SKIP, "", "スキル封印/束縛/二重封印"]

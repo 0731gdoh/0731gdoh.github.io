@@ -143,7 +143,7 @@ Effect.createList = function(a){
     var y = result[b];
     if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
     if(x.sortkey > 4 || !x.sortkey) return x.index - y.index;
-    if(k[a] === k[b] && x.group === y.group) return x.value[0] - y.value[0];
+    if(k[a] === k[b] && x.group === y.group) return x.value[1] - y.value[1] || x.value[0] - y.value[0];
     if((x.type === TYPE.WEAPON || x.type === TYPE.CSWEAPON) && x.type === y.type) return x.value[1] - y.value[1];
     if(en) return t(x.name, 1).toUpperCase() < t(y.name, 1).toUpperCase() ? -1 : 1;
     if(x.reading === y.reading) return x.index - y.index;
@@ -178,7 +178,7 @@ Effect.createList = function(a){
       return p2.replace(/\*+/, "");
     });
     result.push(new Effect(i, v, link));
-    k.push(t(v[0], 0).replace(/\[\d+\.\d+\]$/, ""))
+    k.push(t(v[0], 0).replace(/\[(\d+\.|\+)\d+\]$/, ""))
   });
   order[0].sort(f);
   en = true;
@@ -265,12 +265,12 @@ var EFFECT = Effect.createList(
   ,["×<無窮>", "むき", 2]
   ,["烙印/Stigma", "らく", 1, 1.15]
   ,["連撃/Combo", "れん", 0, 0.6, , EFFECT_FLAG.FIXED, TYPE.COMBO]
-  ,["攻撃力小UP", "こうけきりよく1", 0, 0, 250, EFFECT_FLAG.GIMMICK]
-  ,["攻撃力中UP", "こうけきりよく2", 0, 0, 500, EFFECT_FLAG.GIMMICK]
-  ,["攻撃力大UP", "こうけきりよく3", 0, 0, 1000, EFFECT_FLAG.GIMMICK]
+  ,["攻撃力小UP", "こうけきりよく1", 0, 0, 250, EFFECT_FLAG.BUFF|EFFECT_FLAG.GIMMICK]
+  ,["攻撃力中UP", "こうけきりよく2", 0, 0, 500, EFFECT_FLAG.BUFF|EFFECT_FLAG.GIMMICK]
+  ,["攻撃力大UP", "こうけきりよく3", 0, 0, 1000, EFFECT_FLAG.BUFF|EFFECT_FLAG.GIMMICK]
   ,["CS変更：全域/Change CS Type: All", "CS", 0, 0, 8, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
-  ,["おせち", "おせ", 0, 1.2, 50, EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK, , 0]
-  ,["おせち", "おせ", 1, 0.8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
+  ,["おせち", "おせ", 0, 1.2, 50, EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, , 0]
+  ,["おせち", "おせ", 1, 0.8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["負傷", "ふし", 0, 0.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["ミンスパイ", "", 0, 1.5, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED]
   ,["[ジェイル]怒/[V.Jail]Anger", "", 0, 1.2, , EFFECT_FLAG.EVENT|EFFECT_FLAG.LV1]
@@ -312,8 +312,8 @@ var EFFECT = Effect.createList(
   ,["CS変更：打撃/Change CS Type: Blow", "CS", 0, 0, 3, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,["CS変更：横一文字/Change CS Type: Long Slash", "CS", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,["本格コルク銃", "", 0, 1, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED, TYPE.ATK]
-  ,["イカ焼き", "いか", 0, 37, , EFFECT_FLAG.FIXED|EFFECT_FLAG.GIMMICK]
-  ,["CS変更：無/Change CS Type: None", "CS", 0, 0, 9, EFFECT_FLAG.FIXED|EFFECT_FLAG.GIMMICK, TYPE.CSWEAPON]
+  ,["イカ焼き", "いか", 0, 37, , EFFECT_FLAG.FIXED|EFFECT_FLAG.BUFF|EFFECT_FLAG.GIMMICK]
+  ,["CS変更：無/Change CS Type: None", "CS", 0, 0, 9, EFFECT_FLAG.FIXED|EFFECT_FLAG.BUFF|EFFECT_FLAG.GIMMICK, TYPE.CSWEAPON]
   ,["魅了時弱化[防御]/魅了時弱化[Defense]", "みり", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,["特殊耐性[0.05]", "とくし", 1, 0.05, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["<暗闇>時強化", "くら", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
@@ -363,6 +363,7 @@ var EFFECT = Effect.createList(
   ,["火傷/Burn", "やけ", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["根性/Guts", "こん", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["加速/Acceleration", "かそ", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
+  ,["特殊耐性[+2000]", "とくし", 1, 0.05, 2000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
 ]);
 
 function generateEffectData(s, group){
@@ -413,9 +414,11 @@ function registerBonusEffect(i, value){
       case TAG_TYPE.BUFF:
       case TAG_TYPE.CCT:
       case TAG_TYPE.CWT:
+      case TAG_TYPE.ALL_BUFFS:
         flag = flag | EFFECT_FLAG.BONUS_TO_BUFF;
         break;
       case TAG_TYPE.DEBUFF:
+      case TAG_TYPE.ALL_DEBUFFS:
         flag = flag | EFFECT_FLAG.BONUS_TO_DEBUFF;
     }
   }
