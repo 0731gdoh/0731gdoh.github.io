@@ -364,6 +364,7 @@ var EFFECT = Effect.createList(
   ,["根性/Guts", "こん", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["加速/Acceleration", "かそ", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["特殊耐性[+2000]", "とくし", 1, 0.05, 2000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["見習い使い魔の応援", "みな", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
 ]);
 
 function generateEffectData(s, group){
@@ -392,13 +393,13 @@ function registerBonusEffect(i, value){
   var tag = TAG[value[3]];
   var o = Object.create(EFFECT[i]);
   var flag = EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE;
-  [[1, "与ダメージ減少/Decrease"]
-  ,[2, "特攻/Bonus"]
-  ,[3, "大特攻/Greater bonus"]
-  ,[5, "超特攻/超特攻"]
-  ,[10, "極大特攻/極大特攻"]
+  [[5, "極大特攻/極大特攻"]
+  ,[3, "超特攻/超特攻"]
+  ,[2, "大特攻/Greater bonus"]
+  ,[1, "特攻/Bonus"]
+  ,[0, "与ダメージ減少/Decrease"]
   ].some(function(x){
-    if(o.value[0] < x[0]){
+    if(o.value[0] >= x[0]){
       o.name = value[4] + "に" + x[1] + " damage against " + t(tag.name, 1);
       return true;
     }
