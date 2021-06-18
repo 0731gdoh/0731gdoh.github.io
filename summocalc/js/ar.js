@@ -204,4 +204,8 @@ var AR = Record.createList(
   ,["寂しがりのプランクスター/The Lonely Prankster", , "", 100, 0, 0, EQUIP.BLOW, "アールプ/カーシー", "", ""]
   ,["夢のもふもふ大激突！/The Great Fluffy Clash of Dreams!", , "獣の末裔に特攻[1.5]/獣皮を巻く者に特攻[1.5]", 300, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "クニヨシ/アールプ", "", ""]
   ,["芸術は光と陰に/All in Art is Light and Dark", , "", 150, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "クニヨシ/リヒト", "", ""]
+  ,["夏の島の夜の踊り/Nocturnal Dance", , "意気", 250, 0, EQUIP.WORLD|EQUIP.ALLROUND, 0, "タンガロア/キジムナー", "", ""]
+  ,["夢に見た力比べ/The Strength I dream of", , "", 350, 0, 0, EQUIP.SLASH|EQUIP.NONE, "アステリオス/アスタロト", "", "", 2]
+  ,["巨いなる供物/A Great Offering", , "", 100, 0, EQUIP.WOOD|EQUIP.INFERNAL|EQUIP.WORLD, 0, "タンガロア/ダゴン", "", ""]
+  ,["お手柄！うみのこ探検隊/Accomplished Ocean Explorers", , "", 150, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "キジムナー/エイタ", "", ""]
 ]);
