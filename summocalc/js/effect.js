@@ -368,6 +368,7 @@ var EFFECT = Effect.createList(
   ,["特防[0.4]/Bonus[0.4]", "とくほ", 1, 0.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK, TYPE.BONUS]
   ,["<滋養>時強化[攻&防]/滋養時強化[Atk&Def]", "しよ1", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["滋養時強化[攻&防]/滋養時強化[Atk&Def]", "しよ1", 1, 0.6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,["頑強時強化", "かん", 0, 0, 1000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
 ]);
 
 function generateEffectData(s, group){
