@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset=UTF-8>
-<meta name=robots content="noindex,nofollow">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="放サモ ダメージ計算機">
 <meta name=viewport content="width=device-width,maximum-scale=1">
 <meta name=apple-mobile-web-app-capable content="yes">
 <meta name=apple-mobile-web-app-status-bar-style content="black">
@@ -71,33 +72,71 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
       <table>
         <tr>
           <td><label id=lsef1 for=sef1></label>
-          <td><fieldset id=stf1></fieldset><select id=sef1></select><select id=srf1></select>
+          <td><fieldset id=stf1></fieldset><select id=sef1 class=tag></select><select id=srf1></select>
         <tr>
           <td><label id=lsef2 for=sef2></label>
-          <td><fieldset id=stf2></fieldset><select id=sef2></select><select id=srf2></select>
+          <td><fieldset id=stf2></fieldset><select id=sef2 class=tag></select><select id=srf2></select>
         <tr>
           <td><label for=pf id=lpf></label>
-          <td><select id=pf></select>
+          <td><select id=pf class=tag></select>
         <tr>
           <td><label for=baf id=lbaf></label>
-          <td><select id=baf></select>
+          <td><select id=baf class=tag></select>
         <tr>
           <td><label for=bdf id=lbdf></label>
-          <td><select id=bdf></select>        <tr>
+          <td><select id=bdf class=tag></select>        <tr>
           <td><label for=nf id=lnf></label>
-          <td><select id=nf></select>
+          <td><select id=nf class=tag></select>
       </table>
       <input type=checkbox id=ccf><label for=ccf id=lccf></label>
       <hr>
-      <div id=bs>
+      <div class=bs>
         <button type=button id=rd></button><button type=button id=fr></button>
       </div>
     </div>
     <label for=pl id=lpl></label><input type=number min=1 max=85 value=1 id=pl><button type=button id=ly>-10</button><button type=button id=lm>MAX</button><button type=button id=lx>+10</button><button type=button id=lz>+15</button>
     <hr>
     <label for=a>ATK</label><input type=number min=1 max=99999 value=1 id=a><label for=w id=lw></label><select id=w></select><br>
-    <label for=cs>CS</label><select id=cs></select><label for=cl id=lcl></label><input type=number min=1 max=100 value=1 id=cl><input type=checkbox id=uc><label for=uc id=luc></label><br>
-    <label for=rc id=lrc></label><select id=rc></select><label for=rl id=lrl></label><input type=number min=1 max=100 value=1 id=rl>
+    <label for=cs>CS</label><select id=cs></select><label for=cl id=lcl></label><input type=number min=1 max=100 value=1 id=cl><input type=checkbox id=uc><label for=uc id=luc></label>
+    <hr>
+    <label for=rc id=lrc></label><select id=rc></select><button type=button id=rv><span id=lrv></span><span id=trv>▼</span></button><br>
+    <div id=rw>
+      <table>
+        <caption><span id=rfc></span><span id=rcx></span></caption>
+        <tr>
+          <td><label for=rxf id=lrxf></label>
+          <td><input type=text id=rxf>
+        <tr>
+          <td><label for=rrf id=lrrf></label>
+          <td><select id=rrf></select>
+        <tr>
+          <td><label for=ref1 id=lref1></label>
+          <td><select id=ref1 class=tag></select>
+        <tr>
+          <td><label for=ref2 id=lref2></label>
+          <td><select id=ref2 class=tag></select>
+        <tr>
+          <td><label for=ref3 id=lref3></label>
+          <td><select id=ref3 class=tag></select>
+        <tr>
+          <td><label for=rpf id=lrpf></label>
+          <td><select id=rpf class=tag></select>
+        <tr>
+          <td><label for=raf id=lraf></label>
+          <td><select id=raf class=tag></select>
+        <tr>
+          <td><label for=rdf id=lrdf></label>
+          <td><select id=rdf class=tag></select>        <tr>
+          <td><label for=rnf id=lrnf></label>
+          <td><select id=rnf class=tag></select>
+      </table>
+      <input type=checkbox id=ceq><label for=ceq id=lceq></label>
+      <hr>
+      <div class=bs>
+        <button type=button id=rrd></button><button type=button id=rfr></button>
+      </div>
+    </div>
+    <label for=rl id=lrl></label><input type=number min=1 max=100 value=1 id=rl><button type=button id=ra>1</button><button type=button id=rm>100</button><button type=button id=rx>+5</button><button type=button id=ry>+20</button><button type=button id=rz>10n</button>
     <hr>
     <label for=os id=los></label><select id=os></select><button type=button id=oa></button><button type=button id=or></button><br>
     <label for=ds id=lds></label><select id=ds></select><button type=button id=da></button><button type=button id=dr></button><br>

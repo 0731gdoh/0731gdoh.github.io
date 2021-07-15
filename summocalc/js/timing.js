@@ -10,6 +10,7 @@ var TIMING = {
 TIMING.NOT_CS = TIMING.ANY - TIMING.CS;
 
 function timing2str(timing, lang, cs){
+  timing = timing & TIMING.ANY;
   if(!timing){
     return "";
   }else if(timing){
