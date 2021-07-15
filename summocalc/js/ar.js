@@ -2,16 +2,23 @@ function Record(index, id, x){
   this.index = index;
   this.id = id;
   this.name = x[0];
-  this.effects = splitEffects(x[1]);
-  this.value = new Fraction(x[2]);
-  this.rarity = x[3];
-  this.attribute = x[4];
-  this.weapon = x[5];
-  this.chara = splitCharaNames(x[6]);
-  this.guilds = splitGuildNames(x[7]);
-  this.schools = splitSchoolNames(x[8]);
-  this.csBoost = x[9] || 0;
-  this.csWeapon = x[10] || 0;
+  skills = x.slice(1, 7).map(function(s){
+    return splitSkills(s);
+  });
+  this.effects = generateEffectData(skills[0], 0).concat(generateEffectData(skills[2], 1));
+  this.tag = skills.map(function(s, i){
+    return generateTagData(s, i, TIMING.AR);
+  });
+  this.arRarity = x[7];
+  this.value = new Fraction(x[8]);
+  this.rarity = x[9];
+  this.attribute = x[10];
+  this.weapon = x[11];
+  this.chara = splitCharaNames(x[12]);
+  this.guilds = splitGuildNames(x[13]);
+  this.schools = splitSchoolNames(x[14]);
+  this.csBoost = x[15] || 0;
+  this.csWeapon = x[16] || 0;
 }
 Record.prototype = {
   toString: function(){
@@ -35,34 +42,45 @@ Record.createList = function(a){
 Record.csv = function(list, x){
   return list.map(function(v){
     var e = [];
-    if(!v.name) return t("#,名前,装備制限,ATK,効果,CS倍率,CSタイプ/#,Name,Limitation,ATK,Effects,CSRate,CSType", x);
-    v.chara.forEach(function(z){
-      var name = t(CARD[z].name, x);
-      if(name !== e[e.length - 1]) e.push(name);
-    });
-    [
-      [RARITY, v.rarity],
-      [ATTRIBUTE, v.attribute],
-      [WEAPON, v.weapon]
-    ].forEach(function(z){
-      if(z[1] && z[1] !== EQUIP.ANY){
-        z[0].forEach(function(w, i){
-          if(z[1] & (1 << i)) e.push(t(w.name, x));
-        });
-      }
-    });
-    if(v.guilds) e = e.concat(affs2array(GUILD, v.guilds, x));
-    if(v.schools) e = e.concat(affs2array(SCHOOL, v.schools, x));
-    if(!e.length) e.push(t("(制限なし)/(No limit)", x));
-    return [
-      v.index,
-      '"' + t(v.name, x) + '"',
-      e.join("|"),
-      v.value - 0,
-      v.effects.map(function(n){return t(EFFECT[n].name, x)}).join("/"),
-      ["", "(+1)", "(+2)"][v.csBoost],
-      t(WEAPON[v.csWeapon].name, x)
-    ].join(",");
+    if(!v.name){
+      return t("#,レア度,名前,HP,ATK,ダメージ補正,効果(自身),効果(味方),効果(敵),特攻,特防,状態無効,CS倍率,CSタイプ,装備制限/#,Rarity,Name,HP,ATK,DamageModifier,Effects(Self),Effects(Ally),Effects(Enemy),AttackBonus,DefenseBonus,NullifyStatus,CSRate,CSType,Limitation", x);
+    }else{
+      var r = [
+        v.index,
+        v.arRarity,
+        '"' + t(v.name, x) + '"',
+        v.arRarity * 100 - v.value,
+        v.value - 0,
+        v.effects.map(function(n){return t(EFFECT[n].name, x)}).join("/")
+      ];
+      v.chara.forEach(function(z){
+        var name = t(CARD[z].name, x);
+        if(name !== e[e.length - 1]) e.push(name);
+      });
+      [
+        [RARITY, v.rarity],
+        [ATTRIBUTE, v.attribute],
+        [WEAPON, v.weapon]
+      ].forEach(function(z){
+        if(z[1] && z[1] !== EQUIP.ANY){
+          z[0].forEach(function(w, i){
+            if(z[1] & (1 << i)) e.push(t(w.name, x));
+          });
+        }
+      });
+      if(v.guilds) e = e.concat(affs2array(GUILD, v.guilds, x));
+      if(v.schools) e = e.concat(affs2array(SCHOOL, v.schools, x));
+      if(!e.length) e.push(t("(制限なし)/(No limit)", x));
+      v.tag.forEach(function(z){
+        r.push(z.map(function(a){
+          var tag = TAG[a[0] % TAG_MAX];
+          if(tag.type === TAG_TYPE.CATEGORY) return 0;
+          return timing2str(a[1], x, a[0] > TAG_MAX) + t(tag.name, x);
+        }).filter(function(n){return n}).join("/"));
+      });
+      r.push(["", "(+1)", "(+2)"][v.csBoost], t(WEAPON[v.csWeapon].name, x), e.join("|"));
+      return r.join(",");
+    }
   }).join("\n");
 };
 
@@ -94,118 +112,119 @@ var EQUIP = {
 };
 
 var AR = Record.createList(
-  //名前, id, 補正効果, ATK基本値, レア度指定, 属性指定, 武器タイプ指定, キャラ指定, ギルド指定, 学園指定[, CS倍率補正[, CSタイプ変更]]
-  [["", 0, "", 0, 0, 0, 0, "", "", ""]
-  ,["見習い使い魔の応援/Support of the Apprentice Familiar", 1, "", 50, 0, EQUIP.ALLROUND, 0, "", "", ""]
-  ,["深淵の門番の破片/Shard of the Abyssal Gatekeeper", 2, "", 75, 0, EQUIP.NETHER, 0, "", "", ""]
-  ,["遠雷の闘士の破片", 3, "", 200, 0, EQUIP.AETHER, 0, "", "", ""]
-  ,["長途の待人の破片", 4, "", 0, 0, EQUIP.WOOD, 0, "", "", ""]
-  ,["今、ここだけにしかない物語", 101, "", 300, EQUIP.ANY, 0, 0, "", "", ""]
-  ,["お宝目指して何処までも", 107, "", 200, EQUIP.ANY, 0, 0, "", "", ""]
-  ,["教えの庭にも", 108, "", 200, EQUIP.ANY, 0, 0, "", "", ""]
-  ,["拮抗の例外処理？/Exception of Antagonism?", 102, "", 150, 0, EQUIP.WATER, 0, "", "", ""]
-  ,["魔王と魔王/Dark Lords", 103, "", 150, EQUIP.ANY, 0, 0, "", "", ""]
-  ,["仰げば尊し", 104, "", 100, EQUIP.ANY, 0, 0, "", "", ""]
-  ,["聖夜のダブル・ヒーロー！", 105, "", 150, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.BLOW, "タウラスマスク/クランプス", "", ""]
-  ,["ギュウマオウ式OJT！/OJT: The Gyumao Way", 106, "", 0, 0, 0, EQUIP.LONGSLASH|EQUIP.MAGIC, "ギュウマオウ/セト", "", ""]
-  ,["友情のコンビネーション！", 109, "友情時強化", 200, EQUIP.ANY, 0, 0, "", "", ""]
-  ,["はぐれ者の幕間", 110, "", 0, 0, EQUIP.FIRE|EQUIP.WATER|EQUIP.AETHER, 0, "トムテ/テツヤ", "", ""]
-  ,["初湯のひととき", 111, "", 0, 0, 0, EQUIP.THRUST|EQUIP.LONGSLASH|EQUIP.NONE, "ギュウマオウ/シンノウ", "", ""]
-  ,["曙光に燃える", 112, "", 400, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.WORLD, 0, "タウラスマスク/ワカン・タンカ", "", "", 1]
-  ,["しゃかりき稼ぐぜ海の家/Money-Making Beach House", 113, "", 200, 0, EQUIP.FIRE|EQUIP.WATER, 0, "ノーマッド/タダトモ", "", ""]
-  ,["我ら今は共に歩みて", 114, "", 250, EQUIP.RARE1|EQUIP.RARE2, 0, 0, "", "バーサーカーズ/ミッショネルズ/タイクーンズ", ""]
-  ,["開拓の誓い", , "", 100, 0, EQUIP.NETHER, 0, "主人公/シロウ", "", ""]
-  ,["無窮の誓い", , "クリティカル", 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ", "", ""]
-  ,["豊穣の誓い", , "", 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ", "", ""]
-  ,["根絶の誓い", , "", 250, 0, EQUIP.WATER, 0, "主人公/トウジ", "", ""]
-  ,["結合の誓い", , "", 300, 0, EQUIP.FIRE, 0, "主人公/アルク", "", ""]
-  ,["犬どもの戦場", , "", 300, 0, EQUIP.FIRE|EQUIP.WATER, 0, "モリタカ/タダトモ/シノ", "", ""]
-  ,["ミッションコンプリート", , "クリティカル", 200, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "コタロウ/オセ", "", ""]
-  ,["計り知れざる永劫の", , "恐怖に特攻[1.4]", 100, 0, 0, EQUIP.MAGIC, "シロウ", "", ""]
-  ,["先輩と後輩の時間", , "", 400, 0, 0, EQUIP.BLOW|EQUIP.LONGSLASH, "グンゾウ/ワカン・タンカ", "", ""]
-  ,["従者並びて", , "", 0, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "オニワカ/カーシー", "", ""]
-  ,["シューティングスターズ", , "回避に貫通/連撃", 300, 0, 0, EQUIP.THRUST|EQUIP.SHOT, "イクトシ/バティム", "", ""]
-  ,["幼馴染の流儀", , "", 200, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "シロウ/ケンゴ", "", "", 1]
-  ,["魔王の温泉郷へようこそ", , "", 100, 0, EQUIP.NETHER, 0, "アンドヴァリ/チェルノボーグ", "", ""]
-  ,["大江山の鬼たち", , "", 400, 0, EQUIP.FIRE|EQUIP.WATER|EQUIP.WOOD, 0, "シュテン/イバラキ", "", "", 1]
-  ,["新宿ポリスアカデミー", , "", 200, 0, EQUIP.WOOD|EQUIP.VALIANT, 0, "タヂカラオ/ホウゲン", "", ""]
-  ,["ナンパの心得", , "崩しに特攻[1.4]", 300, 0, EQUIP.WATER, 0, "ゴウリョウ/テュポーン", "", ""]
-  ,["山の熊さんたち", , "根性に特攻[1.4]", 150, 0, EQUIP.WOOD, 0, "アシガラ/バーゲスト", "", ""]
-  ,["都会の隠れ家", , "加速に特攻[1.4]", 75, 0, EQUIP.AETHER, 0, "ガンダルヴァ/サンダーバード", "", ""]
-  ,["東京カジノへようこそ", , "闘志に特攻[1.4]", 225, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ハクメン/ショロトル", "", ""]
-  ,["次なる聖夜のために", , "", 0, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "ジェド/タングリスニル", "", ""]
-  ,["或る島での1ページ", , "", 75, 0, EQUIP.NETHER, 0, "アステリオス/ロビンソン", "", ""]
-  ,["夏の新メニュー開発！", , "祝福に特攻[1.4]", 0, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "リョウタ/チョウジ", "", ""]
-  ,["休日のカラオケロード！", , "脱力に特攻[1.4]", 50, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "ベヒモス/ジズ", "", ""]
-  ,["糾える縄の如し", , "呪いに特攻[1.4]", 225, 0, EQUIP.NETHER, 0, "ケンタ/バーゲスト", "", ""]
-  ,["OH, MY POPSTAR！", , "恐怖に特攻[1.4]", 150, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ニャルラトテプ/アザトース", "", ""]
-  ,["ある家族の肖像", , "祝福に特攻[1.4]", 150, 0, EQUIP.FIRE, 0, "ハーロット/スルト", "", ""]
-  ,["はじめてのオムライス！", , "呪いに特攻[1.4]", 75, 0, EQUIP.WATER, 0, "モリタカ/アギョウ", "", ""]
-  ,["鍛錬あるのみ！", , "頑強に特攻[1.4]", 175, 0, EQUIP.FIRE|EQUIP.INFERNAL, 0, "クロガネ/アマツマラ/ヘパイストス", "", ""]
-  ,["バディの絆", , "頑強に特攻[1.4]", 75, 0, 0, EQUIP.MAGIC, "レイヴ/カーシー", "", ""]
-  ,["ようこそ池袋の劇場へ", , "熱情に特攻[1.4]", 225, 0, 0, EQUIP.SLASH, "クロード/スノウ", "", ""]
-  ,["飢野学園の指導", , "閃きに特攻[1.4]/集中に特攻[1.4]", 300, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "アールプ/レイヴ", "", ""]
-  ,["全ては筋肉より始まる", , "剛力に特攻[1.4]", 300, 0, 0, EQUIP.BLOW, "アマツマラ/スルト", "", ""]
-  ,["父と子と", , "再生に特攻[1.4]", 150, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "アルク/スルト", "", ""]
-  ,["出発！真夏の水中冒険", , "防御強化に特攻[1.4]", 225, 0, EQUIP.WATER, 0, "エイタ/テュポーン", "", ""]
-  ,["おお山の喜びよ", , "凍結に特攻[1.4]", 250, 0, 0, EQUIP.BLOW, "ザオウ/チェルノボーグ", "", ""]
-  ,["どっちの味方なの！？", , "幻惑に特攻[1.4]", 175, 0, 0, EQUIP.MAGIC|EQUIP.LONGSLASH, "リヒト/クニヨシ/ベンテン", "", ""]
-  ,["深淵の海より来たりて", , "", 250, 0, EQUIP.WATER|EQUIP.INFERNAL, 0, "トリトン/ダゴン", "", "", 2]
-  ,["サン・アンド・オイル！", , "聖油に特攻[1.4]", 0, 0, EQUIP.WOOD|EQUIP.WORLD, 0, "クロガネ/タンガロア", "", ""]
-  ,["サモナーズのX'MAS", , "", 200, 0, EQUIP.WATER|EQUIP.WOOD|EQUIP.ALLROUND, 0, "リョウタ/トウジ", "", "", 2]
-  ,["同じ月が見ている", , "", 0, 0, 0, EQUIP.MAGIC, "マリア/ジブリール", "", ""]
-  ,["夕暮れ時の青春は", , "", 200, 0, 0, EQUIP.THRUST|EQUIP.SHOT, "グンゾウ/キュウマ", "", "", 1]
-  ,["バレンタイン・ドッグス！/Valentine's Dogs!", , "", 250, 0, EQUIP.FIRE|EQUIP.NETHER, EQUIP.SLASH, "モリタカ/タダトモ", "", ""]
-  ,["ショコラは深淵より来たり/Abyssal Confectionery", , "呪いに特攻[1.6]", 0, 0, EQUIP.FIRE|EQUIP.NETHER, 0, "シロウ/シトリー", "", ""]
-  ,["硬派を気取ったあの頃は/Acting Tough", , "", 400, 0, EQUIP.AETHER, EQUIP.BLOW, "ケンゴ/シトリー", "", ""]
-  ,["チョコレート・ダイナマイト！/Chocolate Dynamite!", , "", 0, 0, 0, EQUIP.MAGIC|EQUIP.SNIPE, "チョウジ/エビス", "", ""]
-  ,["砂漠のプライベート・レッスン/Private Lesson in the Desert?", , "", 100, 0, EQUIP.VALIANT|EQUIP.WATER, 0, "セト/ゴウリョウ", "", ""]
-  ,["蒲田ギルドの師弟/A Teacher and Student from Kamata", , "攻撃力微増[1.13]", 500, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "アマツマラ/クロガネ", "", ""]
-  ,["サバイバルリゾート/Survival Resort", , "熱情に特攻[1.6]", 100, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ハヌマン/ツァトグァ", "", ""]
-  ,["剣豪と刀鍛冶の攻防/Battle between Swordsmith and Swordsman", , "", 300, 0, EQUIP.ALLROUND|EQUIP.FIRE, EQUIP.SLASH, "ムサシ/アマツマラ", "", ""]
-  ,["寂しがりの猛牛たち/Single Bulls Club", , "", 500, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ワカン・タンカ/テツギュウ", "", "", 2]
-  ,["流れ者の集う街/City of Drifters", , "", 100, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "スズカ/テツギュウ", "", ""]
-  ,["いつかどうして夢の鬼/Ogresses' Dream - A Different Time, A Different Place", , "", 100, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "スズカ/イバラキ", "", ""]
-  ,["剣の道は尚遙か/The Way of the Sword Has Just Begun", , "スキル封印に特攻[1.3]/束縛に特攻[1.3]/二重封印に特攻[1.3]", 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ", "", ""]
-  ,["歓楽の鬼/Ogres' Nightlife", , "", 0, 0, 0, EQUIP.BLOW|EQUIP.SHOT, "スズカ/イバラキ", "", ""]
-  ,["おお温泉の喜びよ", , "", 0, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "ザオウ/チェルノボーグ", "", ""]
-  ,["法の代行者たち", , "再生に特攻[1.5]/祝福に特攻[1.5]/滋養に特攻[1.5]/聖油に特攻[1.5]", 300, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.VALIANT, 0, "ザバーニーヤ/アルスラーン", "", ""]
-  ,["きょうだい弟子の組手", , "連撃", 300, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "イクトシ/カグツチ", "", "", 1]
-  ,["ワンダーフォーゲル！", , "", 200, 0, EQUIP.INFERNAL, EQUIP.MAGIC, "ザオウ/ドゥルガー", "", ""]
-  ,["嵐を呼ぶMCバトル！/An Electrifying MC Battle!", , "", 250, 0, 0, EQUIP.BLOW|EQUIP.THRUST, "ベンテン/エーギル", "", ""]
-  ,["制御できるならやってみろ！/Stop Me if You Can!", , "", 300, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "フェンリル/ジャンバヴァン", "", ""]
-  ,["打ち上げLIVE！/Celebration Live!", , "意気", 150, 0, EQUIP.WATER, EQUIP.BLOW|EQUIP.LONGSLASH, "ベンテン/エビス", "", ""]
-  ,["奪取Theサマー/Seize the Summer!", , "", 100, 0, EQUIP.WATER, 0, "テュポーン/ベンテン", "", ""]
-  ,["成果は現場にあり！/Success Must Be Sought After", , "幻惑に特攻[2.0]", 100, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "アリス/ヴォーロス", "", ""]
-  ,["ジェノサイド・ハロウィン/Genociders' Halloween", , "クリティカル+", 500, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ハーロット/スルト", "", ""]
-  ,["今月の得真道学園/The Theme of the Month", , "", 400, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.MAGIC, "リチョウ/サナト・クマラ", "", ""]
-  ,["ウマミチカンフージェネレーション/Umamichi Kung-Fu Generation", , "暴走に特攻[1.6]/暴走+に特攻[1.6]", 300, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "ハヌマン/ナタ", "", ""]
-  ,["コリーダ・デ・トーロス", , "", 250, 0, EQUIP.WOOD|EQUIP.AETHER, 0, "アステリオス/タウラスマスク", "", ""]
-  ,["上質の一杯", , "滋養", 200, 0, 0, EQUIP.BLOW|EQUIP.SLASH|EQUIP.LONGSLASH, "スノウ/ギュウマオウ", "", ""]
-  ,["浅草ダウンタウンボーイズ/Asakusa Downtown Boys", , "根性時強化[1.5]", 200, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "テツギュウ/ハヌマン", "", ""]
-  ,["昼休みの購買部闘争！/School Lunchtime Battle!", , "", 400, 0, 0, EQUIP.BLOW, "ナタ/テツギュウ", "", ""]
-  ,["鬼も、福も/Ogres and Fortune", , "鬼道の衆に特攻[2.0]", 100, 0, EQUIP.FIRE|EQUIP.INFERNAL, 0, "タケマル/モトスミ", "", ""]
-  ,["禅の心/Spirit of Zen", , "集中", 0, 0, EQUIP.VALIANT, EQUIP.THRUST, "オニワカ/シュテン", "", ""]
-  ,["浅草の愚連隊/Asakusa Gang", , "剛力時強化", 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "モトスミ/リチョウ", "", ""]
-  ,["フィスト・ファイト！/Fist Fight!", , "威圧に特攻[1.4]", 400, 0, 0, EQUIP.BLOW, "オニワカ/イバラキ", "", ""]
-  ,["父の思い出", , "火傷に特攻[2.0]", 100, 0, 0, EQUIP.SLASH|EQUIP.MAGIC|EQUIP.LONGSLASH, "マルコシアス/タダトモ", "", ""]
-  ,["バレンタイン・ライブ！", , "", 200, 0, EQUIP.WATER|EQUIP.AETHER, 0, "ジブリール/マーナガルム", "", "", 2]
-  ,["愛の牢獄", , "", 200, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.AETHER, 0, "ショロトル/ハクメン", "", ""]
-  ,["鉄血のバージンロード", , "", 300, 0, 0, EQUIP.MAGIC, "クロード/スノウ", "", ""]
-  ,["再生のキャンバス", , "", 0, 0, 0, EQUIP.SHOT|EQUIP.SNIPE|EQUIP.NONE, "リヒト/イツァムナー", "", ""]
-  ,["神宿学園の食いしん坊番長", , "滋養に特攻[1.4]", 150, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ベヒモス/リョウタ", "", ""]
-  ,["黄金の実り/Golden Harvest", , "連撃", 300, 0, 0, EQUIP.THRUST, "ヴォーロス/ゴエモン", "", ""]
-  ,["お宝にはご用心/Eyes on the Prize", , "", 200, 0, 0, EQUIP.MAGIC|EQUIP.NONE, "アンドヴァリ/コタロウ", "", "", 2]
-  ,["アタックオブザウォーターメロン/Attack of the Killer Watermelons", , "", 400, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "チョウジ/ヴォーロス", "", ""]
-  ,["Surf the wave/Surfing the Wave", , "妨害に特攻[1.6]", 200, 0, 0, EQUIP.BLOW, "セト/ゴエモン", "", ""]
-  ,["青春は君をおって/In the Flower of Youth", , "", 300, 0, EQUIP.FIRE|EQUIP.INFERNAL, 0, "ドゥルガー/グンゾウ", "", "", 2]
-  ,["おいでよぼくらのもふもふ王国/Welcome to the Furry Kingdom!", , "", 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "クニヨシ/カーシー", "", ""]
-  ,["出会いは決定的に/Treasure Every Meeting", , "怒時強化", 400, 0, EQUIP.WATER|EQUIP.WOOD|EQUIP.NETHER, 0, "クニヨシ/ベンテン", "", "", 1]
-  ,["寂しがりのプランクスター/The Lonely Prankster", , "", 100, 0, 0, EQUIP.BLOW, "アールプ/カーシー", "", ""]
-  ,["夢のもふもふ大激突！/The Great Fluffy Clash of Dreams!", , "獣の末裔に特攻[1.5]/獣皮を巻く者に特攻[1.5]", 300, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "クニヨシ/アールプ", "", ""]
-  ,["芸術は光と陰に/All in Art is Light and Dark", , "", 150, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "クニヨシ/リヒト", "", ""]
-  ,["夏の島の夜の踊り/Nocturnal Dance", , "意気", 250, 0, EQUIP.WORLD|EQUIP.ALLROUND, 0, "タンガロア/キジムナー", "", ""]
-  ,["夢に見た力比べ/The Strength I dream of", , "", 350, 0, 0, EQUIP.SLASH|EQUIP.NONE, "アステリオス/アスタロト", "", "", 2]
-  ,["巨いなる供物/A Great Offering", , "", 100, 0, EQUIP.WOOD|EQUIP.INFERNAL|EQUIP.WORLD, 0, "タンガロア/ダゴン", "", ""]
-  ,["お手柄！うみのこ探検隊/Accomplished Ocean Explorers", , "", 150, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "キジムナー/エイタ", "", ""]
+  //名前, id, 効果(自身), 効果(味方), 効果(敵), 特攻, 特防, 耐性, レア度, ATK基本値, レア度指定, 属性指定, 武器タイプ指定, キャラ指定, ギルド指定, 学園指定[, CS倍率補正[, CSタイプ変更]]
+  [["", 0, "", "", "", "", "", "", 0, 0, 0, 0, 0, "", "", ""]
+  ,["見習い使い魔の応援/Support of the Apprentice Familiar/みならいつかいまのおうえん", 1, "CP増加", "", "", "", "", "", 1, 50, 0, EQUIP.ALLROUND, 0, "", "", ""]
+  ,["深淵の門番の破片/Shard of the Abyssal Gatekeeper/しんえんのもんばんのはへん", 2, "", "", "", "", "", "恐怖", 2, 75, 0, EQUIP.NETHER, 0, "", "", ""]
+  ,["遠雷の闘士の破片/遠雷の闘士の破片/えんらいのとうしのはへん", 3, "", "", "", "", "", "マヒ", 2, 200, 0, EQUIP.AETHER, 0, "", "", ""]
+  ,["長途の待人の破片/長途の待人の破片/ちょうとのまちびとのはへん", 4, "", "", "", "", "", "告死", 2, 0, 0, EQUIP.WOOD, 0, "", "", ""]
+  ,["今、ここだけにしかない物語/今、ここだけにしかない物語/いま、ここだけにしかないものがたり", 101, "HP回復/獲得ランク経験値アップ", "", "", "", "", "", 4, 300, EQUIP.ANY, 0, 0, "", "", ""]
+  ,["お宝目指して何処までも/お宝目指して何処までも/おたからめざしてどこまでも", 107, "獲得コインアップ", "", "呪い", "", "", "", 4, 200, EQUIP.ANY, 0, 0, "", "", ""]
+  ,["教えの庭にも/教えの庭にも/おしえのにわにも", 108, "獲得経験値アップ/獲得ランク経験値アップ", "", "", "", "", "", 4, 200, EQUIP.ANY, 0, 0, "", "", ""]
+  ,["拮抗の例外処理？/Exception of Antagonism?/きっこうのれいがいしょり？", 102, "強制移動無効(後)", "", "HP減少", "", "", "", 3, 150, 0, EQUIP.WATER, 0, "", "", ""]
+  ,["魔王と魔王/Dark Lords/まおうとまおう", 103, "", "", "", "", "", "毒/猛毒", 3, 150, EQUIP.ANY, 0, 0, "", "", ""]
+  ,["仰げば尊し/仰げば尊し/あおげばとうとし", 104, "獲得経験値集約/獲得経験値アップ", "", "", "", "", "", 4, 100, EQUIP.ANY, 0, 0, "", "", ""]
+  ,["聖夜のダブル・ヒーロー！/聖夜のダブル・ヒーロー！/せいやのだぶる・ひーろー！", 105, "根性/特防[0.8]", "", "", "", "打撃", "", 3, 150, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.BLOW, "タウラスマスク/クランプス", "", ""]
+  ,["ギュウマオウ式OJT！/OJT: The Gyumao Way/ぎゅうまおうしきOJT！", 106, "特防[0.8]", "弱体解除(単)", "", "", "突撃", "", 3, 0, 0, 0, EQUIP.LONGSLASH|EQUIP.MAGIC, "ギュウマオウ/セト", "", ""]
+  ,["友情のコンビネーション！/友情のコンビネーション！/ゆうじょうのこんびねーしょん！", 109, "獲得戦友ポイントアップ/友情時強化", "", "", "", "", "", 4, 200, EQUIP.ANY, 0, 0, "", "", ""]
+  ,["はぐれ者の幕間/はぐれ者の幕間/はぐれもののまくま", 110, "弱体解除(単)", "", "", "", "", "劫火", 3, 0, 0, EQUIP.FIRE|EQUIP.WATER|EQUIP.AETHER, 0, "トムテ/テツヤ", "", ""]
+  ,["初湯のひととき/初湯のひととき/はつゆのひととき", 111, "HP回復", "", "", "", "", "", 4, 0, 0, 0, EQUIP.THRUST|EQUIP.LONGSLASH|EQUIP.NONE, "ギュウマオウ/シンノウ", "", ""]
+  ,["曙光に燃える/曙光に燃える/しょこうにもえる", 112, "CS威力増加(+1)", "弱体解除(単)", "", "", "", "", 4, 400, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.WORLD, 0, "タウラスマスク/ワカン・タンカ", "", "", 1]
+  ,["しゃかりき稼ぐぜ海の家/Money-Making Beach House/しゃかりきかせぐぜうみのいえ", 113, "奮起", "HP回復", "", "", "", "", 3, 200, 0, EQUIP.FIRE|EQUIP.WATER, 0, "ノーマッド/タダトモ", "", ""]
+  ,["我ら今は共に歩みて/我ら今は共に歩みて/われらいまはともにあゆみて", 114, "獲得ランク経験値アップ/獲得戦友ポイントアップ", "奮起", "", "", "", "", 5, 250, EQUIP.RARE1|EQUIP.RARE2, 0, 0, "", "バーサーカーズ/ミッショネルズ/タイクーンズ", ""]
+  ,["東方の賢者たち/Wisemen of the East/とうほうのけんじゃたち", 115, "獲得コインアップ", "", "弱点", "", "", "", 5, 250, EQUIP.RARE1|EQUIP.RARE2, EQUIP.WORLD, 0, "", "ワイズメン", ""]
+  ,["開拓の誓い/開拓の誓い/かいたくのちかい", , "", "CP増加", "", "", "", "恐怖", 5, 100, 0, EQUIP.NETHER, 0, "主人公/シロウ", "", ""]
+  ,["無窮の誓い/無窮の誓い/むきゅうのちかい", , "クリティカル", "", "", "", "", "マヒ", 5, 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ", "", ""]
+  ,["豊穣の誓い/豊穣の誓い/ほうじょうのちかい", , "HP回復", "", "", "", "", "告死", 5, 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ", "", ""]
+  ,["根絶の誓い/根絶の誓い/こんぜつのちかい", , "回避", "", "", "", "", "憑依", 5, 250, 0, EQUIP.WATER, 0, "主人公/トウジ", "", ""]
+  ,["結合の誓い/結合の誓い/けつごうのちかい", , "祈り", "", "", "", "", "束縛", 5, 300, 0, EQUIP.FIRE, 0, "主人公/アルク", "", ""]
+  ,["犬どもの戦場/犬どもの戦場/いぬどものせんじょう", , "CP増加/特防[0.7]", "", "", "", "斬撃", "", 4, 300, 0, EQUIP.FIRE|EQUIP.WATER, 0, "モリタカ/タダトモ/シノ", "", ""]
+  ,["ミッションコンプリート/ミッションコンプリート/みっしょんこんぷりーと", , "クリティカル/特防[0.8]", "", "", "", "射撃/狙撃", "", 4, 200, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "コタロウ/オセ", "", ""]
+  ,["計り知れざる永劫の/計り知れざる永劫の/はかりしれざるえいごうの", , "恐怖に特攻[1.4]", "", "恐怖", "恐怖", "", "", 4, 100, 0, 0, EQUIP.MAGIC, "シロウ", "", ""]
+  ,["先輩と後輩の時間/先輩と後輩の時間/せんぱいとこうはいのじかん", , "HP回復/特防[0.7]", "", "", "", "打撃", "", 4, 400, 0, 0, EQUIP.BLOW|EQUIP.LONGSLASH, "グンゾウ/ワカン・タンカ", "", ""]
+  ,["従者並びて/従者並びて/じゅうしゃならびて", , "弱体反射/HP回復", "", "", "", "", "", 4, 0, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "オニワカ/カーシー", "", ""]
+  ,["シューティングスターズ/シューティングスターズ/しゅーてぃんぐすたーず", , "回避に貫通/連撃", "", "", "回避", "", "", 4, 300, 0, 0, EQUIP.THRUST|EQUIP.SHOT, "イクトシ/バティム", "", ""]
+  ,["幼馴染の流儀/幼馴染の流儀/おさななじみのりゅうぎ", , "CS威力増加(+1)", "", "", "", "", "弱点", 4, 200, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "シロウ/ケンゴ", "", "", 1]
+  ,["魔王の温泉郷へようこそ/魔王の温泉郷へようこそ/まおうのおんせんきょうへようこそ", , "弱体解除(単)", "", "", "", "", "崩し", 4, 100, 0, EQUIP.NETHER, 0, "アンドヴァリ/チェルノボーグ", "", ""]
+  ,["大江山の鬼たち/大江山の鬼たち/おおえやまのおにたち", , "CS威力増加(+1)", "", "", "", "", "威圧", 4, 400, 0, EQUIP.FIRE|EQUIP.WATER|EQUIP.WOOD, 0, "シュテン/イバラキ", "", "", 1]
+  ,["新宿ポリスアカデミー/新宿ポリスアカデミー/しんじゅくぽりすあかでみー", , "CP増加", "", "", "", "", "スキル封印", 4, 200, 0, EQUIP.WOOD|EQUIP.VALIANT, 0, "タヂカラオ/ホウゲン", "", ""]
+  ,["ナンパの心得/ナンパの心得/なんぱのこころえ", , "崩しに特攻[1.4]", "", "HP減少", "崩し", "", "", 3, 300, 0, EQUIP.WATER, 0, "ゴウリョウ/テュポーン", "", ""]
+  ,["山の熊さんたち/山の熊さんたち/やまのくまさんたち", , "根性に特攻[1.4]/係留", "", "", "根性", "", "", 3, 150, 0, EQUIP.WOOD, 0, "アシガラ/バーゲスト", "", ""]
+  ,["都会の隠れ家/都会の隠れ家/とかいのかくれが", , "加速に特攻[1.4]/加速", "", "", "加速", "", "", 3, 75, 0, EQUIP.AETHER, 0, "ガンダルヴァ/サンダーバード", "", ""]
+  ,["東京カジノへようこそ/東京カジノへようこそ/とうきょうかじのへようこそ", , "闘志に特攻[1.4]", "", "HP減少", "闘志", "", "", 3, 225, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ハクメン/ショロトル", "", ""]
+  ,["次なる聖夜のために/次なる聖夜のために/つぎなるせいやのために", , "特防[0.8]/CP増加", "", "", "", "魔法", "", 3, 0, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "ジェド/タングリスニル", "", ""]
+  ,["或る島での1ページ/A Page from an Island Journal/あるしまでの1ぺーじ", , "特防[0.8]/係留", "", "", "", "打撃", "", 3, 75, 0, EQUIP.NETHER, 0, "アステリオス/ロビンソン", "", ""]
+  ,["夏の新メニュー開発！/夏の新メニュー開発！/なつのしんめにゅーかいはつ！", , "HP回復/祝福に特攻[1.4]", "", "", "祝福", "", "", 3, 0, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "リョウタ/チョウジ", "", ""]
+  ,["休日のカラオケロード！/休日のカラオケロード！/きゅうじつのからおけろーど", , "HP回復/脱力に特攻[1.4]", "", "", "脱力", "", "", 3, 50, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "ベヒモス/ジズ", "", ""]
+  ,["糾える縄の如し/糾える縄の如し/あざなえるなわのごとし", , "CP増加/呪いに特攻[1.4]", "", "", "呪い", "", "", 3, 225, 0, EQUIP.NETHER, 0, "ケンタ/バーゲスト", "", ""]
+  ,["OH, MY POPSTAR！/OH, MY POPSTAR！", , "恐怖に特攻[1.4]/閃き", "", "", "恐怖", "", "", 3, 150, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ニャルラトテプ/アザトース", "", ""]
+  ,["ある家族の肖像/ある家族の肖像/あるかぞくのしょうぞう", , "CP増加/祝福に特攻[1.4]", "", "", "祝福", "", "", 3, 150, 0, EQUIP.FIRE, 0, "ハーロット/スルト", "", ""]
+  ,["はじめてのオムライス！/はじめてのオムライス！/はじめてのおむらいす！", , "HP回復/呪いに特攻[1.4]", "", "", "呪い", "", "", 3, 75, 0, EQUIP.WATER, 0, "モリタカ/アギョウ", "", ""]
+  ,["鍛錬あるのみ！/鍛錬あるのみ！/たんれんあるのみ！", , "CP増加/頑強に特攻[1.4]", "", "", "頑強", "", "", 3, 175, 0, EQUIP.FIRE|EQUIP.INFERNAL, 0, "クロガネ/アマツマラ/ヘパイストス", "", ""]
+  ,["バディの絆/バディの絆/ばでぃのきずな", , "HP回復/頑強に特攻[1.4]", "", "", "頑強", "", "", 3, 75, 0, 0, EQUIP.MAGIC, "レイヴ/カーシー", "", ""]
+  ,["ようこそ池袋の劇場へ/ようこそ池袋の劇場へ/ようこそいけぶくろのげきじょうへ", , "CP増加/熱情に特攻[1.4]", "", "", "熱情", "", "", 3, 225, 0, 0, EQUIP.SLASH, "クロード/スノウ", "", ""]
+  ,["飢野学園の指導/飢野学園の指導/うえのがくえんのしどう", , "閃きに特攻[1.4]/集中に特攻[1.4]", "", "", "閃き/集中", "", "", 3, 300, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "アールプ/レイヴ", "", ""]
+  ,["全ては筋肉より始まる/全ては筋肉より始まる/すべてはきんにくよりはじまる", , "剛力に特攻[1.4]", "", "HP減少", "剛力", "", "", 3, 300, 0, 0, EQUIP.BLOW, "アマツマラ/スルト", "", ""]
+  ,["父と子と/父と子と/ちちとこと", , "CP増加/再生に特攻[1.4]", "", "", "再生", "", "", 3, 150, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "アルク/スルト", "", ""]
+  ,["出発！真夏の水中冒険/出発！真夏の水中冒険/しゅっぱつ！まなつのすいちゅうぼうけん", , "CP増加/防御強化に特攻[1.4]", "", "", "防御強化", "", "", 3, 225, 0, EQUIP.WATER, 0, "エイタ/テュポーン", "", ""]
+  ,["おお山の喜びよ/おお山の喜びよ/おおやまのよろこびよ", , "CP増加/凍結に特攻[1.4]", "", "", "凍結", "", "", 3, 250, 0, 0, EQUIP.BLOW, "ザオウ/チェルノボーグ", "", ""]
+  ,["どっちの味方なの！？/どっちの味方なの！？/どっちのみかたなの！？", , "CP増加/幻惑に特攻[1.4]", "", "", "幻惑", "", "", 3, 175, 0, 0, EQUIP.MAGIC|EQUIP.LONGSLASH, "リヒト/クニヨシ/ベンテン", "", ""]
+  ,["深淵の海より来たりて/From the Depths/しんえんのうみよりきたりて", , "弱体反射/CS威力増加(+2)", "弱体反射", "", "", "", "", 5, 250, 0, EQUIP.WATER|EQUIP.INFERNAL, 0, "トリトン/ダゴン", "", "", 2]
+  ,["サン・アンド・オイル！/Sun and Oil!/さん・あんど・おいる！", , "聖油に特攻[1.4]", "CP増加", "", "聖油", "", "", 4, 0, 0, EQUIP.WOOD|EQUIP.WORLD, 0, "クロガネ/タンガロア", "", ""]
+  ,["サモナーズのX'MAS/サモナーズのX'MAS/さもなーずのX'MAS", , "HP回復/CS威力増加(+2)", "", "", "", "", "", 5, 200, 0, EQUIP.WATER|EQUIP.WOOD|EQUIP.ALLROUND, 0, "リョウタ/トウジ", "", "", 2]
+  ,["同じ月が見ている/同じ月が見ている/おなじつきがみている", , "弱体無効/HP回復", "", "", "", "", "", 4, 0, 0, 0, EQUIP.MAGIC, "マリア/ジブリール", "", ""]
+  ,["夕暮れ時の青春は/夕暮れ時の青春は/ゆうぐれどきのせいしゅんは", , "HP回復/CS威力増加(+1)", "", "", "", "", "", 4, 200, 0, 0, EQUIP.THRUST|EQUIP.SHOT, "グンゾウ/キュウマ", "", "", 1]
+  ,["バレンタイン・ドッグス！/Valentine's Dogs!/ばれんたいん・どっぐす！", , "根性/CP増加", "", "", "", "", "", 5, 250, 0, EQUIP.FIRE|EQUIP.NETHER, EQUIP.SLASH, "モリタカ/タダトモ", "", ""]
+  ,["ショコラは深淵より来たり/Abyssal Confectionery/しょこらはしんえんよりきたり", , "呪いに特攻[1.6]", "", "", "呪い", "", "魅了", 4, 0, 0, EQUIP.FIRE|EQUIP.NETHER, 0, "シロウ/シトリー", "", ""]
+  ,["硬派を気取ったあの頃は/Acting Tough/こうはをきどったあのころは", , "特防[0.7]/CP増加", "", "", "", "打撃", "", 4, 400, 0, EQUIP.AETHER, EQUIP.BLOW, "ケンゴ/シトリー", "", ""]
+  ,["チョコレート・ダイナマイト！/Chocolate Dynamite!/ちょこれーと・だいなまいと！", , "特防[0.8]", "HP回復", "", "", "横一文字", "", 3, 0, 0, 0, EQUIP.MAGIC|EQUIP.SNIPE, "チョウジ/エビス", "", ""]
+  ,["砂漠のプライベート・レッスン？/Private Lesson in the Desert?/さばくのぷらいべーと・れっすん？", , "", "", "魅了", "", "", "火傷", 5, 100, 0, EQUIP.VALIANT|EQUIP.WATER, 0, "セト/ゴウリョウ", "", ""]
+  ,["蒲田ギルドの師弟/A Teacher and Student from Kamata/かまたぎるどのしてい", , "攻撃力微増[AR]", "", "", "", "", "脱力", 5, 500, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "アマツマラ/クロガネ", "", ""]
+  ,["サバイバルリゾート/Survival Resort/さばいばるりぞーと", , "熱情に特攻[1.6]", "", "脱力", "熱情", "", "", 4, 100, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "ハヌマン/ツァトグァ", "", ""]
+  ,["剣豪と刀鍛冶の攻防/Battle between Swordsmith and Swordsman/けんごうとかたなかじのこうぼう", , "特防[0.8]", "", "強化解除(単)", "", "斬撃/横一文字", "", 4, 300, 0, EQUIP.ALLROUND|EQUIP.FIRE, EQUIP.SLASH, "ムサシ/アマツマラ", "", ""]
+  ,["寂しがりの猛牛たち/Single Bulls Club/さびしがりのもうぎゅうたち", , "CP増加/CS威力増加(+2)", "", "", "", "", "", 5, 500, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ワカン・タンカ/テツギュウ", "", "", 2]
+  ,["流れ者の集う街/City of Drifters/ながれもののつどうまち", , "回避/特防[0.7]", "", "", "", "斬撃/突撃", "", 5, 100, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "スズカ/テツギュウ", "", ""]
+  ,["いつかどうして夢の鬼/Ogresses' Dream - A Different Time, A Different Place/いつかどうしてゆめのおに", , "特防[0.7]", "閃き", "", "", "魔法", "", 4, 100, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "スズカ/イバラキ", "", ""]
+  ,["剣の道は尚遙か/The Way of the Sword Has Just Begun/けんのみちはなおはるか", , "スキル封印に特攻[1.3]/束縛に特攻[1.3]/二重封印に特攻[1.3]", "", "引き寄せ(1マス)", "スキル封印/束縛/二重封印", "", "", 4, 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ", "", ""]
+  ,["歓楽の鬼/Ogres' Nightlife/かんらくのおに", , "", "", "魅了", "", "", "妨害", 4, 0, 0, 0, EQUIP.BLOW|EQUIP.SHOT, "スズカ/イバラキ", "", ""]
+  ,["おお温泉の喜びよ/おお温泉の喜びよ/おおおんせんのよろこびよ", , "温泉", "", "", "", "", "凍結", 5, 0, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "ザオウ/チェルノボーグ", "", ""]
+  ,["法の代行者たち/法の代行者たち/ほうのだいこうしゃたち", , "再生に特攻[1.5]/祝福に特攻[1.5]/滋養に特攻[1.5]/聖油に特攻[1.5]", "", "祝福", "再生/祝福/滋養/聖油", "", "", 5, 300, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.VALIANT, 0, "ザバーニーヤ/アルスラーン", "", ""]
+  ,["きょうだい弟子の組手/きょうだい弟子の組手/きょうだいでしのくみて", , "連撃/CS威力増加(+1)", "", "", "", "", "", 4, 300, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "イクトシ/カグツチ", "", "", 1]
+  ,["ワンダーフォーゲル！/ワンダーフォーゲル！/わんだーふぉーげる！", , "奮起/根性", "", "", "", "", "", 4, 200, 0, EQUIP.INFERNAL, EQUIP.MAGIC, "ザオウ/ドゥルガー", "", ""]
+  ,["嵐を呼ぶMCバトル！/An Electrifying MC Battle!/あらしをよぶMCばとる！", , "強制移動無効(全)", "", "HP減少", "", "", "", 5, 250, 0, 0, EQUIP.BLOW|EQUIP.THRUST, "ベンテン/エーギル", "", ""]
+  ,["制御できるならやってみろ！/Stop Me if You Can!/せいぎょできるならやってみろ！", , "弱体解除(単)/暴走時防御強化/暴走+時防御強化", "", "", "", "", "", 4, 300, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "フェンリル/ジャンバヴァン", "", ""]
+  ,["打ち上げLIVE！/Celebration Live!/うちあげLIVE！", , "意気", "CP増加", "", "", "", "", 3, 150, 0, EQUIP.WATER, EQUIP.BLOW|EQUIP.LONGSLASH, "ベンテン/エビス", "", ""]
+  ,["奪取Theサマー/Seize the Summer!/だっしゅTheさまー", , "CP増加", "", "CP減少", "", "", "", 3, 100, 0, EQUIP.WATER, 0, "テュポーン/ベンテン", "", ""]
+  ,["成果は現場にあり！/Success Must Be Sought After/せいかはげんじょうにあり！", , "閃き/幻惑に特攻[2.0]", "", "", "幻惑", "", "", 5, 100, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "アリス/ヴォーロス", "", ""]
+  ,["ジェノサイド・ハロウィン/Genociders' Halloween/じぇのさいど・はろうぃん", , "クリティカル+", "", "", "", "", "強化無効", 5, 500, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ハーロット/スルト", "", ""]
+  ,["今月の得真道学園/The Theme of the Month/こんげつのうまみちがくえん", , "魅了時弱化[AR]/根性", "", "", "", "", "", 4, 400, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.MAGIC, "リチョウ/サナト・クマラ", "", ""]
+  ,["ウマミチカンフージェネレーション/Umamichi Kung-Fu Generation/うまみちかんふーじぇねれーしょん", , "暴走に特攻[1.6]/暴走+に特攻[1.6]", "係留", "", "暴走/暴走+", "", "", 4, 300, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "ハヌマン/ナタ", "", ""]
+  ,["コリーダ・デ・トーロス/コリーダ・デ・トーロス/こりーだ・で・とーろす", , "CP増加", "", "引き寄せ(2マス)", "", "", "", 5, 250, 0, EQUIP.WOOD|EQUIP.AETHER, 0, "アステリオス/タウラスマスク", "", ""]
+  ,["上質の一杯/上質の一杯/じょうしつのいっぱい", , "滋養/滋養時強化[AR]", "滋養時強化[AR]", "", "", "", "", 5, 200, 0, 0, EQUIP.BLOW|EQUIP.SLASH|EQUIP.LONGSLASH, "スノウ/ギュウマオウ", "", ""]
+  ,["浅草ダウンタウンボーイズ/Asakusa Downtown Boys/あさくさだうんたうんぼーいず", , "根性時強化[AR]", "", "", "", "", "猛毒", 4, 200, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "テツギュウ/ハヌマン", "", ""]
+  ,["昼休みの購買部闘争！/School Lunchtime Battle!/ひるやすみのこうばいぶとうそう！", , "全方向移動力増加/加速", "", "", "", "", "", 4, 400, 0, 0, EQUIP.BLOW, "ナタ/テツギュウ", "", ""]
+  ,["鬼も、福も/Ogres and Fortune/おにも、ふくも", , "鬼道の衆に特攻[2.0]", "CP増加", "", "鬼道の衆", "", "", 5, 100, 0, EQUIP.FIRE|EQUIP.INFERNAL, 0, "タケマル/モトスミ", "", ""]
+  ,["禅の心/Spirit of Zen/ぜんのこころ", , "集中", "", "", "", "", "CS封印", 5, 0, 0, EQUIP.VALIANT, EQUIP.THRUST, "オニワカ/シュテン", "", ""]
+  ,["浅草の愚連隊/Asakusa Gang/あさくさのぐれんたい", , "剛力時強化", "", "", "", "", "呪い", 4, 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "モトスミ/リチョウ", "", ""]
+  ,["フィスト・ファイト！/Fist Fight!/ふぃすと・ふぁいと！", , "威圧に特攻[1.4]", "", "威圧", "威圧", "", "", 4, 400, 0, 0, EQUIP.BLOW, "オニワカ/イバラキ", "", ""]
+  ,["父の思い出/父の思い出/ちちのおもいで", , "火傷に特攻[2.0]", "クリティカル", "", "火傷", "", "", 5, 100, 0, 0, EQUIP.SLASH|EQUIP.MAGIC|EQUIP.LONGSLASH, "マルコシアス/タダトモ", "", ""]
+  ,["バレンタイン・ライブ！/バレンタイン・ライブ！/ばれんたいん・らいぶ！", , "CP増加/CS威力増加(+2)", "CP増加", "", "", "", "", 5, 200, 0, EQUIP.WATER|EQUIP.AETHER, 0, "ジブリール/マーナガルム", "", "", 2]
+  ,["愛の牢獄/愛の牢獄/あいのろうごく", , "", "", "係留/束縛", "", "", "", 4, 200, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.AETHER, 0, "ショロトル/ハクメン", "", ""]
+  ,["鉄血のバージンロード/鉄血のバージンロード/てっけつのばーじんろーど", , "", "HP回復/CP増加", "", "", "", "", 4, 300, 0, 0, EQUIP.MAGIC, "クロード/スノウ", "", ""]
+  ,["再生のキャンバス/再生のキャンバス/さいせいのきゃんばす", , "", "CP増加/HP回復", "", "", "", "", 3, 0, 0, 0, EQUIP.SHOT|EQUIP.SNIPE|EQUIP.NONE, "リヒト/イツァムナー", "", ""]
+  ,["神宿学園の食いしん坊番長/神宿学園の食いしん坊番長/しんじゅくがくえんのくいしんぼうばんちょう", , "滋養に特攻[1.4]/HP回復", "", "", "滋養", "", "", 3, 150, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ベヒモス/リョウタ", "", ""]
+  ,["黄金の実り/Golden Harvest/おうごんのみのり", , "連撃", "HP回復", "", "", "", "", 5, 300, 0, 0, EQUIP.THRUST, "ヴォーロス/ゴエモン", "", ""]
+  ,["お宝にはご用心/Eyes on the Prize/おたからにはごようじん", , "CP増加/CS威力増加(+2)", "", "", "", "", "", 5, 200, 0, 0, EQUIP.MAGIC|EQUIP.NONE, "アンドヴァリ/コタロウ", "", "", 2]
+  ,["アタックオブザウォーターメロン/Attack of the Killer Watermelons/あたっくおぶざうぉーたーめろん", , "", "", "HP減少", "", "", "", 4, 400, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "チョウジ/ヴォーロス", "", ""]
+  ,["Surf the wave/Surfing the Wave", , "妨害に特攻[1.6]", "", "引き寄せ(1マス)", "妨害", "", "", 4, 200, 0, 0, EQUIP.BLOW, "セト/ゴエモン", "", ""]
+  ,["青春は君をおって/In the Flower of Youth/せいしゅんはきみをおって", , "CS威力増加(+2)", "奮起", "", "", "", "", 5, 300, 0, EQUIP.FIRE|EQUIP.INFERNAL, 0, "ドゥルガー/グンゾウ", "", "", 2]
+  ,["おいでよぼくらのもふもふ王国/Welcome to the Furry Kingdom!/おいでよぼくらのもふもふおうこく", , "", "", "引き寄せ(1マス)/魅了", "", "", "", 5, 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "クニヨシ/カーシー", "", ""]
+  ,["出会いは決定的に/Treasure Every Meeting/であいはけっていてきに", , "怒時強化/CS威力増加(+1)", "", "", "", "", "", 4, 400, 0, EQUIP.WATER|EQUIP.WOOD|EQUIP.NETHER, 0, "クニヨシ/ベンテン", "", "", 1]
+  ,["寂しがりのプランクスター/The Lonely Prankster/さびしがりのぷらんくすたー", , "CP増加/注目", "", "", "", "", "", 3, 100, 0, 0, EQUIP.BLOW, "アールプ/カーシー", "", ""]
+  ,["夢のもふもふ大激突！/The Great Fluffy Clash of Dreams!/ゆめのもふもふだいげきとつ！", , "獣の末裔に特攻[1.5]/獣皮を巻く者に特攻[1.5]/HP回復", "", "", "獣の末裔/獣皮を巻く者", "", "", 3, 300, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "クニヨシ/アールプ", "", ""]
+  ,["芸術は光と陰に/All in Art is Light and Dark/げいじゅつはひかりとかげに", , "", "CP増加", "CP減少", "", "", "", 3, 150, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "クニヨシ/リヒト", "", ""]
+  ,["夏の島の夜の踊り/Nocturnal Dance/なつのしまのよるのおどり", , "意気/HP回復", "意気/HP回復", "", "", "", "", 5, 250, 0, EQUIP.WORLD|EQUIP.ALLROUND, 0, "タンガロア/キジムナー", "", ""]
+  ,["夢に見た力比べ/The Strength I dream of/ゆめにみたちからくらべ", , "CS威力増加(+2)", "", "威圧", "", "", "", 5, 350, 0, 0, EQUIP.SLASH|EQUIP.NONE, "アステリオス/アスタロト", "", "", 2]
+  ,["巨いなる供物/A Great Offering/おおいなるくもつ", , "HP回復", "", "HP減少", "", "", "", 4, 100, 0, EQUIP.WOOD|EQUIP.INFERNAL|EQUIP.WORLD, 0, "タンガロア/ダゴン", "", ""]
+  ,["お手柄！うみのこ探検隊/Accomplished Ocean Explorers/おてがら！うみのこたんけんたい", , "特防[0.8]/加速時強化[AR]", "", "", "", "射撃", "", 3, 150, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "キジムナー/エイタ", "", ""]
 ]);

@@ -63,6 +63,7 @@ var calc = {
     if(!navigator.userAgent.match(/iP(hone|[ao]d)/) || isStandalone()) _("ms").style.display = "none";
     this.setLanguage(-1);
     this.cardfilter.init();
+    this.arfilter.init();
     linkInput(c, "atk", "a");
     linkInput(c, "weapon", "w");
     linkInput(c, "cs", "cs");
@@ -73,6 +74,7 @@ var calc = {
     linkInput(c, "card", "pc", function(){
       c.updateEffectOptions();
       c.checkCardSelected();
+      c.arfilter.update(c.card);
     });
     linkInput(c, "lv", "pl");
     linkInput(c, "ar", "rc", function(){
@@ -118,13 +120,22 @@ var calc = {
       });
     };
     _("rd").onclick = function(){
-      c.selectCardRandomly();
+      selectRandomly("pc");
     };
     _("fv").onclick = function(){
       c.cardfilter.toggle();
     };
     _("fr").onclick = function(){
       c.cardfilter.reset();
+    };
+    _("rrd").onclick = function(){
+      selectRandomly("rc");
+    };
+    _("rv").onclick = function(){
+      c.arfilter.toggle();
+    };
+    _("rfr").onclick = function(){
+      c.arfilter.reset();
     };
     _("lm").onclick = function(){
       setValue("pl", CARD[c.card].maxLv);
@@ -140,6 +151,27 @@ var calc = {
     };
     _("ly").onclick = function(){
       setValue("pl", v("pl") - 10);
+      c.update();
+    };
+    _("ra").onclick = function(){
+      setValue("rl", 1);
+      c.update();
+    };
+    _("rm").onclick = function(){
+      setValue("rl", 100);
+      c.update();
+    };
+    _("rx").onclick = function(){
+      setValue("rl", v("rl") + 5);
+      c.update();
+    };
+    _("ry").onclick = function(){
+      setValue("rl", v("rl") + 20);
+      c.update();
+    };
+    _("rz").onclick = function(){
+      var x = v("rl");
+      setValue("rl", x - x % 10 + 10);
       c.update();
     };
     _("rs").onclick = function(){
@@ -173,8 +205,14 @@ var calc = {
     var n = 0;
     var tmp = [];
     var bonus = [];
-    s.write(CARD[this.card].id);
-    s.write(AR[this.ar].id);
+    var card = CARD[this.card];
+    var ar = AR[this.ar];
+    s.write(card.id);
+    if(card.canEquip(ar)){
+      s.write(ar.id);
+    }else{
+      s.write(AR[0].id);
+    }
     s.write(this.usecs);
     s.write(this.cLv);
     s.write(this.arLv);
@@ -194,15 +232,19 @@ var calc = {
       if(v.loop){
         var e = EFFECT[i];
         if(e.sp){
+          var loop = v.loop;
+          if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()) loop += 100;
           bonus.push(e.sp[0]);
           bonus.push(e.sp[1]);
-          bonus.push(v.loop);
+          bonus.push(loop);
         }else{
           if(bonus.length) return true;
           s.write(i - n);
           n = i;
           if(!e.isFixed() || !e.isStackable()){
-            tmp.push(v.lv);
+            var lv = v.lv;
+            if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()) lv += 1000;
+            tmp.push(lv);
           }
           if(e.isStackable()) tmp.push(v.loop);
           if(e.type === TYPE.LIMIT){
@@ -239,7 +281,7 @@ var calc = {
   load: function(x, skipSave){
     var s = new Decoder(x);
     if(s.data){
-      var complete = false;
+      var complete;
       var tmp = [];
       var n = s.read();
       var index = 1;
@@ -251,6 +293,8 @@ var calc = {
         return false;
       });
       this.active = 0;
+      this.cardfilter.reset();
+      this.arfilter.reset();
       setValue("pc", index);
       n = s.read();
       index = 0;
@@ -287,13 +331,23 @@ var calc = {
       this.es.forEach(function(v){
         v.clear();
       });
+      complete = !n;
       if(n) this.es.some(function(v, i, es){
         if(i === n){
           var e = EFFECT[i];
           if(e.sp) return true;
           if(e.group === 2 && e.link) v = es[e.link];
           v.loop = 1;
-          if(!e.isFixed() || !e.isStackable()) v.lv = s.read();
+          if(!e.isFixed() || !e.isStackable()){
+            v.lv = s.read();
+            if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()){
+              if(v.lv < 1000){
+                es[e.link].lv = 1;
+                es[e.link].loop = 1;
+              }
+              v.lv = v.lv % 1000;
+            }
+          }
           if(e.isStackable()) v.loop = Math.min(s.read(), 15);
           if(e.type === TYPE.LIMIT){
             v.hp = s.read();
@@ -330,6 +384,14 @@ var calc = {
           if(!e || !e.subset) return;
           n = e.subset.get(v[1]);
           if(!n || !es[n]) return;
+          e = EFFECT[n];
+          if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()){
+            if(v[2] < 100){
+              es[e.link].lv = 1;
+              es[e.link].loop = 1;
+            }
+            v[2] = v[2] % 100;
+          }
           es[n].loop = Math.min(v[2], 15);
           es[n].lv = 1;
         });
@@ -337,7 +399,6 @@ var calc = {
       this.active = 1;
     }
     this.update(skipSave);
-    this.updateEffectOptions();
   },
   addStatus: function(index, lv, group, mode){
     if(index > EFFECT_MAX){
@@ -476,14 +537,18 @@ var calc = {
     this.updateTexts();
     if(x >= 0){
       this.cardfilter.update();
+      this.arfilter.update();
       this.update();
     }
   },
   updateTexts: function(){
     var cf = this.cardfilter;
-    var b = cf.active;
+    var rf = this.arfilter;
+    var cb = cf.active;
+    var rb = rf.active;
     this.active = 0;
     cf.active = 0;
+    rf.active = 0;
     setOptions("sv", VERSION);
     setOptions("w", WEAPON, FILTER.NAME);
     setOptions("cs", CS, FILTER.VALUE, CS_ORDER);
@@ -505,8 +570,13 @@ var calc = {
       }, TAG.ORDER[language]);
     });
     setOptions("qf", AR);
+    setOptions("rrf", RARITY);
+    ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
+      setOptions(key, TAG, function(x){
+        return !x.index || x.checkFlag(i, TIMING.AR);
+      }, TAG.ORDER[language]);
+    });
     this.updateEffectOptions();
-    this.checkCardSelected();
     setText("lsv", "モード/Mode");
     setText("lpc", "カード/Card");
     setText("lpl", "カードLv/Card Lv");
@@ -551,21 +621,36 @@ var calc = {
     setText("lfv", "フィルタ/Filter ");
     setText("rd", "ランダムカード/Random Card");
     setText("fr", "フィルタをリセット/Reset Filter");
+    setText("rfc", "AR装備フィルタ/AR Equipment Filter ");
+    setText("lrxf", "名前/Name");
+    setText("lrrf", "レア度/Rarity");
+    setText("lref1", "効果(自身)/Effect(Self)");
+    setText("lref2", "効果(味方)/Effect(Ally)");
+    setText("lref3", "効果(敵)/Effect(Enemy)");
+    setText("lrpf", "常時/Static");
+    setText("lraf", "特攻対象/A.Bonus");
+    setText("lrdf", "特防対象/D.Bonus");
+    setText("lrnf", "状態無効/Nullify");
+    setText("lceq", "装備可能のみ/Can be Equipped only");
+    setText("lrv", "フィルタ/Filter ");
+    setText("rrd", "ランダムAR/Random AR");
+    setText("rfr", "フィルタをリセット/Reset Filter");
     setText("dd", "カードデータ: /Card Data: ");
     setText("ad", "ARデータ: /AR Data: ");
     setText("ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'.");
     setText("um", "新しいデータがあります/New data is available.");
     setText("ub", "更新/Update");
-    cf.active = b;
+    cf.active = cb;
+    rf.active = rb;
     this.active = 1;
   },
   updateEffectOptions: function(){
     var p = ["", "{CS} ", "[AR] "];
     var es = this.es;
-    var s = [0].concat(
-      CARD[this.card].effects
-    );
-    AR[this.ar].effects.forEach(function(x){
+    var card = CARD[this.card];
+    var ar = AR[this.ar];
+    var s = [0].concat(card.effects);
+    if(card.canEquip(ar)) ar.effects.forEach(function(x){
       s.push(EFFECT_MAX * 2 + x);
     });
     s.push(0);
@@ -594,20 +679,6 @@ var calc = {
       _("w").value = this.weapon;
       _("cs").value = this.cs;
     }
-    this.filterAR();
-  },
-  selectCardRandomly: function(){
-    var n = _("pc").length - 1;
-    if(n){
-      _("pc").selectedIndex = Math.floor(Math.random() * n) + 1;
-      _("pc").onchange();
-    }
-  },
-  filterAR: function(){
-    var c = CARD[this.card];
-    setOptions("rc", AR, function(x){
-      return c.canEquip(x);
-    });
   },
   update: function(skipSave){
     var dmg = new Fraction(1);
@@ -641,17 +712,18 @@ var calc = {
       setValue("cs", cs);
       result[1] = "　[Lv." + pad(this.lv, 3) + "]　" + card;
     }
-    if(this.ar){
+    if(this.ar && card.canEquip(ar)){
       var stef = [];
       exatk = ar.getValue(this.arLv);
       cs += ar.csBoost;
       if(exatk > 0) stef.push("ATK+" + exatk);
       if(ar.csBoost > 0) stef.push(t("CS威力" + ["増加/I", "大増/Greatly i"][ar.csBoost - 1] + "ncrease CS Damage"));
       if(ar.csWeapon){
-        if(this.usecs) weapon = ar.csWeapon;
+   
+       if(this.usecs) weapon = ar.csWeapon;
         stef.push(WEAPON[ar.csWeapon] + "CS");
       }
-      result[2] = "　[Lv." + pad(this.arLv, 3) + "]　" + (card.canEquip(ar) ? "" : "×") + ar;
+      result[2] = "　[Lv." + pad(this.arLv, 3) + "]　" + ar;
       if(stef.length) result[2] += "（" + stef.join(", ") + "）";
     }
     if(this.usecs){
@@ -955,6 +1027,78 @@ var calc = {
         return true;
       });
       _("cx").innerHTML = "(" + (_("pc").length - 1) + "/" + (CARD.length - 1) + ")";
+    }
+  },
+  arfilter: {
+    name: "",
+    rarity: 0,
+    self: 0,
+    ally: 0,
+    enemy: 0,
+    stef: 0,
+    bonus_a: 0,
+    bonus_b: 0,
+    nullify: 0,
+    card: CARD[0],
+    equipable: true,
+    active: 0,
+    init: function(){
+      var c = this;
+      linkTextInput(c, "name", "rxf");
+      linkInput(c, "rarity", "rrf");
+      linkInput(c, "self", "ref1");
+      linkInput(c, "ally", "ref2");
+      linkInput(c, "enemy", "ref3");
+      linkInput(c, "stef", "rpf");
+      linkInput(c, "bonus_a", "raf");
+      linkInput(c, "bonus_d", "rdf");
+      linkInput(c, "nullify", "rnf");
+      linkInput(c, "equipable", "ceq");
+      this.update();
+    },
+    toggle: function(){
+      if(this.active = 1 - this.active){
+        _("rw").style.display = "block";
+        setText("trv", "▲");
+        this.update();
+      }else{
+        _("rw").style.display = "none";
+        setText("trv", "▼");
+        this.reset();
+      }
+    },
+    reset: function(){
+      var active = this.active;
+      this.active = 0;
+      ["rrf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
+        setValue(x, 0);
+      });
+      setValue("rxf", "");
+      setValue("ceq", true);
+      this.active = active;
+      this.update();
+    },
+    update: function(card){
+      var p = this;
+      var nv = p.name.toLowerCase().replace(/[\u30a1-\u30f4]/g, function(match){
+        return String.fromCharCode(match.charCodeAt(0) - 0x60);
+      });
+      var rv = RARITY[p.rarity].getValue();
+      if(card !== undefined) p.card = CARD[card];
+      setOptions("rc", AR, function(x){
+        if(p.equipable && !p.card.canEquip(x)) return false;
+        if(!p.active) return true;
+        if(!x.index) return true;
+        if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
+        if(p.rarity && (1 << x.arRarity & rv) === 0) return false;
+        if([p.self, p.ally, p.enemy, p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
+          return te && x.tag[i % 6].every(function(ie){
+            return te !== ie[0] || !(ie[1] & TIMING.AR);
+          });
+        })) return false;
+        return true;
+      });
+      _("rcx").innerHTML = "(" + (_("rc").length - 1) + "/" + (AR.length - 1) + ")";
     }
   }
 };

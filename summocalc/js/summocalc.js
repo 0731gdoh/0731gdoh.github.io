@@ -80,6 +80,14 @@ function setOptions(id, list, k, s, d, p){
 function setText(id, str){
   _(id).textContent = t(str);
 }
+function selectRandomly(id){
+  var o = _(id);
+  var n = o.length - 1;
+  if(n){
+    o.selectedIndex = Math.floor(Math.random() * n) + 1;
+    if(o.onchange) o.onchange();
+  }
+}
 function linkInput(obj, key, id, onchange){
   setValue(id, obj[key]);
   _(id).onchange = function(){
