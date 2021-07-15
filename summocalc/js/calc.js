@@ -719,8 +719,7 @@ var calc = {
       if(exatk > 0) stef.push("ATK+" + exatk);
       if(ar.csBoost > 0) stef.push(t("CS威力" + ["増加/I", "大増/Greatly i"][ar.csBoost - 1] + "ncrease CS Damage"));
       if(ar.csWeapon){
-   
-       if(this.usecs) weapon = ar.csWeapon;
+        if(this.usecs) weapon = ar.csWeapon;
         stef.push(WEAPON[ar.csWeapon] + "CS");
       }
       result[2] = "　[Lv." + pad(this.arLv, 3) + "]　" + ar;
