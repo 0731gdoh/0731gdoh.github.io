@@ -12,7 +12,8 @@ var TAG_TYPE = {
   CCT: 10,
   CWT: 11,
   ALL_BUFFS: 12,
-  ALL_DEBUFFS: 13
+  ALL_DEBUFFS: 13,
+  STATUS_GROUP: 14
 };
 
 function Tag(index, x, category, subset){
@@ -25,14 +26,23 @@ function Tag(index, x, category, subset){
   this.flags = [];
   if(index < 3){
     this.sortkey = 0;
-  }else if(this.type === TAG_TYPE.WEAPON){
-    this.sortkey = 2;
-  }else if(this.type === TAG_TYPE.SKILL){
-    this.sortkey = 3;
-  }else if(this.type === TAG_TYPE.CATEGORY){
-    this.sortkey = 4;
   }else{
-    this.sortkey = 1;
+    switch(this.type){
+      case TAG_TYPE.STATUS_GROUP:
+        this.sortkey = 2;
+        break;
+      case TAG_TYPE.WEAPON:
+        this.sortkey = 3;
+        break;
+      case TAG_TYPE.SKILL:
+        this.sortkey = 4;
+        break;
+      case TAG_TYPE.CATEGORY:
+        this.sortkey = 5;
+        break;
+      default:
+        this.sortkey = 1;
+    }
   }
 }
 Tag.prototype = {
@@ -115,11 +125,11 @@ var TAG = Tag.createList(
   ,["全ての強化/All buffs", "", TAG_TYPE.ALL_BUFFS]
   ,["全ての弱体/All debuffs", "", TAG_TYPE.ALL_DEBUFFS]
 
-  ,["移動不能状態", "", TAG_TYPE.SKIP, "", "威圧/恐怖/崩し/不動/マヒ"]
-  ,["攻撃力低下状態", "", TAG_TYPE.SKIP, "", "疑念/強化反転/暗闇/幻惑/束縛/呪い/マヒ"]
-  ,["スキル封印状態", "", TAG_TYPE.SKIP, "", "スキル封印/束縛/二重封印"]
-  ,["被ダメージ増加状態", "", TAG_TYPE.SKIP, "", "強化反転/崩し/契約の代償/激怒/激怒+/劫火/弱点/凍結/発狂/暴走/暴走+/烙印"]
-  ,["防御力増加状態", "", TAG_TYPE.SKIP, "", "頑強/金剛/守護/聖油/防御強化"]
+  ,["移動不能になる状態/Status that cause immobility", "いと", TAG_TYPE.STATUS_GROUP, "", "威圧/恐怖/崩し/不動/マヒ"]
+  ,["攻撃力が低下する状態/Status that lower attack", "こう", TAG_TYPE.STATUS_GROUP, "", "疑念/強化反転/暗闇/幻惑/束縛/呪い/マヒ"]
+  ,["スキルが封印される状態/Skill sealing status", "すき", TAG_TYPE.STATUS_GROUP, "", "スキル封印/束縛/二重封印"]
+  ,["被ダメージが増加する状態", "ひた", TAG_TYPE.STATUS_GROUP, "", "強化反転/崩し/契約の代償/激怒/激怒+/劫火/弱点/凍結/発狂/暴走/暴走+/烙印"]
+  ,["防御力が上昇する状態/Status that raise defense", "ほう", TAG_TYPE.STATUS_GROUP, "", "頑強/金剛/守護/聖油/防御強化"]
   ,["CP減少/Deplete CP", "CPけ", TAG_TYPE.ONE_SHOT, "CP減少系"]
   ,["CP増加/Increase CP", "CPそ", TAG_TYPE.ONE_SHOT, "CP増加系"]
   ,["CS封印/CS Lock", "CSふ", TAG_TYPE.DEBUFF, "CS封印系"]
@@ -421,6 +431,9 @@ var TAG = Tag.createList(
   ,["魅了時弱化[カトブレパス]/魅了時弱化[Catoblepas]", "みりししかと", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["暗闇時弱化", "くらしし", TAG_TYPE.IRREMOVABLE_DEBUFF, "発動率減少系"]
   ,["スキル発動率激増", "すきるは", TAG_TYPE.BUFF, "発動率増加系"]
+  ,["HPが回復する状態", "HPか", TAG_TYPE.STATUS_GROUP, "", "再生/祝福/滋養/聖油"]
+  ,["HPが減少する弱体", "HPけ", TAG_TYPE.STATUS_GROUP, "", "告死/凍結/毒/猛毒/火傷/烙印"]
+  ,["特攻[1.2]/A.Bonus[1.2]", "とつ12", TAG_TYPE.STATIC, "特攻"]
 ]);
 
 var TAG_FLAG_NUM = {
@@ -442,10 +455,10 @@ function generateTagData(s, flagNum, arTiming){
     var tag = TAG[v];
     var timing = arTiming || x[2];
     var g = 0;
-    if(timing & TIMING.CS){
+    if(timing & TIMING_FLAG.CS){
       g = TAG_MAX;
-      if(timing & TIMING.NOT_CS){
-        timing = timing & TIMING.NOT_CS;
+      if(timing & TIMING_FLAG.NOT_CS){
+        timing = timing & TIMING_FLAG.NOT_CS;
       }
     }
     if(tag.type !== TAG_TYPE.CATEGORY){

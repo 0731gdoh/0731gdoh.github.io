@@ -7,7 +7,7 @@ function Record(index, id, x){
   });
   this.effects = generateEffectData(skills[0], 0).concat(generateEffectData(skills[2], 1));
   this.tag = skills.map(function(s, i){
-    return generateTagData(s, i, TIMING.AR);
+    return generateTagData(s, i, TIMING_FLAG.AR);
   });
   this.arRarity = x[7];
   this.value = new Fraction(x[8]);
@@ -185,10 +185,10 @@ var AR = Record.createList(
   ,["寂しがりの猛牛たち/Single Bulls Club/さびしがりのもうぎゅうたち", , "CP増加/CS威力増加(+2)", "", "", "", "", "", 5, 500, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "ワカン・タンカ/テツギュウ", "", "", 2]
   ,["流れ者の集う街/City of Drifters/ながれもののつどうまち", , "回避/特防[0.7]", "", "", "", "斬撃/突撃", "", 5, 100, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "スズカ/テツギュウ", "", ""]
   ,["いつかどうして夢の鬼/Ogresses' Dream - A Different Time, A Different Place/いつかどうしてゆめのおに", , "特防[0.7]", "閃き", "", "", "魔法", "", 4, 100, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "スズカ/イバラキ", "", ""]
-  ,["剣の道は尚遙か/The Way of the Sword Has Just Begun/けんのみちはなおはるか", , "スキル封印に特攻[1.3]/束縛に特攻[1.3]/二重封印に特攻[1.3]", "", "引き寄せ(1マス)", "スキル封印/束縛/二重封印", "", "", 4, 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ", "", ""]
+  ,["剣の道は尚遙か/The Way of the Sword Has Just Begun/けんのみちはなおはるか", , "スキル封印に特攻[1.3]/束縛に特攻[1.3]/二重封印に特攻[1.3]", "", "引き寄せ(1マス)", "スキルが封印される状態", "", "", 4, 300, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "ホウゲン/トウジ", "", ""]
   ,["歓楽の鬼/Ogres' Nightlife/かんらくのおに", , "", "", "魅了", "", "", "妨害", 4, 0, 0, 0, EQUIP.BLOW|EQUIP.SHOT, "スズカ/イバラキ", "", ""]
   ,["おお温泉の喜びよ/おお温泉の喜びよ/おおおんせんのよろこびよ", , "温泉", "", "", "", "", "凍結", 5, 0, 0, 0, EQUIP.SLASH|EQUIP.THRUST, "ザオウ/チェルノボーグ", "", ""]
-  ,["法の代行者たち/法の代行者たち/ほうのだいこうしゃたち", , "再生に特攻[1.5]/祝福に特攻[1.5]/滋養に特攻[1.5]/聖油に特攻[1.5]", "", "祝福", "再生/祝福/滋養/聖油", "", "", 5, 300, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.VALIANT, 0, "ザバーニーヤ/アルスラーン", "", ""]
+  ,["法の代行者たち/法の代行者たち/ほうのだいこうしゃたち", , "再生に特攻[1.5]/祝福に特攻[1.5]/滋養に特攻[1.5]/聖油に特攻[1.5]", "", "祝福", "HPが回復する状態", "", "", 5, 300, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.VALIANT, 0, "ザバーニーヤ/アルスラーン", "", ""]
   ,["きょうだい弟子の組手/きょうだい弟子の組手/きょうだいでしのくみて", , "連撃/CS威力増加(+1)", "", "", "", "", "", 4, 300, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "イクトシ/カグツチ", "", "", 1]
   ,["ワンダーフォーゲル！/ワンダーフォーゲル！/わんだーふぉーげる！", , "奮起/根性", "", "", "", "", "", 4, 200, 0, EQUIP.INFERNAL, EQUIP.MAGIC, "ザオウ/ドゥルガー", "", ""]
   ,["嵐を呼ぶMCバトル！/An Electrifying MC Battle!/あらしをよぶMCばとる！", , "強制移動無効(全)", "", "HP減少", "", "", "", 5, 250, 0, 0, EQUIP.BLOW|EQUIP.THRUST, "ベンテン/エーギル", "", ""]
@@ -227,4 +227,10 @@ var AR = Record.createList(
   ,["夢に見た力比べ/The Strength I dream of/ゆめにみたちからくらべ", , "CS威力増加(+2)", "", "威圧", "", "", "", 5, 350, 0, 0, EQUIP.SLASH|EQUIP.NONE, "アステリオス/アスタロト", "", "", 2]
   ,["巨いなる供物/A Great Offering/おおいなるくもつ", , "HP回復", "", "HP減少", "", "", "", 4, 100, 0, EQUIP.WOOD|EQUIP.INFERNAL|EQUIP.WORLD, 0, "タンガロア/ダゴン", "", ""]
   ,["お手柄！うみのこ探検隊/Accomplished Ocean Explorers/おてがら！うみのこたんけんたい", , "特防[0.8]/加速時強化[AR]", "", "", "", "射撃", "", 3, 150, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "キジムナー/エイタ", "", ""]
+  ,["宿命のグラップル！/宿命のグラップル！/しゅくめいのぐらっぷる！", , "回避に貫通/頑強に貫通/金剛に貫通/守護に貫通/聖油に貫通/防御強化に貫通", "", "崩し", "防御力が上昇する状態/回避", "", "", 5, 500, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "アルスラーン/アヴァルガ", "", ""]
+  ,["研究棟の夜は終わらず/研究棟の夜は終わらず/けんきゅうとうのよるはおわらず", , "根性/HP減少", "", "", "", "", "", 5, 100, 0, EQUIP.WOOD|EQUIP.AETHER, 0, "レイヴ/ジャンバヴァン", "", ""]
+  ,["餅つきと喧嘩はひとりで出来ぬ/餅つきと喧嘩はひとりで出来ぬ/もちつきとけんかはひとりでできぬ", , "HP回復", "", "HP減少", "", "", "", 4, 300, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "ケンゴ/オニワカ", "", ""]
+  ,["ゲヘナの腸/The Bowels of Gehenna/げへなのはらわた", , "告死に特攻[1.2]/凍結に特攻[1.2]/毒に特攻[1.2]/猛毒に特攻[1.2]/火傷に特攻[1.2]/烙印に特攻[1.2]", "", "猛毒", "HPが減少する弱体", "", "", 4, 200, 0, EQUIP.NETHER|EQUIP.INFERNAL, 0, "ルキフゲ/バエル", "", ""]
+  ,["そこにお世話のある限り！/そこにお世話のある限り！/そこにおせわのあるかぎり！", , "", "HP回復/CP増加", "", "", "", "", 3, 0, 0, EQUIP.WATER|EQUIP.VALIANT|EQUIP.ALLROUND, 0, "ホロケウカムイ/トムテ", "", ""]
+  ,["星よ！太陽よ！/星よ！太陽よ！/ほしよ！たいようよ！", , "注目に特攻[1.4]/注目", "", "", "注目", "", "", 3, 300, 0, EQUIP.WORLD, EQUIP.THRUST|EQUIP.SHOT, "テスカトリポカ/オンブレティグレ", "", ""]
 ]);

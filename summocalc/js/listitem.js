@@ -31,7 +31,7 @@ var WEAPON = ListItem.createList(
 ]);
 
 var ATTRIBUTE = ListItem.createList(
-  [[""]
+  [["", 0]
   ,["全/All-round", 2]
   ,["火/Fire", 4]
   ,["水/Water", 8]
@@ -41,12 +41,12 @@ var ATTRIBUTE = ListItem.createList(
   ,["魔/Infernal", 128]
   ,["英雄/Valiant", 256]
   ,["世界/World", 512]
-  ,["[基本5属性]/[Regular 5]", 124]
-  ,["[特殊4属性]/[Special 4]", 898]
 ]);
 
+var ATTRIBUTE_ORDER = [2, 3, 4, 5, 6, 7, 8, 9, 1];
+
 var MULTIPLIER = ListItem.createList(
-  [[""]
+  [["－－－－"]
   ,["x2.0", 2]
   ,["x1.5", 1.5]
   ,["x1.0", 1]
@@ -60,9 +60,6 @@ var RARITY = ListItem.createList(
   ,["☆3", 8]
   ,["☆4", 16]
   ,["☆5", 32]
-  ,["☆1☆2", 6]
-  ,["☆3☆4☆5", 56]
-  ,["☆4☆5", 48]
 ]);
 
 var CS = ListItem.createList(

@@ -10,6 +10,7 @@ function v(x, y){
   var o = _(x);
   var value = parseInt(o.value) || 0;
   if(o.type === "checkbox") return o.checked ? 1 : 0;
+  if(o.tagName === "FIELDSET") return -1;
   if(o.disabled && y) return y;
   if(o.min) return o.value = Math.max(Math.min(value, o.max), o.min);
   return value;
@@ -35,11 +36,11 @@ function setValue(id, value, zeroCount){
     o.checked = !!value;
   }else if(o.tagName === "FIELDSET"){
     var r = o.querySelectorAll("div > input");
-    var m = (1 << r.length) - 1;
+    var all = o.querySelector("legend > input");
     for(var i = 0; i < r.length; i++){
-      r[i].checked = !!(value & (1 << i));
+      r[i].checked = !((value & r[i].value) - r[i].value);
     }
-    o.querySelector("legend > input").checked = (m === (value & m));
+    all.checked = !(all.value - value);
   }else{
     o.value = value;
   }
@@ -104,53 +105,102 @@ function linkTextInput(obj, key, id, oninput){
     if(obj.active) obj.update();
   };
 }
-function setCheckGroup(id, list, br){
+function setCheckGroup(id, list, br, order){
   var fieldset = _(id);
+  var value = 0;
+  if(!order) order = list.map(function(v, i){return i});
   if(fieldset.hasChildNodes()){
     var r = _(id).querySelectorAll("div > label");
-    list.forEach(function(v, i){
-      r[i].textContent = t(v);
-    });
-  }else{
-    var legend = document.createElement("legend");
-    list = ["ALL"].concat(list);
-    list.forEach(function(v, i){
-      var container = document.createElement(i ? "div" : "legend");
-      var check = document.createElement("input");
-      var label = document.createElement("label");
-      if(i) container.className = "cb";
-      check.type = "checkbox";
-      check.id = id + i;
-      check.checked = true;
-      label.htmlFor = check.id;
-      label.textContent = t(v);
-      container.appendChild(check);
-      container.appendChild(label);
-      if(i === br){
-        fieldset.appendChild(document.createElement("br"));
+    var i = 0;
+    order.forEach(function(v){
+      if(list[v].name){
+        var c = _(r[i].htmlFor);
+        if(c.checked) value = value | c.value;
+        r[i].textContent = list[v];
+        c.value = 1 << v;
+        i++;
       }
-      fieldset.appendChild(container);
     });
+    setValue(id, value);
+  }else{
+    var button = document.createElement("input");
+    var legend = document.createElement("legend");
+    var container = document.createElement("div");
+    container.className = "cb";
+    fieldset.appendChild(legend);
+    fieldset.appendChild(container);
+    order.forEach(function(v, i){
+      if(list[v].name){
+        var div = document.createElement("div");
+        value = value | (1 << v);
+        appendCheck(div, id + i, 1 << v, list[v]);
+        if(v === br) container.appendChild(document.createElement("br"));
+        container.appendChild(div);
+      }
+    });
+    appendCheck(legend, id + "_all", value, "ALL");
+    if(!br && list.length > 16){
+      button.id = id + "_btn";
+      button.type = "button";
+      button.value = "[0] ";
+      fieldset.parentNode.insertBefore(button, fieldset);
+      fieldset.style.display = "none";
+    }
+  }
+}
+function appendCheck(container, id, value, text){
+  var check = document.createElement("input");
+  var label = document.createElement("label");
+  check.type = "checkbox";
+  check.id = id;
+  check.value = value;
+  label.htmlFor = id;
+  label.textContent = text;
+  container.appendChild(check);
+  container.appendChild(label);
+}
+function hideCurrent(obj){
+  if(obj.current){
+    _(obj.current).style.display = "none";
+    _(obj.current + "_btn").className = "";
   }
 }
 function linkCheckGroup(obj, key, id, onchange){
+  var btn = id + "_btn";
   setValue(id, obj[key]);
+  if(_(btn)) _(btn).onclick = function(){
+    hideCurrent(obj);
+    if(obj.current === id){
+      obj.current = "";
+    }else{
+      obj.current = id;
+      _(id).style.display = "block";
+      _(btn).className = "ac";
+    }
+  };
   _(id).onchange = function(evt){
     var a = _(id).querySelector("legend > input");
     var r = _(id).querySelectorAll("div > input");
+    var s = _(id).querySelectorAll("div > label");
+    var x = [];
     var n = 0;
     if(evt && evt.target === a){
-      n = a.checked ? (1 << r.length) - 1 : 0
+      if(a.checked) n = a.value - 0;
       for(var i = 0; i < r.length; i++){
-        r[i].checked = !!n;
+        r[i].checked = a.checked;
+        if(a.checked) x.push(s[i].textContent);
       }
     }else{
       for(var i = 0; i < r.length; i++){
-        if(r[i].checked) n += 1 << i;
+        if(r[i].checked){
+          n = n | r[i].value;
+          x.push(s[i].textContent);
+        }
       }
-      a.checked = (n + 1 === 1 << r.length);
+      a.checked = !(a.value - n);
     }
     obj[key] = n;
+    if(_(btn)) _(btn).value = "[" + x.length + "] " + x.join("|");
     if(onchange) onchange();
     if(obj.active) obj.update();
   };
