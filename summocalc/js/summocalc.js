@@ -123,7 +123,6 @@ function setCheckGroup(id, list, br, order){
     });
     setValue(id, value);
   }else{
-    var button = document.createElement("input");
     var legend = document.createElement("legend");
     var container = document.createElement("div");
     container.className = "cb";
@@ -140,6 +139,7 @@ function setCheckGroup(id, list, br, order){
     });
     appendCheck(legend, id + "_all", value, "ALL");
     if(!br && list.length > 16){
+      var button = document.createElement("input");
       button.id = id + "_btn";
       button.type = "button";
       button.value = "[0] ";
