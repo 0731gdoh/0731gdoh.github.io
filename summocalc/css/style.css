@@ -99,8 +99,7 @@ textarea {
   border-radius: 0.4rem;
   font-weight: bold;
 }
-#sw,
-#rw {
+.sb {
   display: none;
   padding: 0.3rem;
   background-image: linear-gradient(#bcd, #abd);
@@ -158,8 +157,19 @@ table {
   width: 13rem;
 }
 .cb {
+  margin-left: -0.6rem;
+  margin-right: 0.2rem;
+}
+.cb > div {
   display: inline-block;
-  margin-right: 0.8rem;
+  margin-left: 0.8rem;
+}
+input[type=button] {
+  width: 14rem;
+  height: 1.3rem;
+}
+.ac {
+  background-color: #fc8;
 }
 td:first-child {
   white-space: nowrap;
