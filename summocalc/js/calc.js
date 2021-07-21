@@ -82,7 +82,7 @@ var calc = {
     });
     linkInput(c, "arLv", "rl");
     _("sl").onclick = function(){
-        c.setLanguage(1 - language);
+      c.setLanguage(1 - language);
     };
     _("oa").onclick = function(){
       c.addStatus(v("os"), v("el"), 0, v("al") * 2);
@@ -553,27 +553,27 @@ var calc = {
     setOptions("w", WEAPON, FILTER.NAME);
     setOptions("cs", CS, FILTER.VALUE, CS_ORDER);
     setOptions("am", MULTIPLIER);
-    setOptions("ef", ATTRIBUTE);
-    setOptions("wf", WEAPON);
-    setOptions("cf", WEAPON);
-    setOptions("rf", RARITY);
+    setCheckGroup("ef", ATTRIBUTE, undefined, ATTRIBUTE_ORDER);
+    setCheckGroup("wf", WEAPON);
+    setCheckGroup("cf", WEAPON);
+    setCheckGroup("rf", RARITY);
     setOptions("vf", VARIANT);
-    setOptions("gf", GUILD, undefined, GUILD.ORDER[language]);
-    setOptions("sf", SCHOOL, undefined, SCHOOL.ORDER[language]);
+    setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language]);
+    setCheckGroup("sf", SCHOOL, undefined, SCHOOL.ORDER[language]);
     ["srf1", "srf2"].forEach(function(key, i){
       setOptions(key, RANGE);
       cf.updateEffectFilterOptions(i);
     });
     ["baf", "bdf", "nf", "pf"].forEach(function(key, i){
       setOptions(key, TAG, function(x){
-        return !x.index || x.checkFlag(i + 3, TIMING.ANY);
+        return !x.index || x.checkFlag(i + 3, TIMING_FLAG.ANY);
       }, TAG.ORDER[language]);
     });
     setOptions("qf", AR);
-    setOptions("rrf", RARITY);
+    setCheckGroup("rrf", RARITY);
     ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
       setOptions(key, TAG, function(x){
-        return !x.index || x.checkFlag(i, TIMING.AR);
+        return !x.index || x.checkFlag(i, TIMING_FLAG.AR);
       }, TAG.ORDER[language]);
     });
     this.updateEffectOptions();
@@ -609,9 +609,9 @@ var calc = {
     setText("lgf", "ギルド/Guild");
     setText("lsf", "学園/School");
     setText("lsef1", "効果1/Effect 1");
-    setCheckGroup("stf1", TIMING_LABELS, 15);
+    setCheckGroup("stf1", TIMING, 14);
     setText("lsef2", "効果2/Effect 2");
-    setCheckGroup("stf2", TIMING_LABELS, 15);
+    setCheckGroup("stf2", TIMING, 14);
     setText("lpf", "常時/Static");
     setText("lbaf", "特攻対象/A.Bonus");
     setText("lbdf", "特防対象/D.Bonus");
@@ -906,8 +906,8 @@ var calc = {
     variant: 0,
     guild: 0,
     school: 0,
-    timing1: TIMING.ANY,
-    timing2: TIMING.ANY,
+    timing1: TIMING_FLAG.ANY,
+    timing2: TIMING_FLAG.ANY,
     range1: 0,
     range2: 0,
     effect1: 0,
@@ -918,17 +918,18 @@ var calc = {
     nullify: 0,
     ar: 0,
     exclude: 0,
+    current: "",
     active: 0,
     init: function(){
       var c = this;
       linkTextInput(c, "name", "xf");
-      linkInput(c, "attribute", "ef");
-      linkInput(c, "weapon", "wf");
-      linkInput(c, "cs", "cf");
-      linkInput(c, "rarity", "rf");
+      linkCheckGroup(c, "attribute", "ef");
+      linkCheckGroup(c, "weapon", "wf");
+      linkCheckGroup(c, "cs", "cf");
+      linkCheckGroup(c, "rarity", "rf");
       linkInput(c, "variant", "vf");
-      linkInput(c, "guild", "gf");
-      linkInput(c, "school", "sf");
+      linkCheckGroup(c, "guild", "gf");
+      linkCheckGroup(c, "school", "sf");
       linkInput(c, "stef", "pf");
       linkInput(c, "bonus_a", "baf");
       linkInput(c, "bonus_d", "bdf");
@@ -954,7 +955,7 @@ var calc = {
     updateEffectFilterOptions: function(n){
       var id = n ? "sef2" : "sef1";
       var r = n ? this.range2 : this.range1;
-      var b = (n ? this.timing2 : this.timing1) || TIMING.ANY;
+      var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.ANY;
       setOptions(id, TAG, function(x){
         return !x.index || x.checkFlag(r, b);
       }, TAG.ORDER[language]);
@@ -967,6 +968,8 @@ var calc = {
       }else{
         _("sw").style.display = "none";
         setText("tfv", "▼");
+        hideCurrent(this);
+        this.current = "";
         this.reset();
       }
     },
@@ -977,8 +980,8 @@ var calc = {
         setValue(x, 0);
       });
       setValue("xf", "");
-      setValue("stf1", TIMING.ANY);
-      setValue("stf2", TIMING.ANY);
+      setValue("stf1", TIMING_FLAG.ANY);
+      setValue("stf2", TIMING_FLAG.ANY);
       this.active = active;
       this.update();
     },
@@ -987,11 +990,7 @@ var calc = {
       var nv = p.name.toLowerCase().replace(/[\u3041-\u3094]/g, function(match){
         return String.fromCharCode(match.charCodeAt(0) + 0x60);
       });
-      var av = ATTRIBUTE[p.attribute].getValue();
-      var rv = RARITY[p.rarity].getValue();
       var vv = VARIANT[p.variant].name;
-      var gv = GUILD[p.guild].getValue();
-      var sv = SCHOOL[p.school].getValue();
       var pl = ["[恒常]", "[期間限定]"].indexOf(t(vv, 0));
       var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
       if(!vv || vv[0] === "["){
@@ -1003,14 +1002,14 @@ var calc = {
         if(!p.active) return true;
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
-        if(p.rarity && (1 << x.rarity & rv) === 0) return false;
-        if(p.weapon && x.weapon[0] !== p.weapon) return false;
-        if(p.cs && x.weapon[1] !== p.cs) return false;
-        if(p.attribute && (1 << x.attribute & av) === 0) return false;
+        if(p.rarity && (1 << x.rarity & p.rarity) === 0) return false;
+        if(p.weapon && (1 << x.weapon[0] & p.weapon) === 0) return false;
+        if(p.cs && (1 << x.weapon[1] & p.cs) === 0) return false;
+        if(p.attribute && (1 << x.attribute & p.attribute) === 0) return false;
         if(pl > -1 && x.limited !== pl) return false;
         if(vv && x.variant.indexOf(vv)) return false;
-        if(p.guild && !(x.guilds & gv)) return false;
-        if(p.school && !(x.schools & sv)) return false;
+        if(p.guild && !(x.guilds & p.guild)) return false;
+        if(p.school && !(x.schools & p.school)) return false;
         if(p.ar && !x.canEquip(AR[p.ar])) return false;
         if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
           return (p.effect1 !== ie[0] % d) || !(ie[1] & p.timing1);
@@ -1040,11 +1039,12 @@ var calc = {
     nullify: 0,
     card: CARD[0],
     equipable: true,
+    current: "",
     active: 0,
     init: function(){
       var c = this;
       linkTextInput(c, "name", "rxf");
-      linkInput(c, "rarity", "rrf");
+      linkCheckGroup(c, "rarity", "rrf");
       linkInput(c, "self", "ref1");
       linkInput(c, "ally", "ref2");
       linkInput(c, "enemy", "ref3");
@@ -1063,6 +1063,8 @@ var calc = {
       }else{
         _("rw").style.display = "none";
         setText("trv", "▼");
+        hideCurrent(this);
+        this.current = "";
         this.reset();
       }
     },
@@ -1082,17 +1084,16 @@ var calc = {
       var nv = p.name.toLowerCase().replace(/[\u30a1-\u30f4]/g, function(match){
         return String.fromCharCode(match.charCodeAt(0) - 0x60);
       });
-      var rv = RARITY[p.rarity].getValue();
       if(card !== undefined) p.card = CARD[card];
       setOptions("rc", AR, function(x){
         if(p.equipable && !p.card.canEquip(x)) return false;
         if(!p.active) return true;
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
-        if(p.rarity && (1 << x.arRarity & rv) === 0) return false;
+        if(p.rarity && (1 << x.arRarity & p.rarity) === 0) return false;
         if([p.self, p.ally, p.enemy, p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[i % 6].every(function(ie){
-            return te !== ie[0] || !(ie[1] & TIMING.AR);
+            return te !== ie[0] || !(ie[1] & TIMING_FLAG.AR);
           });
         })) return false;
         return true;

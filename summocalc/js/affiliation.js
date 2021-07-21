@@ -5,7 +5,7 @@ function Affiliation(index, name, value){
 }
 Affiliation.prototype = {
   toString: function(){
-    return t(this.name) || "－－－－－－－－－－－－－";
+    return t(this.name);
   },
   getValue: function(){
     return this.value;
@@ -16,7 +16,7 @@ Affiliation.createList = function(a){
   var order = [[], []];
   var k = [];
   var result = a.map(function(x, i){
-    var v = i ? 1 << (i - 1) : 0;
+    var v = 1 << i;
     table.set(t(x, 0), v);
     order[0].push(i);
     order[1].push(i);
@@ -24,8 +24,7 @@ Affiliation.createList = function(a){
     return new Affiliation(i, x, v);
   });
   order[1].sort(function(a, b){
-    if(a * b) return k[a] < k[b] ? -1 : 1;
-    return a - b;
+    return k[a] < k[b] ? -1 : 1;
   });
   result.table = table;
   result.ORDER = order;
@@ -33,14 +32,13 @@ Affiliation.createList = function(a){
 };
 
 var GUILD = Affiliation.createList(
-  [""
-  ,"アウトローズ/Outlaws"
+  ["アウトローズ/Outlaws"
   ,"インベイダーズ/Invaders"
   ,"ウォーモンガーズ/Warmongers"
   ,"エージェンツ/Agents"
   ,"エンタティナーズ/Entertainers"
   ,"クラフターズ/Crafters"
-  ,"クリエイターズ"
+  ,"クリエイターズ/Creators"
   ,"ゲームマスターズ/Game Masters"
   ,"サモナーズ/Summoners"
   ,"ジェノサイダーズ/Genociders"
@@ -50,7 +48,7 @@ var GUILD = Affiliation.createList(
   ,"ビーストテイマーズ/Beast Tamers"
   ,"ミッショネルズ/Missionaries"
   ,"ルールメイカーズ/Rule Makers"
-  ,"ワイズメン/Wisemen"
+  ,"ワイズメン/The Wisemen"
   ,"？？？"
   ,"？？？？？"
   ,"？？？？？？"
@@ -58,8 +56,7 @@ var GUILD = Affiliation.createList(
 ]);
 
 var SCHOOL = Affiliation.createList(
-  [""
-  ,"秋波原学園/Akihabara Academy"
+  ["秋波原学園/Akihabara Academy"
   ,"飢野学園/Ueno Academy"
   ,"得真道学園/Umamichi Academy"
   ,"王子坊学園/Ojimachi Academy"
@@ -81,6 +78,7 @@ var SCHOOL = Affiliation.createList(
 ]);
 
 function splitAffiliationNames(aff, s){
+  if(!s) return 0;
   return s.split("/").reduce(function(acc, cur){
     if(!aff.table.has(cur)) throw new Error("所属「" + cur + "」は未登録です\n（" + s + "）");
     return acc | aff.table.get(cur);
@@ -96,7 +94,7 @@ function splitSchoolNames(s){
 }
 
 function affs2array(list, n, lang){
-  var i = 1;
+  var i = 0;
   var r = [];
   while(n){
     if(n & 1) r.push(t(list[i].name, lang));

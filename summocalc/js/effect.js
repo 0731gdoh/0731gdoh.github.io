@@ -372,13 +372,14 @@ var EFFECT = Effect.createList(
   ,["非<*妨害>時弱化", "ひほ", 1, [1, 4], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.NON_STATUS]
   ,["妨害/Obstruct", "ほうか", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["魅了時弱化[カトブレパス]/魅了時弱化[Catoblepas]", "みり1", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
+  ,["特攻[1.2]/Bonus[1.2]", "とつ", 0, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
 ]);
 
 function generateEffectData(s, group){
   var result = [];
   s.forEach(function(value){
     var name = value[0];
-    var g = (value[2] & TIMING.CS) ? EFFECT_MAX : 0;
+    var g = (value[2] & TIMING_FLAG.CS) ? EFFECT_MAX : 0;
     for(var i = 1; i < EFFECT.length; i++){
       if(t(EFFECT[i].name, 0) === name && (group === undefined || EFFECT[i].group === group)){
         if(!EFFECT[i].isToken()){

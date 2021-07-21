@@ -1,23 +1,61 @@
-var TIMING_LABELS = ["登場時/Joining Battle", "フェーズ開始時/Phase Start", "ターン開始時/Turn Start", "敵ターン開始時/Enemy Turn Start", "移動後/Post-Move", "攻撃時/Attacking", "攻撃後/Post-Attack", "空振り時/Missed Attack", "ダメージ時/Attacked", "対ダメージ/Counter", "ダメージ後/Post-Damage", "強化後/Buffed", "弱体後/Debuffed", "退場時/Defeat", "CS", "CS発動後/After CS"];
+var Timing = function(index, x){
+  this.index = index;
+  this.name = x;
+  this.value = 1 << index;
+};
+Timing.prototype = {
+  toString: function(){
+    return t(this.name);
+  },
+  getValue: function(){
+    return this.value;
+  }
+};
+Timing.createList = function(a){
+  var table = new Map();
+  var r = a.map(function(v, i){
+    table.set(v[1], i);
+    return new Timing(i, v[0]);
+  });
+  r.table = table;
+  return r;
+};
 
-var TIMING_KEYWORDS = ["j", "p", "t", "et", "pm", "a", "pa", "ma", "ba", "cd", "pd", "b", "d", "ud", "c", "cx"];
+var TIMING = Timing.createList(
+  [["登場時/Joining Battle", "j"]
+  ,["フェーズ開始時/Phase Start", "p"]
+  ,["ターン開始時/Turn Start", "t"]
+  ,["敵ターン開始時/Enemy Turn Start", "et"]
+  ,["移動後/Post-Move", "pm"]
+  ,["攻撃時/Attacking", "a"]
+  ,["攻撃後/Post-Attack", "pa"]
+  ,["空振り時/Missed Attack", "ma"]
+  ,["ダメージ時/Attacked", "ba"]
+  ,["対ダメージ/Counter", "cd"]
+  ,["ダメージ後/Post-Damage", "pd"]
+  ,["強化後/Buffed", "b"]
+  ,["弱体後/Debuffed", "d"]
+  ,["退場時/Defeat", "ud"]
+  ,["CS", "c"]
+  ,["CS発動後/After CS", "cx"]
+]);
 
-var TIMING = {
-  ANY: (1 << TIMING_KEYWORDS.length) - 1,
-  CS: (1 << TIMING_KEYWORDS.indexOf("c")) | (1 << TIMING_KEYWORDS.indexOf("cx")),
-  AR: 1 << TIMING_KEYWORDS.length
+var TIMING_FLAG = {
+  ANY: (1 << TIMING.length) - 1,
+  CS: (1 << TIMING.table.get("c")) | (1 << TIMING.table.get("cx")),
+  AR: 1 << TIMING.length
 }
-TIMING.NOT_CS = TIMING.ANY - TIMING.CS;
+TIMING_FLAG.NOT_CS = TIMING_FLAG.ANY - TIMING_FLAG.CS;
 
 function timing2str(timing, lang, cs){
-  timing = timing & TIMING.ANY;
+  timing = timing & TIMING_FLAG.ANY;
   if(!timing){
     return "";
   }else if(timing){
     var i = 0;
     var r = [];
     while(timing){
-      if(timing & 1) r.push(t(TIMING_LABELS[i], lang));
+      if(timing & 1) r.push(t(TIMING[i].name, lang));
       timing = timing >> 1;
       i++;
     }
@@ -39,8 +77,8 @@ function splitSkills(s){
     var target = 0;
     var tname = "";
     if(match[1]) timing = match[1].split("&").reduce(function(acc, cur){
-      var n = TIMING_KEYWORDS.indexOf(cur);
-      if(n < 0) throw new Error("キーワード「" + cur + "」は未定義です\n（" + s + "）");
+      var n = TIMING.table.get(cur);
+      if(n === undefined) throw new Error("キーワード「" + cur + "」は未定義です\n（" + s + "）");
       acc = acc | (1 << n);
       return acc;
     }, 0);
@@ -50,7 +88,7 @@ function splitSkills(s){
       return p2;
     });
     var i = TAG.table.get(name);
-    var key = (timing & TIMING.CS) ? "c" + match[2] : match[2];
+    var key = (timing & TIMING_FLAG.CS) ? "c" + match[2] : match[2];
     if(!i) throw new Error("タグ「" + name + "」は未登録です\n（" + s + "）");
     if(result.has(key)) throw new Error("スキル「" + match[2] + "」が重複しています\n（" + s + "）");
     result.set(key, [name, i, timing, target, tname]);
