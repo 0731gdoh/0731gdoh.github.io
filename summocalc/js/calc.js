@@ -79,6 +79,7 @@ var calc = {
     linkInput(c, "lv", "pl");
     linkInput(c, "ar", "rc", function(){
       c.updateEffectOptions();
+      c.updateEquipableOptions();
     });
     linkInput(c, "arLv", "rl");
     _("sl").onclick = function(){
@@ -569,7 +570,7 @@ var calc = {
         return !x.index || x.checkFlag(i + 3, TIMING_FLAG.ANY);
       }, TAG.ORDER[language]);
     });
-    setOptions("qf", AR);
+    this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
     ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
       setOptions(key, TAG, function(x){
@@ -665,6 +666,11 @@ var calc = {
     s = s.concat(EFFECT.ORDER[language]);
     setOptions("os", EFFECT, FILTER.OFFENSE, s, EFFECT_MAX, p);
     setOptions("ds", EFFECT, FILTER.DEFENSE, s, EFFECT_MAX, p);
+  },
+  updateEquipableOptions: function(){
+    var s = AR.map(function(v, i){return i});
+    if(this.ar) s.unshift(0, this.ar);
+    setOptions("qf", AR, undefined, s, undefined, undefined, true);
   },
   checkCardSelected: function(){
     if(this.card){
