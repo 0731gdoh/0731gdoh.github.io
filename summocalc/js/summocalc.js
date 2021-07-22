@@ -49,8 +49,8 @@ function setValue(id, value, zeroCount){
     if(o.oninput) o.oninput();
   }
 }
-function setOptions(id, list, k, s, d, p){
-  //id, リスト[, フィルタ関数[, ソート順[, 除数, 接頭辞リスト]]]
+function setOptions(id, list, k, s, d, p, skipZeroCount){
+  //id, リスト[, フィルタ関数[, ソート順[, 除数, 接頭辞リスト[, zeroCountスキップ]]]]
   var elem = _(id);
   var fragment = document.createDocumentFragment();
   var value = v(id);
@@ -76,6 +76,7 @@ function setOptions(id, list, k, s, d, p){
   });
   elem.appendChild(fragment);
   elem.selectedIndex = 0;
+  if(skipZeroCount) zeroCount = undefined;
   setValue(id, value, zeroCount);
 }
 function setText(id, str){
