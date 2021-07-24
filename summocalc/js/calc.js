@@ -338,6 +338,7 @@ var calc = {
           var e = EFFECT[i];
           if(e.sp) return true;
           if(e.group === 2 && e.link) v = es[e.link];
+          v.lv = 1;
           v.loop = 1;
           if(!e.isFixed() || !e.isStackable()){
             v.lv = s.read();
@@ -397,6 +398,7 @@ var calc = {
           es[n].lv = 1;
         });
       }
+      this.updateEffectOptions();
       this.active = 1;
     }
     this.update(skipSave);
