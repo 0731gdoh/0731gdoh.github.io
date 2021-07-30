@@ -27,15 +27,15 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
 <title>放サモ ダメージ計算機</title>
 <form>
   <div id=un>
-    <span id=um></span><button id=ub></button>
+    <span id=um></span><input type=button id=ub>
   </div>
   <div class=sp>
     <label for=sv id=lsv></label><select id=sv></select>
-    <button type=button id=sl></button>
+    <input type=button id=sl>
   </div>
   <hr>
-  <div class=ib><div class=sp>
-    <label for=pc id=lpc></label><select id=pc></select><button type=button id=fv><span id=lfv></span><span id=tfv>▼</span></button><br>
+  <div class=ib><div class=sp><div class=nm>
+    <div class=cb><label for=pc id=lpc></label><select id=pc></select></div><input type=button id=fv><br>
     <div id=sw class=sb>
       <table>
         <caption><span id=fc></span><span id=cx></span></caption>
@@ -91,15 +91,14 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
       <input type=checkbox id=ccf><label for=ccf id=lccf></label>
       <hr>
       <div class=bs>
-        <button type=button id=rd></button><button type=button id=fr></button>
+        <input type=button id=rd><input type=button id=fr>
       </div>
     </div>
-    <label for=pl id=lpl></label><input type=number min=1 max=85 value=1 id=pl><button type=button id=ly>-10</button><button type=button id=lm>MAX</button><button type=button id=lx>+10</button><button type=button id=lz>+15</button>
+    <div class=cb><label for=pl id=lpl></label><input type=number min=1 max=85 value=1 id=pl></div><input type=button id=ly value="-10"><input type=button id=lm value="MAX"><input type=button id=lx value="+10"><input type=button id=lz value="+15">
     <hr>
-    <label for=a>ATK</label><input type=number min=1 max=99999 value=1 id=a><label for=w id=lw></label><select id=w></select><br>
-    <label for=cs>CS</label><select id=cs></select><label for=cl id=lcl></label><input type=number min=1 max=100 value=1 id=cl><input type=checkbox id=uc><label for=uc id=luc></label>
+    <div class=cb><label for=a>ATK</label><input type=number min=1 max=99999 value=1 id=a></div><div class=cb><label for=w id=lw></label><select id=w></select></div><div class=cb><label for=cs>CS</label><select id=cs></select></div><div class=cb><label for=cl id=lcl></label><input type=number min=1 max=100 value=1 id=cl></div><input type=button id=saa value="1"><input type=button id=sam value="100"><input type=button id=sax value="+5"><div class=cb><input type=checkbox id=uc><label for=uc id=luc></label></div>
     <hr>
-    <label for=rc id=lrc></label><select id=rc></select><button type=button id=rv><span id=lrv></span><span id=trv>▼</span></button><br>
+    <div class=cb><label for=rc id=lrc></label><select id=rc></select></div><input type=button id=rv><br>
     <div id=rw class=sb>
       <table>
         <caption><span id=rfc></span><span id=rcx></span></caption>
@@ -133,24 +132,24 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
       <input type=checkbox id=ceq><label for=ceq id=lceq></label>
       <hr>
       <div class=bs>
-        <button type=button id=rrd></button><button type=button id=rfr></button>
+        <input type=button id=rrd><input type=button id=rfr>
       </div>
     </div>
-    <label for=rl id=lrl></label><input type=number min=1 max=100 value=1 id=rl><button type=button id=ra>1</button><button type=button id=rm>100</button><button type=button id=rx>+5</button><button type=button id=ry>+20</button><button type=button id=rz>10n</button>
+    <div class=cb><label for=rl id=lrl></label><input type=number min=1 max=100 value=1 id=rl></div><input type=button id=ra value="1"><input type=button id=rm value="100"><input type=button id=rx value="+5"><input type=button id=rz value="10n">
     <hr>
-    <label for=os id=los></label><select id=os></select><button type=button id=oa></button><button type=button id=or></button><br>
-    <label for=ds id=lds></label><select id=ds></select><button type=button id=da></button><button type=button id=dr></button><br>
-    <label for=el id=lel></label><input type=number min=1 max=100 value=100 id=el><button type=button id=ea>1</button><button type=button id=em>100</button><input type=checkbox id=al><label for=al id=lal></label>
+    <div class=cb><label for=os id=los></label><select id=os></select></div><input type=button id=oa><input type=button id=or><br>
+    <div class=cb><label for=ds id=lds></label><select id=ds></select></div><input type=button id=da><input type=button id=dr><br>
+    <div class=cb><label for=el id=lel></label><input type=number min=1 max=100 value=100 id=el></div><input type=button id=ea value="1"><input type=button id=em value="100"><div class=cb><input type=checkbox id=al><label for=al id=lal></label></div>
     <hr>
-    <label for=am id=lam></label><select id=am></select>
+    <div class=cb><label for=am id=lam></label><select id=am></select></div>
     <hr>
-  </div></div><div class=ib><div class=sp>
+  </div></div></div><div class=ib><div class=sp>
     <textarea id=o></textarea>
     <br>
-    <button type=button id=rs></button>
-    <button type=button id=cc></button>
-    <button type=button id=sr></button>
-    <button type=button id=su></button>
+    <input type=button id=rs>
+    <input type=button id=cc>
+    <input type=button id=sr>
+    <input type=button id=su>
     <div id=dl>
       <span id=dd></span>
       <a id=dj>日本語</a>/<a id=de>English</a>
