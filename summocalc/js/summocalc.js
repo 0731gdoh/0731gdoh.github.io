@@ -80,7 +80,12 @@ function setOptions(id, list, k, s, d, p, skipZeroCount){
   setValue(id, value, zeroCount);
 }
 function setText(id, str){
-  _(id).textContent = t(str);
+  var o = _(id);
+  if(o.type === "button"){
+    o.value = t(str);
+  }else{
+    o.textContent = t(str);
+  }
 }
 function selectRandomly(id){
   var o = _(id);
@@ -126,12 +131,13 @@ function setCheckGroup(id, list, br, order){
   }else{
     var legend = document.createElement("legend");
     var container = document.createElement("div");
-    container.className = "cb";
+    container.className = "nm";
     fieldset.appendChild(legend);
     fieldset.appendChild(container);
     order.forEach(function(v, i){
       if(list[v].name){
         var div = document.createElement("div");
+        div.className = "cb";
         value = value | (1 << v);
         appendCheck(div, id + i, 1 << v, list[v]);
         if(v === br) container.appendChild(document.createElement("br"));
@@ -144,6 +150,7 @@ function setCheckGroup(id, list, br, order){
       button.id = id + "_btn";
       button.type = "button";
       button.value = "[0] ";
+      button.className = "ex";
       fieldset.parentNode.insertBefore(button, fieldset);
       fieldset.style.display = "none";
     }
@@ -163,7 +170,7 @@ function appendCheck(container, id, value, text){
 function hideCurrent(obj){
   if(obj.current){
     _(obj.current).style.display = "none";
-    _(obj.current + "_btn").className = "";
+    _(obj.current + "_btn").classList.remove("ac");
   }
 }
 function linkCheckGroup(obj, key, id, onchange){
@@ -176,7 +183,7 @@ function linkCheckGroup(obj, key, id, onchange){
     }else{
       obj.current = id;
       _(id).style.display = "block";
-      _(btn).className = "ac";
+      _(btn).classList.add("ac");
     }
   };
   _(id).onchange = function(evt){

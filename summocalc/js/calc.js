@@ -75,11 +75,21 @@ var calc = {
       c.updateEffectOptions();
       c.checkCardSelected();
       c.arfilter.update(c.card);
+      if(CARD[c.card].rarity === 5){
+        setText("sax", "+20");
+      }else{
+        setText("sax", "+5");
+      }
     });
     linkInput(c, "lv", "pl");
     linkInput(c, "ar", "rc", function(){
       c.updateEffectOptions();
       c.updateEquipableOptions();
+      if(AR[c.ar].arRarity === 5){
+        setText("rx", "+20");
+      }else{
+        setText("rx", "+5");
+      }
     });
     linkInput(c, "arLv", "rl");
     _("sl").onclick = function(){
@@ -154,6 +164,18 @@ var calc = {
       setValue("pl", v("pl") - 10);
       c.update();
     };
+    _("saa").onclick = function(){
+      setValue("cl", 1);
+      c.update();
+    };
+    _("sam").onclick = function(){
+      setValue("cl", 100);
+      c.update();
+    };
+    _("sax").onclick = function(){
+      setValue("cl", v("cl") + (CARD[c.card].rarity === 5 ? 20 : 5));
+      c.update();
+    };
     _("ra").onclick = function(){
       setValue("rl", 1);
       c.update();
@@ -163,11 +185,7 @@ var calc = {
       c.update();
     };
     _("rx").onclick = function(){
-      setValue("rl", v("rl") + 5);
-      c.update();
-    };
-    _("ry").onclick = function(){
-      setValue("rl", v("rl") + 20);
+      setValue("rl", v("rl") + (AR[c.ar].arRarity === 5 ? 20 : 5));
       c.update();
     };
     _("rz").onclick = function(){
@@ -550,6 +568,8 @@ var calc = {
     var cb = cf.active;
     var rb = rf.active;
     this.active = 0;
+    cf.updateToggleText();
+    rf.updateToggleText();
     cf.active = 0;
     rf.active = 0;
     setOptions("sv", VERSION);
@@ -583,8 +603,8 @@ var calc = {
     setText("lsv", "モード/Mode");
     setText("lpc", "カード/Card");
     setText("lpl", "カードLv/Card Lv");
-    setText("lw", "武器タイプ/Weapon Type");
-    setText("lcl", "神器Lv/Artifact Lv");
+    setText("lw", "武器/Weapon");
+    setText("lcl", "神器Lv/S.A.Lv");
     setText("luc", "CSを使用/Use CS");
     setText("lrc", "AR");
     setText("lrl", "AR Lv");
@@ -605,7 +625,7 @@ var calc = {
     setText("fc", "カードフィルタ/Filter ");
     setText("lxf", "名前/Name");
     setText("lef", "属性/Attribute");
-    setText("lwf", "武器タイプ/Weapon Type");
+    setText("lwf", "武器/Weapon");
     setText("lcf", "CSタイプ/CS Type");
     setText("lrf", "レア度/Rarity");
     setText("lvf", "バージョン/Variant");
@@ -619,9 +639,8 @@ var calc = {
     setText("lbaf", "特攻対象/A.Bonus");
     setText("lbdf", "特防対象/D.Bonus");
     setText("lnf", "状態無効/Nullify");
-    setText("lqf", "装備可能AR/Equipable AR");
+    setText("lqf", "装備可能/Equipable");
     setText("lccf", "CSの効果を除外する/Exclude CS Effects");
-    setText("lfv", "フィルタ/Filter ");
     setText("rd", "ランダムカード/Random Card");
     setText("fr", "フィルタをリセット/Reset Filter");
     setText("rfc", "AR装備フィルタ/AR Equipment Filter ");
@@ -635,7 +654,6 @@ var calc = {
     setText("lrdf", "特防対象/D.Bonus");
     setText("lrnf", "状態無効/Nullify");
     setText("lceq", "装備可能のみ/Can be Equipped only");
-    setText("lrv", "フィルタ/Filter ");
     setText("rrd", "ランダムAR/Random AR");
     setText("rfr", "フィルタをリセット/Reset Filter");
     setText("dd", "カードデータ: /Card Data: ");
@@ -968,18 +986,20 @@ var calc = {
         return !x.index || x.checkFlag(r, b);
       }, TAG.ORDER[language]);
     },
+    updateToggleText: function(){
+      _("fv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
+    },
     toggle: function(){
       if(this.active = 1 - this.active){
         _("sw").style.display = "block";
-        setText("tfv", "▲");
         this.update();
       }else{
         _("sw").style.display = "none";
-        setText("tfv", "▼");
         hideCurrent(this);
         this.current = "";
         this.reset();
       }
+      this.updateToggleText();
     },
     reset: function(){
       var active = this.active;
@@ -1063,18 +1083,20 @@ var calc = {
       linkInput(c, "equipable", "ceq");
       this.update();
     },
+    updateToggleText: function(){
+      _("rv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
+    },
     toggle: function(){
       if(this.active = 1 - this.active){
         _("rw").style.display = "block";
-        setText("trv", "▲");
         this.update();
       }else{
         _("rw").style.display = "none";
-        setText("trv", "▼");
         hideCurrent(this);
         this.current = "";
         this.reset();
       }
+      this.updateToggleText();
     },
     reset: function(){
       var active = this.active;
