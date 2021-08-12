@@ -688,9 +688,12 @@ var calc = {
     setOptions("ds", EFFECT, FILTER.DEFENSE, s, EFFECT_MAX, p);
   },
   updateEquipableOptions: function(){
+    var a = this.cardfilter.active;
     var s = AR.map(function(v, i){return i});
+    this.cardfilter.active = 0;
     if(this.ar) s.unshift(0, this.ar);
     setOptions("qf", AR, undefined, s, undefined, undefined, true);
+    this.cardfilter.active = a;
   },
   checkCardSelected: function(){
     if(this.card){
