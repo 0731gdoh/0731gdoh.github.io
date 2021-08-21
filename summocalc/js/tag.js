@@ -274,7 +274,7 @@ var TAG = Tag.createList(
   ,["二重封印/Double Lock", "にし", TAG_TYPE.DEBUFF, "スキル封印系/CS封印系"]
   ,["熱情/Ardor", "ねつ", TAG_TYPE.BUFF, "攻撃増加系/CP増加系"]
   ,["呪い/Curse", "のろ", TAG_TYPE.DEBUFF, "攻撃減少系"]
-  ,["呪い時強化", "のろしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["呪い時強化[ヴォルフ]/呪い時強化[Volkh]", "のろしきうお", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["発狂", "はつ", TAG_TYPE.DEBUFF, "防御減少系"]
   ,["非加速時強化", "ひか", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["引き寄せ/Draw", "ひきよせ", TAG_TYPE.ONE_SHOT]
@@ -283,7 +283,7 @@ var TAG = Tag.createList(
   ,["引き寄せ(3マス)/Draw (3 squares)", "ひきよせ3", TAG_TYPE.ONE_SHOT, "強制移動系/引き寄せ"]
   ,["引き寄せ(4マス)/Draw (4 squares)", "ひきよせ4", TAG_TYPE.ONE_SHOT, "強制移動系/引き寄せ"]
   ,["非祈り時強化", "ひい", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
-  ,["非強化時弱化", "ひきよう", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
+  ,["非強化時弱化", "ひきようしし", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["非根性時強化", "ひこ", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["非弱体時強化", "ひししき", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
   ,["非弱体時弱化", "ひししし", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃減少系/防御減少系"]
@@ -434,6 +434,13 @@ var TAG = Tag.createList(
   ,["HPが回復する状態", "HPか", TAG_TYPE.STATUS_GROUP, "", "再生/祝福/滋養/聖油"]
   ,["HPが減少する弱体", "HPけ", TAG_TYPE.STATUS_GROUP, "", "告死/凍結/毒/猛毒/火傷/烙印"]
   ,["特攻[1.2]/A.Bonus[1.2]", "とつ12", TAG_TYPE.STATIC, "特攻"]
+  ,["特攻[5.0]/A.Bonus[5.0]", "とつ5", TAG_TYPE.STATIC, "特攻"]
+  ,["魅了耐性", "みりたい", TAG_TYPE.BUFF, ""]
+  ,["被弾時強化解除", "ひたきよ", TAG_TYPE.IRREMOVABLE_DEBUFF, ""]
+  ,["非強化時強化", "ひきようしき", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
+  ,["呪い時強化[ジュウゴ]/呪い時強化[Jugo]", "のろしきしゆ", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["烙印時強化", "らくしき", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
+  ,["告死時強化", "こくしき", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
 ]);
 
 var TAG_FLAG_NUM = {
