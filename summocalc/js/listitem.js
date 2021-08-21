@@ -143,6 +143,7 @@ var VARIANT = ListItem.createList(
   ,["聖夜20/Xmas20"]
   ,["バレ21/Valentine21"]
   ,["星空/Nightglows"]
+  ,["川/River"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);
