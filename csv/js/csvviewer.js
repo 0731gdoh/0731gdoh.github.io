@@ -26,7 +26,7 @@ const parseCsv = (text) => {
   return data;
 }
 
-const csv2table = (data, s) => {
+const csv2table = (data, s, compareTable) => {
   const table = document.createElement("table");
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
@@ -62,23 +62,25 @@ const csv2table = (data, s) => {
   table.appendChild(thead);
   table.appendChild(tbody);
   table.createCaption().textContent = `${tbody.rows.length}件`;
-  thead.addEventListener("click", _sorter(table));
+  thead.addEventListener("click", _sorter(table, compareTable));
   tbody.addEventListener("click", _filter(table));
   return table;
 };
 
-const _sorter = (table) => {
+const _sorter = (table, compareTable) => {
   let n = -1;
   let order = 1;
+  compareTable = compareTable || [];
   return (evt) => {
     const th = evt.target.closest("th");
     if(th){
       const tbody = table.tBodies[0];
       const i = th.cellIndex;
       const rows = Array.from(tbody.rows);
+      const compare = compareTable[i] || new Intl.Collator(undefined, {numeric: true}).compare;
       let count = 0;
       order = (i === n) ? -order : 1;
-      rows.sort((a, b) => a.cells[i].textContent.localeCompare(b.cells[i].textContent, undefined, {numeric: true}) * order);
+      rows.sort((a, b) => compare(a.cells[i].textContent, b.cells[i].textContent) * order);
       n = i;
       for(const tr of rows){
         tbody.removeChild(tr);
@@ -126,7 +128,7 @@ const _filter = (table) => {
   };
 };
 
-const csvViewer = (parent, url, s, data) => {
+const csvViewer = (parent, url, s, data, compareTable) => {
   const p = document.createElement("p");
   const link = document.createElement("a");
   const hr = document.createElement("hr");
@@ -138,13 +140,13 @@ const csvViewer = (parent, url, s, data) => {
   p.appendChild(document.createTextNode("データセルをクリックでフィルタ"));
   parent.appendChild(p);
   if(data){
-    const table = csv2table(data, s);
+    const table = csv2table(data, s, compareTable);
     parent.appendChild(table);
     link.href = createURL(data);
     link.download = url;
   }else{
     fetchCsv(url).then((text) => {
-      const table = csv2table(parseCsv(text), s);
+      const table = csv2table(parseCsv(text), s, compareTable);
       parent.appendChild(table);
     }).catch((e) => {
       parent.appendChild(document.createTextNode(e));
