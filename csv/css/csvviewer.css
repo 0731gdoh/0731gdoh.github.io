@@ -1,5 +1,6 @@
 * {
-  font-family: monospace;
+  font-family: monospace, serif;
+  font-size: small;
 }
 body {
   -webkit-text-size-adjust: 100%;
@@ -31,4 +32,7 @@ td.highlight span.highlight {
 }
 tr.hide {
   display: none;
+}
+table + p {
+  margin-top: 1.5rem;
 }
