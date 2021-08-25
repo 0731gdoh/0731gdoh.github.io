@@ -129,27 +129,33 @@ const _filter = (table) => {
 };
 
 const csvViewer = (parent, url, s, data, compareTable) => {
-  const p = document.createElement("p");
+  const p1 = document.createElement("p");
   const link = document.createElement("a");
   const hr = document.createElement("hr");
+  const p2 = document.createElement("p");
+  const home = document.createElement("a");
   link.textContent = "Download CSV";
-  p.appendChild(link);
-  p.appendChild(hr);
-  p.appendChild(document.createTextNode("ヘッダセルをクリックでソート"));
-  p.appendChild(document.createElement("br"));
-  p.appendChild(document.createTextNode("データセルをクリックでフィルタ"));
-  parent.appendChild(p);
+  p1.appendChild(link);
+  p1.appendChild(hr);
+  p1.appendChild(document.createTextNode("ヘッダセルをクリックでソート"));
+  p1.appendChild(document.createElement("br"));
+  p1.appendChild(document.createTextNode("データセルをクリックでフィルタ"));
+  parent.appendChild(p1);
+  home.textContent = "戻る";
+  home.href = "/";
+  p2.appendChild(home);
+  parent.appendChild(p2);
   if(data){
     const table = csv2table(data, s, compareTable);
-    parent.appendChild(table);
+    parent.insertBefore(table, p2);
     link.href = createURL(data);
     link.download = url;
   }else{
     fetchCsv(url).then((text) => {
       const table = csv2table(parseCsv(text), s, compareTable);
-      parent.appendChild(table);
+      parent.insertBefore(table, p2);
     }).catch((e) => {
-      parent.appendChild(document.createTextNode(e));
+      parent.insertBefore(document.createTextNode(e), p2);
     });
     link.href = url;
   }
