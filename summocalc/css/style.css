@@ -32,10 +32,13 @@ caption,
 #ms {
   text-align: left;
   font-family: "Courier", monospace;
-  font-size: smaller;
+  font-size: small;
 }
 table {
   margin: 0.2rem 0;
+}
+* + input[type="button"] {
+  margin-left: 0.5rem;
 }
 input[type="button"] + input[type="button"] {
   margin-left: 0.3rem;
@@ -138,6 +141,7 @@ table {
   line-height: normal;
   text-align: center;
   font-family: "Courier", monospace;
+  font-size: small;
   font-weight: bold;
   color: #f00;
   border: solid 1px #f00;
@@ -162,9 +166,6 @@ fieldset {
 }
 .nm > hr {
   margin-left: 0.7rem;
-}
-.cb + input[type="button"] {
-  margin-left: 0.5rem;
 }
 .cb {
   display: inline-block;
