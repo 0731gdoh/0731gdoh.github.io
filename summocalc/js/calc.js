@@ -795,7 +795,8 @@ var calc = {
         if(e.group !== group) continue;
         if(e.isStackable()) count = loop;
         while(loop--){
-          var x;
+          var eV = e.getValue(eLv || this.cLv, !this.version, this.es);
+          var x = eV[0];
           var label = [];
           if(eLv){
             label.push("　[Lv.");
@@ -813,7 +814,7 @@ var calc = {
           if(count > 1) label.push("《x" + count + "》");
           label.push(e);
           desc = [label.join("")];
-          x = e.getMulValue(eLv, !this.version, this.es);
+          
 
           //連撃
           if(e.type === TYPE.COMBO && this.usecs) x = new Fraction(1);
@@ -828,6 +829,8 @@ var calc = {
           if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(1);
           //非弱体時
           if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(1);
+          //武器種弱点
+          if(e.type === TYPE.WEAPON_WEAKNESS && weapon - eV[1]) x = new Fraction(1);
 
           switch(e.type){
             default:
@@ -854,7 +857,7 @@ var calc = {
               break;
           }
 
-          x = e.getAddValue(eLv, !this.version, this.es);
+          x = eV[1];
 
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomAdd();
@@ -883,6 +886,9 @@ var calc = {
               
             case TYPE.CSWEAPON:
               if(this.usecs) weapon = x.round();
+              break;
+              
+            case TYPE.WEAPON_WEAKNESS:
               break;
           }}
           if(!loop){

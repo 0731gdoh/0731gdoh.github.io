@@ -10,7 +10,8 @@ var TYPE = {
   CUSTOM: 13,
   ZERO: 14,
   NOT_BUFFED: 15,
-  NOT_DEBUFFED: 16
+  NOT_DEBUFFED: 16,
+  WEAPON_WEAKNESS: 17
 };
 
 var EFFECT_FLAG = {
@@ -102,11 +103,11 @@ Effect.prototype = {
       return value.add(this.growth[m].mul(lv, 100));
     }
   },
-  getMulValue: function(lv, oldmode, es){
-    return this._getValue(0, lv, oldmode, es);
-  },
-  getAddValue: function(lv, oldmode, es){
-    return this._getValue(1, lv, oldmode, es);
+  getValue: function(lv, oldmode, es){
+    return [
+      this._getValue(0, lv, oldmode, es),
+      this._getValue(1, lv, oldmode, es)
+    ];
   },
   isFixed: function(){
     return this.flag & EFFECT_FLAG.FIXED;
@@ -144,7 +145,6 @@ Effect.createList = function(a){
     if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
     if(x.sortkey > 4 || !x.sortkey) return x.index - y.index;
     if(k[a] === k[b] && x.group === y.group) return x.value[1] - y.value[1] || x.value[0] - y.value[0] || x.index - y.index;
-//    if((x.type === TYPE.WEAPON || x.type === TYPE.CSWEAPON) && x.type === y.type) return x.value[1] - y.value[1];
     if(en) return t(x.name, 1).toUpperCase() < t(y.name, 1).toUpperCase() ? -1 : 1;
     if(x.reading === y.reading) return x.index - y.index;
     return x.reading < y.reading ? -1 : 1;
@@ -296,8 +296,8 @@ var EFFECT = Effect.createList(
   ,["[カスタム]/[Customizable]", "", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.CUSTOM]
   ,["<束縛>時強化", "そく", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特攻[1.3]/Bonus[1.3]", "とつ", 0, 1.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
-  ,["<*守護>無効化", "しゆこむ", 1, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["<*防御強化>無効化", "ほうき", 1, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["<*守護>無効化/Nullify Protection", "しゆこむ", 1, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["<*防御強化>無効化/Nullify DEF Up", "ほうき", 1, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["劫火-<*火傷>/Conflagration", "こうか", 1, 0, 3000, EFFECT_FLAG.FIXED]
   ,["<暴走+>時強化", "ほうそ+", 0, 2.6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<*暴走+>時強化", "ほうそ+", 1, 0.77, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
@@ -381,6 +381,7 @@ var EFFECT = Effect.createList(
   ,["非強化時強化", "ひきようかしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_BUFFED]
   ,["<呪い>時強化[ジュウゴ]/呪い時強化[Jugo]", "のろ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<*烙印>時強化", "らく", 1, 0.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["射撃弱点/Weakness against shot", "しやけ", 1, 2.5, 4, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
 ]);
 
 function generateEffectData(s, group){

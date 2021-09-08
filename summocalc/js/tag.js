@@ -13,7 +13,8 @@ var TAG_TYPE = {
   CWT: 11,
   ALL_BUFFS: 12,
   ALL_DEBUFFS: 13,
-  STATUS_GROUP: 14
+  STATUS_GROUP: 14,
+  UNKNOWN: 15
 };
 
 function Tag(index, x, category, subset){
@@ -233,7 +234,7 @@ var TAG = Tag.createList(
   ,["祝福時弱化[メフィストフェレス]/祝福時弱化[Mephistopheles]", "しゆくししめふ", TAG_TYPE.IRREMOVABLE_DEBUFF, "HP減少系"]
   ,["守護/Protection", "しゆこ", TAG_TYPE.BUFF, "防御増加系"]
   ,["守護に貫通/Ignore Protection", "しゆこにか", TAG_TYPE.STATIC, "特攻/貫通系"]
-  ,["守護無効化", "しゆこむこ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
+  ,["守護無効化/Nullify Protection", "しゆこむこ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["滋養/Nourishment", "しよ", TAG_TYPE.BUFF, "攻撃増加系/HP回復系"]
   ,["滋養時強化[アシガラ]/滋養時強化[Ashigara]", "しよしきあし", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系/防御増加系"]
   ,["スキル封印/Skill Lock", "すきるふ", TAG_TYPE.DEBUFF, "スキル封印系"]
@@ -309,9 +310,9 @@ var TAG = Tag.createList(
   ,["不動/Immobility", "ふと", TAG_TYPE.BUFF, "CP増加系/移動封印系"]
   ,["奮起/Arousal", "ふん", TAG_TYPE.BUFF, "CP増加系"]
   ,["妨害/Obstruct", "ほうか", TAG_TYPE.DEBUFF, "発動率減少系"]
-  ,["防御強化/DEF Up", "ほうき", TAG_TYPE.BUFF, "防御増加系"]
-  ,["防御強化に貫通/Ignore DEF Up", "ほうきにk", TAG_TYPE.STATIC, "特攻/貫通系"]
-  ,["防御強化無効化", "ほうきむこ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
+  ,["防御強化/DEF Up", "ほうきよき", TAG_TYPE.BUFF, "防御増加系"]
+  ,["防御強化に貫通/Ignore DEF Up", "ほうきよきにか", TAG_TYPE.STATIC, "特攻/貫通系"]
+  ,["防御強化無効化/Nullify DEF Up", "ほうきよきむこ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["暴走/Berserk", "ほうそ", TAG_TYPE.BUFF, "攻撃増加系/防御減少系", "暴走+"]
   ,["暴走+/Berserk+", "ほうそ+", TAG_TYPE.BUFF, "攻撃増加系/防御減少系"]
   ,["暴走時強化", "ほうそしき", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
@@ -365,7 +366,7 @@ var TAG = Tag.createList(
   ,["須弥山に篭る者/Mt.Meru Dweller", "しゆみ", TAG_TYPE.SKILL]
   ,["戦争屋/Warmonger", "せん", TAG_TYPE.SKILL]
   ,["大雪山に篭る者", "たいせ", TAG_TYPE.SKILL]
-  ,["退廃の魔王", "たいは", TAG_TYPE.SKILL]
+  ,["退廃の魔王/Lord of Degeneration", "たいは", TAG_TYPE.SKILL]
   ,["第四天魔王の子/Daughter of the Fourth Heaven", "たいよ", TAG_TYPE.SKILL]
   ,["大力の魔王/Hulking Lord", "たいり", TAG_TYPE.SKILL]
   ,["黄昏に弾く獣/Wolf of Ragnarok", "たそ", TAG_TYPE.SKILL]
@@ -394,7 +395,7 @@ var TAG = Tag.createList(
 
   ,["攻撃増加系/ATK Up", "こう1", TAG_TYPE.CATEGORY]
   ,["攻撃減少系/ATK Down", "こう2", TAG_TYPE.CATEGORY]
-  ,["防御増加系/DEF Up", "ほう1き", TAG_TYPE.CATEGORY]
+  ,["防御増加系/DEF Up", "ほうき1", TAG_TYPE.CATEGORY]
   ,["防御減少系/DEF Down", "ほうき2", TAG_TYPE.CATEGORY]
   ,["HP回復系/Restore HP", "HP1", TAG_TYPE.CATEGORY]
   ,["HP減少系/Decrease HP", "HP2", TAG_TYPE.CATEGORY]
@@ -435,12 +436,16 @@ var TAG = Tag.createList(
   ,["HPが減少する弱体", "HPけ", TAG_TYPE.STATUS_GROUP, "", "告死/凍結/毒/猛毒/火傷/烙印"]
   ,["特攻[1.2]/A.Bonus[1.2]", "とつ12", TAG_TYPE.STATIC, "特攻"]
   ,["特攻[5.0]/A.Bonus[5.0]", "とつ5", TAG_TYPE.STATIC, "特攻"]
-  ,["魅了耐性", "みりたい", TAG_TYPE.BUFF, ""]
+  ,["魅了耐性/Resistance charm", "みりたい", TAG_TYPE.BUFF, "状態耐性系"]
   ,["被弾時強化解除", "ひたきよ", TAG_TYPE.IRREMOVABLE_DEBUFF, ""]
   ,["非強化時強化", "ひきようしき", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["呪い時強化[ジュウゴ]/呪い時強化[Jugo]", "のろしきしゆ", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["烙印時強化", "らくしき", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["告死時強化", "こくしき", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
+  ,["状態耐性系/Resistance Status", "しよ", TAG_TYPE.CATEGORY]
+  ,["火傷耐性/Resistance burn", "やけたい", TAG_TYPE.BUFF, "状態耐性系"]
+  ,["防御力上昇無効/Remove all defense buffs", "ほうきより", TAG_TYPE.UNKNOWN, "状態耐性系"]
+  ,["射撃弱点/Weakness against shot", "しやけ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
 ]);
 
 var TAG_FLAG_NUM = {
