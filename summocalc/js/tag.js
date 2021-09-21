@@ -446,6 +446,7 @@ var TAG = Tag.createList(
   ,["火傷耐性/Resistance burn", "やけたい", TAG_TYPE.BUFF, "状態耐性系"]
   ,["防御力上昇無効/Remove all defense buffs", "ほうきより", TAG_TYPE.UNKNOWN, "状態耐性系"]
   ,["射撃弱点/Weakness against shot", "しやけ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
+  ,["火傷時強化", "やけしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
 ]);
 
 var TAG_FLAG_NUM = {
