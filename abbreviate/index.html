@@ -9,8 +9,7 @@ const _ = (id) => document.getElementById(id);
 const SSR = new Map([
   ["ライブアヒーロー", ["ラブヒロ"]],
   ["LIVE A HERO", ["LAH"]],
-  ["東京放課後サモナーズ", ["放サモ"]],
-  ["召喚勇者とＦ系彼氏", ["Ｆ彼"]]
+  ["東京放課後サモナーズ", ["放サモ"]]
 ]);
 
 const val = (id) => {
@@ -52,7 +51,7 @@ const gacha = (n) => {
   });
 };
 
-onload = () => {
+document.addEventListener("DOMContentLoaded", () => {
   for(const s of SSR){
     const o = document.createElement("option");
     o.textContent = s[0];
@@ -62,32 +61,32 @@ onload = () => {
     }
     _("d").appendChild(o);
   }
-  _("s").onclick = () => gacha(1);
-  _("m").onclick = () => gacha(10);
-  _("t").onfocus = () => {
+  _("s").addEventListener("click", () => gacha(1), false);
+  _("m").addEventListener("click", () => gacha(10), false);
+  _("t").addEventListener("focusin", () => {
     _("t").value = "";
-  };
-  _("t").onchange = () => {
+  }, false);
+  _("t").addEventListener("change", () => {
     const v = _("t").value;
-    _("n").value = 4;
+    let x = 0;
     for(const s of SSR){
       if(s[0] === v){
-        _("n").value = s[1][0].length;
+        x = s[1][0].length;
         break;
       }
     }
-  };
-  _("n").onfocus = (evt) => {
-    const elem = evt.currentTarget;
+    if(x) _("n").value = x;
+  }, false);
+  _("n").addEventListener("focusin", () => {
     setTimeout(() => {
       try{
-        elem.setSelectionRange(0, elem.value.length);
+        _("n").setSelectionRange(0, elem.value.length);
       }catch(e){
-        elem.select();
+        _("n").select();
       }
     }, 0);
-  };
-};
+  }, false);
+}, false);
 </script>
 <style>
 * {
