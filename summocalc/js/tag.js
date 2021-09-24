@@ -247,7 +247,7 @@ var TAG = Tag.createList(
   ,["束縛時強化", "そくしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["脱力/Drain", "たつ", TAG_TYPE.DEBUFF, "CP減少系/発動率減少系"]
   ,["注目/Taunt", "ちゆ", TAG_TYPE.BUFF, ""]
-  ,["注目時強化", "ちゆしき", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
+  ,["注目時強化[オンブレティグレ]/注目時強化[Hombre Tigre]", "ちゆしきおん", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
   ,["デメリット[0.25]", "てめ", TAG_TYPE.STATIC, ""]
   ,["凍結/Freeze", "とうけ", TAG_TYPE.DEBUFF, "防御減少系/HP減少系"]
   ,["凍結時弱化", "とうけしし", TAG_TYPE.IRREMOVABLE_DEBUFF, "発動率減少系"]
@@ -447,6 +447,9 @@ var TAG = Tag.createList(
   ,["防御力上昇無効/Remove all defense buffs", "ほうきより", TAG_TYPE.UNKNOWN, "状態耐性系"]
   ,["射撃弱点/Weakness against shot", "しやけ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["火傷時強化", "やけしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["対ダメージ敵HPCP超激減", "たい", TAG_TYPE.IRREMOVABLE_BUFF, ""]
+  ,["CS変更：射撃/Change CS Type: Shot", "CSへ4", TAG_TYPE.CCT, "CS変更"]
+  ,["注目時強化[ツァトグァ]/注目時強化[Tsathoggua]", "ちゆしきつあ", TAG_TYPE.BUFF, "発動率増加系"]
 ]);
 
 var TAG_FLAG_NUM = {
