@@ -237,5 +237,5 @@ var AR = Record.createList(
   ,["苦楽は汗と共に/Sweating Together, Through Good and Bad/くらくはあせとともに", , "弱体解除(単)/HP回復", "", "", "", "", "", 5, 400, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "モリタカ/オルグス", "", ""]
   ,["最高のパフォーマンスを/The Ultimate Performance/さいこうのぱふぉーまんすを", , "特防[0.6]", "根性", "", "", "全域", "", 5, 0, 0, EQUIP.WOOD, 0, "リョウタ/ソール", "", ""]
   ,["ある日の一幕/Snapshot of That Day/あるひのいちまく", , "特防[0.8]", "", "強化解除(単)", "", "打撃/射撃", "", 4, 200, 0, 0, EQUIP.BLOW|EQUIP.SHOT|EQUIP.MAGIC, "ケンゴ/勇者", "", ""]
-  ,["夏の海にはこれ一本！/This One's for the Summer Seas!/なつのうみにはこれいっぽん！", , "HP回復/火傷耐性", "HP回復/火傷耐性", "", "", "", "", 4, 0, 0, EQUIP.NETHER|EQUIP.INFERNAL, 0, "アンドヴァリ/スルト", "", ""]
+  ,["夏の海にはこれ一本！/This One's for the Summer Seas!/なつのうみにはこれいっぽん！", , "HP回復/火傷耐性", "HP回復/火傷耐性", "", "", "", "火傷", 4, 0, 0, EQUIP.NETHER|EQUIP.INFERNAL, 0, "アンドヴァリ/スルト", "", ""]
 ]);
