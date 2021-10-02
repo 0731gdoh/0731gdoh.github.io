@@ -632,9 +632,9 @@ var calc = {
     setText("lgf", "ギルド/Guild");
     setText("lsf", "学園/School");
     setText("lsef1", "効果1/Effect 1");
-    setCheckGroup("stf1", TIMING, 14);
+    setCheckGroup("stf1", TIMING, 15);
     setText("lsef2", "効果2/Effect 2");
-    setCheckGroup("stf2", TIMING, 14);
+    setCheckGroup("stf2", TIMING, 15);
     setText("lpf", "常時/Static");
     setText("lbaf", "特攻対象/A.Bonus");
     setText("lbdf", "特防対象/D.Bonus");
@@ -1033,7 +1033,7 @@ var calc = {
       if(!vv || vv[0] === "["){
         vv = "";
       }else{
-        vv = t(vv, 0);
+        vv = t(vv);
       }
       setOptions("pc", CARD, function(x){
         if(!p.active) return true;
@@ -1044,7 +1044,7 @@ var calc = {
         if(p.cs && (1 << x.weapon[1] & p.cs) === 0) return false;
         if(p.attribute && (1 << x.attribute & p.attribute) === 0) return false;
         if(pl > -1 && x.limited !== pl) return false;
-        if(vv && x.variant.indexOf(vv)) return false;
+        if(vv && x.variant.indexOf(vv) === -1) return false;
         if(p.guild && !(x.guilds & p.guild)) return false;
         if(p.school && !(x.schools & p.school)) return false;
         if(p.ar && !x.canEquip(AR[p.ar])) return false;

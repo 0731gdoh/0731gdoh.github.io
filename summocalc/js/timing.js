@@ -36,6 +36,7 @@ var TIMING = Timing.createList(
   ,["強化後/Buffed", "b"]
   ,["弱体後/Debuffed", "d"]
   ,["退場時/Defeat", "ud"]
+  ,["間接/Indirect", "id"]
   ,["CS", "c"]
   ,["CS発動後/After CS", "cx"]
 ]);
