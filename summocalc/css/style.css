@@ -153,6 +153,7 @@ table {
   display: none;
   position: sticky;
   top: 0.2rem;
+  z-index: 5;
 }
 #um {
   margin-right: 1rem;
