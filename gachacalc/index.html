@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="確率計算するやつ">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#040">
+<style>
+* {
+  font-family: monospace, serif;
+  font-size: small;
+}
+body {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+caption {
+  text-align: left;
+  color: #484;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+table {
+  border-collapse: collapse;
+}
+td {
+  padding-left: 0.8rem;
+  border: none;
+}
+.adjust {
+  display: inline-block;
+  margin-left: 1rem;
+}
+.note {
+  margin: 0.5rem;
+  color: #800;
+}
+input[type="button"] {
+  width: 4rem;
+}
+input[type="number"] {
+  width: 3rem;
+  text-align: right;
+}
+#share {
+  margin-top: 1.5rem;
+  width: 5rem;
+}
+</style>
+<script>
+"use strict";
+document.addEventListener("DOMContentLoaded", () => {
+  const f = document.forms[0];
+  const p = document.getElementById("preset");
+  const presets = [
+    ["",
+      [["", 2, 4]
+    ]],
+    ["東京放課後サモナーズ",
+      [["新規☆5キャラ", 0.73, 1.46]
+      ,["新規☆4キャラ", 1.79, 9.55]
+      ,["デート記念☆5", 1.8, 3.6]
+      ,["☆5AR（単独）", 1.8, 3.6]
+      ,["☆5AR（ダブル）", 0.9, 1.8]
+      ,["☆4AR（単独）", 9, 19.2]
+      ,["☆4AR（複数）", 4.5, 19.2]
+    ]],
+    ["ライブ・ア・ヒーロー！",
+      [["新規☆5ヒーロー（単独）", 1.1, 2.2]
+      ,["新規☆5ヒーロー（ダブル）", 0.8, 1.6]
+      ,["聖夜の熱湯戦線☆5", 0.6, 1.1]
+      ,["新規☆4ヒーロー（単独）", 2, 32]
+      ,["新規☆4ヒーロー（ダブル）", 2, 16]
+      ,["新規☆4サイドキック（単独）", 5, 0]
+      ,["新規☆4サイドキック（ダブル）", 3, 0]
+    ]]
+  ];
+  const v = (id) => {
+    const elem = document.getElementById(id);
+    if(!elem.value) return elem.textContent.trim();
+    let value = parseFloat(elem.value) || 0;
+    if(elem.min) value = Math.max(Math.min(value, elem.max), elem.min);
+    if(elem.step) value = Math.ceil(value / elem.step) * elem.step;
+    elem.value = value;
+    return value;
+  };
+  const w = (id, txt) => {
+    document.getElementById(id).textContent = txt;
+  };
+  const update = () => {
+    const single = v("single");
+    const ten = v("ten");
+    const normal = v("normal") / 100;
+    const rare = v("rare") / 100;
+    const expected = normal * (single + ten * 9) + rare * ten;
+    if(expected){
+      w("expected", `約${expected.toFixed(4) - 0}枚`);
+      w("prob", `約${((1 - (1 - normal) ** (single + ten * 9) * (1 - rare) ** ten) * 100).toFixed(4) - 0}％`);
+    }else{
+      w("expected", "0枚");
+      w("prob", "0％");
+    }
+  };
+  const presetData = [];
+  for(const [label, data] of presets){
+    let g = p;
+    if(label){
+      g = document.createElement("optgroup");
+      g.label = label;
+      p.appendChild(g);
+    }
+    for(const [name, normal, rare] of data){
+      const o = document.createElement("option");
+      o.textContent = name || "－－－－－－－－－－－－－";
+      g.appendChild(o);
+      presetData.push({
+        name: name,
+        normal: normal,
+        rare: rare,
+      });
+    }
+  }
+  p.addEventListener("change", () => {
+    const n = document.getElementById("normal");
+    const r = document.getElementById("rare");
+    const i = p.selectedIndex;
+    n.value = presetData[i].normal;
+    r.value = presetData[i].rare;
+    n.disabled = r.disabled = !!i;
+  });
+  f.addEventListener("change", update);
+  f.addEventListener("focusin", (evt) => {
+    const elem = evt.target;
+    if(elem.tagName === "INPUT" && elem.type === "number") setTimeout(() => {
+      try{
+        elem.setSelectionRange(0, elem.value.length);
+      }catch(e){
+        elem.select();
+      }
+    }, 0);
+  });
+  f.addEventListener("click", (evt) => {
+    const elem = evt.target;
+    if(elem.dataset.adjust){
+      const target = document.getElementById(elem.dataset.adjust);
+      switch(elem.value){
+        case "0":
+          target.value = 0;
+          break;
+        case "+":
+          ++target.value;
+          break;
+        case "-":
+          --target.value;
+          break;
+      }
+      update();
+    }
+  });
+  if(navigator.share){
+    const share = document.createElement("input");
+    share.id = "share";
+    share.type = "button";
+    share.value = "共有";
+    f.appendChild(share);
+    share.addEventListener("click", () => {
+      const result = [
+        `${presetData[p.selectedIndex].name || "ピックアップ"}`,
+        `　通常枠：${v("normal")}％`,
+        `　10連レア枠：${v("rare")}％`,
+        "試行回数",
+        `　単発：${v("single")}回`,
+        `　10連：${v("ten")}回`,
+        "計算結果",
+        `　期待値：${v("expected")}`,
+        `　少なくとも1枚入手：${v("prob")}`
+      ];
+      navigator.share({
+        url: location.href,
+        text: result.join("\n")
+      });
+    });
+  }
+});
+</script>
+<title>確率計算するやつ</title>
+<form>
+  <table>
+    <caption>ピックアップ設定
+    <tr>
+      <td><label for=preset>プリセット</label>
+      <td><select id=preset>
+      </select>
+    <tr>
+      <td><label for=normal>通常枠</label>
+      <td><input type=number max=100 min=0 step=0.001 value=2 id=normal>％
+    <tr>
+      <td><label for=rare>10連レア枠</label>
+      <td><input type=number max=100 min=0 step=0.001 value=4 id=rare>％
+  </table>
+  <div class=note>※プリセットの数値はおおよその傾向です。</div>
+  <hr>
+    <table>
+    <caption>試行回数
+    <tr>
+      <td><label for=single>単発</label>
+      <td><input type=number max=10000 min=0 step=1 value=0 id=single>回<span class=adjust><input type=button data-adjust=single value="0"><input type=button data-adjust=single value="-"><input type=button data-adjust=single value="+"></span>
+    <tr>
+      <td><label for=ten>10連</label>
+      <td><input type=number max=1000 min=0 step=1 value=0 id=ten>回<span class=adjust><input type=button data-adjust=ten value="0"><input type=button data-adjust=ten value="-"><input type=button data-adjust=ten value="+"></span>
+  </table>
+  <hr>
+  <table>
+    <caption>計算結果
+    <tr>
+      <td>期待値
+      <td id=expected>0枚
+    <tr>
+      <td>少なくとも1枚入手
+      <td id=prob>0％
+  </table>
+</form>
+<hr>
+<a href="/">戻る</a>
