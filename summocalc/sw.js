@@ -1,4 +1,4 @@
-var CACHE_NAME = "sc-211002-2";
+var CACHE_NAME = "sc-211007-1";
 var urlsToCache = [
   ".",
   "index.html",
@@ -36,17 +36,10 @@ self.addEventListener("fetch", function(e){
   }));
 });
 
-/*
-self.addEventListener("fetch", function(e){
-  e.respondWith(fetch(e.request).catch(function(){
-    return caches.match(e.request);
-  }));
-});
-*/
-
 self.addEventListener("message", function(e){
   switch(e.data){
     case "skipWaiting":
       skipWaiting();
+      break;
   }
 });
