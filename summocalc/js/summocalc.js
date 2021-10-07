@@ -256,24 +256,32 @@ function isStandalone(){
 function register(url){
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register(url).then(function(reg){
-      if(reg.waiting) showUpdateMessage(reg);
-      reg.onupdatefound = function(){
+      var updatefound = function(){
         reg.installing.onstatechange = function(){
           if(this.state === "installed" && navigator.serviceWorker.controller) showUpdateMessage(reg);
         };
       };
+      if(reg.waiting) return showUpdateMessage(reg);
+      if(reg.installing) updatefound();
+      reg.onupdatefound = updatefound;
     });
   }
 }
 function showUpdateMessage(reg){
-  var o = _("un");
-  _("ub").onclick = function(){
-    o.style.display = "none";
-    if(!reg.waiting) return;
-    reg.waiting.postMessage("skipWaiting");
+  var reload = false;
+  navigator.serviceWorker.oncontrollerchange = function(){
+    if(reload) return;
+    reload = true;
     location.reload();
+  }
+  _("ub").onclick = function(){
+    if(reg.waiting){
+      reg.waiting.postMessage("skipWaiting");
+    }else{
+      location.reload();
+    }
   };
-  o.style.display = "block";
+  _("un").style.display = "block";
 }
 function checkUpdate(){
   if("serviceWorker" in navigator){
