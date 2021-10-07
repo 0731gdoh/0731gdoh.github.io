@@ -8,6 +8,7 @@
 body {
   background-color: #cdf;
   -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
 }
 body::before {
   position: fixed;
@@ -141,15 +142,17 @@ table {
   line-height: normal;
   text-align: center;
   font-family: "Courier", monospace;
-  font-size: small;
+  font-size: medium;
   font-weight: bold;
   color: #f00;
   border: solid 1px #f00;
   border-radius: 0.2rem;
-  background-color: #fdd;
+  background-color: #fddd;
   margin: 0.2rem;
-  padding: 0.4rem;
+  padding: 0.6rem;
   display: none;
+  position: sticky;
+  top: 0.2rem;
 }
 #um {
   margin-right: 1rem;
