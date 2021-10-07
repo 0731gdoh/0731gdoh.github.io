@@ -3,6 +3,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="略称ガチャ">
 <meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#040">
 <script>
 const _ = (id) => document.getElementById(id);
 
@@ -68,14 +69,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }, false);
   _("t").addEventListener("change", () => {
     const v = _("t").value;
-    let x = 0;
     for(const s of SSR){
       if(s[0] === v){
-        x = s[1][0].length;
+        _("n").value = s[1][0].length;
+        _("t").blur();
         break;
       }
     }
-    if(x) _("n").value = x;
   }, false);
   _("n").addEventListener("focusin", () => {
     setTimeout(() => {
@@ -90,23 +90,26 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 <style>
 * {
-  font-family: monospace;
+  font-family: monospace, serif;
+  font-size: small;
 }
 body {
   -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
 }
-input {
+input[type="text"],
+input[type="number"] {
   border: #00F solid;
   border-radius: 0;
   border-width: 0 0 1px 0;
   background-color: #EEF;
-  font-size: medium;
   text-align: center;
 }
-button {
+input[type="button"] {
   width: 6rem;
   height: 2rem;
   margin: 1rem;
+  font-size: x-small;
 }
 #t {
   width: 15rem;
@@ -138,6 +141,6 @@ datalist {
 </style>
 <title>略称ガチャ</title>
 <input type=text value="" id=t list=d><datalist id=d></datalist>の略称<input type=number min=1 max=9 value=4 id=n>文字<br>
-<button id=s>単発</button><button id=m>10連</button><br>
+<input type=button value="単発" id=s><input type=button value="10連" id=m><br>
 <div id=o></div>
 <a href="/">戻る</a>
