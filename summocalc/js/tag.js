@@ -465,7 +465,7 @@ var TAG = Tag.createList(
   ,["呪い時強化[トウジ]/呪い時強化[Toji]", "のろしきとう", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["注目時強化[アールプ]/注目時強化[Alp]", "ちゆしきつあ", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系/発動率増加系"]
   ,["注目全解除/Remove all Taunt", "ちゆせん", TAG_TYPE.UNKNOWN, "状態耐性系"]
-  ,["武器種変更：横一文字[アザトース]/Change Weapon Type: Long Slash [Azathoth]", "ふきし71", TAG_TYPE.DEBUFF, "武器種変更"]
+  ,["武器種変更：横一文字[アザトース]/Change Weapon Type: Long Slash [Azathoth]", "ふきし71", TAG_TYPE.DEBUFF, "武器種変更/武器種変更：横一文字"]
   ,["攻撃力微増[アザトース]/攻撃力微増[Azathoth]", "こうけきりよくひあさ", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
 ]);
 
