@@ -9,8 +9,6 @@ var TAG_TYPE = {
   SKIP: 7,
   IRREMOVABLE_BUFF: 8,
   IRREMOVABLE_DEBUFF: 9,
-  CCT: 10,
-  CWT: 11,
   ALL_BUFFS: 12,
   ALL_DEBUFFS: 13,
   STATUS_GROUP: 14,
@@ -99,8 +97,6 @@ Tag.createList = function(a){
         break;
       case TAG_TYPE.BUFF:
       case TAG_TYPE.IRREMOVABLE_BUFF:
-      case TAG_TYPE.CCT:
-      case TAG_TYPE.CWT:
         c.push(table.get("強化"));
         break;
       case TAG_TYPE.DEBUFF:
@@ -135,10 +131,10 @@ var TAG = Tag.createList(
   ,["CP増加/Increase CP", "CPそ", TAG_TYPE.ONE_SHOT, "CP増加系"]
   ,["CS封印/CS Lock", "CSふ", TAG_TYPE.DEBUFF, "CS封印系"]
   ,["CS変更/Change CS Type", "CSへ", TAG_TYPE.BUFF]
-  ,["CS変更：打撃/Change CS Type: Blow", "CSへ3", TAG_TYPE.CCT, "CS変更"]
-  ,["CS変更：魔法/Change CS Type: Magic", "CSへ5", TAG_TYPE.CCT, "CS変更"]
-  ,["CS変更：横一文字/Change CS Type: Long Slash", "CSへ7", TAG_TYPE.CCT, "CS変更"]
-  ,["CS変更：全域/Change CS Type: All", "CSへ8", TAG_TYPE.CCT, "CS変更"]
+  ,["CS変更：打撃/Change CS Type: Blow", "CSへ3", TAG_TYPE.BUFF, "CS変更"]
+  ,["CS変更：魔法/Change CS Type: Magic", "CSへ5", TAG_TYPE.BUFF, "CS変更"]
+  ,["CS変更：横一文字/Change CS Type: Long Slash", "CSへ7", TAG_TYPE.BUFF, "CS変更"]
+  ,["CS変更：全域/Change CS Type: All", "CSへ8", TAG_TYPE.BUFF, "CS変更"]
   ,["HP回復/Restore HP", "HPか", TAG_TYPE.ONE_SHOT, "HP回復系"]
   ,["HP減少/Decrease HP", "HPけ", TAG_TYPE.ONE_SHOT, "HP減少系"]
   ,["悪魔の契約", "あく", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系/防御増加系/CP増加系"]
@@ -221,7 +217,7 @@ var TAG = Tag.createList(
   ,["弱体時強化[ヴォルフ]/弱体時強化[Volkh]", "しやくたいしきうお", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["弱体奪取/Steal debuff", "しやくたいた", TAG_TYPE.ONE_SHOT]
   ,["弱体奪取(複)/Steal debuff (multiple)", "しやくたいた2", TAG_TYPE.ONE_SHOT, "弱体奪取/弱体解除/弱体解除(複)/弱体を複製(味方に)"]
-  ,["弱体転写(全)/Transfer debuff (all)", "しやくたいた3", TAG_TYPE.ONE_SHOT, "弱体を貼付"]
+  ,["弱体転写(全)/Transfer debuff (all)", "しやくたいて3", TAG_TYPE.ONE_SHOT, "弱体転写/弱体を貼付"]
   ,["弱体反射/Reflect Debuff", "しやくたいは", TAG_TYPE.BUFF, "弱体無効系"]
   ,["弱体無効/Nullify Debuff", "しやくたいむ", TAG_TYPE.BUFF, "弱体無効系"]
   ,["弱体を複製(味方に)/Copy debuff (to ally)", "しやくたいをふ1", TAG_TYPE.ONE_SHOT]
@@ -241,8 +237,8 @@ var TAG = Tag.createList(
   ,["聖油/Unction", "せい", TAG_TYPE.BUFF, "防御増加系/HP回復系"]
   ,["聖油時弱化", "せいしし", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["聖油に貫通/Ignore Unction", "せいにか", TAG_TYPE.STATIC, "特攻/貫通系"]
-  ,["全方向移動力増加/Movement expansion in all directions", "せん1", TAG_TYPE.BUFF, "移動力増加系"]
-  ,["全方向移動力大増", "せん2", TAG_TYPE.IRREMOVABLE_BUFF, "移動力増加系"]
+  ,["全方向移動力増加/Movement expansion in all directions", "せんほ1", TAG_TYPE.BUFF, "移動力増加系"]
+  ,["全方向移動力大増", "せんほ2", TAG_TYPE.IRREMOVABLE_BUFF, "移動力増加系"]
   ,["束縛/Bind", "そく", TAG_TYPE.DEBUFF, "攻撃減少系/スキル封印系"]
   ,["束縛時強化", "そくしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["脱力/Drain", "たつ", TAG_TYPE.DEBUFF, "CP減少系/発動率減少系"]
@@ -292,15 +288,15 @@ var TAG = Tag.createList(
   ,["憑依/Possession", "ひよ", TAG_TYPE.DEBUFF]
   ,["憑依時強化", "ひよしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["閃き/Glint", "ひら", TAG_TYPE.BUFF, "発動率増加系"]
-  ,["武器種変更/Change Weapon Type", "ふきし", TAG_TYPE.BUFF]
-  ,["武器種変更：斬撃/Change Weapon Type: Slash", "ふきし1", TAG_TYPE.CWT, "武器種変更"]
-  ,["武器種変更：突撃/Change Weapon Type: Trust", "ふきし2", TAG_TYPE.CWT, "武器種変更"]
-  ,["武器種変更：打撃/Change Weapon Type: Blow", "ふきし3", TAG_TYPE.CWT, "武器種変更"]
-  ,["武器種変更：魔法/Change Weapon Type: Magic", "ふきし5", TAG_TYPE.CWT, "武器種変更"]
-  ,["武器種変更：横一文字/Change Weapon Type: Long Slash", "ふきし6", TAG_TYPE.CWT, "武器種変更"]
-  ,["武器種変更：狙撃/Change Weapon Type: Snipe", "ふきし7", TAG_TYPE.CWT, "武器種変更"]
-  ,["武器種変更：全域/Change Weapon Type: All", "ふきし8", TAG_TYPE.CWT, "武器種変更"]
-  ,["武器種変更：無/Change Weapon Type: None", "ふきし9", TAG_TYPE.CWT, "武器種変更"]
+  ,["武器種変更/Change Weapon Type", "ふきし", TAG_TYPE.UNKNOWN]
+  ,["武器種変更：斬撃/Change Weapon Type: Slash", "ふきし1", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：突撃/Change Weapon Type: Trust", "ふきし2", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：打撃/Change Weapon Type: Blow", "ふきし3", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：魔法/Change Weapon Type: Magic", "ふきし5", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：横一文字/Change Weapon Type: Long Slash", "ふきし7", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：狙撃/Change Weapon Type: Snipe", "ふきし6", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：全域/Change Weapon Type: All", "ふきし8", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：無/Change Weapon Type: None", "ふきし9", TAG_TYPE.BUFF, "武器種変更"]
   ,["吹き飛ばし(縦)/Blast (back)", "ふきと1", TAG_TYPE.ONE_SHOT]
   ,["吹き飛ばし(1マス)/Blast (1 square)", "ふきと11", TAG_TYPE.ONE_SHOT, "強制移動系/吹き飛ばし(縦)"]
   ,["吹き飛ばし(2マス)/Blast (2 squares)", "ふきと12", TAG_TYPE.ONE_SHOT, "強制移動系/吹き飛ばし(縦)"]
@@ -328,7 +324,6 @@ var TAG = Tag.createList(
   ,["友情時強化", "ゆう", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["烙印/Stigma", "らく", TAG_TYPE.DEBUFF, "防御減少系/HP減少系"]
   ,["連撃/Combo", "れん", TAG_TYPE.BUFF, "攻撃増加系"]
-
   ,["斬撃/Slash", "", TAG_TYPE.WEAPON]
   ,["突撃/Thrust", "", TAG_TYPE.WEAPON]
   ,["打撃/Blow", "", TAG_TYPE.WEAPON]
@@ -338,12 +333,10 @@ var TAG = Tag.createList(
   ,["横一文字/Long Slash", "", TAG_TYPE.WEAPON]
   ,["全域/All", "", TAG_TYPE.WEAPON]
   ,["無/None", "", TAG_TYPE.WEAPON]
-
   ,["鬼系スキル", "", TAG_TYPE.SKIP, "", "鬼道の衆/鬼道を束ねる者/鬼気迫る者"]
   ,["獣系スキル", "", TAG_TYPE.SKIP, "", "首狩りの獣/獣の末裔/獣皮を巻く者/黄昏に弾く獣/忠玉の八犬士/無垢なる獣/ラビリンスの獣"]
   ,["チートと名の付くスキル", "", TAG_TYPE.SKIP, "", "チート系勇者/チートなる者"]
   ,["魔王と名の付くスキル", "", TAG_TYPE.SKIP, "", "僥倖の魔王/混沌の魔王/退廃の魔王/第四天魔王の子/大力の魔王/常闇の魔王/墓場の魔王/魔王"]
-
   ,["愛を囚う者/Love Trapper", "あい", TAG_TYPE.SKILL]
   ,["アスリート/Athlete", "あす", TAG_TYPE.SKILL, "", "歓呼のアスリート/直感のアスリート"]
   ,["海を航る者/Seafarer", "うみ", TAG_TYPE.SKILL]
@@ -391,8 +384,7 @@ var TAG = Tag.createList(
   ,["雷光を現す者/Living Lightning", "らい", TAG_TYPE.SKILL]
   ,["ラビリンスの獣/Beast of the Labyrinth", "らひ", TAG_TYPE.SKILL]
   ,["竜を継ぐ者/Dragonborn", "りゆ", TAG_TYPE.SKILL]
-  ,["霊体/Wraith", "れい", TAG_TYPE.SKILL]
-
+  ,["霊体/Wraith", "れいた", TAG_TYPE.SKILL]
   ,["攻撃増加系/ATK Up", "こう1", TAG_TYPE.CATEGORY]
   ,["攻撃減少系/ATK Down", "こう2", TAG_TYPE.CATEGORY]
   ,["防御増加系/DEF Up", "ほうき1", TAG_TYPE.CATEGORY]
@@ -412,7 +404,6 @@ var TAG = Tag.createList(
   ,["貫通系/Ignore", "かん", TAG_TYPE.CATEGORY]
   ,["強化/Buff", "ん", TAG_TYPE.CATEGORY]
   ,["弱体/Debuff", "ん", TAG_TYPE.CATEGORY]
-
   ,["CS威力増加/Increase CS Damage", "CSい", TAG_TYPE.STATIC]
   ,["CS威力増加(+1)/Increase CS Damage (+1)", "CSい1", TAG_TYPE.STATIC, "CS威力増加"]
   ,["CS威力増加(+2)/Increase CS Damage (+2)", "CSい2", TAG_TYPE.STATIC, "CS威力増加"]
@@ -448,7 +439,7 @@ var TAG = Tag.createList(
   ,["射撃弱点/Weakness against shot", "しやけ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["火傷時強化", "やけしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["対ダメージ敵HPCP超激減", "たいためてき", TAG_TYPE.IRREMOVABLE_BUFF]
-  ,["CS変更：射撃/Change CS Type: Shot", "CSへ4", TAG_TYPE.CCT, "CS変更"]
+  ,["CS変更：射撃/Change CS Type: Shot", "CSへ4", TAG_TYPE.BUFF, "CS変更"]
   ,["注目時強化[ツァトグァ]/注目時強化[Tsathoggua]", "ちゆしきつあ", TAG_TYPE.BUFF, "発動率増加系"]
   ,["移動後回避付与", "いとうこかい", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["移動後クリティカル付与", "いとうこくり", TAG_TYPE.IRREMOVABLE_BUFF]
@@ -461,6 +452,21 @@ var TAG = Tag.createList(
   ,["浄化", "しようか", TAG_TYPE.BUFF]
   ,["滋養時強化[サルタヒコ]/滋養時強化[Sarutahiko]", "しようしきさる", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["凍結耐性/Freeze resistance", "とうたい", TAG_TYPE.BUFF, "状態耐性系"]
+  ,["弱体転写/Transfer debuff", "しやくたいて", TAG_TYPE.ONE_SHOT]
+  ,["弱体転写(単)/Transfer debuff (single)", "しやくたいて1", TAG_TYPE.ONE_SHOT, "弱体転写/弱体を貼付"]
+  ,["霊験者", "れいけ", TAG_TYPE.SKILL]
+  ,["頭陀袋の霊験者", "すた", TAG_TYPE.SKILL]
+  ,["霊系スキル", "", TAG_TYPE.SKIP, "", "頭陀袋の霊験者/霊験者/霊体"]
+  ,["全弱体特攻", "せんし", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["継続回復強化", "けいそくか", TAG_TYPE.IRREMOVABLE_BUFF]
+  ,["継続ダメージ強化", "けいそくた", TAG_TYPE.IRREMOVABLE_DEBUFF]
+  ,["強化を再付与", "きようかをさ", TAG_TYPE.ONE_SHOT, "強化を複製/強化を貼付(味方から)"]
+  ,["弱体を再付与", "しやくたいをさ", TAG_TYPE.ONE_SHOT, "弱体を複製(敵に)/弱体を貼付"]
+  ,["呪い時強化[トウジ]/呪い時強化[Toji]", "のろしきとう", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["注目時強化[アールプ]/注目時強化[Alp]", "ちゆしきつあ", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系/発動率増加系"]
+  ,["注目全解除/Remove all Taunt", "ちゆせん", TAG_TYPE.UNKNOWN, "状態耐性系"]
+  ,["武器種変更：横一文字[アザトース]/Change Weapon Type: Long Slash [Azathoth]", "ふきし71", TAG_TYPE.DEBUFF, "武器種変更"]
+  ,["攻撃力微増[アザトース]/攻撃力微増[Azathoth]", "こうけきりよくひあさ", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
 ]);
 
 var TAG_FLAG_NUM = {

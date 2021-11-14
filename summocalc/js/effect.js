@@ -91,9 +91,10 @@ Effect.prototype = {
   _getValue: function(m, lv, oldmode, es){
     var value = this.value[m];
     if(this.link){
+      var loop = es[this.link].loop;
       if(value.length){
-        value = value[es[this.link].loop ? 0 : 1];
-      }else if(!es[this.link].loop){
+        value = value[loop ? 0 : 1];
+      }else if(!loop){
         value = new Fraction(0);
       }
     }
@@ -160,8 +161,6 @@ Effect.createList = function(a){
     if(tagIndex){
       switch(TAG[tagIndex].type){
         case TAG_TYPE.BUFF:
-        case TAG_TYPE.CCT:
-        case TAG_TYPE.CWT:
           v[5] = (v[5] || 0) | EFFECT_FLAG.BUFF;
           break;
         case TAG_TYPE.DEBUFF:
@@ -387,6 +386,11 @@ var EFFECT = Effect.createList(
   ,["汚れ", "よこ", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.DEBUFF|EFFECT_FLAG.GIMMICK]
   ,["<滋養>時強化[サルタヒコ]/滋養時強化[Sarutahiko]", "しよ", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特殊耐性[0.01+4000]", "とくし", 1, 0.01, 4000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["全弱体特攻", "せん", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
+  ,["<呪い>時強化[トウジ]/呪い時強化[Toji]", "のろ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["注目時強化[アールプ]/注目時強化[Alp]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
+  ,["武器種変更：横一文字[アザトース]/Change Weapon Type: Long Slash [Azathoth]", "ふき", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["攻撃力微増[アザトース]/攻撃力微増[Azathoth]", "こうけひ", 0, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
 ]);
 
 function generateEffectData(s, group){
@@ -435,8 +439,6 @@ function registerBonusEffect(i, value){
   if(!o.link){
     switch(tag.type){
       case TAG_TYPE.BUFF:
-      case TAG_TYPE.CCT:
-      case TAG_TYPE.CWT:
       case TAG_TYPE.ALL_BUFFS:
         flag = flag | EFFECT_FLAG.BONUS_TO_BUFF;
         break;
