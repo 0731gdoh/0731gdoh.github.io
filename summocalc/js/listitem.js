@@ -145,6 +145,7 @@ var VARIANT = ListItem.createList(
   ,["星空/Nightglows"]
   ,["川/River"]
   ,["地獄/Onsen"]
+  ,["ハロ21/Halloween21"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);

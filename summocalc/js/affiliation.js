@@ -49,6 +49,7 @@ var GUILD = Affiliation.createList(
   ,"ミッショネルズ/Missionaries"
   ,"ルールメイカーズ/Rule Makers"
   ,"ワイズメン/The Wisemen"
+  ,"ワンダラーズ"
   ,"？？？"
   ,"？？？？？"
   ,"？？？？？？"
