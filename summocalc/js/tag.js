@@ -459,7 +459,7 @@ var TAG = Tag.createList(
   ,["霊系スキル", "", TAG_TYPE.SKIP, "", "頭陀袋の霊験者/霊験者/霊体"]
   ,["全弱体特攻", "せんし", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["継続回復強化", "けいそくか", TAG_TYPE.IRREMOVABLE_BUFF]
-  ,["継続ダメージ強化", "けいそくた", TAG_TYPE.IRREMOVABLE_BUFF]
+  ,["継続ダメージ強化", "けいそくた", TAG_TYPE.IRREMOVABLE_DEBUFF]
   ,["強化を再付与", "きようかをさ", TAG_TYPE.ONE_SHOT, "強化を複製/強化を貼付(味方から)"]
   ,["弱体を再付与", "しやくたいをさ", TAG_TYPE.ONE_SHOT, "弱体を複製(敵に)/弱体を貼付"]
   ,["呪い時強化[トウジ]/呪い時強化[Toji]", "のろしきとう", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
