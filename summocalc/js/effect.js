@@ -389,8 +389,13 @@ var EFFECT = Effect.createList(
   ,["全弱体特攻", "せん", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,["<呪い>時強化[トウジ]/呪い時強化[Toji]", "のろ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["注目時強化[アールプ]/注目時強化[Alp]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
-  ,["武器種変更：横一文字[アザトース]/Change Weapon Type: Long Slash [Azathoth]", "ふき", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：横一文字[弱体]/Change Weapon Type: Long Slash [Debuff]", "ふき", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.WEAPON]
   ,["攻撃力微増[アザトース]/攻撃力微増[Azathoth]", "こうけひ", 0, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
+  ,["CS変更：横一文字[弱体]/Change CS Type: Long Slash [Debuff]", "CS", 0, 0, 7, EFFECT_FLAG.FIXED|EFFECT_FLAG.DEBUFF|EFFECT_FLAG.GIMMICK, TYPE.CSWEAPON]
+  ,["デバフをくれなきゃイタズラするぞ！", "ては", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.NOT_DEBUFFED]
+  ,["デバフをくれなきゃイタズラするぞ！", "ては", 1, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.NOT_DEBUFFED]
+  ,["バフをくれなきゃイタズラするぞ！", "はふ", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.NOT_BUFFED]
+  ,["バフをくれなきゃイタズラするぞ！", "はふ", 1, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.NOT_BUFFED]
 ]);
 
 function generateEffectData(s, group){
