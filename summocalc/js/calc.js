@@ -573,9 +573,7 @@ var calc = {
     try{
       localStorage.setItem("language", language);
     }catch(e){}
-    try{
     this.updateTexts();
-    }catch(e){alert(e + "\n" + e.stack)}
     if(x >= 0){
       this.cardfilter.update();
       this.arfilter.update();
