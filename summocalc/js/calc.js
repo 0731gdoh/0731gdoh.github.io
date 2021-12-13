@@ -806,7 +806,7 @@ var calc = {
     for(var group = 0; group < 2; group++){
       var buffed = false;
       var debuffed = false;
-      var dow;
+      var dow = undefined;
       this.es.some(function(es, i){
         var e = EFFECT[i];
         if(!es.loop) return false;
