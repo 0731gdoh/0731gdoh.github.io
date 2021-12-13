@@ -22,7 +22,7 @@ function Record(index, id, x){
 }
 Record.prototype = {
   toString: function(){
-    return t(this.name) || "－－－－－－－－－－－－－－－－";
+    return t(this.name) || "－";
   },
   getValue: function(lv){
     return this.value.mul(100 + lv, 100);
@@ -31,13 +31,19 @@ Record.prototype = {
 Record.createList = function(a){
   var c = 1000;
   var ids = [];
-  return a.map(function(v, i){
+  var order = [];
+  var result = a.map(function(v, i){
     var id = v.splice(1, 1)[0];
     if(id === undefined) id = ++c;
     if(ids.indexOf(id) !== -1) throw new Error("AR IDが重複しています（" + id + "）");
     ids.push(id);
+    if(id === 101 || id === 1001) order.push(0);
+    order.push(i);
     return new Record(i, id, v);
   });
+  result.ORDER = order;
+  result.LABELS = ["クエスト報酬/Quest Reward", "ショップ・イベント/Shop or Event", "AR召喚/AR Summons"];
+  return result;
 };
 Record.csv = function(list, x){
   return list.map(function(v){
@@ -121,6 +127,7 @@ var AR = Record.createList(
   ,["今、ここだけにしかない物語/今、ここだけにしかない物語/いま、ここだけにしかないものがたり", 101, "HP回復/獲得ランク経験値アップ", "", "", "", "", "", 4, 300, EQUIP.ANY, 0, 0, "", "", ""]
   ,["お宝目指して何処までも/お宝目指して何処までも/おたからめざしてどこまでも", 107, "獲得コインアップ", "", "呪い", "", "", "", 4, 200, EQUIP.ANY, 0, 0, "", "", ""]
   ,["教えの庭にも/教えの庭にも/おしえのにわにも", 108, "獲得経験値アップ/獲得ランク経験値アップ", "", "", "", "", "", 4, 200, EQUIP.ANY, 0, 0, "", "", ""]
+  ,["放課後の工房/Afterschool Workshop/ほうかごのこうぼう", 119, "種ドロップ率アップ", "", "根性解除/根性耐性", "", "", "", 4, 300, EQUIP.ANY, 0, 0, "", "", ""]
   ,["拮抗の例外処理？/Exception of Antagonism?/きっこうのれいがいしょり？", 102, "強制移動無効(後)", "", "HP減少", "", "", "", 2, 150, 0, EQUIP.WATER, 0, "", "", ""]
   ,["魔王と魔王/Dark Lords/まおうとまおう", 103, "", "", "", "", "", "毒/猛毒", 3, 150, EQUIP.ANY, 0, 0, "", "", ""]
   ,["仰げば尊し/仰げば尊し/あおげばとうとし", 104, "獲得経験値集約/獲得経験値アップ", "", "", "", "", "", 4, 100, EQUIP.ANY, 0, 0, "", "", ""]
@@ -136,6 +143,7 @@ var AR = Record.createList(
   ,["冒険に祝杯を/Cheers to Adventure/ぼうけんにしゅくはいを", 116, "魔王と名の付くスキルに特攻[1.4]/弱体無効", "", "", "魔王と名の付くスキル", "", "", 3, 150, 0, 0, EQUIP.MAGIC|EQUIP.SNIPE, "ネクロス&バッカス/ソール/オルグス", "", ""]
   ,["ようこそ地獄の温泉郷/ようこそ地獄の温泉郷/ようこそじごくのおんせんきょう", 117, "凍結耐性/弱体解除(単)", "凍結耐性", "", "", "", "凍結", 3, 0, 0, 0, EQUIP.SLASH|EQUIP.BLOW|EQUIP.MAGIC, "ダイコク/サルタヒコ", "", ""]
   ,["スウィート・ドリームス/スウィート・ドリームス/すうぃーと・どりーむす", 118, "獲得経験値アップ", "閃き", "", "", "", "", 5, 200, 0, 0, EQUIP.MAGIC|EQUIP.SNIPE, "", "ビーストテイマーズ", ""]
+  ,["レッツ・クラフト！/It's Crafting Time!/れっつ・くらふと！", 120, "ARトークンドロップ率アップ", "攻撃力低下耐性", "", "", "", "", 4, 200, EQUIP.ANY, 0, 0, "", "", ""]
   ,["開拓の誓い/開拓の誓い/かいたくのちかい", , "", "CP増加", "", "", "", "恐怖", 5, 100, 0, EQUIP.NETHER, 0, "主人公/シロウ", "", ""]
   ,["無窮の誓い/無窮の誓い/むきゅうのちかい", , "クリティカル", "", "", "", "", "マヒ", 5, 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ", "", ""]
   ,["豊穣の誓い/豊穣の誓い/ほうじょうのちかい", , "HP回復", "", "", "", "", "告死", 5, 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ", "", ""]

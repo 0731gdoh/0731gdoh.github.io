@@ -20,16 +20,14 @@ function setValue(id, value, zeroCount){
   var o = _(id);
   var p = o.options;
   if(p){
+    var parent = zeroCount ? o.querySelectorAll("optgroup")[zeroCount - 1] : o;
     var index = 0;
-    var checkZero = (zeroCount !== undefined);
-    zeroCount = zeroCount || 0;
     for(var i = 0; i < p.length; i++){
       var x = parseInt(p[i].value);
-      if(x === value && zeroCount === 0){
+      if(x === value && parent.contains(p[i])){
         index = i;
         break;
       }
-      if(x === 0 && checkZero) zeroCount--;
     }
     o.selectedIndex = index;
   }else if(o.type === "checkbox"){
@@ -49,34 +47,61 @@ function setValue(id, value, zeroCount){
     if(o.oninput) o.oninput();
   }
 }
-function setOptions(id, list, k, s, d, p, skipZeroCount){
-  //id, リスト[, フィルタ関数[, ソート順[, 除数, 接頭辞リスト[, zeroCountスキップ]]]]
+function setOptions(id, list, k, s, ogl, d, p){
+  //id, リスト[, フィルタ関数[, ソート順[, グループラベル[, 除数, 接頭辞リスト]]]]
   var elem = _(id);
-  var fragment = document.createDocumentFragment();
   var value = v(id);
   var zeroCount = 0;
-  var n = elem.selectedIndex;
-  while(elem.firstChild){
-    var fc = elem.firstChild;
-    if(n){
-      n--;
-      if(parseInt(fc.value) === 0) zeroCount++;
+  var containers = [document.createDocumentFragment()];
+  var ci = 0;
+  if(ogl){
+    if(!elem.firstChild){
+      ogl.forEach(function(label){
+        if(label){
+          var og = document.createElement("optgroup");
+          og.label = t(label);
+          containers.push(og);
+        }else{
+          containers.push(null);
+        }
+      });
+    }else{
+      var n = 0;
+      var parent = elem.options[Math.max(elem.selectedIndex, 0)].parentNode;
+      while(elem.firstChild){
+        var og = elem.removeChild(elem.firstChild);
+        if(og.tagName === "OPTGROUP"){
+          while(!ogl[containers.length - 1]){
+            containers.push(null);
+          }
+          og.label = t(ogl[containers.length - 1]);
+          ++n;
+          if(og === parent) zeroCount = n;
+          containers.push(og);
+          while(og.firstChild) og.removeChild(og.firstChild);
+        }
+      }
     }
-    elem.removeChild(fc);
+  }else{
+    while(elem.firstChild) elem.removeChild(elem.firstChild);
   }
   if(!s) s = list.map(function(v, i){return i});
-  s.forEach(function(v){
+  s.forEach(function(v, i){
     var x = list[d ? v % d : v];
     if(!k || k(x)){
-      var o = document.createElement("option");
-      o.textContent = d ? p[Math.floor(v / d)] + x : x;
-      o.value = v;
-      fragment.appendChild(o);
+      if(!i || v){
+        var o = document.createElement("option");
+        o.textContent = d ? p[Math.floor(v / d)] + x : x;
+        o.value = v;
+        containers[ci].appendChild(o);
+      }
+      if(!v && ogl) ++ci;
     }
   });
-  elem.appendChild(fragment);
+  containers.forEach(function(x){
+    if(x) elem.appendChild(x);
+  });
   elem.selectedIndex = 0;
-  if(skipZeroCount) zeroCount = undefined;
   setValue(id, value, zeroCount);
 }
 function setText(id, str){

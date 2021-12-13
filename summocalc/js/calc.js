@@ -35,7 +35,7 @@ var calc = {
   version: 1,
   atk: 4000,
   weapon: 1,
-  cs: CS_ORDER[3],
+  cs: CS.ORDER[3],
   cLv: 1,
   card: 0,
   lv: 1,
@@ -73,6 +73,7 @@ var calc = {
     linkInput(c, "multiplier", "am");
     linkInput(c, "card", "pc", function(){
       c.updateEffectOptions();
+      c.updateMultiplierOptions();
       c.checkCardSelected();
       c.arfilter.update(c.card);
       if(CARD[c.card].rarity === 5){
@@ -514,21 +515,38 @@ var calc = {
         if(e.link){
           var tLoop = this.es[e.link].loop;
           var tE = EFFECT[e.link];
-          if((!tLoop || tE.isStackable() && tLoop < es.loop) && !e.isNonStatus()){
-            var tLv = 0;
+          var tLv = 0;
+          if(e.type === TYPE.DEBUFF_OVERWRITE){
+            tLv = -1;
+            while(tLv < 0 || tLv > 15 || isNaN(tLv)){
+              tLv = prompt(t("/Number of ") + tE + t("の数 (※0〜15)/\n(0-15)"), "");
+              if(!tLv) break;
+              tLv = parseInt(tLv, 10);
+            }
+            if(tLv || tLv === 0){
+              this.es[e.link].loop = tLv;
+              this.es[e.link].lv = 1;
+            }
+          }else if(tLoop){
+            if(tE.isStackable() && es.loop > 1){
+              tLv = this.es[e.link].lv;
+              this.addStatus(e.link, tLv || 1, undefined, tLv ? 0 : 1);
+            }
+          }else if(!e.isNonStatus()){
             if(tE.isFixed() || tE.isLv1()){
               if(confirm(t("/Add ") + tE + t("を追加/"))) tLv = 1;
             }else{
               while(tLv < 1 || tLv > 100){
                 tLv = prompt(t("/Add ") + tE + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
-                if(tLv !== 0 && !tLv) break;
+                if(!tLv) break;
                 tLv = parseInt(tLv, 10) || 0;
               }
             }
-            if(tLv) this.addStatus(e.link, tLv, 1);
+            if(tLv) this.addStatus(e.link, tLv);
           }
         }
       }else{
+//        if(e.link && e.isStackable() && this.es[e.link].loop > 1) es = this.es[e.link];
         if(--es.loop < 1) es.clear();
       }
     }else if(!lv && confirm(t("全ての【/Are you sure you want to remove all 【") + t(["攻撃/Offense", "防御/Defense"][group]) + t("側補正】を削除しますか？/】 effects?"))){
@@ -555,7 +573,9 @@ var calc = {
     try{
       localStorage.setItem("language", language);
     }catch(e){}
+    try{
     this.updateTexts();
+    }catch(e){alert(e + "\n" + e.stack)}
     if(x >= 0){
       this.cardfilter.update();
       this.arfilter.update();
@@ -574,9 +594,9 @@ var calc = {
     rf.active = 0;
     setOptions("sv", VERSION);
     setOptions("w", WEAPON, FILTER.NAME);
-    setOptions("cs", CS, FILTER.VALUE, CS_ORDER);
-    setOptions("am", MULTIPLIER);
-    setCheckGroup("ef", ATTRIBUTE, undefined, ATTRIBUTE_ORDER);
+    setOptions("cs", CS, FILTER.VALUE, CS.ORDER);
+    this.updateMultiplierOptions();
+    setCheckGroup("ef", ATTRIBUTE, undefined, ATTRIBUTE.ORDER);
     setCheckGroup("wf", WEAPON);
     setCheckGroup("cf", WEAPON);
     setCheckGroup("rf", RARITY);
@@ -590,14 +610,14 @@ var calc = {
     ["baf", "bdf", "nf", "pf"].forEach(function(key, i){
       setOptions(key, TAG, function(x){
         return !x.index || x.checkFlag(i + 3, TIMING_FLAG.ANY);
-      }, TAG.ORDER[language]);
+      }, TAG.ORDER[language], TAG.LABELS[i + 3]);
     });
     this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
     ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
       setOptions(key, TAG, function(x){
         return !x.index || x.checkFlag(i, TIMING_FLAG.AR);
-      }, TAG.ORDER[language]);
+      }, TAG.ORDER[language], TAG.LABELS[i]);
     });
     this.updateEffectOptions();
     setText("lsv", "モード/Mode");
@@ -671,6 +691,7 @@ var calc = {
     var card = CARD[this.card];
     var ar = AR[this.ar];
     var s = [0].concat(card.effects);
+    var labels = ["ピックアップ/PICK UP", "追加済み/Added"];
     if(card.canEquip(ar)) ar.effects.forEach(function(x){
       s.push(EFFECT_MAX * 2 + x);
     });
@@ -684,16 +705,25 @@ var calc = {
       });
     });
     s = s.concat(EFFECT.ORDER[language]);
-    setOptions("os", EFFECT, FILTER.OFFENSE, s, EFFECT_MAX, p);
-    setOptions("ds", EFFECT, FILTER.DEFENSE, s, EFFECT_MAX, p);
+    setOptions("os", EFFECT, FILTER.OFFENSE, s, labels.concat(EFFECT.LABELS[0]), EFFECT_MAX, p);
+    setOptions("ds", EFFECT, FILTER.DEFENSE, s, labels.concat(EFFECT.LABELS[1]), EFFECT_MAX, p);
   },
   updateEquipableOptions: function(){
     var a = this.cardfilter.active;
-    var s = AR.map(function(v, i){return i});
+    var s = [0].concat(AR.ORDER);
+    var labels = ["装備中/Equipped"].concat(AR.LABELS);
+    var value = v("qf");
     this.cardfilter.active = 0;
-    if(this.ar) s.unshift(0, this.ar);
-    setOptions("qf", AR, undefined, s, undefined, undefined, true);
+    if(this.ar){
+      s.splice(1, 0, this.ar);
+    }
+    setOptions("qf", AR, undefined, s, labels);
+    setValue("qf", value);
     this.cardfilter.active = a;
+  },
+  updateMultiplierOptions: function(){
+    var x = this.card ? 1 : 0;
+    setOptions("am", MULTIPLIER, undefined, MULTIPLIER.ORDER[x], MULTIPLIER.LABELS, 100, ["", ATTRIBUTE[CARD[this.card].attribute]]);
   },
   checkCardSelected: function(){
     if(this.card){
@@ -720,6 +750,7 @@ var calc = {
     var csrate = 1;
     var card = CARD[this.card];
     var ar = AR[this.ar];
+    var multiplier = this.multiplier;
     var desc = [];
     var effects = [];
     var result = [
@@ -735,7 +766,7 @@ var calc = {
     if(this.card){
       atk = card.getValue(this.lv, this.version === 2);
       weapon = card.weapon[this.usecs];
-      cs = CS_ORDER[card.rarity] + card.csBoost;
+      cs = CS.ORDER[card.rarity] + card.csBoost;
       setValue("a", atk);
       setValue("w", weapon);
       setValue("cs", cs);
@@ -763,58 +794,68 @@ var calc = {
       );
     }
     EFFECT.ORDER[language].forEach(function(v){
-      var e = EFFECT[v];
-      effects.push(e);
-      if(e.subset){
-        TAG.ORDER[language].forEach(function(x){
-          var v = e.subset.get(x);
-          if(v) effects.push(EFFECT[v]);
-        });
+      if(v){
+        var e = EFFECT[v];
+        effects.push(e);
+        if(e.subset){
+          TAG.ORDER[language].forEach(function(x){
+            var v = e.subset.get(x);
+            if(v) effects.push(EFFECT[v]);
+          });
+        }
       }
     });
     for(var group = 0; group < 2; group++){
-      var buffed = this.es.some(function(es, i){
-        if(es.loop) return EFFECT[i].isBuff(group);
-        return false;
-      });
-      var debuffed = this.es.some(function(es, i){
-        if(es.loop) return EFFECT[i].isDebuff(group);
-        return false;
+      var buffed = false;
+      var debuffed = false;
+      var dow;
+      this.es.some(function(es, i){
+        var e = EFFECT[i];
+        if(!es.loop) return false;
+        if(!buffed && e.isBuff(group)) buffed = true;
+        if(!debuffed && e.isDebuff(group)) debuffed = true;
+        if(e.type === TYPE.DEBUFF_OVERWRITE && e.group === group) dow = e;
+        return buffed && debuffed && dow;
       });
       desc = [];
       result.push(t([
         "【攻撃側補正】/【Offense】",
         "【防御側補正】/【Defense】"
       ][group]));
-      for(var i = 1; i < effects.length; i++){
+      for(var i = 0; i < effects.length; i++){
         var count = 0;
         var e = effects[i];
         var es = this.es[e.index];
         var eLv = es.lv;
         var loop = es.loop;
         if(e.group !== group) continue;
-        if(e.isStackable()) count = loop;
+        if(e.isStackable()){
+          if(loop && e.link && EFFECT[e.link].isStackable()){
+            es.loop = 1;
+            loop = Math.max(this.es[e.link].loop, 1);
+          }
+          count = loop;
+        }
         while(loop--){
           var eV = e.getValue(eLv || this.cLv, !this.version, this.es);
           var x = eV[0];
+          var modEType = e.type;
           var label = [];
           if(eLv){
             label.push("　[Lv.");
             label.push("]　");
           }else{
-            eLv = this.cLv;
             label.push("　{Lv.");
             label.push("}　")
           }
           if(e.isFixed()){
             label.splice(1, 0, "---");
           }else{
-            label.splice(1, 0, pad(eLv, 3));
+            label.splice(1, 0, pad(eLv || this.cLv, 3));
           }
           if(count > 1) label.push("《x" + count + "》");
           label.push(e);
           desc = [label.join("")];
-          
 
           //連撃
           if(e.type === TYPE.COMBO && this.usecs) x = new Fraction(1);
@@ -832,7 +873,20 @@ var calc = {
           //武器種弱点
           if(e.type === TYPE.WEAPON_WEAKNESS && weapon - eV[1]) x = new Fraction(1);
 
-          switch(e.type){
+          if(dow && e.isDebuff(group)){
+            if(!(x - 0 && x.n !== x.d)){
+              x = dow.getValue(1, false, this.es)[0];
+            }else if(!e.isFixed()){
+              if(group){
+                x = x.add(e.getValue(-300, false, this.es)[0]).add(dow.getValue(1, false, this.es)[1]);
+              }else{
+                x = x.add(e.getValue(100, false, this.es)[0]).add(dow.getValue(1, false, this.es)[1]);
+              }
+              if(x <= 0) modEType = TYPE.ZERO;
+            }
+          }
+
+          switch(modEType){
             default:
               if(x - 0 && x.n !== x.d){
                 dmg = dmg.mul(x);
@@ -852,8 +906,7 @@ var calc = {
               desc.push("x0");
               break;
 
-            case TYPE.WEAPON:
-            case TYPE.CSWEAPON:
+            case TYPE.DEBUFF_OVERWRITE:
               break;
           }
 
@@ -889,6 +942,7 @@ var calc = {
               break;
               
             case TYPE.WEAPON_WEAKNESS:
+            case TYPE.DEBUFF_OVERWRITE:
               break;
           }}
           if(!loop){
@@ -914,11 +968,24 @@ var calc = {
     result.push(t("【ダメージ】/【Damage】"));
     dmg = dmg.mul(WEAPON[weapon].getValue());
     result[6] += "（x" + WEAPON[weapon].getValue() + "）";
-    for(i = 1; i < MULTIPLIER.length; i++){
+    if(multiplier > 4){
+      multiplier = [
+        [3, 3, 3, 3, 3, 3, 3, 3, 3],
+        [3, 3, 4, 1, 3, 3, 2, 3, 4],
+        [3, 1, 3, 4, 3, 3, 2, 3, 4],
+        [3, 4, 1, 3, 3, 3, 2, 3, 4],
+        [3, 3, 3, 3, 3, 1, 2, 4, 3],
+        [3, 3, 3, 3, 1, 3, 2, 4, 3],
+        [3, 2, 2, 2, 2, 2, 2, 4, 1],
+        [3, 4, 4, 4, 3, 3, 1, 2, 4],
+        [3, 3, 3, 3, 4, 4, 4, 1, 2]
+      ][card.attribute - 1][MULTIPLIER[multiplier % 100].getValue() - 1];
+    }
+    for(i = 1; i < 5; i++){
       var attr = MULTIPLIER[i];
-      if(!this.multiplier || i === this.multiplier){
+      if(!multiplier || i === multiplier){
         x = Math.ceil(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg);
-        if(i === 3 || this.multiplier) this.setTitle(x);
+        if(i === 3 || multiplier) this.setTitle(x);
         result.push("　[" + attr + "]: " + x);
       }
     }
@@ -993,7 +1060,7 @@ var calc = {
       var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.ANY;
       setOptions(id, TAG, function(x){
         return !x.index || x.checkFlag(r, b);
-      }, TAG.ORDER[language]);
+      }, TAG.ORDER[language], TAG.LABELS[r]);
     },
     updateToggleText: function(){
       _("fv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
@@ -1136,7 +1203,7 @@ var calc = {
           });
         })) return false;
         return true;
-      });
+      }, AR.ORDER, AR.LABELS);
       _("rcx").innerHTML = "(" + (_("rc").length - 1) + "/" + (AR.length - 1) + ")";
     }
   }
