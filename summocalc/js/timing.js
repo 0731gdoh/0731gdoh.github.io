@@ -27,6 +27,8 @@ var TIMING = Timing.createList(
   ,["ターン開始時/Turn Start", "t"]
   ,["敵ターン開始時/Enemy Turn Start", "et"]
   ,["移動後/Post-Move", "pm"]
+//  ,["非移動後", "nm"]
+//  ,["移動フェーズ終了後", "em"]
   ,["攻撃時/Attacking", "a"]
   ,["攻撃後/Post-Attack", "pa"]
   ,["空振り時/Missed Attack", "ma"]
@@ -70,7 +72,7 @@ function timing2str(timing, lang, cs){
 
 function splitSkills(s){
   var re = /^([a-z&]*)(.+)$/;
-  var bo = /^(.+)に((?:特攻|デメリット)\[\d+\.\d+\])$/;
+  var bo = /^(.*[^に])に?((?:特攻|デメリット)\[\d+\.\d+\])$/;
   var result = new Map();
   if(s) s.split("/").forEach(function(x){
     var match = x.match(re);
