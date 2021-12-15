@@ -243,7 +243,7 @@ var EFFECT = Effect.createList(
   ,["毒反転/Poison Reversal", "とくは", 0, 2, , EFFECT_FLAG.FIXED]
   ,["毒反転/Poison Reversal", "とくは", 1, 0.6, , EFFECT_FLAG.FIXED]
   ,["特防[0.01]/Bonus[0.01]", "とくほ", 1, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK, TYPE.BONUS]
-  ,["特防[0.1]/Bonus[0.1]", "とくほ", 1, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK, TYPE.BONUS]
+  ,["特防[0.1]/Bonus[0.1]", "とくほ", 1, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["特防[0.2]/Bonus[0.2]", "とくほ", 1, 0.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK, TYPE.BONUS]
   ,["特防[0.3]/Bonus[0.3]", "とくほ", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["特防[0.5]/Bonus[0.5]", "とくほ", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
@@ -396,7 +396,7 @@ var EFFECT = Effect.createList(
   ,["非強化時強化", "ひきようかしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_BUFFED]
   ,["<呪い>時強化[ジュウゴ]/呪い時強化[Jugo]", "のろ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<*烙印>時強化", "らく", 1, 0.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["射撃弱点/Weakness against shot", "しやけ", 1, 2.5, 4, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,["射撃弱点/Weakness against shot", "しやけきし", 1, 2.5, 1 << 4, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,["火傷時強化", "やけ", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,["CS変更：射撃/Change CS Type: Shot", "CS", 0, 0, 4, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,["汚れ", "よこ", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.DEBUFF|EFFECT_FLAG.GIMMICK]
@@ -419,71 +419,5 @@ var EFFECT = Effect.createList(
   ,["弱体時強化[タンガロア∞]-<*[その他の解除可能な弱体]>/弱体時強化[Tangaroa ∞]", "しやくた", 1, 0.9, 0.9, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.DEBUFF_OVERWRITE]
   ,["[その他の解除可能な弱体]/[Other removable debuffs]", "ん", 0, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.DEBUFF]
   ,["[その他の解除可能な弱体]/[Other removable debuffs]", "ん", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.DEBUFF]
+  ,["恐怖大特攻", "きようふ", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
 ]);
-
-function generateEffectData(s, group){
-  var result = [];
-  s.forEach(function(value){
-    var name = value[0];
-    var g = (value[2] & TIMING_FLAG.CS) ? EFFECT_MAX : 0;
-    for(var i = 1; i < EFFECT.length; i++){
-      if(t(EFFECT[i].name, 0) === name && (group === undefined || EFFECT[i].group === group)){
-        if(!EFFECT[i].isToken()){
-          var n = i;
-          if(value[3]){
-            n = EFFECT[i].subset.get(value[3]);
-            if(!n) n = registerBonusEffect(i, value);
-          }
-          result.push(n + g);
-        }
-        break;
-      }
-    }
-  });
-  return result;
-}
-
-function registerBonusEffect(i, value){
-  var tag = TAG[value[3]];
-  var o = Object.create(EFFECT[i]);
-  var flag = EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE;
-  if(tag.type === TAG_TYPE.SPECIAL){
-    o.name = value[4] + value[0] + "/Bonus " + t(tag.name, 1) + value[0].replace(/^[^\[]+/, " ");
-  }else{
-    [[6, "極大特攻/極大特攻"]
-    ,[3, "超特攻/超特攻"]
-    ,[2, "大特攻/Greater bonus"]
-    ,[1, "特攻/Bonus"]
-    ,[0, "与ダメージ減少/Decrease"]
-    ].some(function(x){
-      if(o.value[0] >= x[0]){
-        o.name = value[4] + "に" + x[1] + " damage against " + t(tag.name, 1);
-        return true;
-      }
-      return false;
-    });
-  }
-  o.index = EFFECT.length;
-  o.link = EFFECT.table.get("*" + value[4]) || 0;
-  o.subset.set(value[3], o.index);
-  o.subset = null;
-  o.sp = [i, value[3]];
-  if(!o.link){
-    switch(tag.type){
-      case TAG_TYPE.BUFF:
-      case TAG_TYPE.ALL_BUFFS:
-        flag = flag | EFFECT_FLAG.BONUS_TO_BUFF;
-        break;
-      case TAG_TYPE.DEBUFF:
-      case TAG_TYPE.ALL_DEBUFFS:
-        flag = flag | EFFECT_FLAG.BONUS_TO_DEBUFF;
-    }
-  }
-  o.flag = flag;
-  EFFECT.push(o);
-  return o.index;
-}
-
-function splitEffects(s){
-  return generateEffectData(splitSkills(s));
-}
