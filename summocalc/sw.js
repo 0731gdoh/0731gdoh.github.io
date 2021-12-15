@@ -1,4 +1,4 @@
-var CACHE_NAME = "sc-211214-2";
+var CACHE_NAME = "sc-211215-1";
 var urlsToCache = [
   ".",
   "index.html",
@@ -6,6 +6,7 @@ var urlsToCache = [
   "js/fraction.js",
   "js/listitem.js",
   "js/affiliation.js",
+  "js/split.js",
   "js/tag.js",
   "js/effect.js",
   "js/timing.js",
@@ -18,7 +19,9 @@ var urlsToCache = [
 
 self.addEventListener("install", function(e){
   e.waitUntil(caches.open(CACHE_NAME).then(function(cache){
-    return cache.addAll(urlsToCache);
+    return cache.addAll(urlsToCache.map(function(url){
+      return new Request(url, {cache: "no-store"});
+    }));
   }));
 });
 

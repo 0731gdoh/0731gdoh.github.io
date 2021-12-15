@@ -60,7 +60,11 @@ function Tag(index, x, category, subset){
         this.sortkey = 5;
         break;
       case TAG_TYPE.CATEGORY:
-        this.sortkey = 6;
+        if(this.reading[0][0] !== "ん"){
+          this.sortkey = 6;
+        }else{
+          this.sortkey = 7;
+        }
         break;
       case TAG_TYPE.A_BONUS:
         this.sortkey = 3;
@@ -78,7 +82,7 @@ function Tag(index, x, category, subset){
 Tag.prototype = {
   toString: function(){
     if(this.type !== TAG_TYPE.CATEGORY) return t(this.name);
-    if(this.name) return t("[カテゴリ：/[Category: ") + t(this.name) + "]";
+    if(this.name) return t("カテゴリ：/Category: ") + t(this.name);
     return "－";
   },
   setFlag: function(n, b){
@@ -129,19 +133,19 @@ Tag.createList = function(a){
         break;
       case TAG_TYPE.BUFF:
         c.push(table.get("強化"));
-        c.push(table.get("解除可能な強化"));
+        c.push(table.get("強化(解除可)"));
         break;
       case TAG_TYPE.IRREMOVABLE_BUFF:
         c.push(table.get("強化"));
-        c.push(table.get("解除不可な強化"));
+        c.push(table.get("強化(解除不可)"));
         break;
       case TAG_TYPE.DEBUFF:
         c.push(table.get("弱体"));
-        c.push(table.get("解除可能な弱体"));
+        c.push(table.get("弱体(解除可)"));
         break;
       case TAG_TYPE.IRREMOVABLE_DEBUFF:
         c.push(table.get("弱体"));
-        c.push(table.get("解除不可な弱体"));
+        c.push(table.get("弱体(解除不可)"));
         break;
     }
     tag = new Tag(i, v, c, s);
@@ -155,7 +159,7 @@ Tag.createList = function(a){
   });
   for(var i = 0; i < 2; i++){
     order.push(orderData.reduce(function(a, x, i){
-      if(i > 4 || i === 3) a.push(0);
+      if([3, 5, 6].indexOf(i) !== -1) a.push(0);
       return a.concat(x.sort(f))
     }, [0]));
     en = true;
@@ -378,14 +382,14 @@ var TAG = Tag.createList(
   ,["烙印/Stigma", "らく", TAG_TYPE.DEBUFF, "防御減少系/HP減少系"]
   ,["連撃/Combo", "れん", TAG_TYPE.BUFF, "攻撃増加系"]
   ,["斬撃/Slash", "1", TAG_TYPE.WEAPON]
-  ,["突撃/Thrust", "2", TAG_TYPE.WEAPON]
-  ,["打撃/Blow", "3", TAG_TYPE.WEAPON]
-  ,["射撃/Shot", "4", TAG_TYPE.WEAPON]
-  ,["魔法/Magic", "5", TAG_TYPE.WEAPON]
-  ,["狙撃/Snipe", "6", TAG_TYPE.WEAPON]
-  ,["横一文字/Long Slash", "7", TAG_TYPE.WEAPON]
-  ,["全域/All", "8", TAG_TYPE.WEAPON]
-  ,["無/None", "9", TAG_TYPE.WEAPON]
+  ,["突撃/Thrust", "1", TAG_TYPE.WEAPON]
+  ,["打撃/Blow", "1", TAG_TYPE.WEAPON]
+  ,["射撃/Shot", "1", TAG_TYPE.WEAPON]
+  ,["魔法/Magic", "1", TAG_TYPE.WEAPON]
+  ,["狙撃/Snipe", "1", TAG_TYPE.WEAPON]
+  ,["横一文字/Long Slash", "1", TAG_TYPE.WEAPON]
+  ,["全域/All", "1", TAG_TYPE.WEAPON]
+  ,["無/None", "1", TAG_TYPE.WEAPON]
   ,["鬼系スキル", "", TAG_TYPE.SKIP, "", "鬼道の衆/鬼道を束ねる者/鬼気迫る者"]
   ,["獣系スキル", "", TAG_TYPE.SKIP, "", "首狩りの獣/獣の末裔/獣皮を巻く者/黄昏に弾く獣/忠玉の八犬士/無垢なる獣/ラビリンスの獣"]
   ,["チートと名の付くスキル", "ちい", TAG_TYPE.SKILL_GROUP, "", "チート系勇者/チートなる者"]
@@ -489,7 +493,7 @@ var TAG = Tag.createList(
   ,["状態耐性系/Status Resistance", "しよ", TAG_TYPE.CATEGORY]
   ,["火傷耐性/Burn resistance", "やけたい", TAG_TYPE.BUFF, "状態耐性系"]
   ,["防御力上昇無効/Remove all defense buffs", "ほうきより", TAG_TYPE.UNKNOWN, "状態耐性系"]
-  ,["射撃弱点/Weakness against shot", "しやけ", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
+  ,["射撃弱点/Weakness against shot", "しやけし", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,["火傷時強化", "やけしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["対ダメージ敵HPCP超激減", "たいためてき", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["CS変更：射撃/Change CS Type: Shot", "CSへ4", TAG_TYPE.BUFF, "CS変更"]
@@ -528,10 +532,10 @@ var TAG = Tag.createList(
   ,["加速[ナタ]", "", TAG_TYPE.IRREMOVABLE_BUFF, "加速/CP増加系"]
   ,["閃き[バートロ]", "", TAG_TYPE.IRREMOVABLE_BUFF, "閃き/発動率増加系"]
   ,["注目[アールプ]", "", TAG_TYPE.IRREMOVABLE_BUFF, "注目"]
-  ,["解除可能な強化/Removable Buff", "ん2", TAG_TYPE.CATEGORY, ""]
-  ,["解除不可な強化/Irremovable Buff", "ん3", TAG_TYPE.CATEGORY, ""]
-  ,["解除可能な弱体/Removable Debuff", "ん5", TAG_TYPE.CATEGORY, ""]
-  ,["解除不可な弱体/Irremovable Debuff", "ん6", TAG_TYPE.CATEGORY, ""]
+  ,["強化(解除可)/Buff (removable)", "ん2", TAG_TYPE.CATEGORY]
+  ,["強化(解除不可)/Buff (irremovable)", "ん3", TAG_TYPE.CATEGORY]
+  ,["弱体(解除可)/Debuff (removable)", "ん5", TAG_TYPE.CATEGORY]
+  ,["弱体(解除不可)/Debuff (irremovable)", "ん6", TAG_TYPE.CATEGORY]
   ,["移動力減少(縦)", "いとけん1", TAG_TYPE.STATIC, "移動力減少"]
   ,["移動力減少(横)", "いとけん2", TAG_TYPE.STATIC, "移動力減少"]
   ,["特防[2.0]/D.Bonus[2.0]", "とくほ20", TAG_TYPE.D_BONUS, "特防"]
@@ -553,46 +557,13 @@ var TAG = Tag.createList(
   ,["注目時強化", "ちゆしき", TAG_TYPE.UNKNOWN]
   ,["呪い時強化", "のろしき", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["魅了時弱化", "みりしし", TAG_TYPE.IRREMOVABLE_DEBUFF]
+  ,["HP減少反転", "HPけはん", TAG_TYPE.BUFF, "HP回復系"]
+  ,["HP回復反転", "HPかはん", TAG_TYPE.DEBUFF, "HP減少系"]
+  ,["ダメージ反転", "ため", TAG_TYPE.BUFF, "HP回復系"]
+  ,["防御貫通", "ほうきよか", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["恐怖大特攻", "きようふた", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["打撃と斬撃と横一文字への大特防", "たけ", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
+  ,["射撃と狙撃への大特防", "しやけと", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
+  ,["特防[0.1]/D.Bonus[0.1]", "とくほ01", TAG_TYPE.D_BONUS, "特防"]
+  ,["崩し耐性/Break resistance", "くすたい", TAG_TYPE.BUFF, "状態耐性系"]
 ]);
-
-function generateTagData(s, flagNum, arTiming){
-  var z = [];
-  var r = new Map();
-  s.forEach(function(x){
-    var sf = (x[0].slice(0, 3) !== "全ての");
-    var v = x[1];
-    var tag = TAG[v];
-    var timing = arTiming || x[2];
-    var g = 0;
-    if(timing & TIMING_FLAG.CS){
-      g = TAG_MAX;
-      if(timing & TIMING_FLAG.NOT_CS){
-        timing = timing & TIMING_FLAG.NOT_CS;
-      }
-    }
-    if(tag.type !== TAG_TYPE.CATEGORY){
-      var f = (tag.type === TAG_TYPE.STATIC) ? TAG_FLAG_NUM.STATIC : flagNum;
-      var b = (f < 3) ? timing : (timing || 1);
-      if(tag.type !== TAG_TYPE.SKIP){
-        if(r.has(v + g)){
-          r.set(v + g, r.get(v + g) | timing);
-        }else{
-          r.set(v + g, timing);
-        }
-        tag.setFlag(f, b);
-      }
-      (flagNum < 3 ? tag.category : tag.subset).forEach(function(c){
-        if(r.has(c + g)){
-          r.set(c + g, r.get(c + g) | timing);
-        }else{
-          r.set(c + g, timing);
-        }
-        if(sf) TAG[c].setFlag(f, b);
-      });
-    }
-  });
-  r.forEach(function(value, key){
-    z.push([key, value]);
-  });
-  return z;
-}
