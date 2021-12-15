@@ -650,9 +650,9 @@ var calc = {
     setText("lgf", "ギルド/Guild");
     setText("lsf", "学園/School");
     setText("lsef1", "効果1/Effect 1");
-    setCheckGroup("stf1", TIMING, 15);
+    setCheckGroup("stf1", TIMING, 17);
     setText("lsef2", "効果2/Effect 2");
-    setCheckGroup("stf2", TIMING, 15);
+    setCheckGroup("stf2", TIMING, 17);
     setText("lpf", "常時/Static");
     setText("lbaf", "特攻対象/A.Bonus");
     setText("lbdf", "特防対象/D.Bonus");
@@ -869,7 +869,7 @@ var calc = {
           //非弱体時
           if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(1);
           //武器種弱点
-          if(e.type === TYPE.WEAPON_WEAKNESS && weapon - eV[1]) x = new Fraction(1);
+          if(e.type === TYPE.WEAPON_WEAKNESS && !((1 << weapon) & eV[1])) x = new Fraction(1);
 
           if(dow && e.isDebuff(group)){
             if(!(x - 0 && x.n !== x.d)){
