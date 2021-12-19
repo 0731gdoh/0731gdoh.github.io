@@ -720,8 +720,7 @@ var calc = {
     this.cardfilter.active = a;
   },
   updateMultiplierOptions: function(){
-    var x = this.card ? 1 : 0;
-    setOptions("am", MULTIPLIER, undefined, MULTIPLIER.ORDER[x], MULTIPLIER.LABELS, 100, ["", ATTRIBUTE[CARD[this.card].attribute]]);
+    setOptions("am", MULTIPLIER, undefined, MULTIPLIER.ORDER, MULTIPLIER.LABELS, 100, ["", this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？"]);
   },
   checkCardSelected: function(){
     if(this.card){
@@ -968,6 +967,7 @@ var calc = {
     result[6] += "（x" + WEAPON[weapon].getValue() + "）";
     if(multiplier > 4){
       multiplier = [
+        [3, 0, 0, 0, 0, 0, 0, 0, 0],
         [3, 3, 3, 3, 3, 3, 3, 3, 3],
         [3, 3, 4, 1, 3, 3, 2, 3, 4],
         [3, 1, 3, 4, 3, 3, 2, 3, 4],
@@ -977,7 +977,7 @@ var calc = {
         [3, 2, 2, 2, 2, 2, 2, 4, 1],
         [3, 4, 4, 4, 3, 3, 1, 2, 4],
         [3, 3, 3, 3, 4, 4, 4, 1, 2]
-      ][card.attribute - 1][MULTIPLIER[multiplier % 100].getValue() - 1];
+      ][card.attribute][MULTIPLIER[multiplier % 100].getValue() - 1];
     }
     for(i = 1; i < 5; i++){
       var attr = MULTIPLIER[i];
@@ -1066,13 +1066,12 @@ var calc = {
     toggle: function(){
       if(this.active = 1 - this.active){
         _("sw").style.display = "block";
-        this.update();
       }else{
         _("sw").style.display = "none";
         hideCurrent(this);
         this.current = "";
-        this.reset();
       }
+      this.update();
       this.updateToggleText();
     },
     reset: function(){
@@ -1163,13 +1162,12 @@ var calc = {
     toggle: function(){
       if(this.active = 1 - this.active){
         _("rw").style.display = "block";
-        this.update();
       }else{
         _("rw").style.display = "none";
         hideCurrent(this);
         this.current = "";
-        this.reset();
       }
+      this.update();
       this.updateToggleText();
     },
     reset: function(){
@@ -1190,8 +1188,8 @@ var calc = {
       });
       if(card !== undefined) p.card = CARD[card];
       setOptions("rc", AR, function(x){
+        if(!p.active) return p.card.canEquip(x);
         if(p.equipable && !p.card.canEquip(x)) return false;
-        if(!p.active) return true;
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
         if(p.rarity && (1 << x.arRarity & p.rarity) === 0) return false;
