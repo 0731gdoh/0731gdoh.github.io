@@ -566,4 +566,6 @@ var TAG = Tag.createList(
   ,["射撃と狙撃への大特防", "しやけと", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["特防[0.1]/D.Bonus[0.1]", "とくほ01", TAG_TYPE.D_BONUS, "特防"]
   ,["崩し耐性/Break resistance", "くすたい", TAG_TYPE.BUFF, "状態耐性系"]
+  ,["威圧特攻", "いあつと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["閃き時強化", "ひらしき", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
 ]);
