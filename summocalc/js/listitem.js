@@ -60,8 +60,8 @@ var MULTIPLIER = ListItem.createList(
   ,["→英雄/ → Valiant", 8]
   ,["→世界/ → World", 9]
 ]);
-MULTIPLIER.ORDER = [0, 105, 106, 107, 108, 109, 110, 111, 112, 113, 0, 1, 2, 3, 4];
-MULTIPLIER.LABELS = ["属性/Attribute", "倍率/Multiplier"];
+MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113];
+MULTIPLIER.LABELS = ["倍率/Multiplier", "属性/Attribute"];
 
 var RARITY = ListItem.createList(
   [[""]
