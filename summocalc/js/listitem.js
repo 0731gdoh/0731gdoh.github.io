@@ -156,6 +156,7 @@ var VARIANT = ListItem.createList(
   ,["地獄/Onsen"]
   ,["ハロ21/Halloween21"]
   ,["聖夜21/Xmas21"]
+  ,["バレ22/Valentine22"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);
