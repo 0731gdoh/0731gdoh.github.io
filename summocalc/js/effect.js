@@ -12,7 +12,8 @@ var TYPE = {
   NOT_BUFFED: 15,
   NOT_DEBUFFED: 16,
   WEAPON_WEAKNESS: 17,
-  DEBUFF_OVERWRITE: 18
+  DEBUFF_OVERWRITE: 18,
+  PROMPT: 19
 };
 
 var EFFECT_FLAG = {
@@ -110,6 +111,9 @@ Effect.prototype = {
     }
   },
   getValue: function(lv, oldmode, es){
+    if(this.type === TYPE.PROMPT) {
+      return PROMPT_DATA.get(this.index).getValue(lv);
+    }
     return [
       this._getValue(0, lv, oldmode, es),
       this._getValue(1, lv, oldmode, es)
@@ -137,6 +141,12 @@ Effect.prototype = {
   },
   isNonStatus: function(){
     return this.flag & EFFECT_FLAG.NON_STATUS;
+  },
+  prompt: function(){
+    return PROMPT_DATA.get(this.index).prompt();
+  },
+  getLabel: function(lv){
+    return PROMPT_DATA.get(this.index).getLabel(lv);
   }
 };
 Effect.createList = function(a){
@@ -201,6 +211,50 @@ Effect.createList = function(a){
   result.LABELS = labels;
   result.table = table;
   return result;
+};
+
+function PromptData(x){
+  this.title = x[1];
+  this.label = "[" + x[2] + ":";
+  this.min = threshold = x[3];
+  this.max = x[4];
+  this.data = x[5].map(function(v){
+    threshold += v[0];
+    return [v[0], [new Fraction(v[1] * 100, 100), new Fraction(v[2] * 100, 100)]];
+  });
+  this.threshold = threshold;
+}
+PromptData.prototype = {
+  prompt: function(){
+    var lv = -1;
+    while(lv < this.min || lv > this.max || isNaN(lv)){
+      lv = prompt(t(this.title) + t(" (※/\n(") + this.min + t("〜/-") + this.max + ")");
+      if(!lv) return null;
+      lv = parseInt(lv, 10);
+    }
+    return lv;
+  },
+  getValue: function(lv){
+    var value;
+    lv -= this.min;
+    this.data.some(function(v){
+      lv -= v[0];
+      value = v[1];
+      return lv < 0;
+    });
+    return value;
+  },
+  getLabel: function(lv){
+    if(lv < this.threshold) return this.label + lv + "]";
+    return this.label + this.threshold + "+]";
+  }
+};
+PromptData.createMap = function(a){
+  var map = new Map();
+  a.forEach(function(v){
+    map.set(EFFECT.table.get(v[0]), new PromptData(v));
+  });
+  return map;
 };
 
 var EFFECT_MAX = 10000;
@@ -375,7 +429,7 @@ var EFFECT = Effect.createList(
   ,["特攻[1.67]/Bonus[1.67]", "とつ", 0, 1.67, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["発狂", "はつ", 1, 0, 400]
   ,["<*劫火>時強化", "こうか", 1, 0.35, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["×<*火傷>", "", 2]
+  ,["×<*火傷>", "", 2, , , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["根性/Guts", "こんし", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["加速/Acceleration", "かそ", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,["特殊耐性[0.05+2000]", "とくし", 1, 0.05, 2000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
@@ -430,9 +484,33 @@ var EFFECT = Effect.createList(
   ,["威圧特攻", "いあつ", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,["<*発狂>時弱化", "はつ", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["攻撃力増加[2.0]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["攻撃力増加[1.6]", "こうけそ", 0, 1.6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["攻撃力増加[1.5]", "こうけそ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["攻撃力増加[1.4]", "こうけそ", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["攻撃力増加[1.3]", "こうけそ", 0, 1.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["攻撃力増加[1.2]", "こうけそ", 0, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["×<攻撃力増加[ターン毎減少]>@1", "", 2, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["×<攻撃力増加[ターン毎減少]>@2", "", 2, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["×<攻撃力増加[ターン毎減少]>@3", "", 2, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["×<攻撃力増加[ターン毎減少]>@4", "", 2, 4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["×<攻撃力増加[ターン毎減少]>@5", "", 2, 5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["攻撃力増加[ターン毎減少]", "こうけそ", 0, 1.6, , EFFECT_FLAG.IRREMOVABLE, TYPE.PROMPT]
+  ,["攻撃力増加[イツァムナー]/攻撃力増加[Itzamna]", "こうけそ", 0, 3.0, , EFFECT_FLAG.IRREMOVABLE, TYPE.PROMPT]
+]);
+
+PROMPT_DATA = PromptData.createMap(
+  [["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T", 1, 999,
+    [[1, 1.6]
+    ,[1, 1.5]
+    ,[1, 1.4]
+    ,[1, 1.3]
+    ,[0, 1.2]
+  ]]
+  ,["攻撃力増加[イツァムナー]", "イツァムナーのCP/Itzamna's CP", "CP", 0, 100,
+    [[10, 1.2]
+    ,[10, 1.4]
+    ,[10, 1.6]
+    ,[10, 1.8]
+    ,[10, 2.0]
+    ,[10, 2.2]
+    ,[10, 2.4]
+    ,[10, 2.6]
+    ,[10, 2.8]
+    ,[11, 3.0]
+  ]]
 ]);

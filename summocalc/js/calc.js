@@ -355,8 +355,13 @@ var calc = {
       if(n) this.es.some(function(v, i, es){
         if(i === n){
           var e = EFFECT[i];
+          var owLv = 0;
+          var loopOw = false;
           if(e.sp) return true;
-          if(e.group === 2 && e.link) v = es[e.link];
+          if(e.group === 2 && e.link){
+            v = es[e.link];
+            owLv = e.value[0] - 0;
+          }
           v.lv = 1;
           v.loop = 1;
           if(!e.isFixed() || !e.isStackable()){
@@ -367,9 +372,14 @@ var calc = {
                 es[e.link].loop = 1;
               }
               v.lv = v.lv % 1000;
+              if(EFFECT[e.link].isStackable() && es[e.link].loop) loopOw = true;
             }
           }
-          if(e.isStackable()) v.loop = Math.min(s.read(), 15);
+          if(owLv) v.lv = owLv;
+          if(e.isStackable()){
+            v.loop = Math.min(s.read(), 15);
+            if(loopOw) es[e.link].loop = v.loop;
+          }
           if(e.type === TYPE.LIMIT){
             v.hp = s.read();
             v.maxHp = s.read();
@@ -412,6 +422,7 @@ var calc = {
               es[e.link].loop = 1;
             }
             v[2] = v[2] % 100;
+            if(es[e.link].loop && EFFECT[e.link].isStackable()) es[e.link].loop = Math.min(v[2], 15);
           }
           es[n].loop = Math.min(v[2], 15);
           es[n].lv = 1;
@@ -431,13 +442,16 @@ var calc = {
       var e = EFFECT[index];
       var es = this.es[index];
       if(lv){
-        if(mode == 1){
+        if(e.type === TYPE.PROMPT){
+          lv = e.prompt();
+          if(lv === null) return;
+        }else if(mode == 1){
           lv = 0;
         }else if(mode == 2 && !e.isFixed()){
           lv = 0;
           while(lv < 1 || lv > 100){
             lv = prompt(t("効果Lv (※1〜100)/Effect Lv\n(1-100)"), "");
-            if(lv !== 0 && !lv) return;
+            if(!lv) return;
             lv = parseInt(lv, 10) || 0;
           }
         }
@@ -463,17 +477,17 @@ var calc = {
           var a = -1;
           while(n < 1){
             n = prompt(t("ダメージ倍率の分子 (※1以上の整数)/Numerator of damage multiplier\n(Enter an integer greater than or equal to 1.)"), 1);
-            if(n !== 0 && !n) return;
+            if(!n) return;
             n = parseInt(n, 10) || 0;
           }
           while(d < 1){
             d = prompt(t("ダメージ倍率の分母 (※1以上の整数)/Denominator of damage multiplier\n(Enter an integer greater than or equal to 1.)"), 1);
-            if(d !== 0 && !d) return;
+            if(!d) return;
             d = parseInt(d, 10) || 0;
           }
           while(a < 0){
             a = prompt(t("追加ダメージ (※0以上の整数)/Additional damage\n(Enter an integer greater than or equal to 0.)"), 0);
-            if(a !== 0 && !a) return;
+            if(!a) return;
             a = parseInt(a, 10);
             if(a === undefined) a = -1;
           }
@@ -486,12 +500,12 @@ var calc = {
           var maxHp = 0;
           while(hp < 1){
             hp = prompt(t("現在HP (※1以上の整数)/Current HP\n(Enter an integer greater than or equal to 1.)"), es.hp);
-            if(hp !== 0 && !hp) return;
+            if(!hp) return;
             hp = parseInt(hp, 10) || 0;
           }
           while(maxHp < hp){
             maxHp = prompt(t("最大HP (※/Max HP\n(Enter an integer greater than or equal to ") + hp + t("以上の整数)/.)"), Math.max(es.maxHp, hp));
-            if(maxHp !== 0 && !maxHp) return;
+            if(!maxHp) return;
             maxHp = parseInt(maxHp, 10) || 0;
           }
           es.hp = hp || 1;
@@ -500,7 +514,7 @@ var calc = {
           lv = 0;
           while(lv < 1 || lv > 2000){
             lv = prompt(t("ATKの種 (※1〜2000)/ATK Seed\n(1-2000)"), es.lv || 1000);
-            if(lv !== 0 && !lv) return;
+            if(!lv) return;
             lv = parseInt(lv, 10) || 0;
           }
         }else if(e.isFixed() || e.isLv1()){
@@ -838,14 +852,14 @@ var calc = {
           var x = eV[0];
           var modEType = e.type;
           var label = [];
-          if(eLv){
+          if(eLv || e.type === TYPE.PROMPT){
             label.push("　[Lv.");
             label.push("]　");
           }else{
             label.push("　{Lv.");
             label.push("}　")
           }
-          if(e.isFixed()){
+          if(e.isFixed() || e.type === TYPE.PROMPT){
             label.splice(1, 0, "---");
           }else{
             label.splice(1, 0, pad(eLv || this.cLv, 3));
@@ -884,6 +898,8 @@ var calc = {
           }
 
           switch(modEType){
+            case TYPE.PROMPT:
+              desc[0] += e.getLabel(eLv);
             default:
               if(x - 0 && x.n !== x.d){
                 dmg = dmg.mul(x);
