@@ -496,6 +496,7 @@ var EFFECT = Effect.createList(
   ,["狼の応援（防）", "おお", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["攻撃力増加[バレ]/攻撃力増加[Valentine]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
   ,["防御力増加[バレ]/防御力増加[Valentine]", "こうけそ", 1, 0.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
+  ,["食べちゃうぞ", "たへ", 1, 0.01, 10000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
 ]);
 
 PROMPT_DATA = PromptData.createMap(
