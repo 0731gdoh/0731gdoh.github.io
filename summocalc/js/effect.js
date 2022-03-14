@@ -491,6 +491,11 @@ var EFFECT = Effect.createList(
   ,["×<攻撃力増加[ターン毎減少]>@5", "", 2, 5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["攻撃力増加[ターン毎減少]", "こうけそ", 0, 1.6, , EFFECT_FLAG.IRREMOVABLE, TYPE.PROMPT]
   ,["攻撃力増加[イツァムナー]/攻撃力増加[Itzamna]", "こうけそ", 0, 3.0, , EFFECT_FLAG.IRREMOVABLE, TYPE.PROMPT]
+  ,["ブレーメンにゃ！", "ふれ", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["狼の応援（攻）", "おお", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["狼の応援（防）", "おお", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["攻撃力増加[バレ]/攻撃力増加[Valentine]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
+  ,["防御力増加[バレ]/防御力増加[Valentine]", "こうけそ", 1, 0.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
 ]);
 
 PROMPT_DATA = PromptData.createMap(
