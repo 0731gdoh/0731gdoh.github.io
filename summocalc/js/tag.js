@@ -263,7 +263,7 @@ var TAG = Tag.createList(
   ,["金剛時強化", "こんこしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["金剛に貫通/Ignore Adamantine", "こんこにか", TAG_TYPE.STATIC, "特攻/貫通系"]
   ,["根性/Guts", "こんし", TAG_TYPE.BUFF]
-  ,["根性時強化[AR]", "", TAG_TYPE.IRREMOVABLE_BUFF, "根性時強化/攻撃増加系"]
+  ,["根性時強化[浅草AR]", "", TAG_TYPE.IRREMOVABLE_BUFF, "根性時強化/攻撃増加系"]
   ,["根性時強化[マガン]", "", TAG_TYPE.IRREMOVABLE_BUFF, "根性時強化/攻撃増加系"]
   ,["再生/Regeneration", "さい", TAG_TYPE.BUFF, "HP回復系"]
   ,["弱体解除/Remove debuff", "しやくたいか", TAG_TYPE.ONE_SHOT]
@@ -585,4 +585,5 @@ var TAG = Tag.createList(
   ,["スキル発動率増加", "すきるはそ", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
   ,["次ターン引き寄せ[味方]", "つきひき", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["次ターン引き寄せ[敵味方]", "つきひき", TAG_TYPE.IRREMOVABLE_BUFF]
+  ,["根性時強化[桜の山AR]", "", TAG_TYPE.IRREMOVABLE_BUFF, "根性時強化/CP増加系"]
 ]);
