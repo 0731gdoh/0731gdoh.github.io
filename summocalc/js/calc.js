@@ -794,13 +794,13 @@ var calc = {
         stef.push(WEAPON[ar.csWeapon] + "CS");
       }
       result[2] = "　[Lv." + pad(this.arLv, 3) + "]　" + ar;
-      if(stef.length) result[2] += "（" + stef.join(", ") + "）";
+      if(stef.length) result[2] += " (" + stef.join(", ") + ")";
     }
     if(this.usecs){
       csrate = CS[cs].getValue() * (1 + Math.LOG10E * Math.log(this.cLv) / 2);
       result.push(
         t("【チャージスキル】/【Charge Skill】"),
-        "　{Lv." + pad(this.cLv, 3) + "}　" + CS[cs] + "（x" + csrate + "）",
+        "　{Lv." + pad(this.cLv, 3) + "}　" + CS[cs] + " (x" + csrate + ")",
         LINE
       );
     }
@@ -959,7 +959,7 @@ var calc = {
               break;
           }}
           if(!loop){
-            if(desc.length > 1) desc = [desc[0], "（" + desc.slice(1).join(", ") + "）"];
+            if(desc.length > 1) desc = [desc[0], " (" + desc.slice(1).join(", ") + ")"];
             result.push(desc.join(""));
           }
         }
@@ -976,11 +976,11 @@ var calc = {
     desc = [];
     if(exatk.n) desc.push((exatk < 0 ? "" : "+") + exatk);
     if(atkbonus.n) desc.push("+" + atkbonus.mul(100, 1) + "%");
-    if(desc.length) result[5] += "（" + desc.join(", ") + "）";
+    if(desc.length) result[5] += " (" + desc.join(", ") + ")";
     result[6] += WEAPON[weapon];
     result.push(t("【ダメージ】/【Damage】"));
     dmg = dmg.mul(WEAPON[weapon].getValue());
-    result[6] += "（x" + WEAPON[weapon].getValue() + "）";
+    result[6] += " (x" + WEAPON[weapon].getValue() + ")";
     if(multiplier > 4){
       multiplier = [
         [3, 0, 0, 0, 0, 0, 0, 0, 0],
