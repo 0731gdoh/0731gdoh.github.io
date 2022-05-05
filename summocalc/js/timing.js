@@ -1,3 +1,5 @@
+"use strict";
+
 var Timing = function(index, x){
   this.index = index;
   this.name = x;
@@ -28,7 +30,7 @@ var TIMING = Timing.createList(
   ,["敵ターン開始時/Enemy Turn Start", "et"]
   ,["移動後/Post-Move", "pm"]
   ,["移動フェーズ終了後", "em"]
-  ,["非移動後", "nm"]
+  ,["非移動後/Post-No Move", "nm"]
   ,["攻撃時/Attacking", "a"]
   ,["攻撃後/Post-Attack", "pa"]
   ,["空振り時/Missed Attack", "ma"]

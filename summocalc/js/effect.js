@@ -1,3 +1,5 @@
+"use strict";
+
 var TYPE = {
   NORMAL: 1,
   ATK: 2,
@@ -97,7 +99,7 @@ Effect.prototype = {
   _getValue: function(m, lv, oldmode, es){
     var value = this.value[m];
     if(this.link && this.type !== TYPE.DEBUFF_OVERWRITE){
-      var loop = es[this.link].loop;
+      var loop = es ? es[this.link].loop : 1;
       if(value.length){
         value = value[loop ? 0 : 1];
       }else if(!loop){
@@ -168,7 +170,7 @@ Effect.createList = function(a){
     return x.reading < y.reading ? -1 : 1;
   };
   a.forEach(function(v, i){
-    var key = t(v[0], 0).replace(/-<[^>]+>/, "");
+    var key = t(v[0], 0).replace(/-<[^>]+>|<\*?|>/g, "");
     var tagIndex = TAG.table.get(key);
     if(v[2]) key = "*" + key;
     if(table.has(key)) throw Error(["攻撃", "防御"][v[2]] + "側補正効果「" + key + "」が重複しています\n（" + v[0] + "）");
@@ -214,9 +216,10 @@ Effect.createList = function(a){
 };
 
 function PromptData(x){
+  var threshold = x[3];
   this.title = x[1];
   this.label = "[" + x[2] + ":";
-  this.min = threshold = x[3];
+  this.min = threshold;
   this.max = x[4];
   this.data = x[5].map(function(v){
     threshold += v[0];
@@ -342,7 +345,7 @@ var EFFECT = Effect.createList(
   ,["おせち", "おせ", 1, 0.8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["負傷", "ふし", 0, 0.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["ミンスパイ", "", 0, 1.5, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED]
-  ,["結縁：怒[ジェイル]/Affinity: Anger [V.Jail]", "", 0, 1.2, , EFFECT_FLAG.EVENT|EFFECT_FLAG.LV1]
+  ,["結縁：怒[ジェイル]/Affinity: Anger[V.Jail]", "", 0, 1.2, , EFFECT_FLAG.EVENT|EFFECT_FLAG.LV1]
   ,["隊列歩行[L]/Single-File[L]", "", 0, 0.5, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED, TYPE.ATK]
   ,["隊列歩行[M]/Single-File[M]", "", 1, 0.5, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED]
   ,["トラバース/Criss-Cross", "", 0, 0.3, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED, TYPE.ATK]
@@ -395,7 +398,7 @@ var EFFECT = Effect.createList(
   ,["<*回数回避>無効化", "かいす", 1, 100, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["強化時超弱体", "きようかし", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF|EFFECT_FLAG.GIMMICK]
   ,["非<*加速>時強化", "ひか", 1, [1, 0.6], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.NON_STATUS]
-  ,["<*火傷>時弱化", "やけ", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["<*火傷>時弱化[ジェド]/火傷時弱化[Ded]", "やけ", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["祝福時強化", "しゆく", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,["金剛時強化", "こんこ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,["悪い子弱体", "わる", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
@@ -459,9 +462,9 @@ var EFFECT = Effect.createList(
   ,["全弱体特攻", "せん", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,["<呪い>時強化[トウジ]/呪い時強化[Toji]", "のろ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["注目時強化[アールプ]/注目時強化[Alp]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
-  ,["武器種変更：横一文字[弱体]/Change Weapon Type: Long Slash [Debuff]", "ふき", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.WEAPON]
+  ,["武器種変更：横一文字[弱体]/Change Weapon Type: Long Slash[Debuff]", "ふき", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.WEAPON]
   ,["攻撃力微増[アザトース]/攻撃力微増[Azathoth]", "こうけひ", 0, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
-  ,["CS変更：横一文字[弱体]/Change CS Type: Long Slash [Debuff]", "CS", 0, 0, 7, EFFECT_FLAG.FIXED|EFFECT_FLAG.DEBUFF|EFFECT_FLAG.GIMMICK, TYPE.CSWEAPON]
+  ,["CS変更：横一文字[弱体]/Change CS Type: Long Slash[Debuff]", "CS", 0, 0, 7, EFFECT_FLAG.FIXED|EFFECT_FLAG.DEBUFF|EFFECT_FLAG.GIMMICK, TYPE.CSWEAPON]
   ,["デバフをくれなきゃイタズラするぞ！", "ては", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.NOT_DEBUFFED]
   ,["デバフをくれなきゃイタズラするぞ！", "ては", 1, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.NOT_DEBUFFED]
   ,["バフをくれなきゃイタズラするぞ！", "はふ", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.NOT_BUFFED]
@@ -478,28 +481,30 @@ var EFFECT = Effect.createList(
   ,["特殊耐性[0.01+1000]", "とくし", 1, 0.01, 1000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["攻撃力上昇[2.5]", "こうけし", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["攻撃力上昇[3.0]", "こうけし", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,["攻撃力増加[聖夜]/攻撃力増加[Xmas]", "こうけそ", 0, 1.1, 10000, EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, , , 0]
-  ,["武器種変更：射撃/Change Weapon Type: Shot", "ふき", 0, 0, 4, EFFECT_FLAG.FIXED|EFFECT_FLAG.GIMMICK, TYPE.WEAPON]
+  ,["攻撃力増加[聖夜]/Increase ATK[Xmas]", "こうけそ", 0, 1.1, 10000, EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, , , 0]
+  ,["武器種変更：射撃/Change Weapon Type: Shot", "ふき", 0, 0, 4, EFFECT_FLAG.FIXED, TYPE.WEAPON]
   ,["強化時防御力上昇", "きようかし", 1, 0.05, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF|EFFECT_FLAG.GIMMICK]
   ,["威圧特攻", "いあつ", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,["<*発狂>時弱化", "はつ", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["攻撃力増加[2.0]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["攻撃力増加[2.0]/Increase ATK[2.0]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["×<攻撃力増加[ターン毎減少]>@1", "", 2, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["×<攻撃力増加[ターン毎減少]>@2", "", 2, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["×<攻撃力増加[ターン毎減少]>@3", "", 2, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["×<攻撃力増加[ターン毎減少]>@4", "", 2, 4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["×<攻撃力増加[ターン毎減少]>@5", "", 2, 5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,["攻撃力増加[ターン毎減少]", "こうけそ", 0, 1.6, , EFFECT_FLAG.IRREMOVABLE, TYPE.PROMPT]
-  ,["攻撃力増加[イツァムナー]/攻撃力増加[Itzamna]", "こうけそ", 0, 3.0, , EFFECT_FLAG.IRREMOVABLE, TYPE.PROMPT]
+  ,["攻撃力増加[ターン毎減少]/Increase ATK[Wanes each turn]", "こうけそ", 0, 1.6, , EFFECT_FLAG.IRREMOVABLE, TYPE.PROMPT]
+  ,["攻撃力増加[イツァムナー]/Increase ATK[Itzamna]", "こうけそ", 0, 3.0, , EFFECT_FLAG.IRREMOVABLE, TYPE.PROMPT]
   ,["ブレーメンにゃ！", "ふれ", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["狼の応援（攻）", "おお", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["狼の応援（防）", "おお", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,["攻撃力増加[バレ]/攻撃力増加[Valentine]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
+  ,["攻撃力増加[バレ]/Increase ATK[Valentine]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
   ,["防御力増加[バレ]/防御力増加[Valentine]", "ほうきそ", 1, 0.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
   ,["食べちゃうぞ", "たへ", 1, 0.01, 10000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["魅了時弱化[ペルーン]/魅了時弱化[Perun]", "みり", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
+  ,["斬撃・横一文字弱点", "さんけ", 1, 1.2, (1 << 1) | (1 << 7), EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
 ]);
 
-PROMPT_DATA = PromptData.createMap(
+var PROMPT_DATA = PromptData.createMap(
   [["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T", 1, 999,
     [[1, 1.6]
     ,[1, 1.5]

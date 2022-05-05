@@ -1,3 +1,5 @@
+"use strict";
+
 function Affiliation(index, name, value){
   this.index = index;
   this.name = name;
@@ -54,6 +56,7 @@ var GUILD = Affiliation.createList(
   ,"？？？？？"
   ,"？？？？？？"
   ,"？？？？？？？"
+  ,"？？？？？？？？"
 ]);
 
 var SCHOOL = Affiliation.createList(
