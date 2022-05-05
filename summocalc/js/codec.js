@@ -1,3 +1,5 @@
+"use strict";
+
 var B64TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
 var Encoder = function(){

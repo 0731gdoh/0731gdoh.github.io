@@ -1,3 +1,5 @@
+"use strict";
+
 function ListItem(index, x){
   this.index = index;
   this.name = x[0];

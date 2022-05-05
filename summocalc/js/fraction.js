@@ -1,3 +1,5 @@
+"use strict";
+
 function gcd(n, m){
   if(n > m){
     var t = n;

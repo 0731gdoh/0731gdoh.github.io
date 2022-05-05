@@ -1,3 +1,5 @@
+"use strict";
+
 var LINE = "－－－－－－－－－－－－";
 
 var EffectStatus = function(){
@@ -199,6 +201,12 @@ var calc = {
         c.load(c.defaultHash);
         checkUpdate();
       }
+    };
+    _("ri").onclick = function(){
+      var o = _("rc").options;
+      var r = [];
+      for(var i = 1; i < o.length; i++) r.push(AR[o[i].value].getInfo());
+      _("o").value = r.join("\n\n");
     };
     for(var i = 0; i < nums.length; i++){
       nums[i].onfocus = function(){
@@ -589,8 +597,10 @@ var calc = {
     }catch(e){}
     this.updateTexts();
     if(x >= 0){
+      this.active = 0;
       this.cardfilter.update();
       this.arfilter.update();
+      this.active = 1;
       this.update();
     }
   },
@@ -674,7 +684,7 @@ var calc = {
     setText("lqf", "装備可能/Equipable");
     setText("lccf", "CSの効果を除外する/Exclude CS Effects");
     setText("rd", "ランダムカード/Random Card");
-    setText("fr", "フィルタをリセット/Reset Filter");
+    setText("fr", "リセット/Reset");
     setText("rfc", "AR装備フィルタ/AR Equipment Filter ");
     setText("lrxf", "名前/Name");
     setText("lrrf", "レア度/Rarity");
@@ -687,12 +697,13 @@ var calc = {
     setText("lrnf", "状態無効/Nullify");
     setText("lceq", "装備可能のみ/Can be Equipped only");
     setText("rrd", "ランダムAR/Random AR");
-    setText("rfr", "フィルタをリセット/Reset Filter");
+    setText("rfr", "リセット/Reset");
     setText("dd", "カードデータ: /Card Data: ");
     setText("ad", "ARデータ: /AR Data: ");
     setText("ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'.");
     setText("um", "新しいデータがあります/New data is available.");
     setText("ub", "更新/Update");
+    setText("ri", "一覧表示/List");
     cf.active = cb;
     rf.active = rb;
     this.active = 1;

@@ -1,7 +1,9 @@
+"use strict";
+
 function splitCharaNames(s){
   if(!s) return [];
   return s.split("/").reduce(function(acc, cur){
-    return acc.concat(CARD.table.get(cur))
+    return acc.concat(CARD.table.get(cur));
   }, []);
 }
 
@@ -75,7 +77,20 @@ function splitSkills(s){
     var key = (timing & TIMING_FLAG.CS) ? "c" + match[2] : match[2];
     if(!i) throw new Error("タグ「" + name + "」は未登録です\n（" + s + "）");
     if(result.has(key)) throw new Error("スキル「" + match[2] + "」が重複しています\n（" + s + "）");
-    result.set(key, [name, i, timing, target, tname]);
+    if(target && TAG[target].subset.length && [TAG_TYPE.SKILL, TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS].indexOf(TAG[target].type) === -1){
+      var evo = [];
+      TAG[target].subset.forEach(function(sub){
+        if(evo.indexOf(sub) === -1){
+          var subtag = TAG[sub];
+          var subname = t(subtag.name, 0);
+          var subkey = subname + "に" + name;
+          if(subtag.subset.length) evo = subtag.subset;
+          result.set(subkey, [name, i, timing, sub, subname]);
+        }
+      });
+    }else{
+      result.set(key, [name, i, timing, target, tname]);
+    }
   });
   return result;
 }
@@ -83,19 +98,16 @@ function splitSkills(s){
 function generateEffectData(s, group){
   var result = [];
   s.forEach(function(value){
-    var name = value[0];
-    var g = (value[2] & TIMING_FLAG.CS) ? EFFECT_MAX : 0;
-    for(var i = 1; i < EFFECT.length; i++){
-      if(t(EFFECT[i].name, 0) === name && (group === undefined || EFFECT[i].group === group)){
-        if(!EFFECT[i].isToken()){
-          var n = i;
-          if(value[3]){
-            n = EFFECT[i].subset.get(value[3]);
-            if(!n) n = registerBonusEffect(i, value);
-          }
-          result.push(n + g);
+    var i = EFFECT.table.get(group ? "*" + value[0] : value[0]);
+    if(i){
+      var g = (value[2] & TIMING_FLAG.CS) ? EFFECT_MAX : 0;
+      if(!EFFECT[i].isToken()){
+        var n = i;
+        if(value[3]){
+          n = EFFECT[i].subset.get(value[3]);
+          if(!n) n = registerBonusEffect(i, value);
         }
-        break;
+        result.push(n + g);
       }
     }
   });

@@ -1,3 +1,5 @@
+"use strict";
+
 var language = -1;
 
 function _(id){
@@ -15,8 +17,8 @@ function v(x, y){
   if(o.min) return o.value = Math.max(Math.min(value, o.max), o.min);
   return value;
 }
-function setValue(id, value, zeroCount){
-  if(value === v(id)) return;
+function setValue(id, value, zeroCount, forced){
+  if(value === v(id) && !forced) return;
   var o = _(id);
   var p = o.options;
   if(p){
@@ -102,7 +104,7 @@ function setOptions(id, list, k, s, ogl, d, p){
     if(x) elem.appendChild(x);
   });
   elem.selectedIndex = 0;
-  setValue(id, value, zeroCount);
+  setValue(id, value, zeroCount, true);
 }
 function setText(id, str){
   var o = _(id);
@@ -124,16 +126,20 @@ function linkInput(obj, key, id, onchange){
   setValue(id, obj[key]);
   _(id).onchange = function(){
     obj[key] = v(id);
-    if(onchange) onchange();
-    if(obj.active) obj.update();
+    if(obj.active){
+      if(onchange) onchange();
+      obj.update();
+    }
   };
 }
 function linkTextInput(obj, key, id, oninput){
   setValue(id, obj[key]);
   _(id).oninput = function(){
     obj[key] = _(id).value;
-    if(oninput) oninput();
-    if(obj.active) obj.update();
+    if(obj.active){
+      if(oninput) oninput();
+      obj.update();
+    }
   };
 }
 function setCheckGroup(id, list, br, order){
@@ -234,8 +240,10 @@ function linkCheckGroup(obj, key, id, onchange){
     }
     obj[key] = n;
     if(_(btn)) _(btn).value = "[" + x.length + "] " + x.join("|");
-    if(onchange) onchange();
-    if(obj.active) obj.update();
+    if(obj.active){
+      if(onchange) onchange();
+      obj.update();
+    }
   };
 }
 function copyText(id){

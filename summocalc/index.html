@@ -14,7 +14,6 @@
 "use strict";
 onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
 </script>
-
 <script src="js/summocalc.js"></script>
 <script src="js/fraction.js"></script>
 <script src="js/listitem.js"></script>
@@ -94,8 +93,9 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
       <input type=checkbox id=ccf><label for=ccf id=lccf></label>
       <hr>
       <div class=bs>
-        <input type=button id=rd><input type=button id=fr>
+        <input type=button id=rd>
       </div>
+      <input type=button id=fr class=rb>
     </div>
     <div class=cb><label for=pl id=lpl></label><input type=number min=1 max=85 value=1 id=pl><input type=button id=ly value="-10"><input type=button id=lm value="MAX"><input type=button id=lx value="+10"><input type=button id=lz value="+15"></div>
     <hr>
@@ -135,8 +135,9 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
       <input type=checkbox id=ceq><label for=ceq id=lceq></label>
       <hr>
       <div class=bs>
-        <input type=button id=rrd><input type=button id=rfr>
+        <input type=button id=ri><input type=button id=rrd>
       </div>
+      <input type=button id=rfr class=rb>
     </div>
     <div class=cb><label for=rl id=lrl></label><input type=number min=1 max=100 value=1 id=rl><input type=button id=ra value="1"><input type=button id=rm value="100"><input type=button id=rx value="+5"><input type=button id=rz value="10n"></div>
     <hr>
