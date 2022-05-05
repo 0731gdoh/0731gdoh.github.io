@@ -101,6 +101,7 @@ textarea {
   font-weight: bold;
 }
 .sb {
+  position: relative;
   display: none;
   padding: 0.3rem;
   background-image: linear-gradient(#bcd, #abd);
@@ -108,6 +109,11 @@ textarea {
   border: solid 1px;
   border-radius: 0.2rem;
   margin-left: 0.7rem;
+}
+.rb {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
 }
 .bs {
   text-align: right;
