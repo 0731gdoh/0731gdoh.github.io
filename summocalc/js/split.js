@@ -11,9 +11,9 @@ function generateTagData(s, flagNum, arTiming){
   var z = [];
   var r = new Map();
   s.forEach(function(x){
-    var sf = (x[0].slice(0, 3) !== "全ての");
     var v = x[1];
     var tag = TAG[v];
+    var sf = [TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS, TAG_TYPE.CWT_GROUP].indexOf(tag.type) === -1;
     var timing = arTiming || x[2];
     var g = 0;
     if(timing & TIMING_FLAG.CS){
@@ -77,7 +77,7 @@ function splitSkills(s){
     var key = (timing & TIMING_FLAG.CS) ? "c" + match[2] : match[2];
     if(!i) throw new Error("タグ「" + name + "」は未登録です\n（" + s + "）");
     if(result.has(key)) throw new Error("スキル「" + match[2] + "」が重複しています\n（" + s + "）");
-    if(target && TAG[target].subset.length && [TAG_TYPE.SKILL, TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS].indexOf(TAG[target].type) === -1){
+    if(target && TAG[target].subset.length && [TAG_TYPE.SKILL, TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS, TAG_TYPE.CWT_GROUP].indexOf(TAG[target].type) === -1){
       var evo = [];
       TAG[target].subset.forEach(function(sub){
         if(evo.indexOf(sub) === -1){
@@ -100,14 +100,16 @@ function generateEffectData(s, group){
   s.forEach(function(value){
     var i = EFFECT.table.get(group ? "*" + value[0] : value[0]);
     if(i){
+      var e = EFFECT[i];
       var g = (value[2] & TIMING_FLAG.CS) ? EFFECT_MAX : 0;
-      if(!EFFECT[i].isToken()){
-        var n = i;
+      if(!e.isToken()){
         if(value[3]){
-          n = EFFECT[i].subset.get(value[3]);
+          var n = e.subset.get(value[3]);
           if(!n) n = registerBonusEffect(i, value);
+          result.push(n + g);
+        }else if(e.type !== TYPE.BONUS){
+          result.push(i + g);
         }
-        result.push(n + g);
       }
     }
   });
@@ -121,8 +123,7 @@ function registerBonusEffect(i, value){
   if(tag.type === TAG_TYPE.SPECIAL){
     o.name = value[4] + value[0] + "/Bonus " + t(tag.name, 1) + value[0].replace(/^[^\[]+/, " ");
   }else{
-    [[6, "極大特攻/極大特攻"]
-    ,[3, "超特攻/超特攻"]
+    [[3, "超特攻/超特攻"]
     ,[2, "大特攻/Greater bonus"]
     ,[1, "特攻/Bonus"]
     ,[0, "与ダメージ減少/Decrease"]

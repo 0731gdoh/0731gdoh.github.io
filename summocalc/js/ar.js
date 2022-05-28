@@ -12,14 +12,8 @@ function Record(index, id, x){
     return generateTagData(s, i, TIMING_FLAG.AR);
   });
   this.arRarity = x[7];
-  if(x[8].length){
-    this.value = new Fraction(x[8][0]);
-    this.growth = new Fraction(x[8][1]);
-    this.hp = x[7] * 100 - x[8][0];
-  }else{
-    this.value = new Fraction(x[8]);
-    this.hp = x[7] * 100 - x[8];
-  }
+  this.value = new Fraction(x[8]);
+  this.hp = x[7] * 100 - x[8];
   this.rarity = x[9];
   this.attribute = x[10];
   this.weapon = x[11];
@@ -34,7 +28,7 @@ Record.prototype = {
     return t(this.name) || "－";
   },
   getValue: function(lv){
-    return this.value.add((this.growth || this.value).mul(lv, 100));
+    return this.value.mul(100 + lv, 100);
   },
   getLimitation: function(lang){
     var e = [];
@@ -83,7 +77,7 @@ Record.prototype = {
   try{
     var r = [
       RARITY[this.arRarity] + " " + this,
-      "[HP+" + this.hp + " / ATK+" + (this.value - 0) + (this.growth ? "] (Lv.100: ATK+" + (this.value.add(this.growth) - 0) + ")" : "]"),
+      "[HP+" + this.hp + " / ATK+" + (this.value - 0) + "]",
       "■ " + this.getLimitation().join(" OR ")
     ];
     var s = [
@@ -149,7 +143,7 @@ Record.createList = function(a){
 Record.csv = function(list, x){
   return list.map(function(v){
     if(!v.name){
-      return t("#,レア度,名前,HP,ATK,ATK(最大Lv),ダメージ補正,効果(自身),効果(味方),効果(敵),特攻,特防,状態無効,CS倍率,CSタイプ,装備制限/#,Rarity,Name,HP,ATK,ATK(MaxLv),DamageModifier,Effects(Self),Effects(Ally),Effects(Enemy),AttackBonus,DefenseBonus,NullifyStatus,CSRate,CSType,Limitation", x);
+      return t("#,レア度,名前,HP,ATK,ダメージ補正,効果(自身),効果(味方),効果(敵),特攻,特防,状態無効,CS倍率,CSタイプ,装備制限/#,Rarity,Name,HP,ATK,DamageModifier,Effects(Self),Effects(Ally),Effects(Enemy),AttackBonus,DefenseBonus,NullifyStatus,CSRate,CSType,Limitation", x);
     }else{
       var e = v.getLimitation(x);
       var r = [
@@ -158,7 +152,6 @@ Record.csv = function(list, x){
         '"' + t(v.name, x) + '"',
         v.hp,
         v.value - 0,
-        v.growth ? v.value.add(v.growth) - 0 : "",
         v.effects.map(function(n){return t(EFFECT[n].name, x)}).join("/")
       ];
       v.tag.forEach(function(z){
@@ -198,7 +191,9 @@ var EQUIP = {
   NETHER: 1 << 6,
   INFERNAL: 1 << 7,
   VALIANT: 1 << 8,
-  WORLD: 1 << 9
+  WORLD: 1 << 9,
+  INFINITY: 1 << 10,
+  X: 1 << 11
 };
 
 var AR = Record.createList(
@@ -229,7 +224,7 @@ var AR = Record.createList(
   ,["スウィート・ドリームス/スウィート・ドリームス/すうぃーと・どりーむす", 118, "獲得経験値アップ", "閃き", "", "", "", "", 5, 200, 0, 0, EQUIP.MAGIC|EQUIP.SNIPE, "", "ビーストテイマーズ", ""]
   ,["レッツ・クラフト！/It's Crafting Time!/れっつ・くらふと！", 120, "ARトークンドロップ率アップ", "攻撃力低下耐性", "", "", "", "", 4, 200, EQUIP.ANY, 0, 0, "", "", ""]
   ,["隣を駆ける者ども/隣を駆ける者ども/となりをかけるものども", 121, "", "崩し耐性/CP増加", "", "", "", "", 3, 150, 0, EQUIP.AETHER|EQUIP.VALIANT, 0, "タングリスニル/グリンブルスティ", "", ""]
-  ,["虎たちの乾杯/虎たちの乾杯/とらたちのかんぱい", 122, "CP増加/威圧特攻", "威圧特攻", "", "威圧", "", "", 4, 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "ノーマッド/ドゥルガー/リチョウ", "", ""]
+  ,["虎たちの乾杯/虎たちの乾杯/とらたちのかんぱい", 122, "CP増加/威圧特攻/特攻[1.4]", "威圧特攻", "", "威圧", "", "", 4, 200, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "ノーマッド/ドゥルガー/リチョウ", "", ""]
   ,["クイーン・オブ・カブキチョウ/クイーン・オブ・カブキチョウ/くいーん・おぶ・かぶきちょう", 123, "種ドロップ率アップ", "", "魅了", "", "", "", 5, 100, 0, EQUIP.NETHER|EQUIP.INFERNAL, 0, "", "アウトローズ", ""]
   ,["猫たちの憩いの場/A Place Where the Cats Can Dream/ねこたちのいこいのば", 124, "HP回復/CP増加", "", "", "", "", "", 3, 0, 0, 0, EQUIP.SLASH|EQUIP.MAGIC|EQUIP.NONE, "テスカトリポカ/ケットシー", "", ""]
   ,["バレンタインアドベンチャー/バレンタインアドベンチャー/ばれんたいんあどべんちゃー", 125, "HP回復", "", "", "", "", "疑念", 3, 200, 0, EQUIP.FIRE|EQUIP.WATER|EQUIP.WOOD, 0, "キュウマ/アキハゴンゲン", "", ""]
@@ -330,7 +325,7 @@ var AR = Record.createList(
   ,["夢に見た力比べ/The Strength I dream of/ゆめにみたちからくらべ", , "CS威力増加(+2)", "", "威圧", "", "", "", 5, 350, 0, 0, EQUIP.SLASH|EQUIP.NONE, "アステリオス/アスタロト", "", "", 2]
   ,["巨いなる供物/A Great Offering/おおいなるくもつ", , "HP回復", "", "HP減少", "", "", "", 4, 100, 0, EQUIP.WOOD|EQUIP.INFERNAL|EQUIP.WORLD, 0, "タンガロア/ダゴン", "", ""]
   ,["お手柄！うみのこ探検隊/Accomplished Ocean Explorers/おてがら！うみのこたんけんたい", , "特防[0.8]/加速時強化[AR]", "", "", "", "射撃", "", 3, 150, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "キジムナー/エイタ", "", ""]
-  ,["宿命のグラップル！/宿命のグラップル！/しゅくめいのぐらっぷる！", , "回避に貫通/頑強に貫通/金剛に貫通/守護に貫通/聖油に貫通/防御強化に貫通", "", "崩し", "防御力が上昇する状態/回避", "", "", 5, 500, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "アルスラーン/アヴァルガ", "", ""]
+  ,["宿命のグラップル！/宿命のグラップル！/しゅくめいのぐらっぷる！", , "回避に貫通/頑強に貫通/金剛に貫通/守護に貫通/聖油に貫通/防御強化に貫通", "", "崩し", "回避/防御力が上昇する状態", "", "", 5, 500, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "アルスラーン/アヴァルガ", "", ""]
   ,["研究棟の夜は終わらず/研究棟の夜は終わらず/けんきゅうとうのよるはおわらず", , "根性/HP減少", "", "", "", "", "", 5, 100, 0, EQUIP.WOOD|EQUIP.AETHER, 0, "レイヴ/ジャンバヴァン", "", ""]
   ,["餅つきと喧嘩はひとりで出来ぬ/餅つきと喧嘩はひとりで出来ぬ/もちつきとけんかはひとりでできぬ", , "HP回復", "", "HP減少", "", "", "", 4, 300, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "ケンゴ/オニワカ", "", ""]
   ,["ゲヘナの腸/The Bowels of Gehenna/げへなのはらわた", , "HPが減少する弱体に特攻[1.2]", "", "猛毒", "HPが減少する弱体", "", "", 4, 200, 0, EQUIP.NETHER|EQUIP.INFERNAL, 0, "ルキフゲ/バエル", "", ""]
@@ -353,7 +348,7 @@ var AR = Record.createList(
   ,["ファンクラブの友たち/ファンクラブの友たち/ふぁんくらぶのともたち", , "", "CP増加/意気", "", "", "", "", 4, 400, 0, 0, EQUIP.SLASH|EQUIP.BLOW|EQUIP.LONGSLASH, "カルキ/マーナガルム", "", ""]
   ,["六本木のフィクサーたち/六本木のフィクサーたち/ろっぽんぎのふぃくさーたち", , "移動不能になる状態に特攻[1.3]", "", "", "移動不能になる状態", "", "不動", 4, 200, 0, 0, EQUIP.SLASH|EQUIP.SHOT, "ハクメン/ツァトグァ", "", ""]
   ,["汝、何処へ行き給う/Where are you going?/なんじ、いずこへいきたまう", , "弱体解除(単)/HP回復", "", "", "", "", "", 5, 100, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "マリア/アザゼル", "", ""]
-  ,["雪解けの甘くとろけたる/A Melting Snow-like Delight/ゆきどけのあまくとろけたる", , "被回復増加", "被回復増加/HP回復", "", "", "", "", 5, [250, 300], 0, EQUIP.VALIANT|EQUIP.ALLROUND, 0, "ホロケウカムイ/キムンカムイ", "", ""]
+  ,["雪解けの甘くとろけたる/A Melting Snow-like Delight/ゆきどけのあまくとろけたる", , "被回復増加", "被回復増加/HP回復", "", "", "", "", 5, 250, 0, EQUIP.VALIANT|EQUIP.ALLROUND, 0, "ホロケウカムイ/キムンカムイ", "", ""]
   ,["聖者の休息/A Break for a Saint/せいじゃのきゅうそく", , "", "HP回復", "武器種変更：無", "", "", "", 4, 300, 0, 0, EQUIP.MAGIC|EQUIP.THRUST, "ソール/キムンカムイ", "", ""]
   ,["我が盟友の為ならば/For My Sworn Friend/わがめいゆうのためならば", , "熱情に特攻[1.6]", "CP増加", "", "熱情", "", "", 4, 150, 0, 0, EQUIP.SLASH|EQUIP.SHOT, "アイゼン/カルキ", "", ""]
 ]);
