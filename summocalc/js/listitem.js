@@ -43,6 +43,8 @@ var ATTRIBUTE = ListItem.createList(
   ,["魔/Infernal", 128]
   ,["英雄/Valiant", 256]
   ,["世界/World", 512]
+  ,["無限", 1024]
+  ,["？", 2048]
 ]);
 ATTRIBUTE.ORDER = [2, 3, 4, 5, 6, 7, 8, 9, 1];
 
@@ -61,8 +63,10 @@ var MULTIPLIER = ListItem.createList(
   ,["→魔/ → Infernal", 7]
   ,["→英雄/ → Valiant", 8]
   ,["→世界/ → World", 9]
+  ,["→無限/ → 無限", 10]
+  ,["→？/ → ？", 11]
 ]);
-MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113];
+MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114];
 MULTIPLIER.LABELS = ["倍率/Multiplier", "属性/Attribute"];
 
 var RARITY = ListItem.createList(
@@ -159,6 +163,7 @@ var VARIANT = ListItem.createList(
   ,["ハロ21/Halloween21"]
   ,["聖夜21/Xmas21"]
   ,["バレ22/Valentine22"]
+  ,["13章/Ch.13"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);

@@ -127,7 +127,11 @@ function linkInput(obj, key, id, onchange){
   _(id).onchange = function(){
     obj[key] = v(id);
     if(obj.active){
-      if(onchange) onchange();
+      if(onchange){
+        obj.active = 0;
+        onchange();
+        obj.active = 1;
+      }
       obj.update();
     }
   };
@@ -137,7 +141,11 @@ function linkTextInput(obj, key, id, oninput){
   _(id).oninput = function(){
     obj[key] = _(id).value;
     if(obj.active){
-      if(oninput) oninput();
+      if(oninput){
+        obj.active = 0;
+        oninput();
+        obj.active = 1;
+      }
       obj.update();
     }
   };
@@ -241,7 +249,11 @@ function linkCheckGroup(obj, key, id, onchange){
     obj[key] = n;
     if(_(btn)) _(btn).value = "[" + x.length + "] " + x.join("|");
     if(obj.active){
-      if(onchange) onchange();
+      if(onchange){
+        obj.active = 0;
+        onchange();
+        obj.active = 1;
+      }
       obj.update();
     }
   };

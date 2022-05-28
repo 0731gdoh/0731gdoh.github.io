@@ -71,6 +71,7 @@ var SCHOOL = Affiliation.createList(
   ,"神宿学園/Shinjuku Academy"
   ,"代神山学園/Daikanyama Academy"
   ,"東京サンタスクール/Tokyo Santa School"
+  ,"東京消防大学"
   ,"東都学園"
   ,"豊舟海洋学園/Toyosu Marine Academy"
   ,"中迦野芸能学園"
