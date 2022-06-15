@@ -17,8 +17,8 @@ function v(x, y){
   if(o.min) return o.value = Math.max(Math.min(value, o.max), o.min);
   return value;
 }
-function setValue(id, value, zeroCount, forced){
-  if(value === v(id) && !forced) return;
+function setValue(id, value, skipUpdate, zeroCount){
+  if(value === v(id)) return;
   var o = _(id);
   var p = o.options;
   if(p){
@@ -44,7 +44,7 @@ function setValue(id, value, zeroCount, forced){
   }else{
     o.value = value;
   }
-  if(!o.disabled){
+  if(!skipUpdate){
     if(o.onchange) o.onchange();
     if(o.oninput) o.oninput();
   }
@@ -104,7 +104,8 @@ function setOptions(id, list, k, s, ogl, d, p){
     if(x) elem.appendChild(x);
   });
   elem.selectedIndex = 0;
-  setValue(id, value, zeroCount, true);
+  setValue(id, value, true, zeroCount);
+  if(elem.onchange && v(id) !== value) elem.onchange();
 }
 function setText(id, str){
   var o = _(id);
@@ -126,28 +127,16 @@ function linkInput(obj, key, id, onchange){
   setValue(id, obj[key]);
   _(id).onchange = function(){
     obj[key] = v(id);
-    if(obj.active){
-      if(onchange){
-        obj.active = 0;
-        onchange();
-        obj.active = 1;
-      }
-      obj.update();
-    }
+    if(onchange) onchange();
+    if(obj.active) obj.update();
   };
 }
 function linkTextInput(obj, key, id, oninput){
   setValue(id, obj[key]);
   _(id).oninput = function(){
     obj[key] = _(id).value;
-    if(obj.active){
-      if(oninput){
-        obj.active = 0;
-        oninput();
-        obj.active = 1;
-      }
-      obj.update();
-    }
+    if(oninput) oninput();
+    if(obj.active) obj.update();
   };
 }
 function setCheckGroup(id, list, br, order){
@@ -248,14 +237,8 @@ function linkCheckGroup(obj, key, id, onchange){
     }
     obj[key] = n;
     if(_(btn)) _(btn).value = "[" + x.length + "] " + x.join("|");
-    if(obj.active){
-      if(onchange){
-        obj.active = 0;
-        onchange();
-        obj.active = 1;
-      }
-      obj.update();
-    }
+    if(onchange) onchange();
+    if(obj.active) obj.update();
   };
 }
 function copyText(id){
