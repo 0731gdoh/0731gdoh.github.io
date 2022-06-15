@@ -436,7 +436,7 @@ var calc = {
           es[n].lv = 1;
         });
       }
-      this.updateEffectOptions();
+//      this.updateEffectOptions();
       this.active = 1;
     }
     this.update(skipSave);
@@ -789,9 +789,9 @@ var calc = {
       atk = card.getValue(this.lv, this.version === 2);
       weapon = card.weapon[this.usecs];
       cs = CS.ORDER[card.rarity] + card.csBoost;
-      setValue("a", atk);
-      setValue("w", weapon);
-      setValue("cs", cs);
+      setValue("a", atk, true);
+      setValue("w", weapon, true);
+      setValue("cs", cs, true);
       result[1] = "　[Lv." + pad(this.lv, 3) + "]　" + card;
     }
     if(this.ar && card.canEquip(ar)){

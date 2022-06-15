@@ -390,7 +390,7 @@ var TAG = Tag.createList(
   ,["横一文字/Long Slash", "1", TAG_TYPE.WEAPON]
   ,["全域/All", "1", TAG_TYPE.WEAPON]
   ,["無/None", "1", TAG_TYPE.WEAPON]
-  ,["鬼系スキル", "", TAG_TYPE.SKIP, "", "鬼道の衆/鬼道を束ねる者/鬼気迫る者"]
+  ,["鬼系スキル", "", TAG_TYPE.SKIP, "", "鬼道の衆/鬼道を束ねる者/鬼気迫る者/愚直なる血鬼"]
   ,["獣系スキル", "", TAG_TYPE.SKIP, "", "獣の末裔/黄昏に弾く獣/首狩りの獣/忠玉の八犬士/ラビリンスの獣/獣皮を巻く者/無垢なる獣"]
   ,["チートと名の付くスキル", "ちい", TAG_TYPE.SKILL, "", "チート系勇者/チートなる者"]
   ,["魔王と名の付くスキル", "まお", TAG_TYPE.SKILL, "", "僥倖の魔王/混沌の魔王/退廃の魔王/第四天魔王の子/大力の魔王/常闇の魔王/墓場の魔王/魔王"]
@@ -623,4 +623,5 @@ var TAG = Tag.createList(
   ,["全域大特防", "せんい", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["スキル発動率激増[アイザック]", "", TAG_TYPE.IRREMOVABLE_BUFF, "スキル発動率激増/発動率増加系"]
   ,["マシンボディ付与", "まし", TAG_TYPE.IRREMOVABLE_BUFF]
+  ,["愚直なる血鬼", "くち", TAG_TYPE.SKILL]
 ]);
