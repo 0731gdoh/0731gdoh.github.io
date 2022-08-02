@@ -193,7 +193,7 @@ var EQUIP = {
   VALIANT: 1 << 8,
   WORLD: 1 << 9,
   INFINITY: 1 << 10,
-  X: 1 << 11
+  ZERO: 1 << 11
 };
 
 var AR = Record.createList(
@@ -327,12 +327,12 @@ var AR = Record.createList(
   ,["夢に見た力比べ/The Strength I dream of/ゆめにみたちからくらべ", , "CS威力増加(+2)", "", "威圧", "", "", "", 5, 350, 0, 0, EQUIP.SLASH|EQUIP.NONE, "アステリオス/アスタロト", "", "", 2]
   ,["巨いなる供物/A Great Offering/おおいなるくもつ", , "HP回復", "", "HP減少", "", "", "", 4, 100, 0, EQUIP.WOOD|EQUIP.INFERNAL|EQUIP.WORLD, 0, "タンガロア/ダゴン", "", ""]
   ,["お手柄！うみのこ探検隊/Accomplished Ocean Explorers/おてがら！うみのこたんけんたい", , "特防[0.8]/加速時強化[AR]", "", "", "", "射撃", "", 3, 150, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "キジムナー/エイタ", "", ""]
-  ,["宿命のグラップル！/宿命のグラップル！/しゅくめいのぐらっぷる！", , "回避に貫通/頑強に貫通/金剛に貫通/守護に貫通/聖油に貫通/防御強化に貫通", "", "崩し", "回避/防御力が上昇する状態", "", "", 5, 500, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "アルスラーン/アヴァルガ", "", ""]
-  ,["研究棟の夜は終わらず/研究棟の夜は終わらず/けんきゅうとうのよるはおわらず", , "根性/HP減少", "", "", "", "", "", 5, 100, 0, EQUIP.WOOD|EQUIP.AETHER, 0, "レイヴ/ジャンバヴァン", "", ""]
-  ,["餅つきと喧嘩はひとりで出来ぬ/餅つきと喧嘩はひとりで出来ぬ/もちつきとけんかはひとりでできぬ", , "HP回復", "", "HP減少", "", "", "", 4, 300, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "ケンゴ/オニワカ", "", ""]
+  ,["宿命のグラップル！/Grapple With Destiny!/しゅくめいのぐらっぷる！", , "回避に貫通/頑強に貫通/金剛に貫通/守護に貫通/聖油に貫通/防御強化に貫通", "", "崩し", "回避/防御力が上昇する状態", "", "", 5, 500, 0, 0, EQUIP.THRUST|EQUIP.BLOW, "アルスラーン/アヴァルガ", "", ""]
+  ,["研究棟の夜は終わらず/Endless Night of Research/けんきゅうとうのよるはおわらず", , "根性/HP減少", "", "", "", "", "", 5, 100, 0, EQUIP.WOOD|EQUIP.AETHER, 0, "レイヴ/ジャンバヴァン", "", ""]
+  ,["餅つきと喧嘩はひとりで出来ぬ/Can't Fight or Make Rice Cakes Alone/もちつきとけんかはひとりでできぬ", , "HP回復", "", "HP減少", "", "", "", 4, 300, 0, EQUIP.FIRE|EQUIP.AETHER, 0, "ケンゴ/オニワカ", "", ""]
   ,["ゲヘナの腸/The Bowels of Gehenna/げへなのはらわた", , "HPが減少する弱体に特攻[1.2]", "", "猛毒", "HPが減少する弱体", "", "", 4, 200, 0, EQUIP.NETHER|EQUIP.INFERNAL, 0, "ルキフゲ/バエル", "", ""]
-  ,["そこにお世話のある限り！/そこにお世話のある限り！/そこにおせわのあるかぎり！", , "", "HP回復/CP増加", "", "", "", "", 3, 0, 0, EQUIP.WATER|EQUIP.VALIANT|EQUIP.ALLROUND, 0, "ホロケウカムイ/トムテ", "", ""]
-  ,["星よ！太陽よ！/星よ！太陽よ！/ほしよ！たいようよ！", , "注目に特攻[1.4]/注目", "", "", "注目", "", "", 3, 300, 0, EQUIP.WORLD, EQUIP.THRUST|EQUIP.SHOT, "テスカトリポカ/オンブレティグレ", "", ""]
+  ,["そこにお世話のある限り！/As Long As Someone's There to Help!/そこにおせわのあるかぎり！", , "", "HP回復/CP増加", "", "", "", "", 3, 0, 0, EQUIP.WATER|EQUIP.VALIANT|EQUIP.ALLROUND, 0, "ホロケウカムイ/トムテ", "", ""]
+  ,["星よ！太陽よ！/O Stars! O Sun!/ほしよ！たいようよ！", , "注目に特攻[1.4]/注目", "", "", "注目", "", "", 3, 300, 0, EQUIP.WORLD, EQUIP.THRUST|EQUIP.SHOT, "テスカトリポカ/オンブレティグレ", "", ""]
   ,["苦楽は汗と共に/Sweating Together, Through Good and Bad/くらくはあせとともに", , "弱体解除(単)/HP回復", "", "", "", "", "", 5, 400, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "モリタカ/オルグス", "", ""]
   ,["最高のパフォーマンスを/The Ultimate Performance/さいこうのぱふぉーまんすを", , "特防[0.6]", "根性", "", "", "全域", "", 5, 0, 0, EQUIP.WOOD, 0, "リョウタ/ソール", "", ""]
   ,["ある日の一幕/Snapshot of That Day/あるひのいちまく", , "特防[0.8]", "", "強化解除(単)", "", "打撃/射撃", "", 4, 200, 0, 0, EQUIP.BLOW|EQUIP.SHOT|EQUIP.MAGIC, "ケンゴ/勇者", "", ""]

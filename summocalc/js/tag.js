@@ -216,7 +216,7 @@ var TAG = Tag.createList(
   ,["頑強/Tenacity", "かん", TAG_TYPE.BUFF, "防御増加系"]
   ,["頑強時強化", "かんしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["頑強に貫通/Ignore Tenacity", "かんにか", TAG_TYPE.STATIC, "特攻/貫通系"]
-  ,["疑念", "きね", TAG_TYPE.DEBUFF, "攻撃増加系/攻撃減少系"]
+  ,["疑念/Doubt", "きね", TAG_TYPE.DEBUFF, "攻撃増加系/攻撃減少系"]
   ,["強化解除/Remove buff", "きようかか", TAG_TYPE.ONE_SHOT]
   ,["強化解除(単)/Remove buff (single)", "きようかか1", TAG_TYPE.ONE_SHOT, "強化解除"]
   ,["強化解除(複)/Remove buff (multiple)", "きようかか2", TAG_TYPE.ONE_SHOT, "強化解除"]
@@ -626,4 +626,8 @@ var TAG = Tag.createList(
   ,["愚直なる血鬼", "くち", TAG_TYPE.SKILL]
   ,["横移動力増加", "よこそう", TAG_TYPE.IRREMOVABLE_BUFF, "移動力増加系"]
   ,["花獲得率アップ/Increase drop rate of Blossoms", "はな", TAG_TYPE.STATIC, "報酬増加系"]
+  ,["外壁", "かいへ", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
+  ,["弱点特攻", "しやくてと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["係留時強化", "けいりしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["弱点耐性/Weakness resistance", "しやくてたい", TAG_TYPE.BUFF, "状態耐性系"]
 ]);
