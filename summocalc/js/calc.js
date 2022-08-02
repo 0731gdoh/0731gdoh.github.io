@@ -2,13 +2,18 @@
 
 var LINE = "－－－－－－－－－－－－";
 
-var EffectStatus = function(){
+var EffectStatus = function(e){
+  this.effect = e;
   this.clear();
 };
 EffectStatus.prototype = {
+  toString: function(){
+    return this.effect.toString() + this.label;
+  },
   clear: function(){
     this.lv = 0;
     this.loop = 0;
+    this.label = "";
     this.hp = 1;
     this.maxHp = 1;
     this.c = 0;
@@ -42,7 +47,7 @@ var calc = {
   card: 0,
   lv: 1,
   es: EFFECT.map(function(v){
-    return new EffectStatus();
+    return new EffectStatus(v);
   }),
   evt: 0,
   wc: 0,
@@ -74,7 +79,7 @@ var calc = {
     linkInput(c, "version", "sv");
     linkInput(c, "multiplier", "am");
     linkInput(c, "card", "pc", function(){
-      c.updateEffectOptions();
+      if(c.active) c.updateEffectOptions();
       c.updateMultiplierOptions();
       c.checkCardSelected();
       c.arfilter.update(c.card);
@@ -86,7 +91,7 @@ var calc = {
     });
     linkInput(c, "lv", "pl");
     linkInput(c, "ar", "rc", function(){
-      c.updateEffectOptions();
+      if(c.active) c.updateEffectOptions();
       c.updateEquipableOptions();
       if(AR[c.ar].arRarity === 5){
         setText("rx", "+20");
@@ -421,7 +426,11 @@ var calc = {
         if(!n) bonus.forEach(function(v){
           var e = EFFECT[v[0]];
           if(!e || !e.subset) return;
-          n = e.subset.get(v[1]);
+          if(e.type === TYPE.BONUS){
+            n = e.subset.get(v[1]);
+          }else{
+            n = e.getSub(v[1]);
+          }
           if(!n || !es[n]) return;
           e = EFFECT[n];
           if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()){
@@ -436,7 +445,7 @@ var calc = {
           es[n].lv = 1;
         });
       }
-//      this.updateEffectOptions();
+      this.updateEffectOptions();
       this.active = 1;
     }
     this.update(skipSave);
@@ -451,7 +460,7 @@ var calc = {
       var es = this.es[index];
       if(lv){
         if(e.type === TYPE.PROMPT){
-          lv = e.prompt();
+          lv = e.promptData.prompt();
           if(lv === null) return;
         }else if(mode == 1){
           lv = 0;
@@ -877,14 +886,14 @@ var calc = {
           }
           if(count > 1) label.push("《x" + count + "》");
           label.push(e);
-          desc = [label.join("")];
+          if(e.promptData) label.push(e.promptData.getLabel(eLv));
 
           //連撃
           if(e.type === TYPE.COMBO && this.usecs) x = new Fraction(1);
           //極限
           if(e.type === TYPE.LIMIT){
             x = x.mul(2 * es.maxHp - es.hp, es.maxHp);
-            desc[0] += "[HP:" + es.hp + "/" + es.maxHp + "]";
+            label.push("[HP:" + es.hp + "/" + es.maxHp + "]");
           }
           //カスタム
           if(e.type === TYPE.CUSTOM) x = es.getCustomMul();
@@ -908,9 +917,9 @@ var calc = {
             }
           }
 
+          desc = [label.join("")];
+
           switch(modEType){
-            case TYPE.PROMPT:
-              desc[0] += e.getLabel(eLv);
             default:
               if(x - 0 && x.n !== x.d){
                 dmg = dmg.mul(x);

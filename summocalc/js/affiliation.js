@@ -69,6 +69,7 @@ var SCHOOL = Affiliation.createList(
   ,"窯多工業高等専門学校/Kamata Technical Academy"
   ,"鬼王警察学校/Kiou Police Academy"
   ,"神宿学園/Shinjuku Academy"
+//  ,"世耕農業学園"
   ,"代神山学園/Daikanyama Academy"
   ,"東京サンタスクール/Tokyo Santa School"
   ,"東京消防大学"
