@@ -396,7 +396,7 @@ var calc = {
         if(!n) bonus.forEach(function(v){
           var ep = es[v[0]];
           var e = EFFECT[v[0]];
-          if(!ep || !ep.subsetOrder) return;
+          if(!e || !ep || !ep.subsetOrder) return;
           if(e.type === TYPE.BONUS){
             n = e.subset.get(v[1]);
             if(!n) return;
