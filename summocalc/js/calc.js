@@ -360,7 +360,7 @@ var calc = {
           
           if(e.isStackable()){
             loop = s.read();
-            if(loopOw) es[e.link].loop = v.loop;
+            if(loopOw) es[e.link].loop = loop;
           }
           v.setLevel(owLv || lv, loop);
           if(e.type === TYPE.LIMIT){
