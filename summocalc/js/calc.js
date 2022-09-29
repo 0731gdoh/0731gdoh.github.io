@@ -502,7 +502,8 @@ var calc = {
               if(!tLv) break;
               tLv = parseInt(tLv, 10);
             }
-            if(tLv || tLv === 0) this.es[e.link].setLevel(1, tLv);
+            if(tLv) this.es[e.link].setLevel(1, tLv);
+            if(tLv === 0) this.es[e.link].clear();
           }else if(tLoop){
             if(tE.isStackable() && ep.loop > 1){
               tLv = this.es[e.link].lv;
