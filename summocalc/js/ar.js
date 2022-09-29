@@ -93,13 +93,13 @@ Record.prototype = {
       var c = [];
       var tags = x.map(function(d){
         var tag = TAG[d[0] % TAG_MAX];
+        if(i < 3 && tag.category.length) ex = ex.concat(tag.category);
+        if(i > 2 && tag.subset.length) ex = ex.concat(tag.subset);
         if(tag.name.indexOf("に貫通") !== -1){
           s[3][0] = "/Ignore ";
           s[3][1] = s[3][1].replace("特攻", "貫通");
           return 0;
         }
-        if(i < 3 && tag.category.length) ex = ex.concat(tag.category);
-        if(i > 2 && tag.subset.length) ex = ex.concat(tag.subset);
         if(ex.indexOf(tag.index) !== -1) return 0;
         if(tag.name[0] === "特"){
           var w = "攻防".indexOf(tag.name[1]);
@@ -233,6 +233,7 @@ var AR = Record.createList(
   ,["アチアチ・ホットキャンプ！/Piping-Hot Camp!/あちあち・ほっときゃんぷ！", 128, "浄化/滋養に特攻[1.3]", "", "", "滋養", "", "", 3, 100, 0, EQUIP.FIRE|EQUIP.WOOD, 0, "カグツチ/シロウ/アイゼン", "", ""]
   ,["N番目の祝宴/N番目の祝宴/Nばんめのしゅくえん", 129, "特防[0.8]/祝福", "", "", "", "狙撃", "", 3, 0, 0, 0, EQUIP.LONGSLASH|EQUIP.THRUST|EQUIP.SLASH, "ヤスヨリ/オンブレティグレ", "", ""]
   ,["母と子と/母と子と/ははとこと", 130, "花獲得率アップ", "HP回復", "", "", "", "", 5, 100, 0, EQUIP.FIRE|EQUIP.NETHER, 0, "", "ジェノサイダーズ", ""]
+  ,["夏の日の一枚/夏の日の一枚/なつのひのいちまい", 131, "意気", "", "", "", "", "魅了", 3, 150, 0, EQUIP.ALLROUND|EQUIP.WATER|EQUIP.INFERNAL, 0, "ベイブ・バニヤン/シュクユウ", "", ""]
   ,["開拓の誓い/開拓の誓い/かいたくのちかい", , "", "CP増加", "", "", "", "恐怖", 5, 100, 0, EQUIP.NETHER, 0, "主人公/シロウ", "", ""]
   ,["無窮の誓い/無窮の誓い/むきゅうのちかい", , "クリティカル", "", "", "", "", "マヒ", 5, 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ", "", ""]
   ,["豊穣の誓い/豊穣の誓い/ほうじょうのちかい", , "HP回復", "", "", "", "", "告死", 5, 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ", "", ""]
@@ -342,7 +343,7 @@ var AR = Record.createList(
   ,["池袋クリスマス・場外乱闘！/池袋クリスマス・場外乱闘！/いけぶくろくりすます・じょうがいらんとう！", , "", "", "HP減少", "", "", "", 4, 400, 0, EQUIP.WATER, EQUIP.SLASH|EQUIP.SNIPE, "スノウ/メリュジーヌ", "", ""]
   ,["親父さん見てる！？/親父さん見てる！？/おやじさんみてる！？", , "", "激怒+/CP増加", "", "", "", "", 4, 0, 0, EQUIP.FIRE|EQUIP.NETHER, 0, "バティム/シトリー", "", ""]
   ,["骨董市の品定め/Shopping at the Antique Market/こっとういちのしなさだめ", , "", "CS封印/次ターン強化/攻撃力増加[次ターン]", "", "", "", "", 5, 0, 0, EQUIP.WOOD|EQUIP.NETHER, 0, "フルフミ/リヒト", "", ""]
-  ,["金魚すくいレクチャー！/A Lesson in Goldfish Scooping/きんぎょすくいれくちゃー！", , "攻撃力増加[ターン毎減少]", "", "", "", "", "", 5, 300, 0, EQUIP.WATER, 0, "リョウタ/リチョウ/ケットシー", "", "", 2]
+  ,["金魚すくいレクチャー！/A Lesson in Goldfish Scooping/きんぎょすくいれくちゃー！", , "攻撃力増加[ターン毎減少]/CS威力増加(+2)", "", "", "", "", "", 5, 300, 0, EQUIP.WATER, 0, "リョウタ/リチョウ/ケットシー", "", "", 2]
   ,["祭りの日の出会い/An Encounter at the Festival/まつりのひのであい", , "閃き", "CP増加", "", "", "", "", 4, 100, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.AETHER, 0, "リチョウ/フルフミ", "", ""]
   ,["同盟者からのサプライズ/A Surprise from a Comrade/どうめいしゃからのさぷらいず", , "暗闇に特攻[1.6]/スキル発動率大増", "", "", "暗闇", "", "", 4, 200, 0, EQUIP.INFERNAL|EQUIP.VALIANT|EQUIP.WORLD, 0, "テスカトリポカ/バロール", "", ""]
   ,["悪魔式ティータイム/A Devilish Teatime/あくましきてぃーたいむ", , "毒/再生", "毒/再生", "毒/再生", "", "", "", 5, 200, 0, EQUIP.AETHER|EQUIP.NETHER|EQUIP.INFERNAL, 0, "アスタロト/バエル", "", ""]
@@ -353,4 +354,8 @@ var AR = Record.createList(
   ,["雪解けの甘くとろけたる/A Melting Snow-like Delight/ゆきどけのあまくとろけたる", , "被回復増加", "被回復増加/HP回復", "", "", "", "", 5, 250, 0, EQUIP.VALIANT|EQUIP.ALLROUND, 0, "ホロケウカムイ/キムンカムイ", "", ""]
   ,["聖者の休息/A Break for a Saint/せいじゃのきゅうそく", , "", "HP回復", "武器種変更：無", "", "", "", 4, 300, 0, 0, EQUIP.MAGIC|EQUIP.THRUST, "ソール/キムンカムイ", "", ""]
   ,["我が盟友の為ならば/For My Sworn Friend/わがめいゆうのためならば", , "熱情に特攻[1.6]", "CP増加", "", "熱情", "", "", 4, 150, 0, 0, EQUIP.SLASH|EQUIP.SHOT, "アイゼン/カルキ", "", ""]
+  ,["衣装の心得/Tips on Clothing/いしょうのこころえ", , "魅了耐性/魅了に特攻[2.0]", "", "", "魅了", "", "魅了", 5, 300, 0, 0, EQUIP.BLOW|EQUIP.SHOT|EQUIP.NONE, "アラクネ/カトブレパス", "", ""]
+  ,["ようこそ、夜の宝石たち/Welcome, Gems of the Night/ようこそ、よるのほうせきたち", , "CS威力増加(+1)", "", "引き寄せ(1マス)", "", "", "", 4, 200, 0, EQUIP.AETHER|EQUIP.INFERNAL, 0, "ツクヨミ/スズカ", "", "", 1]
+  ,["腹の底から高らかに/Hearty Singing/はらのそこからたからかに", , "回避に貫通/HP回復", "HP回復", "", "回避", "", "", 4, 300, 0, 0, EQUIP.BLOW|EQUIP.SLASH|EQUIP.LONGSLASH, "アラクネ/スズカ", "", ""]
+  ,["サマータイム・シャワー/Summertime Shower/さまーたいむ・しゃわー", , "注目/熱情に特攻[1.4]", "", "", "熱情", "", "", 3, 0, 0, 0, EQUIP.BLOW|EQUIP.THRUST, "ワカン・タンカ/ザバーニーヤ", "", ""]
 ]);

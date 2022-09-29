@@ -165,6 +165,7 @@ var VARIANT = ListItem.createList(
   ,["バレ22/Valentine22"]
   ,["13章/Ch.13"]
   ,["プール/Pool"]
+  ,["浜辺/Dynamis"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);
