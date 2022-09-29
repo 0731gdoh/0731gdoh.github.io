@@ -13,7 +13,7 @@ function generateTagData(s, flagNum, arTiming){
   s.forEach(function(x){
     var v = x[1];
     var tag = TAG[v];
-    var sf = [TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS, TAG_TYPE.CWT_GROUP].indexOf(tag.type) === -1;
+    var sf = ([TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS, TAG_TYPE.CWT_GROUP].indexOf(tag.type) === -1);
     var timing = arTiming || x[2];
     var g = 0;
     if(timing & TIMING_FLAG.CS){
@@ -121,9 +121,9 @@ function registerBonusEffect(i, value){
   var o = Object.create(EFFECT[i]);
   var flag = EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE;
   if(tag.type === TAG_TYPE.SPECIAL){
-    o.name = value[4] + value[0] + "/Bonus " + t(tag.name, 1) + value[0].replace(/^[^\[]+/, " ");
+    o.name = value[4] + value[0] + "/Bonus damage " + t(tag.name, 1) + value[0].replace(/^[^\[]+/, " ");
   }else{
-    [[3, "超特攻/超特攻"]
+    [[3, "超特攻/Massive bonus"]
     ,[2, "大特攻/Greater bonus"]
     ,[1, "特攻/Bonus"]
     ,[0, "与ダメージ減少/Decrease"]

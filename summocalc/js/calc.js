@@ -2,35 +2,6 @@
 
 var LINE = "－－－－－－－－－－－－";
 
-var EffectStatus = function(e){
-  this.effect = e;
-  this.clear();
-};
-EffectStatus.prototype = {
-  toString: function(){
-    return this.effect.toString() + this.label;
-  },
-  clear: function(){
-    this.lv = 0;
-    this.loop = 0;
-    this.label = "";
-    this.hp = 1;
-    this.maxHp = 1;
-    this.c = 0;
-    this.a = 0;
-  },
-  setCustom: function(n, d, a){
-    this.c = new Fraction(n, d);
-    this.a = a;
-  },
-  getCustomMul: function(){
-    return this.c || new Fraction(1);
-  },
-  getCustomAdd: function(){
-    return new Fraction(this.a);
-  }
-};
-
 var FILTER = {
   VALUE: function(x){return x.getValue() - 0},
   OFFENSE: function(x){return x.group === 0 || x.group < 0},
@@ -46,12 +17,7 @@ var calc = {
   cLv: 1,
   card: 0,
   lv: 1,
-  es: EFFECT.map(function(v){
-    return new EffectStatus(v);
-  }),
-  evt: 0,
-  wc: 0,
-  csc: 0,
+  es: EffectParameter.createList(),
   usecs: 0,
   ar: 0,
   arLv: 1,
@@ -258,18 +224,22 @@ var calc = {
       s.write(this.cs);
     }
     s.write(this.multiplier);
-    s.write(this.evt);
-    s.write(this.wc);
-    s.write(this.csc);
+    s.write(0); //evt
+    s.write(0); //wc
+    s.write(0); //csc
     this.es.some(function(v, i){
       if(v.loop){
-        var e = EFFECT[i];
+        var e = v.effect;
         if(e.sp){
           var loop = v.loop;
           if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()) loop += 100;
           bonus.push(e.sp[0]);
           bonus.push(e.sp[1]);
           bonus.push(loop);
+        }else if(v.alt && !v.subsetOrder){
+          bonus.push(e.index);
+          bonus.push(v.lv);
+          bonus.push(v.loop);
         }else{
           if(bonus.length) return true;
           s.write(i - n);
@@ -352,9 +322,9 @@ var calc = {
         setValue("cs", s.read());
       }
       setValue("am", s.read());
-      this.evt = s.read();
-      this.wc = s.read();
-      this.csc = s.read();
+      s.read(); //evt
+      s.read(); //wc
+      s.read(); //csc
       while(1){
         n = s.read();
         if(!n) break;
@@ -367,7 +337,9 @@ var calc = {
       complete = !n;
       if(n) this.es.some(function(v, i, es){
         if(i === n){
-          var e = EFFECT[i];
+          var e = v.effect;
+          var lv = 1;
+          var loop = 1;
           var owLv = 0;
           var loopOw = false;
           if(e.sp) return true;
@@ -375,24 +347,22 @@ var calc = {
             v = es[e.link];
             owLv = e.value[0] - 0;
           }
-          v.lv = 1;
-          v.loop = 1;
           if(!e.isFixed() || !e.isStackable()){
-            v.lv = s.read();
+            lv = s.read();
             if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()){
-              if(v.lv < 1000){
-                es[e.link].lv = 1;
-                es[e.link].loop = 1;
+              if(lv < 1000){
+                es[e.link].setLevel(1, 1);
               }
-              v.lv = v.lv % 1000;
+              lv = lv % 1000;
               if(EFFECT[e.link].isStackable() && es[e.link].loop) loopOw = true;
             }
           }
-          if(owLv) v.lv = owLv;
+          
           if(e.isStackable()){
-            v.loop = Math.min(s.read(), 15);
-            if(loopOw) es[e.link].loop = v.loop;
+            loop = s.read();
+            if(loopOw) es[e.link].loop = loop;
           }
+          v.setLevel(owLv || lv, loop);
           if(e.type === TYPE.LIMIT){
             v.hp = s.read();
             v.maxHp = s.read();
@@ -424,25 +394,23 @@ var calc = {
           n -= 3;
         }
         if(!n) bonus.forEach(function(v){
+          var ep = es[v[0]];
           var e = EFFECT[v[0]];
-          if(!e || !e.subset) return;
+          if(!e || !ep || !ep.subsetOrder) return;
           if(e.type === TYPE.BONUS){
             n = e.subset.get(v[1]);
-          }else{
-            n = e.getSub(v[1]);
-          }
-          if(!n || !es[n]) return;
-          e = EFFECT[n];
-          if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()){
-            if(v[2] < 100){
-              es[e.link].lv = 1;
-              es[e.link].loop = 1;
+            if(!n) return;
+            e = EFFECT[n];
+            if(!e) return;
+            if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()){
+              if(v[2] < 100) es[e.link].setLevel(1, 1);
+              v[2] = v[2] % 100;
+              if(es[e.link].loop && EFFECT[e.link].isStackable()) es[e.link].loop = Math.min(v[2], 15);
             }
-            v[2] = v[2] % 100;
-            if(es[e.link].loop && EFFECT[e.link].isStackable()) es[e.link].loop = Math.min(v[2], 15);
+            es[n].setLevel(1, v[2]);
+          }else if(ep.alt){
+            ep.setLevel(v[1], v[2]);
           }
-          es[n].loop = Math.min(v[2], 15);
-          es[n].lv = 1;
         });
       }
       this.updateEffectOptions();
@@ -456,8 +424,8 @@ var calc = {
       index = index % EFFECT_MAX;
     }
     if(index > 0){
-      var e = EFFECT[index];
-      var es = this.es[index];
+      var ep = this.es[index];
+      var e = ep.effect;
       if(lv){
         if(e.type === TYPE.PROMPT){
           lv = e.promptData.prompt();
@@ -472,23 +440,8 @@ var calc = {
             lv = parseInt(lv, 10) || 0;
           }
         }
-        //イベント
-        if(e.event && index !== this.evt){
-          if(this.es[this.evt]) this.es[this.evt].clear();
-          this.evt = index;
-        }
-        //武器種変更
-        if(e.type === TYPE.WEAPON && index !== this.wc){
-          if(this.es[this.wc]) this.es[this.wc].clear();
-          this.wc = index;
-        }
-        //CS変更
-        if(e.type === TYPE.CSWEAPON && index !== this.csc){
-          if(this.es[this.csc]) this.es[this.csc].clear();
-          this.csc = index;
-        }
 
-        if(e.type === TYPE.CUSTOM && !es.loop){
+        if(e.type === TYPE.CUSTOM && !ep.loop){
           var n = 0;
           var d = 0;
           var a = -1;
@@ -509,40 +462,35 @@ var calc = {
             if(a === undefined) a = -1;
           }
           if(n === d && !a) return;
-          es.setCustom(n, d, a);
+          ep.setCustom(n, d, a);
         }
 
         if(e.type === TYPE.LIMIT){
           var hp = 0;
           var maxHp = 0;
           while(hp < 1){
-            hp = prompt(t("現在HP (※1以上の整数)/Current HP\n(Enter an integer greater than or equal to 1.)"), es.hp);
+            hp = prompt(t("現在HP (※1以上の整数)/Current HP\n(Enter an integer greater than or equal to 1.)"), ep.hp);
             if(!hp) return;
             hp = parseInt(hp, 10) || 0;
           }
           while(maxHp < hp){
-            maxHp = prompt(t("最大HP (※/Max HP\n(Enter an integer greater than or equal to ") + hp + t("以上の整数)/.)"), Math.max(es.maxHp, hp));
+            maxHp = prompt(t("最大HP (※/Max HP\n(Enter an integer greater than or equal to ") + hp + t("以上の整数)/.)"), Math.max(ep.maxHp, hp));
             if(!maxHp) return;
             maxHp = parseInt(maxHp, 10) || 0;
           }
-          es.hp = hp || 1;
-          es.maxHp = maxHp || 1;
+          ep.hp = hp || 1;
+          ep.maxHp = maxHp || 1;
         }else if(e.type === TYPE.SEED){
           lv = 0;
           while(lv < 1 || lv > 2000){
-            lv = prompt(t("ATKの種 (※1〜2000)/ATK Seed\n(1-2000)"), es.lv || 1000);
+            lv = prompt(t("ATKの種 (※1〜2000)/ATK Seed\n(1-2000)"), ep.lv || 1000);
             if(!lv) return;
             lv = parseInt(lv, 10) || 0;
           }
         }else if(e.isFixed() || e.isLv1()){
           lv = 1;
         }
-        es.lv = lv;
-        if(!e.isStackable()){
-          es.loop = 1;
-        }else if(es.loop < 15){
-          es.loop++;
-        }
+        ep.setLevel(lv);
         if(e.link){
           var tLoop = this.es[e.link].loop;
           var tE = EFFECT[e.link];
@@ -554,12 +502,10 @@ var calc = {
               if(!tLv) break;
               tLv = parseInt(tLv, 10);
             }
-            if(tLv || tLv === 0){
-              this.es[e.link].loop = tLv;
-              this.es[e.link].lv = 1;
-            }
+            if(tLv) this.es[e.link].setLevel(1, tLv);
+            if(tLv === 0) this.es[e.link].clear();
           }else if(tLoop){
-            if(tE.isStackable() && es.loop > 1){
+            if(tE.isStackable() && ep.loop > 1){
               tLv = this.es[e.link].lv;
               this.addStatus(e.link, tLv || 1, undefined, tLv ? 0 : 1);
             }
@@ -577,12 +523,12 @@ var calc = {
           }
         }
       }else{
-//        if(e.link && e.isStackable() && this.es[e.link].loop > 1) es = this.es[e.link];
-        if(--es.loop < 1) es.clear();
+//        if(e.link && e.isStackable() && this.es[e.link].loop > 1) ep = this.es[e.link];
+        if(--ep.loop < 1) ep.clear();
       }
     }else if(!lv && confirm(t("全ての【/Are you sure you want to remove all 【") + t(["攻撃/Offense", "防御/Defense"][group]) + t("側補正】を削除しますか？/】 effects?"))){
-      this.es.forEach(function(v, i){
-        if(EFFECT[i].group === group) v.clear();
+      this.es.forEach(function(ep, i){
+        if(ep.effect.group === group) ep.clear();
       });
     }
     this.update();
@@ -729,16 +675,15 @@ var calc = {
     });
     s.push(0);
     EFFECT.ORDER[language].forEach(function(x){
-      var subset = EFFECT[x].subset;
+      var order = es[x].subsetOrder;
       if(es[x].loop) s.push(x);
-      if(subset) TAG.ORDER[language].forEach(function(z){
-        var x = subset.get(z);
-        if(x && es[x].loop) s.push(x);
+      if(order) order[language].forEach(function(z){
+        if(es[z].loop) s.push(z);
       });
     });
     s = s.concat(EFFECT.ORDER[language]);
-    setOptions("os", EFFECT, FILTER.OFFENSE, s, labels.concat(EFFECT.LABELS[0]), EFFECT_MAX, p);
-    setOptions("ds", EFFECT, FILTER.DEFENSE, s, labels.concat(EFFECT.LABELS[1]), EFFECT_MAX, p);
+    setOptions("os", es, FILTER.OFFENSE, s, labels.concat(EFFECT.LABELS[0]), EFFECT_MAX, p);
+    setOptions("ds", es, FILTER.DEFENSE, s, labels.concat(EFFECT.LABELS[1]), EFFECT_MAX, p);
   },
   updateEquipableOptions: function(){
     var a = this.cardfilter.active;
@@ -771,6 +716,7 @@ var calc = {
     }
   },
   update: function(skipSave){
+    var es = this.es;
     var dmg = new Fraction(1);
     var exdmg = 0;
     var atk = this.atk;
@@ -783,7 +729,7 @@ var calc = {
     var ar = AR[this.ar];
     var multiplier = this.multiplier;
     var desc = [];
-    var effects = [];
+    var params = [];
     var result = [
       t("【カード】/【Card】"),
       "　[Lv.---]",
@@ -826,12 +772,11 @@ var calc = {
     }
     EFFECT.ORDER[language].forEach(function(v){
       if(v){
-        var e = EFFECT[v];
-        effects.push(e);
-        if(e.subset){
-          TAG.ORDER[language].forEach(function(x){
-            var v = e.subset.get(x);
-            if(v) effects.push(EFFECT[v]);
+        var ep = es[v];
+        params.push(ep);
+        if(ep.subsetOrder){
+          ep.subsetOrder[language].forEach(function(x){
+            params.push(es[x]);
           });
         }
       }
@@ -840,9 +785,9 @@ var calc = {
       var buffed = false;
       var debuffed = false;
       var dow = undefined;
-      this.es.some(function(es, i){
-        var e = EFFECT[i];
-        if(!es.loop) return false;
+      es.some(function(ep, i){
+        var e = ep.effect;
+        if(!ep.loop) return false;
         if(!buffed && e.isBuff(group)) buffed = true;
         if(!debuffed && e.isDebuff(group)) debuffed = true;
         if(e.type === TYPE.DEBUFF_OVERWRITE && e.group === group) dow = e;
@@ -853,22 +798,22 @@ var calc = {
         "【攻撃側補正】/【Offense】",
         "【防御側補正】/【Defense】"
       ][group]));
-      for(var i = 0; i < effects.length; i++){
+      for(var i = 0; i < params.length; i++){
         var count = 0;
-        var e = effects[i];
-        var es = this.es[e.index];
-        var eLv = es.lv;
-        var loop = es.loop;
+        var ep = params[i];
+        var e = ep.effect;
+        var eLv = ep.lv;
+        var loop = ep.loop;
         if(e.group !== group) continue;
         if(e.isStackable()){
           if(loop && e.link && EFFECT[e.link].isStackable()){
-            es.loop = 1;
-            loop = Math.max(this.es[e.link].loop, 1);
+            ep.loop = 1;
+            loop = Math.max(es[e.link].loop, 1);
           }
           count = loop;
         }
         while(loop--){
-          var eV = e.getValue(eLv || this.cLv, !this.version, this.es);
+          var eV = e.getValue(eLv || this.cLv, !this.version, es);
           var x = eV[0];
           var modEType = e.type;
           var label = [];
@@ -892,11 +837,11 @@ var calc = {
           if(e.type === TYPE.COMBO && this.usecs) x = new Fraction(1);
           //極限
           if(e.type === TYPE.LIMIT){
-            x = x.mul(2 * es.maxHp - es.hp, es.maxHp);
-            label.push("[HP:" + es.hp + "/" + es.maxHp + "]");
+            x = x.mul(2 * ep.maxHp - ep.hp, ep.maxHp);
+            label.push("[HP:" + ep.hp + "/" + ep.maxHp + "]");
           }
           //カスタム
-          if(e.type === TYPE.CUSTOM) x = es.getCustomMul();
+          if(e.type === TYPE.CUSTOM) x = ep.getCustomMul();
           //非強化時
           if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(1);
           //非弱体時
@@ -906,12 +851,12 @@ var calc = {
 
           if(dow && e.isDebuff(group)){
             if(!(x - 0 && x.n !== x.d)){
-              x = dow.getValue(1, false, this.es)[0];
+              x = dow.getValue(1, false, es)[0];
             }else if(!e.isFixed()){
               if(group){
-                x = x.add(e.getValue(-300, false, this.es)[0]).add(dow.getValue(1, false, this.es)[1]);
+                x = x.add(e.getValue(-300, false, es)[0]).add(dow.getValue(1, false, es)[1]);
               }else{
-                x = x.add(e.getValue(100, false, this.es)[0]).add(dow.getValue(1, false, this.es)[1]);
+                x = x.add(e.getValue(100, false, es)[0]).add(dow.getValue(1, false, es)[1]);
               }
               if(x <= 0) modEType = TYPE.ZERO;
             }
@@ -946,7 +891,7 @@ var calc = {
           x = eV[1];
 
           //カスタム
-          if(e.type === TYPE.CUSTOM) x = es.getCustomAdd();
+          if(e.type === TYPE.CUSTOM) x = ep.getCustomAdd();
           //非強化時
           if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(0);
           //非弱体時
