@@ -502,8 +502,11 @@ var calc = {
               if(!tLv) break;
               tLv = parseInt(tLv, 10);
             }
-            if(tLv) this.es[e.link].setLevel(1, tLv);
-            if(tLv === 0) this.es[e.link].clear();
+            if(tLv){
+              this.es[e.link].setLevel(1, tLv);
+            }else if(tLv === 0){
+              this.es[e.link].clear();
+            }
           }else if(tLoop){
             if(tE.isStackable() && ep.loop > 1){
               tLv = this.es[e.link].lv;
@@ -527,7 +530,7 @@ var calc = {
         if(--ep.loop < 1) ep.clear();
       }
     }else if(!lv && confirm(t("全ての【/Are you sure you want to remove all 【") + t(["攻撃/Offense", "防御/Defense"][group]) + t("側補正】を削除しますか？/】 effects?"))){
-      this.es.forEach(function(ep, i){
+      this.es.forEach(function(ep){
         if(ep.effect.group === group) ep.clear();
       });
     }
