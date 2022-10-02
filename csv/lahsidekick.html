@@ -2,7 +2,7 @@
 <meta charset=UTF-8>
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LAH サイドキック">
-<meta name=viewport content="width=device-width">
+<meta name=viewport content="width=device-width,maximum-scale=1">
 <meta name=theme-color content="#400">
 <link rel=stylesheet href="css/csvviewer.css">
 <script>
@@ -10,7 +10,7 @@
 
 onload = () => {
   const f = (a, b) => "DCBAS".indexOf(a[0]) - "DCBAS".indexOf(b[0]);
-  csvViewer(document.body, "lahsidekick.csv", "", "", [undefined, undefined, undefined, f, f, f, f, undefined]);
+  csvViewer(document.body, "lahsidekick.csv", "", [undefined, undefined, undefined, f, f, f, f, undefined]);
 };
 </script>
 <script src="js/csvviewer.js"></script>

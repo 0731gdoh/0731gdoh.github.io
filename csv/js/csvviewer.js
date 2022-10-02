@@ -1,5 +1,71 @@
+"use strict";
+
+class Filter{
+  constructor(table, select, input, s){
+    this.data = [];
+    this.s = s;
+    this.table = table;
+    this.select = select;
+    this.input = input;
+  }
+  getIndex(){
+    const i = this.select.selectedIndex;
+    if(i < 0){
+      this.setKwds(0, []);
+      return 0;
+    }
+    return i;
+  }
+  updateInput(){
+    this.input.value = this.getKwds(this.getIndex()).join(this.s);
+  }
+  updateKwds(){
+    this.data[this.getIndex()] = this.split(this.input.value);
+  }
+  getKwds(i){
+    return this.data[i] || [];
+  }
+  setKwds(i, v){
+    if(v.length === 1 && v[0] === "") v = ["", ""];
+    this.data[i] = v;
+    this.select.selectedIndex = i;
+    this.updateInput();
+  }
+  split(v){
+    return v ? v.split(this.s) : [];
+  }
+  updateTable(){
+    const i = this.getIndex();
+    const kwds = this.getKwds(i);
+    const rows = Array.from(this.table.tBodies[0].rows);
+    let count = 0;
+    for(const tr of rows){
+      if(!kwds.length){
+        tr.cells[i].className = "";
+      }else{
+        let cls = "hide";
+        for(const d of Array.from(tr.cells[i].children)){
+          if(kwds.indexOf(d.textContent) !== -1){
+            cls = "highlight";
+            d.className = cls;
+          }else{
+            d.className = "";
+          }
+        }
+        tr.cells[i].className = cls;
+      }
+      if(Array.prototype.some.call(tr.cells, (c) => c.className === "hide")){
+        tr.className = "hide";
+      }else{
+        tr.className = (count++ & 1) ? "odd" : "";
+      }
+    }
+    this.table.caption.textContent = `${count}件`;
+  }
+}
+
 const parseCsv = (text) => {
-  const ex = /,|\r?\n|"(?:[^"]|"")*"|[^,"\r\n][^,\r\n]*/g
+  const ex = /,|\r?\n|"(?:[^"]|"")*"|[^,"\r\n][^,\r\n]*/g;
   const data = [];
   let row = [""];
   let m;
@@ -27,9 +93,16 @@ const parseCsv = (text) => {
 }
 
 const csv2table = (data, s, compareTable) => {
+  const form = document.createElement("form");
+  const check = document.createElement("input");
+  const label = document.createElement("label");
+  const searchbox = document.createElement("div");
+  const select = document.createElement("select");
+  const input = document.createElement("input");
   const table = document.createElement("table");
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
+  const filter = new Filter(table, select, input, s);
   let header = true;
   let n = 0;
   for(const row of data){
@@ -37,8 +110,11 @@ const csv2table = (data, s, compareTable) => {
     if(header){
       for(const v of row){
         const th = document.createElement("th");
+        const option = document.createElement("option");
         th.textContent = v;
         tr.appendChild(th);
+        option.textContent = v;
+        select.appendChild(option);
       }
       thead.appendChild(tr);
       header = false;
@@ -46,7 +122,7 @@ const csv2table = (data, s, compareTable) => {
       tr.className = (n++ & 1) ? "odd" : "";
       for(const v of row){
         const td = document.createElement("td");
-        const kwds = s ? v.split(s) : [v];
+        const kwds = v.split(s);
         let i = 0;
         for(const p of kwds){
           const span = document.createElement("span");
@@ -62,12 +138,34 @@ const csv2table = (data, s, compareTable) => {
   table.appendChild(thead);
   table.appendChild(tbody);
   table.createCaption().textContent = `${tbody.rows.length}件`;
-  thead.addEventListener("click", _sorter(table, compareTable));
-  tbody.addEventListener("click", _filter(table));
-  return table;
+  input.type = "search";
+  searchbox.id = "searchbox";
+  searchbox.className = "hide";
+  searchbox.appendChild(select);
+  searchbox.appendChild(document.createElement("br"));
+  searchbox.appendChild(input);
+  check.type = "checkbox";
+  label.htmlFor = check.id = "check";
+  label.textContent = "フィルタウインドウを表示";
+  form.appendChild(check);
+  form.appendChild(label);
+  form.appendChild(searchbox);
+  form.appendChild(table);
+  thead.addEventListener("click", _thClick(table, compareTable));
+  tbody.addEventListener("click", _tdClick(filter));
+  select.addEventListener("change", _select(filter));
+  input.addEventListener("input", _input(filter));
+  check.addEventListener("change", _check(searchbox));
+  return form;
 };
 
-const _sorter = (table, compareTable) => {
+const _check = (searchbox) => {
+  return (evt) => {
+    searchbox.className = evt.target.checked ? "" : "hide";
+  };
+};
+
+const _thClick = (table, compareTable) => {
   let n = -1;
   let order = 1;
   compareTable = compareTable || [];
@@ -93,47 +191,38 @@ const _sorter = (table, compareTable) => {
   };
 };
 
-const _filter = (table) => {
+const _tdClick = (filter) => {
   return (evt) => {
     const td = evt.target.closest("td");
     if(td){
       const i = td.cellIndex;
-      const rows = Array.from(table.tBodies[0].rows);
-      const kwds = Array.prototype.map.call(td.children, (c) => c.textContent);
-      const mode = td.className;
-      let count = 0;
-      for(const tr of rows){
-        if(mode){
-          tr.cells[i].className = "";
-        }else{
-          let cls = "hide";
-          for(const d of Array.from(tr.cells[i].children)){
-            if(kwds.indexOf(d.textContent) !== -1){
-              cls = "highlight";
-              d.className = cls;
-            }else{
-              d.className = "";
-            }
-          }
-          tr.cells[i].className = cls;
-        }
-        if(Array.prototype.some.call(tr.cells, (c) => c.className === "hide")){
-          tr.className = "hide";
-        }else{
-          tr.className = (count++ & 1) ? "odd" : "";
-        }
-      }
-      table.caption.textContent = `${count}件`;
+      filter.setKwds(i, td.className ? [] : Array.prototype.map.call(td.children, (c) => c.textContent));
+      filter.updateTable();
     }
   };
 };
 
-const csvViewer = (parent, url, s, data, compareTable) => {
+const _select = (filter) => {
+  return (evt) => {
+    filter.updateInput();
+    filter.updateTable();
+  };
+};
+
+const _input = (filter) => {
+  return (evt) => {
+    filter.updateKwds();
+    filter.updateTable();
+  };
+};
+
+const csvViewer = (parent, url, data, compareTable, s) => {
   const p1 = document.createElement("p");
   const link = document.createElement("a");
   const hr = document.createElement("hr");
   const p2 = document.createElement("p");
   const home = document.createElement("a");
+  s = s || "|";
   link.textContent = "Download CSV";
   p1.appendChild(link);
   p1.appendChild(hr);
