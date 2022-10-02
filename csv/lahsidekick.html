@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <meta charset=UTF-8>
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LAH サイドキック">
-<meta name=viewport content="width=device-width">
-<meta name=theme-color content="#400">
+<meta name=robots content="noindex,nofollow">
+<meta name=viewport content="width=device-width,maximum-scale=1">
 <link rel=stylesheet href="css/csvviewer.css">
 <script>
 "use strict";
 
 onload = () => {
-  const f = (a, b) => "DCBAS".indexOf(a[0]) - "DCBAS".indexOf(b[0]);
-  csvViewer(document.body, "lahsidekick.csv", "", "", [undefined, undefined, undefined, f, f, f, f, undefined]);
+  csvViewer(document.body, "lahsidekick.csv", "", [undefined, undefined, undefined, f, f, f, f, undefined]);
 };
 </script>
 <script src="js/csvviewer.js"></script>
