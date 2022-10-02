@@ -1,3 +1,5 @@
+"use strict";
+
 const countDays = (list) => {
   let i = 0;
   for(const row of list){
