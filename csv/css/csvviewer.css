@@ -4,6 +4,7 @@
 }
 body {
   -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
 }
 table {
   text-align: center;
@@ -30,9 +31,26 @@ td.highlight span.highlight {
   font-weight: bold;
   color: #F00;
 }
-tr.hide {
+tr.hide, #searchbox.hide {
   display: none;
 }
 table + p {
   margin-top: 1.5rem;
+}
+#searchbox {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0.3rem;
+  background-color: #8cc8;
+  width: fit-content;
+  margin: 0.3rem;
+  padding: 0.5rem;
+  border-radius: 0.4rem;
+}
+#searchbox * {
+  vertical-align: bottom;
+}
+input[type=search] {
+  width: 24rem;
+  margin-top: 0.3rem;
 }
