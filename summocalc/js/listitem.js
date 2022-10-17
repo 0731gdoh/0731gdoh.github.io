@@ -133,7 +133,7 @@ var VARIANT = ListItem.createList(
   ,["臨海/Seaside"]
   ,["ハロ/Halloween"]
   ,["ハロ17/Halloween17"]
-  ,["秘島17/Island"]
+  ,["秘島/Island"]
   ,["聖夜/Xmas"]
   ,["聖夜17/Xmas17"]
   ,["バレ18/Valentine18"]
