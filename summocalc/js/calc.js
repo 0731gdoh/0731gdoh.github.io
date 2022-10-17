@@ -481,11 +481,13 @@ var calc = {
           ep.hp = hp || 1;
           ep.maxHp = maxHp || 1;
         }else if(e.type === TYPE.SEED){
-          lv = 0;
-          while(lv < 1 || lv > 2000){
-            lv = prompt(t("ATKの種 (※1〜2000)/ATK Seed\n(1-2000)"), ep.lv || 1000);
-            if(!lv) return;
-            lv = parseInt(lv, 10) || 0;
+          lv = e.value[1] - 0;
+          if(!lv){
+            while(lv < 1 || lv > 2000){
+              lv = prompt(t("ATK+ (※1〜2000)/ATK+\n(1-2000)"), ep.exclusive[0].lv || "");
+              if(!lv) return;
+              lv = parseInt(lv, 10) || 0;
+            }
           }
         }else if(e.isFixed() || e.isLv1()){
           lv = 1;
@@ -671,7 +673,7 @@ var calc = {
     var es = this.es;
     var card = CARD[this.card];
     var ar = AR[this.ar];
-    var s = [0].concat(card.effects);
+    var s = [0].concat(card.effects[0]).concat(card.effects[2]);
     var labels = ["ピックアップ/PICK UP", "追加済み/Added"];
     if(card.canEquip(ar)) ar.effects.forEach(function(x){
       s.push(EFFECT_MAX * 2 + x);
@@ -895,6 +897,8 @@ var calc = {
 
           //カスタム
           if(e.type === TYPE.CUSTOM) x = ep.getCustomAdd();
+          //種
+          if(e.type === TYPE.SEED) x = new Fraction(eLv);
           //非強化時
           if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(0);
           //非弱体時
@@ -908,7 +912,6 @@ var calc = {
               break;
 
             case TYPE.SEED:
-              x = new Fraction(eLv);
             case TYPE.ATK:
               exatk = exatk.add(x);
               desc.push("ATK" + (x < 0 ? "" : "+") + x);

@@ -3,7 +3,7 @@
 function EffectParameter(e){
   this.effect = e;
   this.group = this.effect.group;
-  this.clear();
+  this._clear();
   if(e.subset){
     var order = [];
     var f = function(v){
@@ -21,7 +21,7 @@ EffectParameter.prototype = {
   toString: function(){
     return this.effect.toString() + this.label;
   },
-  clear: function(){
+  _clear: function(){
     this.lv = 0;
     this.loop = 0;
     this.label = "";
@@ -29,12 +29,21 @@ EffectParameter.prototype = {
     this.maxHp = 1;
     this.c = 0;
     this.a = 0;
+  },
+  clear: function(){
+    if(this.exclusive){
+      this.exclusive.forEach(function(ep){
+        ep._clear();
+      });
+    }else{
+      this._clear();
+    }
     if(this.alt && this.subsetOrder){
       var last;
       this.alt.forEach(function(ep){
         if(ep.loop) last = ep;
       });
-      if(last) last.clear();
+      if(last) last._clear();
     }
     this.updateLabel();
   },
@@ -65,7 +74,16 @@ EffectParameter.prototype = {
         }
       }
     }
-    if(this.exclusive) this.exclusive.forEach(function(ep){
+    if(this.effect.type === TYPE.SEED){
+      if(this.exclusive[0] !== this){
+        this.exclusive[0].setLevel(lv, loop);
+        return;
+      }else if(!lv){
+        this.clear();
+        return;
+      }
+      lv = Math.min(lv, 2000);
+    }else if(this.exclusive) this.exclusive.forEach(function(ep){
       if(ep !== this) ep.clear();
     });
     this.lv = lv;
@@ -98,6 +116,7 @@ EffectParameter.createList = function(){
   var event = [];
   var cwt = [];
   var cst = [];
+  var seed = [];
   var extend = [];
   var result = [];
   EFFECT.forEach(function(e){
@@ -106,12 +125,21 @@ EffectParameter.createList = function(){
     if(e.event){
       ep.exclusive = event;
       event.push(ep);
-    }else if(e.type === TYPE.WEAPON){
-      ep.exclusive = cwt;
-      cwt.push(ep);
-    }else if(e.type === TYPE.CSWEAPON){
-      ep.exclusive = cst;
-      cst.push(ep);
+    }else{
+      switch(e.type){
+        case TYPE.WEAPON:
+          ep.exclusive = cwt;
+          cwt.push(ep);
+          break;
+        case TYPE.CSWEAPON:
+          ep.exclusive = cst;
+          cst.push(ep);
+          break;
+        case TYPE.SEED:
+          ep.exclusive = seed;
+          seed.push(ep);
+          break
+      }
     }
     if(e.hasAlt()) extend.push(ep);
     if(e.equ){

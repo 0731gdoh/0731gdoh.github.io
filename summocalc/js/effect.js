@@ -164,8 +164,8 @@ Effect.createList = function(a, pd){
     var x = result[a];
     var y = result[b];
     if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
-    if(x.sortkey > 5 || !x.sortkey) return x.index - y.index;
-    if((x.sortkey === 2 || k[a] === k[b]) && x.group === y.group) return x.value[0] - y.value[0] || x.value[1] - y.value[1] || x.index - y.index;
+    if(x.sortkey > 5) return x.index - y.index;
+    if((x.sortkey === 2 || !x.sortkey || k[a] === k[b]) && x.group === y.group) return x.value[0] - y.value[0] || x.value[1] - y.value[1] || x.index - y.index;
     if(en) return t(x.name, 1).toUpperCase() < t(y.name, 1).toUpperCase() ? -1 : 1;
     if(x.reading === y.reading) return x.index - y.index;
     return x.reading < y.reading ? -1 : 1;
@@ -270,7 +270,7 @@ var EFFECT_MAX = 10000;
 var EFFECT = Effect.createList(
   //名前, 読み, グループ, 乗算基本値, 加算基本値, フラグ=0, タイプ=TYPE.NORMAL, 乗算成長率=undefined, 加算成長率=undefined
   [["", "", -1, 1, 0]
-  ,["[ATKの種]/[ATK Seed]", "", 0, 0, 1000, EFFECT_FLAG.FIXED, TYPE.SEED]
+  ,["[ATKの種]/[ATK Seed]", "", 0, , , EFFECT_FLAG.FIXED, TYPE.SEED]
   ,["結縁：怒/Affinity: Anger", "", 0, 1.1, , EFFECT_FLAG.LV1]
   ,["意気/Spirit", "いき", 0, 0, 400]
   ,["回避/Evasion", "かいひ", 1, 0.01]
@@ -531,6 +531,9 @@ var EFFECT = Effect.createList(
   ,["特殊耐性[0.01+1]", "とくし", 1, 0.01, 1, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["<*頑強>時弱化", "かん", 1, 3.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["<*守護>時弱化", "しゆこしし", 1, 3.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["[ATKの種+1000]/[ATK Seed +1000]", "", 0, , 1000, EFFECT_FLAG.FIXED, TYPE.SEED]
+  ,["[ATKの種+2000]/[ATK Seed +2000]", "", 0, , 2000, EFFECT_FLAG.FIXED, TYPE.SEED]
+  ,["<連撃>時強化", "れん", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T", 1, 999,
     [[1, 1.6]
