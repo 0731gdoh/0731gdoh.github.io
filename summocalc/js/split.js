@@ -74,7 +74,14 @@ function splitSkills(s){
       return p2;
     });
     var i = TAG.table.get(name);
-    var key = (timing & TIMING_FLAG.CS) ? "c" + match[2] : match[2];
+    var key = match[2];
+    if(timing & TIMING_FLAG.CS){
+      if(timing & TIMING_FLAG.NOT_CS){
+        key = "&c" + key;
+      }else{
+        key = "c" + key;
+      }
+    }
     if(!i) throw new Error("タグ「" + name + "」は未登録です\n（" + s + "）");
     if(result.has(key)) throw new Error("スキル「" + match[2] + "」が重複しています\n（" + s + "）");
     if(target && TAG[target].subset.length && [TAG_TYPE.SKILL, TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS, TAG_TYPE.CWT_GROUP].indexOf(TAG[target].type) === -1){

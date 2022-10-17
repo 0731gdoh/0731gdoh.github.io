@@ -74,7 +74,6 @@ Record.prototype = {
     return e;
   },
   getInfo: function(){
-  try{
     var r = [
       RARITY[this.arRarity] + " " + this,
       "[HP+" + this.hp + " / ATK+" + (this.value - 0) + "]",
@@ -120,7 +119,6 @@ Record.prototype = {
       if(tags.length) r.push(t(s[i][0]) + tags.join("/") + t(s[i][1]));
     });
     return r.join("\n");
-  }catch(e){alert(e)}
   }
 };
 Record.createList = function(a){
