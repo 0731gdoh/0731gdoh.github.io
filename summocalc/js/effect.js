@@ -9,6 +9,7 @@ var TYPE = {
   SEED: 9,
   CSWEAPON: 10,
   BONUS: 11,
+  IGNORE: 12,
   CUSTOM: 13,
   ZERO: 14,
   NOT_BUFFED: 15,
@@ -41,22 +42,25 @@ function Effect(index, x, link, equ){
   this.name = x[0];
   this.reading = x[1];
   this.group = x[2];
+  this.flag = x[5] || 0;
+  this.type = x[6] || TYPE.NORMAL;
+  this.event = this.flag & EFFECT_FLAG.EVENT;
+  this.gimmick = this.flag & EFFECT_FLAG.GIMMICK;
+  this.baseValue = [];
   this.value = [];
   for(var i = 3; i < 5; i++){
     var v = x[i] || 0;
     if(link && v.length){
+      this.baseValue.push(v[(this.flag & EFFECT_FLAG.NON_STATUS) ? 1 : 0]);
       this.value.push([
         new Fraction(v[0] * 100, 100),
         new Fraction(v[1] * 100, 100)
       ]);
     }else{
+      this.baseValue.push(v);
       this.value.push(new Fraction(v * 100, 100));
     }
   }
-  this.flag = x[5] || 0;
-  this.type = x[6] || TYPE.NORMAL;
-  this.event = this.flag & EFFECT_FLAG.EVENT;
-  this.gimmick = this.flag & EFFECT_FLAG.GIMMICK;
   this.canOld = false;
   if(this.isFixed()){
     this.growth = [
@@ -86,7 +90,6 @@ function Effect(index, x, link, equ){
   }else if(this.gimmick){
     this.sortkey = 5;
   }else if(this.type === TYPE.BONUS){
-    if(!this.group) this.subset = new Map();
     this.sortkey = 2;
   }else if(this.type === TYPE.CUSTOM){
     this.sortkey = 7;
@@ -95,10 +98,12 @@ function Effect(index, x, link, equ){
   }else if(this.flag & EFFECT_FLAG.IRREMOVABLE){
     this.sortkey = 4;
   }
+  if((this.type === TYPE.BONUS || this.type === TYPE.IGNORE) && !this.group) this.subset = new Map();
+  this.csOnly = false;
 }
 Effect.prototype = {
   toString: function(){
-    return (this.event ? "◎" : this.gimmick ? "☆" : "") + t(this.name) || "－";
+    return (this.event ? "◎" : this.gimmick ? "☆" : "") + t(this.name) + (this.csOnly ? "[CS]" : "") || "－";
   },
   _getValue: function(m, lv, oldmode, es){
     var value = this.value[m];
@@ -164,8 +169,9 @@ Effect.createList = function(a, pd){
     var x = result[a];
     var y = result[b];
     if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
+    if(x.group !== y.group) return x.group - y.group;
     if(x.sortkey > 5) return x.index - y.index;
-    if((x.sortkey === 2 || !x.sortkey || k[a] === k[b]) && x.group === y.group) return x.value[0] - y.value[0] || x.value[1] - y.value[1] || x.index - y.index;
+    if(x.sortkey === 2 || !x.sortkey || k[a] === k[b]) return x.baseValue[0] - y.baseValue[0] || x.baseValue[1] - y.baseValue[1] || x.index - y.index;
     if(en) return t(x.name, 1).toUpperCase() < t(y.name, 1).toUpperCase() ? -1 : 1;
     if(x.reading === y.reading) return x.index - y.index;
     return x.reading < y.reading ? -1 : 1;
@@ -274,9 +280,9 @@ var EFFECT = Effect.createList(
   ,["結縁：怒/Affinity: Anger", "", 0, 1.1, , EFFECT_FLAG.LV1]
   ,["意気/Spirit", "いき", 0, 0, 400]
   ,["回避/Evasion", "かいひ", 1, 0.01]
-  ,["<*回避>に貫通/Ignore Evasion", "かいひ", 0, 100, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
+  ,["<*回避>に貫通/Ignore Evasion", "かいひ", 0, 100, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
   ,["頑強/Tenacity", "かん", 1, 0.9]
-  ,["<*頑強>に貫通/Ignore Tenacity", "かん", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
+  ,["<*頑強>に貫通/Ignore Tenacity", "かん", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
   ,["極限/Limit", "きよく", 0, 1, , , TYPE.LIMIT]
   ,["崩し/Break", "くす", 1, 1.2]
   ,["暗闇/Darkness", "くら", 0, 0.9]
@@ -291,14 +297,14 @@ var EFFECT = Effect.createList(
   ,["攻撃強化/ATK Up", "こうけ", 0, 1.1]
   ,["剛力/Brawn", "こうり", 0, 1.15]
   ,["金剛/Adamantine", "こんこ", 1, 0.9]
-  ,["<*金剛>に貫通/Ignore Adamantine", "こんこ", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
+  ,["<*金剛>に貫通/Ignore Adamantine", "こんこ", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
   ,["弱点/Weakness", "しやくて", 1, 1.2]
   ,["集中/Concentration", "しゆう", 0, 1.1]
   ,["守護/Protection", "しゆこ", 1, 0.9]
-  ,["<*守護>に貫通/Ignore Protection", "しゆこに", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
+  ,["<*守護>に貫通/Ignore Protection", "しゆこに", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
   ,["滋養/Nourishment", "しよ", 0, 1.1, , , , 0.4]
   ,["聖油/Unction", "せい", 1, 0.85]
-  ,["<*聖油>に貫通/Ignore Unction", "せい", 0, 2.35, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
+  ,["<*聖油>に貫通/Ignore Unction", "せい", 0, 2.35, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
   ,["束縛/Bind", "そく", 0, 0.9]
   ,["×<*凍結>", "とうけ", 2]
   ,["闘志/Vigor", "とうし", 0, 1.2]
@@ -333,7 +339,7 @@ var EFFECT = Effect.createList(
   ,["武器種変更：全域/Change Weapon Type: All", "ふき", 0, 0, 8, EFFECT_FLAG.FIXED, TYPE.WEAPON]
   ,["武器種変更：無/Change Weapon Type: None", "ふき", 0, 0, 9, EFFECT_FLAG.FIXED, TYPE.WEAPON]
   ,["防御強化/DEF Up", "ほうき", 1, 0.9]
-  ,["<*防御強化>に貫通/Ignore DEF Up", "ほうき", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE]
+  ,["<*防御強化>に貫通/Ignore DEF Up", "ほうき", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
   ,["暴走/Berserk", "ほうそ", 0, 1.3]
   ,["暴走/Berserk", "ほうそ", 1, 1.3]
   ,["暴走+/Berserk+", "ほうそ+", 0, 1.3]
@@ -477,8 +483,8 @@ var EFFECT = Effect.createList(
   ,["凍結/Freeze", "とうけ", 1, 1.1, , EFFECT_FLAG.STACKABLE|EFFECT_FLAG.ALT]
   ,["火傷/Burn", "やけ", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN|EFFECT_FLAG.STACKABLE]
   ,["特防[1.3]/Bonus[1.3]", "とくほ", 1, 1.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
-  ,["弱体時強化[タンガロア∞]-<[その他の解除可能な弱体]>/弱体時強化[Tangaroa ∞]", "しやくたいし", 0, 1.3, 0.5, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.DEBUFF_OVERWRITE]
-  ,["弱体時強化[タンガロア∞]-<*[その他の解除可能な弱体]>/弱体時強化[Tangaroa ∞]", "しやくたいし", 1, 0.9, 0.9, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.DEBUFF_OVERWRITE]
+  ,["弱体時強化[タンガロア∞]-<[その他の解除可能な弱体]>/弱体時強化[Tangaroa∞]", "しやくたいし", 0, 1.3, 0.5, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.DEBUFF_OVERWRITE]
+  ,["弱体時強化[タンガロア∞]-<*[その他の解除可能な弱体]>/弱体時強化[Tangaroa∞]", "しやくたいし", 1, 0.9, 0.9, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.DEBUFF_OVERWRITE]
   ,["[その他の解除可能な弱体]/[Other removable debuffs]", "ん", 0, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.DEBUFF]
   ,["[その他の解除可能な弱体]/[Other removable debuffs]", "ん", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.DEBUFF]
   ,["恐怖大特攻", "きようふ", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
@@ -517,8 +523,8 @@ var EFFECT = Effect.createList(
   ,["特殊耐性[0.08+8000]", "とくし", 1, 0.08, 8000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["攻撃力増加[リフレイン]/Increase ATK[Refrain]", "こうけそ", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["被ダメージ増加[リフレイン]/被ダメージ増加[Refrain]", "ひた", 1, 0, 20000, EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,["攻撃力増加[タンガロア∞]/Increase ATK[Tangaroa ∞]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,["防御力増加[タンガロア∞]/防御力増加[Tangaroa ∞]", "ほうきそ", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["攻撃力増加[タンガロア∞]/Increase ATK[Tangaroa∞]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["防御力増加[タンガロア∞]/防御力増加[Tangaroa∞]", "ほうきそ", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["外壁", "かいへ", 1, 0.9, , EFFECT_FLAG.IRREMOVABLE, , -0.15]
   ,["<*弱点>特攻", "しやくて", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["係留時強化", "けいり", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]

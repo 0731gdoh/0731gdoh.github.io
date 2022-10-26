@@ -1,6 +1,6 @@
 "use strict";
 
-var language = -1;
+var language = 0;
 
 function _(id){
   return document.getElementById(id);
