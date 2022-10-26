@@ -98,7 +98,6 @@ function splitSkills(s){
     var target = TAG.table.get(tname);
     var i = TAG.table.get(name);
     var key = match[2];
-    var prefix = "";
     if(target && TAG[target].subset.length && [TAG_TYPE.SKILL, TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS, TAG_TYPE.CWT_GROUP].indexOf(TAG[target].type) === -1){
       var evo = [];
       set(key, ["", 0, timing, target, tname, false]);
@@ -112,7 +111,7 @@ function splitSkills(s){
             set(subname, [subname, TAG.table.get(subname), timing, sub, subname, true]);
           }else{
             var subkey = subname + "に" + name;
-            set(subkey, [name, i, timing, sub, subname, false]);
+            set(subkey, [name, i, timing, sub, subname, true]);
           }
         }
       });
@@ -138,7 +137,7 @@ function generateEffectData(s, group){
             if(!n) n = registerBonusEffect(i, value);
           }
           result.push(n + g);
-        }else{
+        }else if(e.type !== TYPE.BONUS){
           result.push(i + g);
         }
       }
