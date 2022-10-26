@@ -233,8 +233,9 @@ var calc = {
         if(e.sp){
           var loop = v.loop;
           if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()) loop += 100;
+          if(e.sp[1] > TAG_MAX) loop += 200;
           bonus.push(e.sp[0]);
-          bonus.push(e.sp[1]);
+          bonus.push(e.sp[1] % TAG_MAX);
           bonus.push(loop);
         }else if(v.alt && !v.subsetOrder){
           bonus.push(e.index);
@@ -276,9 +277,9 @@ var calc = {
     if(!this.defaultHash){
       this.defaultHash = s;
     }else if(s === this.defaultHash){
-      history.replaceState(null, null, location.pathname);
+      history.replaceState(null, "", location.pathname);
     }else{
-      history.replaceState(null, null, location.pathname + "#" + s);
+      history.replaceState(null, "", location.pathname + "#" + s);
     }
   },
   load: function(x, skipSave){
@@ -345,7 +346,7 @@ var calc = {
           if(e.sp) return true;
           if(e.group === 2 && e.link){
             v = es[e.link];
-            owLv = e.value[0] - 0;
+            owLv = e.baseValue[0];
           }
           if(!e.isFixed() || !e.isStackable()){
             lv = s.read();
@@ -357,7 +358,6 @@ var calc = {
               if(EFFECT[e.link].isStackable() && es[e.link].loop) loopOw = true;
             }
           }
-          
           if(e.isStackable()){
             loop = s.read();
             if(loopOw) es[e.link].loop = loop;
@@ -396,15 +396,17 @@ var calc = {
         if(!n) bonus.forEach(function(v){
           var ep = es[v[0]];
           var e = EFFECT[v[0]];
+          var flag = Math.floor(v[2] / 100);
+          v[2] = v[2] % 100;
           if(!e || !ep || !ep.subsetOrder) return;
-          if(e.type === TYPE.BONUS){
+          if(e.subset){
+            if(flag & 2) v[1] += TAG_MAX;
             n = e.subset.get(v[1]);
             if(!n) return;
             e = EFFECT[n];
             if(!e) return;
             if(e.link && EFFECT[e.link].isToken() && !e.isNonStatus()){
-              if(v[2] < 100) es[e.link].setLevel(1, 1);
-              v[2] = v[2] % 100;
+              if(!(flag & 1)) es[e.link].setLevel(1, 1);
               if(es[e.link].loop && EFFECT[e.link].isStackable()) es[e.link].loop = Math.min(v[2], 15);
             }
             es[n].setLevel(1, v[2]);
@@ -481,7 +483,7 @@ var calc = {
           ep.hp = hp || 1;
           ep.maxHp = maxHp || 1;
         }else if(e.type === TYPE.SEED){
-          lv = e.value[1] - 0;
+          lv = e.baseValue[1];
           if(!lv){
             while(lv < 1 || lv > 2000){
               lv = prompt(t("ATK+ (※1〜2000)/ATK+\n(1-2000)"), ep.exclusive[0].lv || "");
@@ -492,7 +494,7 @@ var calc = {
         }else if(e.isFixed() || e.isLv1()){
           lv = 1;
         }
-        ep.setLevel(lv);
+//        ep.setLevel(lv);
         if(e.link){
           var tLoop = this.es[e.link].loop;
           var tE = EFFECT[e.link];
@@ -510,7 +512,7 @@ var calc = {
               this.es[e.link].clear();
             }
           }else if(tLoop){
-            if(tE.isStackable() && ep.loop > 1){
+            if(tE.isStackable() && ep.loop){
               tLv = this.es[e.link].lv;
               this.addStatus(e.link, tLv || 1, undefined, tLv ? 0 : 1);
             }
@@ -527,6 +529,7 @@ var calc = {
             if(tLv) this.addStatus(e.link, tLv);
           }
         }
+        ep.setLevel(lv);
       }else{
 //        if(e.link && e.isStackable() && this.es[e.link].loop > 1) ep = this.es[e.link];
         if(--ep.loop < 1) ep.clear();
@@ -870,6 +873,9 @@ var calc = {
           desc = [label.join("")];
 
           switch(modEType){
+            case TYPE.BONUS:
+            case TYPE.IGNORE:
+              if(e.csOnly && !this.usecs) break;
             default:
               if(x - 0 && x.n !== x.d){
                 dmg = dmg.mul(x);

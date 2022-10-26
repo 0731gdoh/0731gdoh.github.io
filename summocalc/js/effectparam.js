@@ -6,15 +6,16 @@ function EffectParameter(e){
   this._clear();
   if(e.subset){
     var order = [];
-    var f = function(v){
+    var f = function(a, v){
       var x = e.subset.get(v);
-      if(x) order.push(x);
+      if(x) a.push(x);
+      x = e.subset.get(v + TAG_MAX);
+      if(x) a.push(x);
+      return a;
     };
-    TAG.ORDER[0].forEach(f);
-    this.subsetOrder = [order];
-    order = [];
-    TAG.ORDER[1].forEach(f);
-    this.subsetOrder.push(order);
+    order.push(TAG.ORDER[0].reduce(f, []));
+    order.push(TAG.ORDER[1].reduce(f, []));
+    this.subsetOrder = order;
   }
 };
 EffectParameter.prototype = {
@@ -73,8 +74,7 @@ EffectParameter.prototype = {
           return;
         }
       }
-    }
-    if(this.effect.type === TYPE.SEED){
+    }else if(this.effect.type === TYPE.SEED){
       if(this.exclusive[0] !== this){
         this.exclusive[0].setLevel(lv, loop);
         return;
@@ -83,9 +83,11 @@ EffectParameter.prototype = {
         return;
       }
       lv = Math.min(lv, 2000);
-    }else if(this.exclusive) this.exclusive.forEach(function(ep){
-      if(ep !== this) ep.clear();
-    });
+    }else if(this.exclusive){
+      this.exclusive.forEach(function(ep){
+        if(ep !== this) ep.clear();
+      });
+    }
     this.lv = lv;
     if(!this.effect.isStackable()){
       this.loop = 1;
@@ -138,7 +140,7 @@ EffectParameter.createList = function(){
         case TYPE.SEED:
           ep.exclusive = seed;
           seed.push(ep);
-          break
+          break;
       }
     }
     if(e.hasAlt()) extend.push(ep);

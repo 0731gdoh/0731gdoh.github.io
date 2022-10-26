@@ -32,13 +32,14 @@ var TAG_FLAG_NUM = {
   STATIC: 6
 };
 
-function Tag(index, x, category, subset){
+function Tag(index, x, category, subset, bonusTarget){
   this.index = index;
   this.name = x[0];
   this.reading = x[1];
   this.type = x[2];
   this.category = category;
   this.subset = subset;
+  this.bonusTarget = bonusTarget;
   this.flags = [];
   if(index < 3){
     this.sortkey = 0;
@@ -148,7 +149,7 @@ Tag.createList = function(a){
         c.push(table.get("弱体(解除不可)"));
         break;
     }
-    tag = new Tag(i, v, c, s);
+    tag = new Tag(i, v, c, s, tget(v[5]));
     result.push(tag);
     if(i && tag.reading){
       var o = orderData[tag.sortkey] || [];
@@ -514,7 +515,7 @@ var TAG = Tag.createList(
   ,["霊験者/Worker of Miracles", "れいけ", TAG_TYPE.SKILL]
   ,["頭陀袋の霊験者/Miraculous Bag Bearer", "すた", TAG_TYPE.SKILL]
   ,["霊系スキル", "", TAG_TYPE.SKIP, "", "霊体/霊験者/頭陀袋の霊験者"]
-  ,["全弱体特攻", "せんし", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["全弱体特攻", "せんし", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系", , "全ての弱体"]
   ,["継続回復強化", "けいそくか", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["継続ダメージ強化", "けいそくた", TAG_TYPE.IRREMOVABLE_DEBUFF]
   ,["強化を再付与", "きようかをさ", TAG_TYPE.ONE_SHOT, "強化を複製/強化を貼付(味方から)"]
@@ -561,12 +562,12 @@ var TAG = Tag.createList(
   ,["HP回復反転", "HPかはん", TAG_TYPE.DEBUFF, "HP減少系"]
   ,["ダメージ反転", "ためはん", TAG_TYPE.BUFF, "防御増加系"]
   ,["防御貫通", "ほうきよか", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
-  ,["恐怖大特攻", "きようふた", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["恐怖大特攻", "きようふた", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系", , "恐怖"]
   ,["打撃と斬撃と横一文字への大特防", "たけ", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["射撃と狙撃への大特防", "しやけと", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["特防[0.1]/D.Bonus[0.1]", "とくほ01", TAG_TYPE.D_BONUS, "特防"]
   ,["崩し耐性/Break resistance", "くすたい", TAG_TYPE.BUFF, "状態耐性系"]
-  ,["威圧特攻", "いあつと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["威圧特攻", "いあつと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系", , "威圧"]
   ,["閃き時強化", "ひらしき", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
   ,["退場時強化全転写", "たいしよきよ", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["退場時敵強化全解除", "たいしよてき", TAG_TYPE.IRREMOVABLE_BUFF]
@@ -627,12 +628,12 @@ var TAG = Tag.createList(
   ,["横移動力増加", "よこそう", TAG_TYPE.IRREMOVABLE_BUFF, "移動力増加系"]
   ,["花獲得率アップ/Increase drop rate of Blossoms", "はな", TAG_TYPE.STATIC, "報酬増加系"]
   ,["外壁", "かいへ", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
-  ,["弱点特攻", "しやくてと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["弱点特攻", "しやくてと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系", , "弱点"]
   ,["係留時強化", "けいりしき", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["弱点耐性/Weakness resistance", "しやくてたい", TAG_TYPE.BUFF, "状態耐性系"]
   ,["防御強化時回復", "ほうきよきしか", TAG_TYPE.IRREMOVABLE_BUFF, "HP回復系"]
   ,["強化後回復付与", "きようかこか", TAG_TYPE.IRREMOVABLE_BUFF]
-  ,["マシンボディ特攻", "ましんと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["マシンボディ特攻", "ましんと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系", , "マシンボディ"]
   ,["注目耐性/Taunt resistance", "ちゆたい", TAG_TYPE.BUFF, "状態耐性系"]
   ,["非火傷時強化", "ひや", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["火傷時強化[アキハゴンゲン]", "", TAG_TYPE.IRREMOVABLE_BUFF, "火傷時強化/CP増加系"]
