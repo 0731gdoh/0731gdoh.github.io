@@ -324,7 +324,7 @@ const fetchCsv = (url) => {
 const createURL = (data) => {
   const text = data.map((row) => {
     return row.map((cell) => {
-      if(!cell.replace) return cell.checkbox.checked ? "○" : "";
+      if(cell.checkbox) return cell.checkbox.checked ? "○" : "";
       cell = cell.replace(/"/g, '""');
       if(/[",\n]/.test(cell)) return `"${cell}"`;
       return cell;
