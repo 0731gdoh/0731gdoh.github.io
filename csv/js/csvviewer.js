@@ -40,11 +40,16 @@ class Filter{
     const rows = Array.from(this.table.tBodies[0].rows);
     let count = 0;
     for(const tr of rows){
+      const td = tr.cells[i];
+      const checkable = td.classList.contains("checkable");
       if(!kwds.length){
-        tr.cells[i].className = "";
+        td.className = checkable ? "checkable" : "";
+      }else if(checkable){
+        const value = td.firstChild.checked ? "○" : "";
+        td.className = (kwds.indexOf(value) === -1) ? "checkable hide" : "checkable highlight";
       }else{
         let cls = "hide";
-        for(const d of Array.from(tr.cells[i].children)){
+        for(const d of Array.from(td.children)){
           if(kwds.indexOf(d.textContent) !== -1){
             cls = "highlight";
             d.className = cls;
@@ -52,9 +57,9 @@ class Filter{
             d.className = "";
           }
         }
-        tr.cells[i].className = cls;
+        td.className = cls;
       }
-      if(Array.prototype.some.call(tr.cells, (c) => c.className === "hide")){
+      if(Array.prototype.some.call(tr.cells, (c) => c.classList.contains("hide"))){
         tr.className = "hide";
       }else{
         tr.className = (count++ & 1) ? "odd" : "";
@@ -103,6 +108,8 @@ const csv2table = (data, s, compareTable) => {
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
   const filter = new Filter(table, select, input, s);
+  const checkable = [];
+  let hasCheckable = false;
   let header = true;
   let n = 0;
   for(const row of data){
@@ -115,6 +122,7 @@ const csv2table = (data, s, compareTable) => {
         tr.appendChild(th);
         option.textContent = v;
         select.appendChild(option);
+        checkable.push([]);
       }
       thead.appendChild(tr);
       header = false;
@@ -122,18 +130,46 @@ const csv2table = (data, s, compareTable) => {
       tr.className = (n++ & 1) ? "odd" : "";
       for(const v of row){
         const td = document.createElement("td");
-        const kwds = v.split(s);
-        let i = 0;
-        for(const p of kwds){
-          const span = document.createElement("span");
-          span.textContent = p;
-          if(i++) td.appendChild(document.createTextNode(s));
-          td.appendChild(span);
+        if(v.split){
+          const kwds = v.split(s);
+          let i = 0;
+          for(const p of kwds){
+            const span = document.createElement("span");
+            span.textContent = p;
+            if(i++) td.appendChild(document.createTextNode(s));
+            td.appendChild(span);
+          }
+        }else{
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.checked = v.value;
+          v.checkbox = check;
+          td.className = "checkable";
+          td.appendChild(check);
+          checkable[tr.childElementCount].push(check);
+          hasCheckable = true;
         }
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
     }
+  }
+  if(hasCheckable){
+    const tr = document.createElement("tr");
+    for(const v of checkable){
+      const th = document.createElement("th");
+      th.className = "checkable";
+      if(v.length){
+        const check = document.createElement("input");
+        check.type = "checkbox";
+        th.appendChild(check);
+        updateCheckAll(check, v);
+        check.addEventListener("change", () => {for(const c of v) c.checked = check.checked});
+        for(const c of v) c.addEventListener("change", () => {updateCheckAll(check, v)});
+      }
+      tr.appendChild(th);
+    }
+    thead.appendChild(tr);
   }
   table.appendChild(thead);
   table.appendChild(tbody);
@@ -159,6 +195,20 @@ const csv2table = (data, s, compareTable) => {
   return form;
 };
 
+const updateCheckAll = (checkAll, list) => {
+  const count = list.reduce((a, c) => c.checked ? a + 1 : a, 0);
+  if(count === list.length){
+    checkAll.checked = true;
+    checkAll.indeterminate = false;
+  }else if(count){
+    checkAll.checked = false;
+    checkAll.indeterminate = true;
+  }else{
+    checkAll.checked = false;
+    checkAll.indeterminate = false;
+  }
+};
+
 const _check = (searchbox) => {
   return (evt) => {
     searchbox.className = evt.target.checked ? "" : "hide";
@@ -171,14 +221,19 @@ const _thClick = (table, compareTable) => {
   compareTable = compareTable || [];
   return (evt) => {
     const th = evt.target.closest("th");
-    if(th){
+    if(th && !th.classList.contains("checkable")){
       const tbody = table.tBodies[0];
       const i = th.cellIndex;
       const rows = Array.from(tbody.rows);
       const compare = compareTable[i] || new Intl.Collator(undefined, {numeric: true}).compare;
+      const get = (row) => {
+        const cell = row.cells[i];
+        if(cell.className === "checkable") return cell.firstChild.checked ? "○" : "";
+        return cell.textContent;
+      };
       let count = 0;
       order = (i === n) ? -order : 1;
-      rows.sort((a, b) => compare(a.cells[i].textContent, b.cells[i].textContent) * order);
+      rows.sort((a, b) => compare(get(a), get(b)) * order);
       n = i;
       for(const tr of rows){
         tbody.removeChild(tr);
@@ -195,8 +250,10 @@ const _tdClick = (filter) => {
   return (evt) => {
     const td = evt.target.closest("td");
     if(td){
-      const i = td.cellIndex;
-      filter.setKwds(i, td.className ? [] : Array.prototype.map.call(td.children, (c) => c.textContent));
+      if(!td.classList.contains("checkable")){
+        const i = td.cellIndex;
+        filter.setKwds(i, td.className ? [] : Array.prototype.map.call(td.children, (c) => c.textContent));
+      }
       filter.updateTable();
     }
   };
@@ -216,37 +273,41 @@ const _input = (filter) => {
   };
 };
 
-const csvViewer = (parent, url, data, compareTable, s) => {
+const csvViewer = (tid, url, data, compareTable, s) => {
+  const target = document.getElementById(tid);
+  const fragment = document.createDocumentFragment();
   const p1 = document.createElement("p");
-  const link = document.createElement("a");
-  const hr = document.createElement("hr");
-  const p2 = document.createElement("p");
-  const home = document.createElement("a");
   s = s || "|";
-  link.textContent = "Download CSV";
-  p1.appendChild(link);
-  p1.appendChild(hr);
+  if(url){
+    const link = document.createElement("a");
+    const hr = document.createElement("hr");
+    link.textContent = "Download CSV";
+    if(data){
+      link.href = "javascript:void(0)";
+      link.addEventListener("click", () => download(data, name));
+    }else{
+      link.href = url;
+    }
+    p1.appendChild(link);
+    p1.appendChild(hr);
+  }
   p1.appendChild(document.createTextNode("ヘッダセルをクリックでソート"));
   p1.appendChild(document.createElement("br"));
   p1.appendChild(document.createTextNode("データセルをクリックでフィルタ"));
-  parent.appendChild(p1);
-  home.textContent = "戻る";
-  home.href = "/";
-  p2.appendChild(home);
-  parent.appendChild(p2);
+  fragment.appendChild(p1);
   if(data){
     const table = csv2table(data, s, compareTable);
-    parent.insertBefore(table, p2);
-    link.href = createURL(data);
-    link.download = url;
+    fragment.appendChild(table);
+    document.body.replaceChild(fragment, target);
   }else{
     fetchCsv(url).then((text) => {
       const table = csv2table(parseCsv(text), s, compareTable);
-      parent.insertBefore(table, p2);
+      fragment.appendChild(table);
+      document.body.replaceChild(fragment, target);
     }).catch((e) => {
-      parent.insertBefore(document.createTextNode(e), p2);
+      fragment.appendChild(document.createTextNode(e));
+      document.body.replaceChild(fragment, target);
     });
-    link.href = url;
   }
 };
 
@@ -263,6 +324,7 @@ const fetchCsv = (url) => {
 const createURL = (data) => {
   const text = data.map((row) => {
     return row.map((cell) => {
+      if(!cell.replace) return cell.checkbox.checked ? "○" : "";
       cell = cell.replace(/"/g, '""');
       if(/[",\n]/.test(cell)) return `"${cell}"`;
       return cell;
@@ -270,4 +332,13 @@ const createURL = (data) => {
   }).join("\r\n");
   const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), text], {type: "text/csv"});
   return URL.createObjectURL(blob);
+};
+
+const download = (data, name) => {
+  const link = document.createElement("a");
+  const url = createURL(data);
+  link.href = url;
+  link.download = name;
+  link.click();
+  URL.revokeObjectURL(url);
 };
