@@ -284,7 +284,7 @@ const csvViewer = (tid, url, data, compareTable, s) => {
     link.textContent = "Download CSV";
     if(data){
       link.href = "javascript:void(0)";
-      link.addEventListener("click", () => download(data, name));
+      link.addEventListener("click", () => download(data, url));
     }else{
       link.href = url;
     }
