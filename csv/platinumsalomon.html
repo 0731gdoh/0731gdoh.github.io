@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="放サモ 恒常☆4チェッカー">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#004">
+<link rel=stylesheet href="css/csvviewer.css">
+<script>
+"use strict";
+
+window.addEventListener("load", () => {
+  const ac = (a, b) => attr.indexOf(a) - attr.indexOf(b);
+  const wc = (a, b) => weapon.indexOf(a) - weapon.indexOf(b);
+  const share = document.getElementById("share");
+  if(navigator.share){
+    share.addEventListener("click", () => {
+      navigator.share({
+        url: location.href,
+        text: document.title
+      });
+    });
+  }else{
+    share.remove();
+  }
+  csvViewer("loading", "platinumsalomon.csv", data, [undefined, ac, wc, undefined, undefined]);
+  document.forms[0].addEventListener("change", save);
+  window.addEventListener("hashchange", load);
+  load();
+});
+</script>
+<script src="js/csvviewer.js"></script>
+<script src="js/platinumsalomon.js"></script>
+<title>放サモ 恒常☆4チェッカー</title>
+<p id=loading>Now loading...</p>
+<input type=button value="共有" id=share>
+<p><a href="/">戻る</a></p>

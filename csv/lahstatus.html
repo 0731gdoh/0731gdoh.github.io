@@ -8,9 +8,11 @@
 <script>
 "use strict";
 
-onload = () => {
-  csvViewer(document.body, "lahstatus.csv");
-};
+window.addEventListener("load", () => {
+  csvViewer("loading", "lahstatus.csv");
+});
 </script>
 <script src="js/csvviewer.js"></script>
 <title>LAH ステータス</title>
+<p id=loading>Now loading...</p>
+<p><a href="/">戻る</a></p>

@@ -8,12 +8,14 @@
 <script>
 "use strict";
 
-onload = () => {
-  csvViewer(document.body, "thirdvariant.csv", data);
-};
+window.addEventListener("load", () => {
+  csvViewer("loading", "thirdvariant.csv", data);
+});
 </script>
 <script src="js/csvviewer.js"></script>
 <script src="js/thirdvariant.js"></script>
 <title>放サモ 三枠目実装日数</title>
 <p>三枠目未実装のキャラの「日数」は「今日三枠目が実装された場合の日数」として、このページを開いた時点での日付（日本時間）から算出されています。</p>
 <hr>
+<p id=loading>Now loading...</p>
+<p><a href="/">戻る</a></p>

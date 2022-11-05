@@ -8,10 +8,10 @@
 <script>
 "use strict";
 
-onload = () => {
+window.addEventListener("load", () => {
   const f = (a, b) => "DCBAS".indexOf(a[0]) - "DCBAS".indexOf(b[0]);
-  csvViewer(document.body, "lahsidekick.csv", "", [undefined, undefined, undefined, f, f, f, f, undefined]);
-};
+  csvViewer("loading", "lahsidekick.csv", "", [undefined, undefined, undefined, f, f, f, f, undefined]);
+});
 </script>
 <script src="js/csvviewer.js"></script>
 <style>
@@ -73,3 +73,5 @@ onload = () => {
       <td>+1
 </table>
 <hr>
+<p id=loading>Now loading...</p>
+<p><a href="/">戻る</a></p>
