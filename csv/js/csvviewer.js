@@ -228,7 +228,7 @@ const _thClick = (table, compareTable) => {
       const compare = compareTable[i] || new Intl.Collator(undefined, {numeric: true}).compare;
       const get = (row) => {
         const cell = row.cells[i];
-        if(cell.className === "checkable") return cell.firstChild.checked ? "○" : "";
+        if(cell.classList.contains("checkable")) return cell.firstChild.checked ? "○" : "";
         return cell.textContent;
       };
       let count = 0;
