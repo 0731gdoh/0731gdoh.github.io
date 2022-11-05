@@ -205,12 +205,18 @@ const save = () => {
   let header = true;
   let i = 0;
   let v = 0;
+  let count = 0;
+  let length = 0;
   for(const row of data){
     if(header){
       header = false;
     }else{
       v = v << 1;
-      if(row[4].checkbox.checked) v = v | 1;
+      length++;
+      if(row[4].checkbox.checked){
+        v = v | 1;
+        count++;
+      }
       if(++i === 6){
         result.push(b64[v]);
         v = 0;
@@ -219,6 +225,7 @@ const save = () => {
     }
   }
   history.replaceState(null, "", location.pathname + "#" + result.join(""));
+  document.title = `放サモ 恒常☆4チェッカー（${count}/${length}）`;
 };
 
 const load = () => {
