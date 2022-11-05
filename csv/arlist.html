@@ -8,9 +8,11 @@
 <script>
 "use strict";
 
-onload = () => {
-  csvViewer(document.body, "arlist.csv");
-};
+window.addEventListener("load", () => {
+  csvViewer("loading", "arlist.csv");
+});
 </script>
 <script src="js/csvviewer.js"></script>
 <title>放サモ ARリスト</title>
+<p id=loading>Now loading...</p>
+<p><a href="/">戻る</a></p>
