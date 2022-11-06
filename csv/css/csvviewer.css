@@ -25,7 +25,7 @@ th:hover {
   background: #0ff4;
 }
 th.checkable {
-  background: transparent;
+  background: #ccc;
 }
 td.highlight {
   background: #ff04;
