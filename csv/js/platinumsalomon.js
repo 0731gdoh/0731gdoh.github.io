@@ -1,7 +1,7 @@
 "use strict";
 
 const attr = ["", "全", "火", "水", "木", "天", "冥", "魔", "英雄", "世界", "無限", "零", "-"];
-const weapon = ["", "斬撃", "突撃", "打撃", "射撃", "魔法", "狙撃", "横一文字", "全域", "無", "-"]
+const weapon = ["", "斬撃", "突撃", "打撃", "射撃", "魔法", "横一文字", "狙撃", "全域", "無", "-"]
 
 const build = (list) => {
   let i = 0;
@@ -89,12 +89,12 @@ const data = build(
   ,[7, 2, "ドゥルガー"]
   ,[6, 1, "テツギュウ"]
   ,[4, 5, "シュウイチ"]
-  ,[5, 7, "スズカ"]
+  ,[5, 6, "スズカ"]
   ,[4, 5, "ギョウブ"]
   ,[8, 5, "セト"]
-  ,[3, 6, "エビス"]
-  ,[2, 6, "アルク"]
-  ,[9, 6, "アザトース"]
+  ,[3, 7, "エビス"]
+  ,[2, 7, "アルク"]
+  ,[9, 7, "アザトース"]
 //  ,[8, 1, "グリンブルスティ"]
   ,[6, 1, "ベヒモス"]
   ,[5, 5, "ジズ"]
@@ -103,32 +103,32 @@ const data = build(
   ,[3, 1, "ブレイク"]
   ,[4, 2, "アヴァルガ"]
   ,[8, 2, "アルジャーノン"]
-  ,[6, 6, "オセ"]
+  ,[6, 7, "オセ"]
   ,[4, 5, "オズ"]
   ,[6, 2, "アールプ"]
   ,[4, 9, "フルフミ"]
   ,[4, 2, "オンブレティグレ"]
-//  ,[7, 6, "アラクネ"]
+//  ,[7, 7, "アラクネ"]
   ,[2, 5, "ゴエモン"]
   ,[5, 5, "リチョウ"]
 //  ,[5, 9, "アスタロト"]
   ,[1, 9, "トムテ"]
   ,[8, 2, "シンノウ"]
-  ,[4, 7, "ヤスヨリ"]
+  ,[4, 6, "ヤスヨリ"]
   ,[4, 3, "エーコー"]
   ,[3, 9, "リャナンシー"]
   ,[8, 4, "タネトモ"]
-  ,[8, 6, "ティダ"]
+  ,[8, 7, "ティダ"]
   ,[8, 3, "バロール"]
   ,[4, 3, "ナタ"]
   ,[2, 2, "キムンカムイ"]
-  ,[3, 6, "オトヒメ"]
+  ,[3, 7, "オトヒメ"]
   ,[6, 5, "ケットシー"]
   ,[2, 2, "トヴァシュトリ"]
-  ,[8, 6, "マルドゥック"]
+  ,[8, 7, "マルドゥック"]
   ,[9, 2, "バートロ"]
   ,[2, 9, "イツァムナー"]
-  ,[9, 7, "マクロイヒ"]
+  ,[9, 6, "マクロイヒ"]
   ,[7, 5, "メフィストフェレス"]
   ,[3, 4, "ベイブ・バニヤン"]
   ,[7, 3, "マサノリ"]
@@ -138,7 +138,7 @@ const data = build(
   ,[9, 9, "スモーキーゴッド"]
   ,[1, 5, "シュクユウ"]
   ,[3, 2, "サルタヒコ"]
-  ,[5, 6, "ホテイ"]
+  ,[5, 7, "ホテイ"]
   ,[3, 5, "ヘルメス"]
   ,[6, 1, "ブギーマン"]
   ,[2, 2, "バロン"]
@@ -211,10 +211,9 @@ const save = () => {
     if(header){
       header = false;
     }else{
-      v = v << 1;
       length++;
       if(row[4].checkbox.checked){
-        v = v | 1;
+        v = v | (1 << (5 - i));
         count++;
       }
       if(++i === 6){
@@ -224,24 +223,33 @@ const save = () => {
       }
     }
   }
+  if(i) result.push(b64[v]);
   history.replaceState(null, "", location.pathname + "#" + result.join(""));
   document.title = `放サモ 恒常☆4チェッカー（${count}/${length}）`;
 };
 
 const load = () => {
   const hash = location.hash.slice(1);
-  if(hash){
-    const result = [];
-    let index = 1;
-    for(const s of hash){
-      const v = b64.indexOf(s);
-      let i = 6;
-      if(v === -1) return;
-      while(i--){
-        if(index >= data.length) return;
-        data[index++][4].checkbox.checked = !!(v & (1 << i));
+  if(hash) _load(hash);
+};
+
+const _load = (hash) => {
+  const list = Array.from(hash);
+  const result = [];
+  let header = true;
+  let i = 0;
+  let v = 0;
+  for(const row of data){
+    if(header){
+      header = false;
+    }else{
+      if(--i < 0){
+        i = 5;
+        v = b64.indexOf(list.shift());
+        if(v === -1) v = 0;
       }
+      row[4].checkbox.checked = !!(v & (1 << i));
     }
-    data[1][4].checkbox.dispatchEvent(new Event("change", {bubbles: true}));
   }
+  data[1][4].checkbox.dispatchEvent(new Event("change", {bubbles: true}));
 };
