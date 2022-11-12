@@ -251,5 +251,5 @@ const _load = (hash) => {
       row[4].checkbox.checked = !!(v & (1 << i));
     }
   }
-  data[1][4].checkbox.dispatchEvent(new Event("change", {bubbles: true}));
+  data[1][4].notify();
 };
