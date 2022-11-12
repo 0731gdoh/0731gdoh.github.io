@@ -108,7 +108,7 @@ const csv2table = (data, s, compareTable) => {
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
   const filter = new Filter(table, select, input, s);
-  const checkable = [];
+  const checkables = [];
   let hasCheckable = false;
   let header = true;
   let n = 0;
@@ -122,7 +122,7 @@ const csv2table = (data, s, compareTable) => {
         tr.appendChild(th);
         option.textContent = v;
         select.appendChild(option);
-        checkable.push([]);
+        checkables.push([]);
       }
       thead.appendChild(tr);
       header = false;
@@ -146,7 +146,7 @@ const csv2table = (data, s, compareTable) => {
           v.checkbox = check;
           td.className = "checkable";
           td.appendChild(check);
-          checkable[tr.childElementCount].push(check);
+          checkables[tr.childElementCount].push(v);
           hasCheckable = true;
         }
         tr.appendChild(td);
@@ -156,16 +156,20 @@ const csv2table = (data, s, compareTable) => {
   }
   if(hasCheckable){
     const tr = document.createElement("tr");
-    for(const v of checkable){
+    for(const list of checkables){
       const th = document.createElement("th");
       th.className = "checkable";
-      if(v.length){
+      if(list.length){
         const check = document.createElement("input");
+        const notify = () => {updateCheckAll(check, list)};
         check.type = "checkbox";
         th.appendChild(check);
-        updateCheckAll(check, v);
-        check.addEventListener("change", () => {for(const c of v) c.checked = check.checked});
-        for(const c of v) c.addEventListener("change", () => {updateCheckAll(check, v)});
+        updateCheckAll(check, list);
+        check.addEventListener("change", () => {for(const v of list) v.checkbox.checked = check.checked});
+        for(const v of list){
+          v.notify = notify;
+          v.checkbox.addEventListener("change", notify);
+        }
       }
       tr.appendChild(th);
     }
@@ -196,16 +200,13 @@ const csv2table = (data, s, compareTable) => {
 };
 
 const updateCheckAll = (checkAll, list) => {
-  const count = list.reduce((a, c) => c.checked ? a + 1 : a, 0);
+  const count = list.reduce((a, c) => c.checkbox.checked ? a + 1 : a, 0);
   if(count === list.length){
     checkAll.checked = true;
     checkAll.indeterminate = false;
-  }else if(count){
-    checkAll.checked = false;
-    checkAll.indeterminate = true;
   }else{
     checkAll.checked = false;
-    checkAll.indeterminate = false;
+    checkAll.indeterminate = !!count;
   }
 };
 
