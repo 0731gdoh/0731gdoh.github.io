@@ -98,7 +98,16 @@ function Effect(index, x, link, equ){
   }else if(this.flag & EFFECT_FLAG.IRREMOVABLE){
     this.sortkey = 4;
   }
-  if((this.type === TYPE.BONUS || this.type === TYPE.IGNORE) && !this.group) this.subset = new Map();
+  switch(this.type){
+    case TYPE.BONUS:
+    case TYPE.IGNORE:
+      if(!this.group) this.subset = new Map();
+      break;
+    case TYPE.WEAPON:
+    case TYPE.CSWEAPON:
+      this.weaponOrder = WEAPON.ORDER.indexOf(this.baseValue[1]);
+      break;
+  }
   this.csOnly = false;
 }
 Effect.prototype = {
@@ -171,7 +180,10 @@ Effect.createList = function(a, pd){
     if(x.sortkey !== y.sortkey) return x.sortkey - y.sortkey;
     if(x.group !== y.group) return x.group - y.group;
     if(x.sortkey > 5) return x.index - y.index;
-    if(x.sortkey === 2 || !x.sortkey || k[a] === k[b]) return x.baseValue[0] - y.baseValue[0] || x.baseValue[1] - y.baseValue[1] || x.index - y.index;
+    if(x.sortkey === 2 || !x.sortkey || k[a] === k[b]){
+      if(x.weaponOrder && y.weaponOrder) return x.weaponOrder - y.weaponOrder;
+      return x.baseValue[0] - y.baseValue[0] || x.baseValue[1] - y.baseValue[1] || x.index - y.index;
+    }
     if(en) return t(x.name, 1).toUpperCase() < t(y.name, 1).toUpperCase() ? -1 : 1;
     if(x.reading === y.reading) return x.index - y.index;
     return x.reading < y.reading ? -1 : 1;

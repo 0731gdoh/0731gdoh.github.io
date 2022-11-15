@@ -24,6 +24,7 @@ var calc = {
   multiplier: 0,
   active: 1,
   defaultHash: "",
+  savedata: [],
   init: function(){
     var c = this;
     var nums = document.querySelectorAll('input[type="number"]');
@@ -66,6 +67,19 @@ var calc = {
       }
     });
     linkInput(c, "arLv", "rl");
+    this.updateSaveMenu();
+    window.onstorage = function(){
+      c.updateSaveMenu();
+    };
+    _("svd").onclick = function(){
+      c.saveToStorage();
+    };
+    _("ldd").onclick = function(){
+      c.loadFromStorage();
+    };
+    _("dld").onclick = function(){
+      c.deleteFromStorage();
+    };
     _("sl").onclick = function(){
       c.setLanguage(1 - language);
     };
@@ -192,10 +206,12 @@ var calc = {
       };
     }
     nums = null;
-    setBlobURL("dj", Card.csv(CARD, 0), "text/csv", "housamo_card_ja.csv");
-    setBlobURL("de", Card.csv(CARD, 1), "text/csv", "housamo_card_en.csv");
-    setBlobURL("aj", Record.csv(AR, 0), "text/csv", "housamo_ar_ja.csv");
-    setBlobURL("ae", Record.csv(AR, 1), "text/csv", "housamo_ar_en.csv");
+    _("dj").onclick = function(){
+      download(Card.csv(CARD, language), "text/csv", t("housamo_card_ja.csv/housamo_card_en.csv"));
+    };
+    _("aj").onclick = function(){
+      download(Record.csv(AR, language), "text/csv", t("housamo_ar_ja.csv/housamo_ar_en.csv"));
+    };
     this.save();
     this.load(location.hash.slice(1), true);
   },
@@ -297,6 +313,8 @@ var calc = {
         return false;
       });
       this.active = 0;
+      if(this.cardfilter.active) this.cardfilter.toggle();
+      if(this.arfilter.active) this.arfilter.toggle();
       this.cardfilter.reset();
       this.arfilter.reset();
       setValue("pc", index);
@@ -578,12 +596,12 @@ var calc = {
     cf.active = 0;
     rf.active = 0;
     setOptions("sv", VERSION);
-    setOptions("w", WEAPON, FILTER.NAME);
+    setOptions("w", WEAPON, FILTER.NAME, WEAPON.ORDER);
     setOptions("cs", CS, FILTER.VALUE, CS.ORDER);
     this.updateMultiplierOptions();
     setCheckGroup("ef", ATTRIBUTE, undefined, ATTRIBUTE.ORDER);
-    setCheckGroup("wf", WEAPON);
-    setCheckGroup("cf", WEAPON);
+    setCheckGroup("wf", WEAPON, undefined, WEAPON.ORDER);
+    setCheckGroup("cf", WEAPON, undefined, WEAPON.ORDER);
     setCheckGroup("rf", RARITY);
     setOptions("vf", VARIANT);
     setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language]);
@@ -667,9 +685,71 @@ var calc = {
     setText("um", "新しいデータがあります/New data is available.");
     setText("ub", "更新/Update");
     setText("ri", "一覧表示/List");
+    setText("svd", "保存/Save");
+    setText("ldd", "読込/Load");
+    setText("dld", "削除/Delete");
     cf.active = cb;
     rf.active = rb;
     this.active = 1;
+  },
+  updateSaveMenu: function(){
+    var list = [];
+    var data = [];
+    for(var i = 0; i < 9; i++){
+      var label = "#" + (i + 1) + ": ";
+      var value = "";
+      try{
+        value = localStorage.getItem("slot" + i) || "";
+      }catch(e){}
+      value = value.split("#");
+      if(value.length === 2 && value[0] && value[1]){
+        var name = decodeURIComponent(value[0]);
+        if(name.length > 49) name = name.slice(0, 49) + "…";
+        list.push(label + name);
+        data.push(value[1]);
+      }else{
+        list.push(label);
+        data.push("");
+      }
+    }
+    setOptions("ssf", list);
+    this.savedata = data;
+  },
+  saveToStorage: function(){
+    var i = Math.max(_("ssf").selectedIndex, 0);
+    var label = "#" + (i + 1);
+    if(!this.savedata[i] || confirm(t(label + " に上書きしますか？/Are you sure you want to overwrite to " + label + " ?"))){
+      var pattern = /[\\\/:*?"<>|]/; //"
+      var name = prompt(t("名前を付けて保存/Save As"), CARD[this.card]) || "";
+      if(pattern.test(name)){
+        alert(t("名前には次の文字は使えません/A name can't contain any of the following characters") + ':\n\\ / : * ? " < > |');
+      }else if(name){
+        var data = location.hash;
+        if(data.length < 2) data = "#" + this.defaultHash;
+        if(name.length > 50) name = name.slice(0, 50);
+        try{
+          localStorage.setItem("slot" + i, encodeURIComponent(name) + data);
+        }catch(e){}
+        this.updateSaveMenu();
+      }
+    }
+  },
+  loadFromStorage: function(){
+    var i = Math.max(_("ssf").selectedIndex, 0);
+    var label = "#" + (i + 1);
+    if(this.savedata[i] && confirm(t(label + " を読込みますか？/Are you sure you want to load " + label + " ?"))){
+      this.load(this.savedata[i]);
+    }
+  },
+  deleteFromStorage: function(){
+    var i = Math.max(_("ssf").selectedIndex, 0);
+    var label = "#" + (i + 1);
+    if(this.savedata[i] && confirm(t(label + " を削除しますか？/Are you sure you want to delete " + label + " ?"))){
+      try{
+        localStorage.removeItem("slot" + i);
+      }catch(e){}
+      this.updateSaveMenu();
+    }
   },
   updateEffectOptions: function(){
     var p = ["", "{CS} ", "[AR] "];

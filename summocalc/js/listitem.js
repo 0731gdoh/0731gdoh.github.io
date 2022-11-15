@@ -31,6 +31,7 @@ var WEAPON = ListItem.createList(
   ,["全域/All", 0.1]
   ,["無/None", 0]
 ]);
+WEAPON.ORDER = [0, 1, 2, 3, 4, 5, 7, 6, 8, 9];
 
 var ATTRIBUTE = ListItem.createList(
   [["", 0]
