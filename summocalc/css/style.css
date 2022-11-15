@@ -36,7 +36,8 @@ caption,
   font-size: small;
 }
 table {
-  margin: 0.2rem 0;
+  margin: 0.2rem 0 0.7rem;
+  line-height: 1.5;
 }
 * + input[type="button"] {
   margin-left: 0.5rem;
@@ -122,9 +123,6 @@ textarea {
   padding: 1rem 0 0.5rem;
   text-align: right;
 }
-table {
-  line-height: 1.5;
-}
 .ib {
   display: inline-block;
   width: 100%;
@@ -204,4 +202,15 @@ td:first-child {
 }
 #am {
   width: 8.5rem;
+}
+#ssf {
+  width: 8rem;
+}
+#sm {
+  padding: 0.3rem;
+  background-image: linear-gradient(#bcd, #abd);
+  background-color: #bcd;
+  border: solid 1px;
+  border-radius: 0.2rem;
+  margin-top: 1rem;
 }
