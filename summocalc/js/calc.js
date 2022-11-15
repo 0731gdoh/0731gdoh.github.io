@@ -724,7 +724,8 @@ var calc = {
       if(pattern.test(name)){
         alert(t("名前には次の文字は使えません/A name can't contain any of the following characters") + ':\n\\ / : * ? " < > |');
       }else if(name){
-        var data = location.hash || "#" + this.defaultHash;
+        var data = location.hash;
+        if(data.length < 2) data = "#" + this.defaultHash;
         if(name.length > 50) name = name.slice(0, 50);
         try{
           localStorage.setItem("slot" + i, encodeURIComponent(name) + data);
