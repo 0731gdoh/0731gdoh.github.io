@@ -156,7 +156,11 @@ Tag.createList = function(a){
       o.push(i);
       orderData[tag.sortkey] = o;
     }
-    k.push(t(v[0], 1).replace(/ *[\(:].+/, ""));
+    if(tag.type === TAG_TYPE.WEAPON){
+      k.push("");
+    }else{
+      k.push(t(v[0], 1).replace(/ *[\(:].+/, ""));
+    }
   });
   for(var i = 0; i < 2; i++){
     order.push(orderData.reduce(function(a, x, i){
@@ -191,7 +195,7 @@ var TAG = Tag.createList(
   ,["CS変更/Change CS Type", "CSへ", TAG_TYPE.BUFF]
   ,["CS変更：打撃/Change CS Type: Blow", "CSへ3", TAG_TYPE.BUFF, "CS変更"]
   ,["CS変更：魔法/Change CS Type: Magic", "CSへ5", TAG_TYPE.BUFF, "CS変更"]
-  ,["CS変更：横一文字/Change CS Type: Long Slash", "CSへ7", TAG_TYPE.BUFF, "CS変更"]
+  ,["CS変更：横一文字/Change CS Type: Long Slash", "CSへ6", TAG_TYPE.BUFF, "CS変更"]
   ,["CS変更：全域/Change CS Type: All", "CSへ8", TAG_TYPE.BUFF, "CS変更"]
   ,["HP回復/Restore HP", "HPか", TAG_TYPE.ONE_SHOT, "HP回復系"]
   ,["HP減少/Decrease HP", "HPけ", TAG_TYPE.ONE_SHOT, "HP減少系"]
@@ -351,8 +355,8 @@ var TAG = Tag.createList(
   ,["武器種変更：突撃/Change Weapon Type: Trust", "ふきし2", TAG_TYPE.BUFF, "武器種変更"]
   ,["武器種変更：打撃/Change Weapon Type: Blow", "ふきし3", TAG_TYPE.BUFF, "武器種変更"]
   ,["武器種変更：魔法/Change Weapon Type: Magic", "ふきし5", TAG_TYPE.BUFF, "武器種変更"]
-  ,["武器種変更：横一文字/Change Weapon Type: Long Slash", "ふきし7", TAG_TYPE.BUFF, "武器種変更"]
-  ,["武器種変更：狙撃/Change Weapon Type: Snipe", "ふきし6", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：横一文字/Change Weapon Type: Long Slash", "ふきし6", TAG_TYPE.BUFF, "武器種変更"]
+  ,["武器種変更：狙撃/Change Weapon Type: Snipe", "ふきし7", TAG_TYPE.BUFF, "武器種変更"]
   ,["武器種変更：全域/Change Weapon Type: All", "ふきし8", TAG_TYPE.BUFF, "武器種変更"]
   ,["武器種変更：無/Change Weapon Type: None", "ふきし9", TAG_TYPE.BUFF, "武器種変更"]
   ,["吹き飛ばし(縦)/Blast (back)", "ふきと1", TAG_TYPE.ONE_SHOT]
@@ -383,14 +387,14 @@ var TAG = Tag.createList(
   ,["烙印/Stigma", "らく", TAG_TYPE.DEBUFF, "防御減少系/HP減少系"]
   ,["連撃/Combo", "れん", TAG_TYPE.BUFF, "攻撃増加系"]
   ,["斬撃/Slash", "1", TAG_TYPE.WEAPON]
-  ,["突撃/Thrust", "1", TAG_TYPE.WEAPON]
-  ,["打撃/Blow", "1", TAG_TYPE.WEAPON]
-  ,["射撃/Shot", "1", TAG_TYPE.WEAPON]
-  ,["魔法/Magic", "1", TAG_TYPE.WEAPON]
-  ,["狙撃/Snipe", "1", TAG_TYPE.WEAPON]
-  ,["横一文字/Long Slash", "1", TAG_TYPE.WEAPON]
-  ,["全域/All", "1", TAG_TYPE.WEAPON]
-  ,["無/None", "1", TAG_TYPE.WEAPON]
+  ,["突撃/Thrust", "2", TAG_TYPE.WEAPON]
+  ,["打撃/Blow", "3", TAG_TYPE.WEAPON]
+  ,["射撃/Shot", "4", TAG_TYPE.WEAPON]
+  ,["魔法/Magic", "5", TAG_TYPE.WEAPON]
+  ,["狙撃/Snipe", "7", TAG_TYPE.WEAPON]
+  ,["横一文字/Long Slash", "6", TAG_TYPE.WEAPON]
+  ,["全域/All", "8", TAG_TYPE.WEAPON]
+  ,["無/None", "9", TAG_TYPE.WEAPON]
   ,["鬼系スキル", "", TAG_TYPE.SKIP, "", "鬼道の衆/鬼道を束ねる者/鬼気迫る者/愚直なる血鬼"]
   ,["獣系スキル", "", TAG_TYPE.SKIP, "", "獣の末裔/黄昏に弾く獣/首狩りの獣/忠玉の八犬士/ラビリンスの獣/獣皮を巻く者/無垢なる獣"]
   ,["チートと名の付くスキル", "ちい", TAG_TYPE.SKILL, "", "チート系勇者/チートなる者"]
@@ -625,7 +629,7 @@ var TAG = Tag.createList(
   ,["スキル発動率激増[アイザック]", "", TAG_TYPE.IRREMOVABLE_BUFF, "スキル発動率激増/発動率増加系"]
   ,["マシンボディ付与", "まし", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["愚直なる血鬼/Naive Vampire", "くち", TAG_TYPE.SKILL]
-  ,["横移動力増加", "よこそう", TAG_TYPE.IRREMOVABLE_BUFF, "移動力増加系"]
+  ,["横移動力増加", "よこそう", TAG_TYPE.BUFF, "移動力増加系"]
   ,["花獲得率アップ/Increase drop rate of Blossoms", "はな", TAG_TYPE.STATIC, "報酬増加系"]
   ,["外壁", "かいへ", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,["弱点特攻", "しやくてと", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系", , "弱点"]
@@ -646,7 +650,7 @@ var TAG = Tag.createList(
   ,["回避貫通", "かいひか", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["退場時攻撃強化付与", "たいしよこう", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["退場時防御強化付与", "たいしよほう", TAG_TYPE.IRREMOVABLE_BUFF]
-  ,["回避耐性/Evasion resistance", "かいひたい", TAG_TYPE.BUFF, "状態耐性系"]
+  ,["回避耐性/Evasion resistance", "かいひたい", TAG_TYPE.DEBUFF, "状態耐性系"]
   ,["攻撃後強化単体奪取", "こうけきこきよ", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["攻撃後弱点付与", "こうけきこしや", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["攻撃後CP吸収", "こうけきこCP", TAG_TYPE.IRREMOVABLE_BUFF]
@@ -660,4 +664,7 @@ var TAG = Tag.createList(
   ,["攻撃後HP回復", "こうけきこHPか", TAG_TYPE.IRREMOVABLE_BUFF]
   ,["空振り時烙印付与", "かららく", TAG_TYPE.IRREMOVABLE_DEBUFF]
   ,["強化後集中付与", "きようかこし", TAG_TYPE.IRREMOVABLE_BUFF]
+  ,["横移動力増加[解除不可]", "", TAG_TYPE.IRREMOVABLE_BUFF, "横移動力増加/移動力増加系"]
+  ,["ダメージ時回避付与", "ためしかい", TAG_TYPE.IRREMOVABLE_BUFF]
+  ,["ダメージ後回避耐性付与", "ためこかい", TAG_TYPE.IRREMOVABLE_DEBUFF]
 ]);

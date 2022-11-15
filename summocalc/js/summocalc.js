@@ -261,20 +261,21 @@ function share(data){
 function pad(n, length){
   return ("00" + n).slice(-length);
 }
-function setBlobURL(id, data, mime, name){
-  var a = _(id);
+function download(data, mime, name){
   var blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), data], {type: mime});
   if(navigator.msSaveOrOpenBlob){
-    a.href = "javascript:void(0)";
-    a.onclick = function(){
-      navigator.msSaveOrOpenBlob(blob, name);
-    };
+    navigator.msSaveOrOpenBlob(blob, name);
   }else if(URL && URL.createObjectURL && "download" in HTMLAnchorElement.prototype){
-    a.href = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var url = URL.createObjectURL(blob);
+    document.body.appendChild(a);
+    a.href = url;
     a.download = name;
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }else{
-    a.href = "data:" + mime + ";charset=UTF-8,%EF%BB%BF" + encodeURIComponent(data);
-    a.target = "_blank";
+    window.open("data:" + mime + ";charset=UTF-8,%EF%BB%BF" + encodeURIComponent(data));
   }
 }
 function isStandalone(){
