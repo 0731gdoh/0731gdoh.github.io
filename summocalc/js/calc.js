@@ -719,7 +719,7 @@ var calc = {
     var i = Math.max(_("ssf").selectedIndex, 0);
     var label = "#" + (i + 1);
     if(!this.savedata[i] || confirm(t(label + " に上書きしますか？/Are you sure you want to overwrite to " + label + " ?"))){
-      var pattern = new RegExp('[\\\/:*?"<>|]');
+      var pattern = /[\\\/:*?"<>|]/; //"
       var name = prompt(t("名前を付けて保存/Save As"), CARD[this.card]) || "";
       if(pattern.test(name)){
         alert(t("名前には次の文字は使えません/A name can't contain any of the following characters") + ':\n\\ / : * ? " < > |');
