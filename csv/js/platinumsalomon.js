@@ -4,19 +4,26 @@ const attr = ["", "全", "火", "水", "木", "天", "冥", "魔", "英雄", "�
 const weapon = ["", "斬撃", "突撃", "打撃", "射撃", "魔法", "横一文字", "狙撃", "全域", "無", "-"]
 
 const build = (list) => {
+  const chara = [];
+  const ar = [];
   let i = 0;
   for(const row of list){
+    if(row[0]){
+      chara.push(row);
+    }else{
+      ar.push(row);
+    }
     row[0] = attr[row[0] || attr.length - 1];
     row[1] = weapon[row[1] || weapon.length - 1];
     row.push({value: false});
-    row.unshift(++i + "");
   }
-  list.unshift(["#", "属性", "武器", "名前", "所持"]);
-  return list;
+  for(const row of chara) row.unshift(++i + "");
+  for(const row of ar) row.unshift(++i + "");
+  return [["#", "属性", "武器", "名前", "所持"]].concat(chara).concat(ar);
 };
 
-const data = build(
-  [[6, 5, "シロウ"]
+const source = [
+  [6, 5, "シロウ"]
   ,[5, 3, "ケンゴ"]
   ,[4, 5, "リョウタ"]
   ,[3, 1, "トウジ"]
@@ -196,31 +203,28 @@ const data = build(
   ,[0, 0, "我が盟友の為ならば"]
   ,[0, 0, "ようこそ、夜の宝石たち"]
   ,[0, 0, "腹の底から高らかに"]
-]);
+  ,[1, 4, "イシュバランケー"]
+];
+const data = build(source);
 
 const b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
 const save = () => {
   const result = [];
-  let header = true;
   let i = 0;
   let v = 0;
   let count = 0;
   let length = 0;
-  for(const row of data){
-    if(header){
-      header = false;
-    }else{
-      length++;
-      if(row[4].checkbox.checked){
-        v = v | (1 << (5 - i));
-        count++;
-      }
-      if(++i === 6){
-        result.push(b64[v]);
-        v = 0;
-        i = 0;
-      }
+  for(const row of source){
+    length++;
+    if(row[4].checkbox.checked){
+      v = v | (1 << (5 - i));
+      count++;
+    }
+    if(++i === 6){
+      result.push(b64[v]);
+      v = 0;
+      i = 0;
     }
   }
   if(i) result.push(b64[v]);
@@ -236,20 +240,15 @@ const load = () => {
 const _load = (hash) => {
   const list = Array.from(hash);
   const result = [];
-  let header = true;
   let i = 0;
   let v = 0;
-  for(const row of data){
-    if(header){
-      header = false;
-    }else{
-      if(--i < 0){
-        i = 5;
-        v = b64.indexOf(list.shift());
-        if(v === -1) v = 0;
-      }
-      row[4].checkbox.checked = !!(v & (1 << i));
+  for(const row of source){
+    if(--i < 0){
+      i = 5;
+      v = b64.indexOf(list.shift());
+      if(v === -1) v = 0;
     }
+    row[4].checkbox.checked = !!(v & (1 << i));
   }
   data[1][4].notify();
 };
