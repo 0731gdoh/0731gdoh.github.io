@@ -45,7 +45,7 @@ var ATTRIBUTE = ListItem.createList(
   ,["英雄/Valiant", 256]
   ,["世界/World", 512]
   ,["無限/無限(Infinity)", 1024]
-  ,["零/零(Zero)", 2048]
+  ,["零/Null", 2048]
 ]);
 ATTRIBUTE.ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
@@ -65,7 +65,7 @@ var MULTIPLIER = ListItem.createList(
   ,["→英雄/ → Valiant", 8]
   ,["→世界/ → World", 9]
   ,["→無限/ → 無限(Infinity)", 10]
-  ,["→零/ → 零(Zero)", 11]
+  ,["→零/ → Null", 11]
 ]);
 MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115];
 MULTIPLIER.LABELS = ["倍率/Multiplier", "属性/Attribute"];
@@ -167,6 +167,7 @@ var VARIANT = ListItem.createList(
   ,["プール/Pool"]
   ,["浜辺/Dynamis"]
   ,["夜祭/NightFest"]
+  ,["聖夜22/Xmas22"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);
