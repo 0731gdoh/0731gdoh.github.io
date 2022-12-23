@@ -878,7 +878,7 @@ var calc = {
         if(!ep.loop) return false;
         if(!buffed && e.isBuff(group)) buffed = true;
         if(!debuffed && e.isDebuff(group)) debuffed = true;
-        if(e.type === TYPE.DEBUFF_OVERWRITE && e.group === group) dow = e;
+        if(e.type === TYPE.DEBUFF_OVERWRITE && e.group === group) dow = e.getValue(1, false, false);
         return buffed && debuffed && dow;
       });
       desc = [];
@@ -892,6 +892,7 @@ var calc = {
         var e = ep.effect;
         var eLv = ep.lv;
         var loop = ep.loop;
+        var condition = false;
         if(e.group !== group) continue;
         if(e.isStackable()){
           if(loop && e.link && EFFECT[e.link].isStackable()){
@@ -900,8 +901,13 @@ var calc = {
           }
           count = loop;
         }
+        if(
+          (e.link && es[e.link].getLoopSum()) ||
+          (e.type === TYPE.NOT_BUFFED && buffed) ||
+          (e.type === TYPE.NOT_DEBUFFED && debuffed)
+        ) condition = true;
         while(loop--){
-          var eV = e.getValue(eLv || this.cLv, !this.version, es);
+          var eV = e.getValue(eLv || this.cLv, !this.version, condition);
           var x = eV[0];
           var modEType = e.type;
           var label = [];
@@ -931,20 +937,20 @@ var calc = {
           //カスタム
           if(e.type === TYPE.CUSTOM) x = ep.getCustomMul();
           //非強化時
-          if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(1);
+//          if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(1);
           //非弱体時
-          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(1);
+//          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(1);
           //武器種弱点
           if(e.type === TYPE.WEAPON_WEAKNESS && !((1 << weapon) & eV[1])) x = new Fraction(1);
 
           if(dow && e.isDebuff(group)){
             if(!(x - 0 && x.n !== x.d)){
-              x = dow.getValue(1, false, es)[0];
+              x = dow[0];
             }else if(!e.isFixed()){
               if(group){
-                x = x.add(e.getValue(-300, false, es)[0]).add(dow.getValue(1, false, es)[1]);
+                x = x.add(e.getValue(-300, false, condition)[0]).add(dow[1]);
               }else{
-                x = x.add(e.getValue(100, false, es)[0]).add(dow.getValue(1, false, es)[1]);
+                x = x.add(e.getValue(100, false, condition)[0]).add(dow[1]);
               }
               if(x <= 0) modEType = TYPE.ZERO;
             }
@@ -986,9 +992,9 @@ var calc = {
           //種
           if(e.type === TYPE.SEED) x = new Fraction(eLv);
           //非強化時
-          if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(0);
+//          if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(0);
           //非弱体時
-          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(0);
+//          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(0);
 
           if(x - 0){switch(e.type){
             default:
