@@ -383,7 +383,7 @@ var TAG = Tag.createList(
   ,["猛毒/Fatal Poison", "もう", TAG_TYPE.DEBUFF, "HP減少系"]
   ,["火傷/Burn", "やけ", TAG_TYPE.DEBUFF, "HP減少系"]
   ,["火傷時弱化[ジェド]", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "火傷時弱化/防御減少系"]
-  ,["友情時強化", "ゆう", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,["友情時強化", "ゆうしよ", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,["烙印/Stigma", "らく", TAG_TYPE.DEBUFF, "防御減少系/HP減少系"]
   ,["連撃/Combo", "れん", TAG_TYPE.BUFF, "攻撃増加系"]
   ,["斬撃/Slash", "1", TAG_TYPE.WEAPON]
@@ -682,4 +682,5 @@ var TAG = Tag.createList(
   ,["威圧特攻[シームルグ]", "", TAG_TYPE.IRREMOVABLE_BUFF, "威圧特攻/攻撃増加系", , "威圧"]
   ,["攻撃力微増[シームルグ]", "", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃力微増/攻撃増加系"]
   ,["威圧耐性/Oppression resistance", "いあたい", TAG_TYPE.BUFF, "状態耐性系"]
+  ,["友時強化", "ゆうしき", TAG_TYPE.IRREMOVABLE_BUFF, "HP回復系"]
 ]);

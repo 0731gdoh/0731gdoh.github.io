@@ -503,7 +503,7 @@ var EFFECT = Effect.createList(
   ,["特殊耐性[0.01+1000]", "とくし", 1, 0.01, 1000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["攻撃力上昇[2.5]", "こうけし", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,["攻撃力上昇[3.0]", "こうけし", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,["攻撃力増加[聖夜]/Increase ATK[Xmas]", "こうけそ", 0, 1.1, 10000, EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, , , 0]
+  ,["攻撃力増加[ショーダウン]/Increase ATK[Showdown]", "こうけそ", 0, 1.1, 10000, EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, , , 0]
   ,["武器種変更：射撃/Change Weapon Type: Shot", "ふき", 0, 0, 4, EFFECT_FLAG.FIXED, TYPE.WEAPON]
   ,["強化時防御力上昇", "きようかし", 1, 0.05, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF|EFFECT_FLAG.GIMMICK]
   ,["威圧特攻[AR]", "いあつ", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
@@ -559,6 +559,8 @@ var EFFECT = Effect.createList(
   ,["祝福時強化[シュクユウ]/祝福時強化[Zhurong]", "しゆく", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,["威圧特攻[シームルグ]/威圧特攻[Simurgh]", "いあつ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,["攻撃力微増[シームルグ]/攻撃力微増[Simurgh]", "こうけひ", 0, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
+  ,["攻撃力増加[ギャングスター]/Increase ATK[Gangstar]", "こうけそ", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["攻撃力上昇[ギャングスター]/攻撃力上昇[Gangstar]", "こうけし", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T", 1, 999,
     [[1, 1.6]
