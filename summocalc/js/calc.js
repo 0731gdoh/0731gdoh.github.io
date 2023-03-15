@@ -617,6 +617,7 @@ var calc = {
     });
     this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
+    setOptions("rlf", LIMITED_AR);
     ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
       setOptions(key, TAG, function(x){
         return !x.index || x.checkFlag(i, TIMING_FLAG.AR);
@@ -669,6 +670,9 @@ var calc = {
     setText("rfc", "AR装備フィルタ/AR Equipment Filter ");
     setText("lrxf", "名前/Name");
     setText("lrrf", "レア度/Rarity");
+    setText("lrhf", "HP基本値/Base HP")
+    setText("lrkf", "ATK基本値/Base ATK")
+    setText("lrlf", "期間限定/Limited");
     setText("lref1", "効果(自身)/Effect(Self)");
     setText("lref2", "効果(味方)/Effect(Ally)");
     setText("lref3", "効果(敵)/Effect(Enemy)");
@@ -1212,6 +1216,9 @@ var calc = {
   arfilter: {
     name: "",
     rarity: 0,
+    hp: 0,
+    atk: 0,
+    limited: 0,
     self: 0,
     ally: 0,
     enemy: 0,
@@ -1227,6 +1234,9 @@ var calc = {
       var c = this;
       linkTextInput(c, "name", "rxf");
       linkCheckGroup(c, "rarity", "rrf");
+      linkInput(c, "hp", "rhf");
+      linkInput(c, "atk", "rkf");
+      linkInput(c, "limited", "rlf");
       linkInput(c, "self", "ref1");
       linkInput(c, "ally", "ref2");
       linkInput(c, "enemy", "ref3");
@@ -1254,7 +1264,7 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["rrf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
+      ["rrf", "rhf", "rkf", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("rxf", "");
@@ -1274,6 +1284,9 @@ var calc = {
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
         if(p.rarity && (1 << x.arRarity & p.rarity) === 0) return false;
+        if(p.hp && x.hp < p.hp) return false;
+        if(p.atk && x.value < p.atk) return false;
+        if(p.limited && (p.limited === 1) !== x.limited) return false;
         if([p.self, p.ally, p.enemy, p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[i % 6].every(function(ie){
             return te !== ie[0] || !(ie[1] & TIMING_FLAG.AR);

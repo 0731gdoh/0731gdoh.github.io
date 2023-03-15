@@ -29,7 +29,7 @@ var TIMING = Timing.createList(
   ,["ターン開始時/Turn Start", "t"]
   ,["敵ターン開始時/Enemy Turn Start", "et"]
   ,["移動後/Post-Move", "pm"]
-  ,["移動フェーズ終了後", "em"]
+  ,["移動フェーズ終了後/End of Movement Phase", "em"]
   ,["非移動後/Post-No Move", "nm"]
   ,["攻撃時/Attacking", "a"]
   ,["攻撃後/Post-Attack", "pa"]

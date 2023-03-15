@@ -6,7 +6,7 @@ function _(id){
   return document.getElementById(id);
 }
 function t(str, x){
-  return str.indexOf("/") < 0 ? str : str.split("/")[x === undefined ? language : x];
+  return str.indexOf("/") < 0 ? str : str.split("/")[x === undefined ? language : x].replace(/%%/g, "/");
 }
 function v(x, y){
   var o = _(x);

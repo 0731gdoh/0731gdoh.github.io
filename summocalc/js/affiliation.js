@@ -19,7 +19,12 @@ Affiliation.createList = function(a){
   var k = [];
   var result = a.map(function(x, i){
     var v = 1 << i;
-    table.set(t(x, 0), v);
+    var key;
+    x = x.replace(/<([^>]+)>/, function(match, p1){
+      key = p1;
+      return p1;
+    });
+    table.set(key || t(x, 0), v);
     order[0].push(i);
     order[1].push(i);
     k.push(t(x, 1));
@@ -60,28 +65,28 @@ var GUILD = Affiliation.createList(
 ]);
 
 var SCHOOL = Affiliation.createList(
-  ["秋波原学園/Akihabara Academy"
-  ,"飢野学園/Ueno Academy"
-  ,"得真道学園/Umamichi Academy"
-  ,"王子坊学園/Ojimachi Academy"
-  ,"学園軍獄？/Penitentia Academy?"
-  ,"歌舞輝蝶学園/Kabukicho Academy"
-  ,"窯多工業高等専門学校/Kamata Technical Academy"
-  ,"鬼王警察学校/Kiou Police Academy"
-  ,"究段武道学園"
-  ,"神宿学園/Shinjuku Academy"
-  ,"水道帳商業学校"
-  ,"世耕農業・林業学園"
-  ,"代神山学園/Daikanyama Academy"
-  ,"東京サンタスクール/Tokyo Santa School"
-  ,"東京消防大学"
-  ,"東都学園"
-  ,"豊舟海洋学園/Toyosu Marine Academy"
-  ,"中迦野芸能学園"
-  ,"武玄学園/Bukuro Academy"
-  ,"不死見学園/Fujimi Academy"
-  ,"依々祇学園/Yoyogi Academy"
-  ,"六本城学園/Roppongi Academy"
+  ["<秋波原>学園/Akihabara Academy"
+  ,"<飢野>学園/Ueno Academy"
+  ,"<得真道>学園/Umamichi Academy"
+  ,"<王子坊>学園/Ojimachi Academy"
+  ,"学園<軍獄>？/Penitentia Academy?"
+  ,"<歌舞輝蝶>学園/Kabukicho Academy"
+  ,"<窯多>工業高等専門学校/Kamata Technical Academy"
+  ,"<鬼王>警察学校/Kiou Police Academy"
+  ,"<究段>武道学園"
+  ,"<神宿>学園/Shinjuku Academy"
+  ,"<水道帳>商業学校"
+  ,"<世耕>農業・林業学園"
+  ,"<代神山>学園/Daikanyama Academy"
+  ,"東京<サンタ>スクール/Tokyo Santa School"
+  ,"東京<消防>大学"
+  ,"<東都>学園"
+  ,"<豊舟>海洋学園/Toyosu Marine Academy"
+  ,"<中迦野>芸能学園"
+  ,"<武玄>学園/Bukuro Academy"
+  ,"<不死見>学園/Fujimi Academy"
+  ,"<依々祇>学園/Yoyogi Academy"
+  ,"<六本城>学園/Roppongi Academy"
   ,"？？？"
 ]);
 
