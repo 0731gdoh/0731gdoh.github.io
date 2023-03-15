@@ -36,7 +36,7 @@ caption,
   font-size: small;
 }
 table {
-  margin: 0.2rem 0 0.7rem;
+  margin: 0.2rem 0 0.4rem;
   line-height: 1.5;
 }
 * + input[type="button"] {
