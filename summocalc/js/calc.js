@@ -407,7 +407,7 @@ var calc = {
           var be = s.read();
           var bt = s.read();
           var bl = s.read();
-          if(!be || !bt || !bl) break;
+          if(!be || !bl) break;
           bonus.push([be, bt, bl]);
           n -= 3;
         }
