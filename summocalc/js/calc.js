@@ -447,7 +447,7 @@ var calc = {
       var ep = this.es[index];
       var e = ep.effect;
       if(lv){
-        if(e.type === TYPE.PROMPT){
+        if(e.promptData){
           lv = e.promptData.prompt();
           if(lv === null) return;
         }else if(mode == 1){
@@ -911,18 +911,18 @@ var calc = {
           (e.type === TYPE.NOT_DEBUFFED && debuffed)
         ) condition = true;
         while(loop--){
-          var eV = e.getValue(eLv || this.cLv, !this.version, condition);
+          var eV = e.getValue(e.promptData ? eLv : eLv || this.cLv, !this.version, condition);
           var x = eV[0];
           var modEType = e.type;
           var label = [];
-          if(eLv || e.type === TYPE.PROMPT){
+          if(eLv || e.promptData){
             label.push("　[Lv.");
             label.push("]　");
           }else{
             label.push("　{Lv.");
             label.push("}　")
           }
-          if(e.isFixed() || e.type === TYPE.PROMPT){
+          if(e.isFixed() || e.promptData){
             label.splice(1, 0, "---");
           }else{
             label.splice(1, 0, pad(eLv || this.cLv, 3));
