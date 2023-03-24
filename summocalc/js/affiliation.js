@@ -56,7 +56,7 @@ var GUILD = Affiliation.createList(
   ,"ミッショネルズ/Missionaries"
   ,"ルールメイカーズ/Rule Makers"
   ,"ワイズメン/The Wisemen"
-  ,"ワンダラーズ"
+  ,"ワンダラーズ/Wanderers"
   ,"？？？"
   ,"？？？？？"
   ,"？？？？？？"
@@ -91,9 +91,9 @@ var SCHOOL = Affiliation.createList(
 ]);
 
 var TEAM = Affiliation.createList(
-  ["神宿<ワン>ダーフォー<ゲル>部"
-  ,"<バズ>ル<ドリ>ーマーズ"
-  ,"八犬士"
+  ["神宿<ワン>ダーフォー<ゲル>部/Shinjuku Academy Mountaineers"
+  ,"<バズ>ル<ドリ>ーマーズ/Viral Influence"
+  ,"八犬士/Eight Dog Warriors"
 ]);
 
 function splitAffiliationNames(aff, s){
