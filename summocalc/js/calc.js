@@ -604,8 +604,9 @@ var calc = {
     setCheckGroup("cf", WEAPON, undefined, WEAPON.ORDER);
     setCheckGroup("rf", RARITY);
     setOptions("vf", VARIANT);
-    setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language]);
-    setCheckGroup("sf", SCHOOL, undefined, SCHOOL.ORDER[language]);
+    setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language], true);
+    setCheckGroup("sf", SCHOOL, undefined, SCHOOL.ORDER[language], true);
+    setCheckGroup("of", TEAM, undefined, TEAM.ORDER[language]);
     ["srf1", "srf2"].forEach(function(key, i){
       setOptions(key, RANGE);
       cf.updateEffectFilterOptions(i);
@@ -653,8 +654,9 @@ var calc = {
     setText("lcf", "CSタイプ/CS Type");
     setText("lrf", "レア度/Rarity");
     setText("lvf", "バージョン/Variant");
-    setText("lgf", "ギルド/Guild");
-    setText("lsf", "学園/School");
+    setText("lgf", "所属：ギルド/Tag: Guild");
+    setText("lsf", "所属：学園/Tag: School");
+    setText("lof", "所属：その他/Tag: Other");
     setText("lsef1", "効果1/Effect 1");
     setCheckGroup("stf1", TIMING, 17);
     setText("lsef2", "効果2/Effect 2");
@@ -1091,6 +1093,7 @@ var calc = {
     variant: 0,
     guild: 0,
     school: 0,
+    team: 0,
     timing1: TIMING_FLAG.ANY,
     timing2: TIMING_FLAG.ANY,
     range1: 0,
@@ -1115,6 +1118,7 @@ var calc = {
       linkInput(c, "variant", "vf");
       linkCheckGroup(c, "guild", "gf");
       linkCheckGroup(c, "school", "sf");
+      linkCheckGroup(c, "team", "of");
       linkInput(c, "stef", "pf");
       linkInput(c, "bonus_a", "baf");
       linkInput(c, "bonus_d", "bdf");
@@ -1162,7 +1166,7 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["ef", "wf", "cf", "rf", "vf", "gf", "sf", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
+      ["ef", "wf", "cf", "rf", "vf", "gf", "sf", "of", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("xf", "");
@@ -1196,6 +1200,7 @@ var calc = {
         if(vv && x.variant.indexOf(vv) === -1) return false;
         if(p.guild && !(x.guilds & p.guild)) return false;
         if(p.school && !(x.schools & p.school)) return false;
+        if(p.team && !(x.teams & p.team)) return false;
         if(p.ar && !x.canEquip(AR[p.ar])) return false;
         if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
           return (p.effect1 !== ie[0] % d) || !(ie[1] & p.timing1);
