@@ -19,9 +19,9 @@ Affiliation.createList = function(a){
   var k = [];
   var result = a.map(function(x, i){
     var v = 1 << i;
-    var key;
-    x = x.replace(/<([^>]+)>/, function(match, p1){
-      key = p1;
+    var key = "";
+    x = x.replace(/<([^>]+)>/g, function(match, p1){
+      key += p1;
       return p1;
     });
     table.set(key || t(x, 0), v);
@@ -90,6 +90,12 @@ var SCHOOL = Affiliation.createList(
   ,"？？？"
 ]);
 
+var TEAM = Affiliation.createList(
+  ["神宿<ワン>ダーフォー<ゲル>部"
+  ,"<バズ>ル<ドリ>ーマーズ"
+  ,"八犬士"
+]);
+
 function splitAffiliationNames(aff, s){
   if(!s) return 0;
   return s.split("/").reduce(function(acc, cur){
@@ -104,6 +110,10 @@ function splitGuildNames(s){
 
 function splitSchoolNames(s){
   return splitAffiliationNames(SCHOOL, s);
+}
+
+function splitTeamNames(s){
+  return splitAffiliationNames(TEAM, s);
 }
 
 function affs2array(list, n, lang){

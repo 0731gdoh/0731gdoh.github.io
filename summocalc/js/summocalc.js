@@ -139,7 +139,7 @@ function linkTextInput(obj, key, id, oninput){
     if(obj.active) obj.update();
   };
 }
-function setCheckGroup(id, list, br, order){
+function setCheckGroup(id, list, br, order, btn){
   var fieldset = _(id);
   var value = 0;
   if(!order) order = list.map(function(v, i){return i});
@@ -173,7 +173,7 @@ function setCheckGroup(id, list, br, order){
       }
     });
     appendCheck(legend, id + "_all", value, "ALL");
-    if(!br && list.length > 16){
+    if(btn){
       var button = document.createElement("input");
       button.id = id + "_btn";
       button.type = "button";
