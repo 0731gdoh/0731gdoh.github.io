@@ -1,0 +1,58 @@
+@keyframes marquee {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    font-family: sans-serif;
+    background-color: black;
+    background-image: linear-gradient(90deg, navy, black, black, navy);
+    color: white;
+    text-align: center;
+  }
+  h1 {
+    overflow: hidden;
+    color: red;
+    font-size: 0;
+  }
+  h2 {
+    color: gray;
+  }
+  h2::before, h2::after {
+    content: "†";
+    margin: 0.5rem;
+  }
+  a {
+    color: yellow;
+  }
+  h1::before {
+    content: "忘却の箱庭";
+    font-size: 2rem;
+  }
+  h1::after {
+    content: "あなたは 0401 人目の訪問者です";
+    display: block;
+    background-image: none;
+    color: white;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: normal;
+    white-space: nowrap;
+    animation: marquee 12s infinite linear;
+  }
+  ul {
+    margin: 0 0 1rem 0;
+    padding: 0;
+  }
+  p:last-of-type {
+    font-size: 0;
+  }
+  p:last-of-type::after {
+    content: "BBS（工事中）";
+    font-size: 1rem;
+  }
+}

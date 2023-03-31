@@ -27,6 +27,18 @@ li {
   padding: 0;
 }
 </style>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const d = new Date();
+  const m = d.getMonth() * 100 + d.getDate() + 100;
+  if(m === 401){
+    const t = document.createElement("link");
+    t.rel = "stylesheet";
+    t.href = "aprilfool.css";
+    document.head.appendChild(t);
+  }
+});
+</script>
 <title>物置</title>
 <h1>物置</h1>
 <p>
