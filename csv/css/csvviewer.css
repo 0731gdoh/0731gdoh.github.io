@@ -2,37 +2,33 @@
   font-family: monospace, serif;
   font-size: small;
 }
-body {
-  -webkit-text-size-adjust: 100%;
-  touch-action: manipulation;
-}
 table {
   text-align: center;
   border-collapse: collapse;
   margin-top: 1rem;
 }
 thead {
-  background: #ccc;
+  background-color: var(--color-header);
 }
 tr.odd {
-  background: #eee;
+  background-color: #8882;
 }
 th, td {
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-header);
   min-width: 1rem;
 }
 th:hover {
-  background: #0ff4;
+  background-color: #0ff4;
 }
-th.checkable {
-  background: #ccc;
+th.checkable:hover {
+  background-color: inherit;
 }
 td.highlight {
-  background: #ff04;
+  background-color: #ff04;
 }
 td.highlight span.highlight {
   font-weight: bold;
-  color: #F00;
+  color: var(--color-highlight);
 }
 tr.hide, #searchbox.hide {
   display: none;
