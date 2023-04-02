@@ -4,14 +4,12 @@
 <meta name="twitter:title" content="確率計算するやつ">
 <meta name=viewport content="width=device-width,maximum-scale=1">
 <meta name=theme-color content="#040">
+<link rel=stylesheet href="/theme/theme.css">
+<script src="/theme/theme.js"></script>
 <style>
 * {
   font-family: monospace, serif;
   font-size: small;
-}
-body {
-  -webkit-text-size-adjust: 100%;
-  touch-action: manipulation;
 }
 caption {
   text-align: left;
@@ -32,7 +30,7 @@ td {
 }
 .note {
   margin: 0.5rem;
-  color: #800;
+  color: #f00c;
 }
 input[type="button"] {
   width: 4rem;
@@ -67,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ["ライブ・ア・ヒーロー！",
       [["新規☆5ヒーロー（単独）", 1.1, 2.2]
       ,["新規☆5ヒーロー（ダブル）", 0.8, 1.6]
-//      ,["聖夜の熱湯戦線☆5（初開催時）", 0.6, 1.1]
+      ,["聖夜の熱湯戦線☆5", 0.6, 1.1]
       ,["新規☆4ヒーロー（単独）", 2, 32]
       ,["新規☆4ヒーロー（ダブル）", 2, 16]
       ,["新規☆4サイドキック（単独）", 5, 0]
