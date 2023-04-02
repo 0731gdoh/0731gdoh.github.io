@@ -212,6 +212,12 @@ var calc = {
     _("aj").onclick = function(){
       download(Record.csv(AR, language), "text/csv", t("housamo_ar_ja.csv/housamo_ar_en.csv"));
     };
+    _("dm").selectedIndex = parseInt(document.documentElement.dataset.theme) || 0;
+    _("dm").onchange = function(){
+      var x = _("dm").selectedIndex;
+      document.documentElement.dataset.theme = x;
+      localStorage.setItem("theme", x);
+    };
     this.save();
     this.load(location.hash.slice(1), true);
   },
@@ -596,6 +602,7 @@ var calc = {
     cf.active = 0;
     rf.active = 0;
     setOptions("sv", VERSION);
+    setOptions("dm", THEME);
     setOptions("w", WEAPON, FILTER.NAME, WEAPON.ORDER);
     setOptions("cs", CS, FILTER.VALUE, CS.ORDER);
     this.updateMultiplierOptions();
@@ -626,6 +633,7 @@ var calc = {
     });
     this.updateEffectOptions();
     setText("lsv", "モード/Mode");
+    setText("ldm", "テーマ/Theme");
     setText("lpc", "カード/Card");
     setText("lpl", "カードLv/Card Lv");
     setText("lw", "武器/Weapon");

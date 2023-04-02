@@ -319,6 +319,21 @@ function checkUpdate(){
     });
   }
 }
+function initTheme(){
+  var m = window.matchMedia("(prefers-color-scheme: dark)");
+  document.documentElement.dataset.theme = localStorage.getItem("theme") || 0;
+  if(m.matches){
+    document.documentElement.classList.add("dark");
+  }
+  m.addEventListener("change", function(){
+    if(m.matches){
+      document.documentElement.classList.add("dark");
+    }else{
+      document.documentElement.classList.remove("dark");
+    }
+  });
+}
+initTheme();
 
 onload = function(){
   register("sw.js");
