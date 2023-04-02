@@ -4,10 +4,9 @@
 <meta name="twitter:title" content="物置">
 <meta name=viewport content="width=device-width,maximum-scale=1">
 <meta name=theme-color content="#000">
+<link rel=stylesheet href="/theme/theme.css">
+<script src="/theme/theme.js"></script>
 <style>
-body {
-  -webkit-text-size-adjust: 100%;
-}
 h1 {
   font-size: xxx-large;
   font-weight: bold;
@@ -27,18 +26,6 @@ li {
   padding: 0;
 }
 </style>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const d = new Date();
-  const m = d.getMonth() * 100 + d.getDate() + 100;
-  if(m === 401){
-    const t = document.createElement("link");
-    t.rel = "stylesheet";
-    t.href = "aprilfool.css";
-    document.head.appendChild(t);
-  }
-});
-</script>
 <title>物置</title>
 <h1>物置</h1>
 <p>
@@ -60,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <li><a href="abbreviate/">略称ガチャ</a></li>
     <li><a href="gachacalc/">確率計算するやつ</a></li>
   </ul>
+  <div id="select_theme"></div>
 </p>
 <hr>
 <p>
