@@ -126,6 +126,12 @@ var RANGE = ListItem.createList(
   ,["敵に/to enemy"]
 ]);
 
+var THEME = ListItem.createList(
+  [["自動/Auto"]
+  ,["ライト/Light"]
+  ,["ダーク/Dark"]
+]);
+
 var VARIANT = ListItem.createList(
   [[""]
   ,["バレ/Valentine"]
