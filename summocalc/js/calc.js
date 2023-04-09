@@ -1014,7 +1014,7 @@ var calc = {
             default:
               x = x.round();
               exdmg += x;
-              desc.push(t("ダメージ+/Damage+") + x);
+              desc.push(t("ダメージ/Damage") + (x < 0 ? "" : "+") + x);
               break;
 
             case TYPE.SEED:
@@ -1077,7 +1077,7 @@ var calc = {
     for(i = 1; i < 5; i++){
       var attr = MULTIPLIER[i];
       if(!multiplier || i === multiplier){
-        x = Math.ceil(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg);
+        x = Math.ceil(Math.max(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg, 0));
         if(i === 3 || multiplier) this.setTitle(x);
         result.push("　[" + attr + "]: " + x);
       }
