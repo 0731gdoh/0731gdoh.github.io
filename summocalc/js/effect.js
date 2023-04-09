@@ -402,7 +402,7 @@ var EFFECT = Effect.createList(
   ,["攻撃力微増[AR]/Minor ATK Increase[AR]", "こうけひ", 0, 1.13, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,["[カスタム]/[Customizable]", "", 0, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.CUSTOM]
   ,["[カスタム]/[Customizable]", "", 1, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.CUSTOM]
-  ,["<束縛>時強化/Bind Strengthening", "そく", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["<束縛>時強化/Bind Strengthening", "そくはくしき", 0, 10, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特攻[1.3]/Bonus[1.3]", "とつ", 0, 1.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["<*守護>無効化/Nullify Protection", "しゆこむ", 1, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["<*防御強化>無効化/Nullify DEF Up", "ほうき", 1, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
@@ -587,6 +587,8 @@ var EFFECT = Effect.createList(
   ,["魔法弱点/Magic Weakness", "まほ", 1, 2.5, WEAPON_FLAG.MAGIC, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,["魅了時強化/Charm Strengthening", "みりようしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,["非<連撃>時強化/Non-Combo Strengthening", "ひれ", 0, [1.5, 3], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.NON_STATUS]
+  ,["<束縛>時弱化/Bind Weakening", "そくはくしし", 0, 0, -999999, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["祝福時強化[ノブミチ]/Blessing Strengthening[Nobumichi]", "しゆく", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T", 1, 999,
     [[1, 1.6]
