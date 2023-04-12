@@ -33,13 +33,13 @@ input[type="button"] {
 const getDescription = (title, key) => {
   switch(title){
     case "localStorage":
-      return getStorageDescription(key);
+      return `${key}：${getStorageDescription(key)}`;
     case "cache":
-      if(/sc-\d{6}-\d/.test(key)) return "ダメージ計算機のオフライン用キャッシュ";
+      if(/sc-(\d{6})-\d/.test(key)) return `${key}：ダメージ計算機のオフライン用キャッシュ`;
     case "serviceWorker":
       if(/summocalc/.test(key)) return "ダメージ計算機用サービスワーカー";
   }
-  return "";
+  return key;
 };
 
 const getStorageDescription = (key) => {  switch(key){
@@ -70,14 +70,20 @@ const getSlotDescription = (key) => {
 document.addEventListener("DOMContentLoaded", () => {
   const keys = [];
   const length = localStorage.length;
+  const localDiv = document.createElement("div");
+  const cacheDiv = document.createElement("div");
+  const workerDiv = document.createElement("div");
+  document.forms[0].appendChild(localDiv);
+  document.forms[0].appendChild(cacheDiv);
+  document.forms[0].appendChild(workerDiv);
   for(let i = 0; i < length; i++) keys.push(localStorage.key(i));
   keys.sort();
-  appendFieldset(document.forms[0], "localStorage", "削除", keys, (key) => localStorage.removeItem(key));
+  appendFieldset(localDiv, "localStorage", "削除", keys, (key) => localStorage.removeItem(key));
   if(caches) caches.keys().then((list) => {
-    appendFieldset(document.forms[0], "caches", "削除", list, (key) => caches.delete(key));
+    appendFieldset(cacheDiv, "caches", "削除", list, (key) => caches.delete(key));
   });
   if("serviceWorker" in navigator) navigator.serviceWorker.getRegistrations().then((list) => {
-    appendFieldset(document.forms[0], "serviceWorker", "登録解除", list.map((reg) => reg.scope), (scope) => navigator.serviceWorker.getRegistration(scope).then((reg) => {
+    appendFieldset(workerDiv, "serviceWorker", "登録解除", list.map((reg) => reg.scope), (scope) => navigator.serviceWorker.getRegistration(scope).then((reg) => {
       if(reg) reg.unregister();
     }));
   });
@@ -94,8 +100,8 @@ const appendFieldset = (parent, title, action, list, callback) => {
     const check = document.createElement("input");
     const label = document.createElement("label");
     check.type = "checkbox";
-    label.textContent = `${key}：${getDescription(title, key)}`;
-    label.htmlFor = check.id = `check_${i}`;
+    label.textContent = getDescription(title, key);
+    label.htmlFor = check.id = `check_${title}_${i}`;
     check.dataset.key = key;
     div.appendChild(check);
     div.appendChild(label);
