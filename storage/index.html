@@ -34,8 +34,8 @@ const getDescription = (title, key) => {
   switch(title){
     case "localStorage":
       return `${key}：${getStorageDescription(key)}`;
-    case "cache":
-      if(/sc-(\d{6})-\d/.test(key)) return `${key}：ダメージ計算機のオフライン用キャッシュ`;
+    case "caches":
+      if(/sc-\d{6}-\d/.test(key)) return `${key}：ダメージ計算機のオフライン用キャッシュ`;
     case "serviceWorker":
       if(/summocalc/.test(key)) return "ダメージ計算機用サービスワーカー";
   }
