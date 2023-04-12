@@ -34,12 +34,12 @@ a:active {
 a:visited {
   color: var(--color-link-visited);
 }
-#select_theme {
+#theme_selector {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
 }
-#select_theme input {
+#theme_selector input {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -51,7 +51,7 @@ a:visited {
   border-radius: 0.4rem;
   font-weight: bold;
 }
-.theme_dialog {
+#theme_dialog {
   padding: 0;
   font-family: monospace;
   color: var(--color);
@@ -59,16 +59,16 @@ a:visited {
   border: 1px solid var(--color);
   border-radius: 0.4rem;
 }
-.theme_dialog::backdrop {
+#theme_dialog::backdrop {
   background-color: #002c;
 }
-.theme_dialog div:first-child {
+#theme_dialog div:first-child {
   margin: 0;
   padding: 0.1rem 0.5rem;
   background-color: #26f6;
   border-bottom: 1px solid var(--color);
 }
-.theme_dialog div {
+#theme_dialog div {
   margin: 0;
   padding: 1.5rem 3rem;
 }

@@ -14,10 +14,11 @@ const initTheme = () => {
     }
   });
   document.addEventListener("DOMContentLoaded", createThemeSelector);
+  window.addEventListener("storage", checkStorageUpdate);
 };
 
 const createThemeSelector = () => {
-  const container = document.getElementById("select_theme");
+  const container = document.getElementById("theme_selector");
   if(container){
     const select = document.createElement("select");
     for(const x of ["自動", "ライト", "ダーク"]){
@@ -25,6 +26,7 @@ const createThemeSelector = () => {
       option.textContent = x;
       select.appendChild(option);
     }
+    select.id = "theme_select";
     select.selectedIndex = parseInt(document.documentElement.dataset.theme) || 0;
     if(HTMLDialogElement){
       const btn = document.createElement("input");
@@ -33,7 +35,7 @@ const createThemeSelector = () => {
       const body = document.createElement("div");
       btn.type = "button";
       btn.value = title.textContent = "テーマ切替";
-      dialog.classList.add("theme_dialog");
+      dialog.id = "theme_dialog";
       body.appendChild(select);
       dialog.appendChild(title);
       dialog.appendChild(body);
@@ -45,12 +47,21 @@ const createThemeSelector = () => {
     }
     select.addEventListener("change", updateTheme);
   }
+  
 };
 
 const updateTheme = (e) => {
   const n = e.currentTarget.selectedIndex;
   document.documentElement.dataset.theme = n;
   localStorage.setItem("theme", n);
+};
+
+const checkStorageUpdate = (e) => {
+  if(e.key === "theme"){
+    const select = document.getElementById("theme_select");
+    if(select) select.selectedIndex = e.newValue;
+    document.documentElement.dataset.theme = e.newValue;
+  }
 };
 
 const showModalFunction = (dialog) => {
