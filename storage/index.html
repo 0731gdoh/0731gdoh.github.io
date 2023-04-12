@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ストレージ管理">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#000">
+<link rel=stylesheet href="/theme/theme.css">
+<script src="/theme/theme.js"></script>
+<style>
+* {
+  font-family: monospace, serif;
+  font-size: small;
+}
+form {
+  line-height: 2;
+  margin-bottom: 1rem;
+}
+fieldset {
+  padding: 0.5rem;
+  border: solid 1px #8888;
+  border-radius: 0.4rem;
+}
+label {
+  margin-left: 0.5rem;
+}
+input[type="button"] {
+  margin-top: 1rem;
+}
+</style>
+<script>
+"use strict";
+
+const getDescription = (title, key) => {
+  switch(title){
+    case "localStorage":
+      return getStorageDescription(key);
+    case "cache":
+      if(/sc-\d{6}-\d/.test(key)) return "ダメージ計算機のオフライン用キャッシュ";
+    case "serviceWorker":
+      if(/summocalc/.test(key)) return "ダメージ計算機用サービスワーカー";
+  }
+  return "";
+};
+
+const getStorageDescription = (key) => {  switch(key){
+    case "language":
+      return "ダメージ計算機の言語設定";
+    case "theme":
+      return "サイトのテーマ設定";
+    default:
+      if(/slot\d/.test(key)){
+        return getSlotDescription(key);
+      }else{
+        return "";
+      }
+  }
+};
+
+const getSlotDescription = (key) => {
+  const data = localStorage.getItem(key).split("#");
+  if(data.length === 2 && data[0] && data[1]){
+    let name = decodeURIComponent(data[0]);
+    if(name.length > 49) name = name.slice(0, 49) + "…";
+    return `計算結果「${name}」`;
+  }else{
+    return "";
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  const keys = [];
+  const length = localStorage.length;
+  for(let i = 0; i < length; i++) keys.push(localStorage.key(i));
+  keys.sort();
+  appendFieldset(document.forms[0], "localStorage", "削除", keys, (key) => localStorage.removeItem(key));
+  if(caches) caches.keys().then((list) => {
+    appendFieldset(document.forms[0], "caches", "削除", list, (key) => caches.delete(key));
+  });
+  if("serviceWorker" in navigator) navigator.serviceWorker.getRegistrations().then((list) => {
+    appendFieldset(document.forms[0], "serviceWorker", "登録解除", list.map((reg) => reg.scope), (scope) => navigator.serviceWorker.getRegistration(scope).then((reg) => {
+      if(reg) reg.unregister();
+    }));
+  });
+});
+
+const appendFieldset = (parent, title, action, list, callback) => {
+  const fieldset = document.createElement("fieldset");
+  const legend = document.createElement("legend");
+  const button = document.createElement("input");
+  legend.textContent = title;
+  fieldset.appendChild(legend);
+  for(const [i, key] of list.entries()){
+    const div = document.createElement("div");
+    const check = document.createElement("input");
+    const label = document.createElement("label");
+    check.type = "checkbox";
+    label.textContent = `${key}：${getDescription(title, key)}`;
+    label.htmlFor = check.id = `check_${i}`;
+    check.dataset.key = key;
+    div.appendChild(check);
+    div.appendChild(label);
+    fieldset.appendChild(div);
+  }
+  button.type = "button";
+  button.value = action;
+  button.disabled = true;
+  fieldset.appendChild(button);
+  fieldset.addEventListener("change", () => {
+    button.disabled = !fieldset.querySelector(":checked");
+  });
+  button.addEventListener("click", () => {
+    const list = fieldset.querySelectorAll(":checked");
+    if(confirm(`${title}：${list.length}件の項目を${action}しますか？`)){
+      for(const check of list){
+        callback(check.dataset.key);
+        check.checked = false;
+        check.parentElement.remove();
+      }
+      button.disabled = true;
+    }
+  });
+  parent.appendChild(fieldset);
+};
+
+</script>
+<title>ストレージ管理</title>
+<form></form>
+<a href="/">戻る</a>
