@@ -458,7 +458,7 @@ var calc = {
         if(e.promptData){
           lv = e.promptData.prompt();
           if(lv === null) return;
-        }if(e.isAffiliation()){
+        }else if(e.isAffiliation()){
           lv = 0;
           while(lv < 1 || lv > 10){
             lv = prompt(t("効果Lv (※1〜10)/Effect Lv\n(1-10)"), ep.lv || "");
