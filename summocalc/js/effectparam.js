@@ -30,6 +30,7 @@ EffectParameter.prototype = {
     this.maxHp = 1;
     this.c = 0;
     this.a = 0;
+    this.unit = 0;
   },
   clear: function(){
     if(this.exclusive){
@@ -106,6 +107,9 @@ EffectParameter.prototype = {
   },
   getCustomAdd: function(){
     return new Fraction(this.a);
+  },
+  setUnitNum: function(u){
+    this.unit = u;
   },
   getLoopSum: function(){
     if(this.alt) return this.alt.reduce(function(a, ep){

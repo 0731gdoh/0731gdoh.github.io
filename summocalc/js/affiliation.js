@@ -17,6 +17,8 @@ Affiliation.createList = function(a){
   var table = new Map();
   var order = [[], []];
   var k = [];
+  var selectable = 0;
+  var exists = 0;
   var result = a.map(function(x, i){
     var v = 1 << i;
     var key = "";
@@ -25,8 +27,13 @@ Affiliation.createList = function(a){
       return p1;
     });
     table.set(key || t(x, 0), v);
-    order[0].push(i);
-    order[1].push(i);
+    if(x[0] === "("){
+      selectable = selectable | v;
+    }else{
+      order[0].push(i);
+      order[1].push(i);
+      if(x[0] !== "？") exists = exists | v;
+    }
     k.push(t(x, 1));
     return new Affiliation(i, x, v);
   });
@@ -34,6 +41,8 @@ Affiliation.createList = function(a){
     return k[a] < k[b] ? -1 : 1;
   });
   result.table = table;
+  result.selectable = selectable;
+  result.exists = exists;
   result.ORDER = order;
   return result;
 };
@@ -62,6 +71,7 @@ var GUILD = Affiliation.createList(
   ,"？？？？？？"
   ,"？？？？？？？"
   ,"？？？？？？？？"
+  ,"(設定可)/(Selectable)"
 ]);
 
 var SCHOOL = Affiliation.createList(
@@ -80,7 +90,7 @@ var SCHOOL = Affiliation.createList(
   ,"<代神山>学園/Daikanyama Academy"
   ,"東京<サンタ>スクール/Tokyo Santa School"
   ,"東京<消防>大学"
-  ,"<東都>学園"
+  ,"<東都>学園/Togo Academy"
   ,"<豊舟>海洋学園/Toyosu Marine Academy"
   ,"<中迦野>芸能学園"
   ,"<武玄>学園/Bukuro Academy"
