@@ -35,7 +35,7 @@ var calc = {
       _("su").style.display = "none";
     }
     if(!navigator.userAgent.match(/iP(hone|[ao]d)/) || isStandalone()) _("ms").style.display = "none";
-    this.setLanguage(-1);
+    this.loadLanguage();
     this.cardfilter.init();
     this.arfilter.init();
     linkInput(c, "atk", "a");
@@ -277,6 +277,7 @@ var calc = {
             tmp.push(v.hp);
             tmp.push(v.maxHp);
           }
+          if(e.type === TYPE.ATK && e.isAffiliation()) tmp.push(v.unit);
           if(e.type === TYPE.CUSTOM){
             var c = v.getCustomMul();
             tmp.push(c.n);
@@ -391,6 +392,7 @@ var calc = {
             v.hp = s.read();
             v.maxHp = s.read();
           }
+          if(e.type === TYPE.ATK && e.isAffiliation()) v.unit = s.read();
           if(e.type === TYPE.CUSTOM){
             var cn = s.read();
             var cd = s.read();
@@ -456,6 +458,22 @@ var calc = {
         if(e.promptData){
           lv = e.promptData.prompt();
           if(lv === null) return;
+        }if(e.isAffiliation()){
+          lv = 0;
+          while(lv < 1 || lv > 10){
+            lv = prompt(t("効果Lv (※1〜10)/Effect Lv\n(1-10)"), ep.lv || "");
+            if(!lv) return;
+            lv = parseInt(lv, 10) || 0;
+          }
+          if(e.type === TYPE.ATK){
+            var u = 0;
+            while(u < 1 || u > 5){
+              u = prompt(t("所属メンバー (※1〜5)/Guildmates\n(1-5)"), "");
+              if(!u) return;
+              u = parseInt(u, 10) || 0;
+            }
+            ep.setUnitNum(u);
+          }
         }else if(mode == 1){
           lv = 0;
         }else if(mode == 2 && !e.isFixed()){
@@ -485,7 +503,7 @@ var calc = {
             a = prompt(t("追加ダメージ (※0以上の整数)/Additional damage\n(Enter an integer greater than or equal to 0.)"), 0);
             if(!a) return;
             a = parseInt(a, 10);
-            if(a === undefined) a = -1;
+            if(a !== a) a = -1;
           }
           if(n === d && !a) return;
           ep.setCustom(n, d, a);
@@ -566,30 +584,23 @@ var calc = {
     this.update();
     this.updateEffectOptions();
   },
+  loadLanguage: function(){
+    try{
+      language = parseInt(localStorage.getItem("language") || 0, 10);
+    }catch(e){}
+    this.updateTexts();
+  },
   setLanguage: function(x){
-    if(x < 0){
-      try{
-        language = parseInt(localStorage.getItem("language") || -1, 10);
-      }catch(e){}
-      if(language < 0) language = (
-        navigator.language ||
-        navigator.userLanguage ||
-        navigator.browserLanguage
-      ).slice(0, 2) === "ja" ? 0 : 1;
-    }else{
-      language = x;
-    }
+    language = x;
     try{
       localStorage.setItem("language", language);
     }catch(e){}
     this.updateTexts();
-    if(x >= 0){
-      this.active = 0;
-      this.cardfilter.update();
-      this.arfilter.update();
-      this.active = 1;
-      this.update();
-    }
+    this.active = 0;
+    this.cardfilter.update();
+    this.arfilter.update();
+    this.active = 1;
+    this.update();
   },
   updateTexts: function(){
     var cf = this.cardfilter;
@@ -956,6 +967,15 @@ var calc = {
 //          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(1);
           //武器種弱点
           if(e.type === TYPE.WEAPON_WEAKNESS && !((1 << weapon) & eV[1])) x = new Fraction(1);
+          //支援効果
+          if(e.isAffiliation()){
+            if(this.card && !(card.guilds & GUILD.exists)){
+              x = new Fraction(0);
+            }else if(e.type === TYPE.ATK){
+              x = x.add((ep.unit - 1) * 30, 100);
+              label.push(t("[所属メンバー:/[Guildmates:") + ep.unit + "]");
+            }
+          }
 
           if(dow && e.isDebuff(group)){
             if(!(x - 0 && x.n !== x.d)){
@@ -1240,7 +1260,7 @@ var calc = {
     bonus_b: 0,
     nullify: 0,
     card: CARD[0],
-    equipable: true,
+    equipable: 1,
     current: "",
     active: 0,
     init: function(){
@@ -1281,7 +1301,7 @@ var calc = {
         setValue(x, 0);
       });
       setValue("rxf", "");
-      setValue("ceq", true);
+      setValue("ceq", 1);
       this.active = active;
       this.update();
     },
