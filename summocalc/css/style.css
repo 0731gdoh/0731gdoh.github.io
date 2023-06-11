@@ -170,8 +170,13 @@ textarea {
 .ib {
   display: inline-block;
   width: 100%;
-  max-width: 25rem;
+/*  max-width: 25rem;*/
   vertical-align: top;
+}
+@media (orientation: landscape){
+  .ib {
+    width: 50%;
+  }
 }
 .sp {
   position: relative;
