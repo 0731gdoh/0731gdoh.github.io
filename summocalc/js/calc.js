@@ -622,8 +622,8 @@ var calc = {
     setCheckGroup("cf", WEAPON, undefined, WEAPON.ORDER);
     setCheckGroup("rf", RARITY);
     setOptions("vf", VARIANT);
-    setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language], true);
-    setCheckGroup("sf", SCHOOL, undefined, SCHOOL.ORDER[language], true);
+    setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language]);
+    setCheckGroup("sf", SCHOOL, undefined, SCHOOL.ORDER[language]);
     setCheckGroup("of", TEAM, undefined, TEAM.ORDER[language]);
     ["srf1", "srf2"].forEach(function(key, i){
       setOptions(key, RANGE);
@@ -667,15 +667,18 @@ var calc = {
     setText("rs", "リセット/Reset");
     setText("sl", "English/日本語");
     setText("fc", "カードフィルタ/Filter ");
+    setText("ltb1", "一般/General");
+    setText("ltb2", "所属タグ/Affiliation");
+    setText("ltb3", "スキル/Skill");
     setText("lxf", "名前/Name");
     setText("lef", "属性/Attribute");
     setText("lwf", "武器/Weapon");
     setText("lcf", "CSタイプ/CS Type");
     setText("lrf", "レア度/Rarity");
     setText("lvf", "バージョン/Variant");
-    setText("lgf", "所属：ギルド/Tag: Guild");
-    setText("lsf", "所属：学園/Tag: School");
-    setText("lof", "所属：その他/Tag: Other");
+    setText("lgf", "ギルド/Guild");
+    setText("lsf", "学園/School");
+    setText("lof", "その他/Other");
     setText("lsef1", "効果1/Effect 1");
     setCheckGroup("stf1", TIMING, 17);
     setText("lsef2", "効果2/Effect 2");
@@ -1090,8 +1093,8 @@ var calc = {
         [3, 2, 2, 2, 2, 2, 2, 4, 1, 3, 3],
         [3, 4, 4, 4, 3, 3, 1, 2, 4, 3, 3],
         [3, 3, 3, 3, 4, 4, 4, 1, 2, 3, 3],
-        [3, 4, 3, 3, 3, 3, 3, 3, 3, 3, 1],
-        [3, 1, 3, 3, 3, 3, 3, 3, 3, 4, 3]
+        [4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1],
+        [1, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3]
       ][card.attribute][MULTIPLIER[multiplier % 100].getValue() - 1];
     }
     for(i = 1; i < 5; i++){

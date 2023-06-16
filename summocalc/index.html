@@ -38,11 +38,23 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
     <input type=button id=sl>
   </div>
   <hr>
-  <div class=ib><div class=sp><div class=nm>
+  <div class=fx><div class=ib><div class=sp><div class=nm>
     <div class=cb><label for=pc id=lpc></label><select id=pc></select></div><input type=button id=fv><br>
     <div id=sw class=sb>
-      <table>
-        <caption><span id=fc></span><span id=cx></span></caption>
+      <div class=cp><span id=fc></span><span id=cx></span></div>
+      <input type=radio name=tab id=tb1 checked>
+      <input type=radio name=tab id=tb2>
+      <input type=radio name=tab id=tb3>
+      <div class=tl>
+        <div></div>
+        <label for=tb1 id=ltb1></label>
+        <div></div>
+        <label for=tb2 id=ltb2></label>
+        <div></div>
+        <label for=tb3 id=ltb3></label>
+        <div></div>
+      </div>
+      <div class=tc id=tc1><table>
         <tr>
           <td><label for=xf id=lxf></label>
           <td><input type=text id=xf>
@@ -62,6 +74,11 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
           <td><label for=vf id=lvf></label>
           <td><select id=vf></select>
         <tr>
+          <td><label for=qf id=lqf></label>
+          <td><select id=qf></select>
+      </table></div>
+      <div class=tc id=tc2><table>
+        <tr>
           <td><label for=gf_btn id=lgf></label>
           <td><fieldset id=gf></fieldset>
         <tr>
@@ -70,12 +87,8 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
         <tr>
           <td><label id=lof></label>
           <td><fieldset id=of></fieldset>
-        <tr>
-          <td><label for=qf id=lqf></label>
-          <td><select id=qf></select>
-      </table>
-      <hr>
-      <table>
+      </table></div>
+      <div class=tc id=tc3><table>
         <tr>
           <td><label id=lsef1 for=sef1></label>
           <td><fieldset id=stf1></fieldset><select id=sef1 class=tag></select><select id=srf1></select>
@@ -95,8 +108,7 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
           <td><label for=nf id=lnf></label>
           <td><select id=nf class=tag></select>
       </table>
-      <input type=checkbox id=ccf><label for=ccf id=lccf></label>
-      <hr>
+      <input type=checkbox id=ccf><label for=ccf id=lccf></label></div>
       <div class=bs>
         <input type=button id=rd>
       </div>
@@ -108,8 +120,8 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
     <hr>
     <div class=cb><label for=rc id=lrc></label><select id=rc></select></div><input type=button id=rv><br>
     <div id=rw class=sb>
-      <table>
-        <caption><span id=rfc></span><span id=rcx></span></caption>
+      <div class=cp><span id=rfc></span><span id=rcx></span></div>
+      <div class=tc><table>
         <tr>
           <td><label for=rxf id=lrxf></label>
           <td><input type=text id=rxf>
@@ -147,8 +159,7 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
           <td><label for=rnf id=lrnf></label>
           <td><select id=rnf class=tag></select>
       </table>
-      <input type=checkbox id=ceq><label for=ceq id=lceq></label>
-      <hr>
+      <input type=checkbox id=ceq><label for=ceq id=lceq></label></div>
       <div class=bs>
         <input type=button id=ri><input type=button id=rrd>
       </div>
@@ -169,14 +180,17 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
     <input type=button id=cc>
     <input type=button id=sr>
     <input type=button id=su>
+  </div></div></div>
+  <div class=fx><div class=ib><div class=sp>
     <div id=sm>
       <select id=ssf></select>
       <div class=cb><input type=button id=svd><input type=button id=ldd><input type=button id=dld></div>
     </div>
+  </div></div><div class=ib><div class=sp>
     <div id=dl>
       <span id=dd></span><a href="javascript:void(0)" id=dj>DOWNLOAD</a><br>
       <span id=ad></span><a href="javascript:void(0)" id=aj>DOWNLOAD</a><br>
     </div>
-  </div></div>
-  <div id=ms></div>
+  </div></div></div>
 </form>
+<div id=ms></div>

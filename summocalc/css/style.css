@@ -71,16 +71,15 @@ form {
   line-height: 2;
 }
 label,
-caption,
+.cp,
 #dl,
 #ms {
   text-align: left;
   font-family: "Courier", monospace;
   font-size: small;
 }
-table {
-  margin: 0.2rem 0 0.4rem;
-  line-height: 1.5;
+.cp {
+  margin: 0.3rem;
 }
 * + input[type="button"] {
   margin-left: 0.5rem;
@@ -147,13 +146,17 @@ textarea {
 .sb {
   position: relative;
   display: none;
-  padding: 0.3rem;
   background-image: linear-gradient(var(--bgcolor-sub-from), var(--bgcolor-sub-to));
   background-color: var(--bgcolor-sub-from);
   border: solid 1px;
   border-color: var(--border-sub, revert);
   border-radius: 0.2rem;
   margin-left: 0.7rem;
+  overflow-x: auto;
+}
+table {
+  line-height: 1.5;
+  margin-bottom: 0.4rem;
 }
 .rb {
   position: absolute;
@@ -162,6 +165,7 @@ textarea {
 }
 .bs {
   text-align: right;
+  margin: 0 0.3rem 0.3rem;
 }
 #dl {
   padding: 1rem 0 0.5rem;
@@ -170,17 +174,24 @@ textarea {
 .ib {
   display: inline-block;
   width: 100%;
-/*  max-width: 25rem;*/
   vertical-align: top;
-}
-@media (orientation: landscape){
-  .ib {
-    width: 50%;
-  }
 }
 .sp {
   position: relative;
   padding: 0 0.4rem;
+}
+@media (orientation: landscape) and (min-width: 480px) {
+  .ib {
+    width: 55%;
+  }
+  .ib:last-child {
+    position: sticky;
+    top: 0;
+    width: 45%;
+  }
+  .ib:last-child .sp {
+    padding: 0.2rem 0.4rem 0 0;
+  }
 }
 #ms {
   line-height: normal;
@@ -279,4 +290,63 @@ a:visited {
 }
 #ldm {
   margin-left: 0.7rem;
+}
+.tl {
+  display: flex;
+}
+.tl > div {
+  flex: 0 0 0.2rem;
+  border-bottom: solid 1px;
+  border-color: var(--color);
+}
+.tl > div:first-child {
+  flex: 0 0 0.5rem;
+}
+.tl > div:last-child {
+  flex: 1 0 0.2rem;
+}
+#tb1,
+#tb2,
+#tb3 {
+  display: none;
+}
+#ltb1,
+#tc1 {
+  background-color: #f001;
+}
+#ltb2,
+#tc2 {
+  background-color: #0f01;
+}
+#ltb3,
+#tc3 {
+  background-color: #00f1;
+}
+.tl > label {
+  padding: 0 1rem;
+  text-align: center;
+  border: solid 1px var(--color);
+  border-radius: 0.4rem 0.4rem 0 0;
+  word-break: break-all;
+}
+#tb1:checked ~ .tl > #ltb1,
+#tb2:checked ~ .tl > #ltb2,
+#tb3:checked ~ .tl > #ltb3 {
+  border-bottom: none;
+}
+.tc {
+  width: 100%;
+  padding: 0.3rem;
+  border-bottom: solid 1px var(--color);
+  display: none;
+}
+.cp + .tc {
+  border-top: solid 1px var(--color);
+  background-color: #f001;
+  display: block;
+}
+#tb1:checked ~ #tc1,
+#tb2:checked ~ #tc2,
+#tb3:checked ~ #tc3 {
+  display: block;
 }
