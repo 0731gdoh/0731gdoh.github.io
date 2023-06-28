@@ -37,10 +37,10 @@ var TIMING = Timing.createList(
   ,["ダメージ時/Attacked", "ba"]
   ,["対ダメージ/Counter", "cd"]
   ,["ダメージ後/Post-Damage", "pd"]
-  ,["強化後/Buffed", "b"]
-  ,["弱体後/Debuffed", "d"]
+  ,["強化後/Post-Buff", "b"]
+  ,["弱体後/Post-Debuff", "d"]
   ,["退場時/Defeat", "ud"]
-  ,["間接/Indirect", "id"]
+  ,["[間接]/[Indirect]", "id"]
   ,["CS", "c"]
   ,["CS発動後/After CS", "cx"]
 ]);
