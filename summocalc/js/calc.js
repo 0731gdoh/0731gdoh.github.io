@@ -56,6 +56,7 @@ var calc = {
         setText("sax", "+5");
       }
     });
+    _("pl").max = 70 + MAX_LEVEL_SEED;
     linkInput(c, "lv", "pl");
     linkInput(c, "ar", "rc", function(){
       if(c.active) c.updateEffectOptions();
