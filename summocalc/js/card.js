@@ -7,6 +7,7 @@ var LIMITED = [
   "勇者", "ヤマサチヒコ", "オオグチマガミ", "ゴロウザエモン", "イナバ",
   "ナイトゴーント", "トリッカー", "サンドドラゴン", "レイス"
 ];
+var MAX_LEVEL_SEED = 20;
 
 function Card(index, id, name, variant, guilds, schools, teams, e, x){
   var skills = e.map(function(s){
@@ -106,7 +107,7 @@ Card.createList = function(a){
 Card.csv = function(list, x){
   return list.map(function(v){
     if(!v.name){
-      return t("#,レア度,名前,バージョン,限定,属性,武器タイプ,CSタイプ,CS倍率,基礎ATK,成長率*98,最大Lv,ATK(最大Lv),ATK(最大Lv+15),ダメージ補正(自身),ダメージ補正(味方),ダメージ補正(敵),効果(自身),効果(味方),効果(敵),特攻,特防,状態無効,ギルド,学園,その他/#,Rarity,Name,Variant,Limited,Attribute,WeaponType,CSType,CSRate,BaseATK,GrowthRate*98,MaxLv,ATK(MaxLv),ATK(MaxLv+10),DamageModifiers(Self),DamageModifiers(Ally),DamageModifiers(Enemy),Effects(Self),Effects(Ally),Effects(Enemy),AttackBonus,DefenseBonus,NullifyStatus,Guilds,Schools,Others", x);
+      return t("#,レア度,名前,バージョン,限定,属性,武器タイプ,CSタイプ,CS倍率,基礎ATK,成長率*98,最大Lv,ATK(最大Lv),ATK(最大Lv+" + MAX_LEVEL_SEED + "),ダメージ補正(自身),ダメージ補正(味方),ダメージ補正(敵),効果(自身),効果(味方),効果(敵),特攻,特防,状態無効,ギルド,学園,その他/#,Rarity,Name,Variant,Limited,Attribute,WeaponType,CSType,CSRate,BaseATK,GrowthRate*98,MaxLv,ATK(MaxLv),ATK(MaxLv+" + MAX_LEVEL_SEED + "),DamageModifiers(Self),DamageModifiers(Ally),DamageModifiers(Enemy),Effects(Self),Effects(Ally),Effects(Enemy),AttackBonus,DefenseBonus,NullifyStatus,Guilds,Schools,Others", x);
     }else{
       var r = [
         v.index,
@@ -122,7 +123,7 @@ Card.csv = function(list, x){
         v.growth.muln(98),
         v.maxLv,
         v.getValue(v.maxLv),
-        v.getValue(v.maxLv + 15)
+        v.getValue(v.maxLv + MAX_LEVEL_SEED)
       ];
       v.effects.forEach(function(z){
         r.push(z.map(function(n){
