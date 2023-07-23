@@ -1,1 +1,228 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="経験値計算">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#004">
+<link rel=stylesheet href="/theme/theme.css">
+<script src="/theme/theme.js"></script>
+<title>経験値計算</title>
+<style>
+* {
+  font-family: monospace, serif;
+  font-size: small;
+}
+div{
+  background-color: #f884;
+  margin: 0.2rem 0;
+}
+input[type="number"] {
+  width: 2rem;
+  text-align: right;
+}
+#n {
+  width: 3rem;
+}
+#next {
+  width: 6rem;
+}
+input[type="checkbox"] {
+  margin: 0 0.4rem 0 1rem;
+}
+table {
+  border-collapse: collapse;
+  margin: 0.5rem;
+}
+th {
+  font-weight: bold;
+  background-color: #8ff4;
+}
+th, td {
+  border: 1px solid;
+}
+form {
+  margin-bottom: 1.5rem;
+}
+</style>
+<script>
+"use strict";
 
+const dungeon = [
+  ["探索なし", 0],
+  ["探索上級", 32000],
+  ["探索超級", 40000]
+];
+const g1 = 1536;
+const g2 = 1280;
+const exptable = [
+  0, 12, 15, 27, 36,
+  50, 80, 100, 130, 150,
+  200, 250, 350, 400, 550,
+  650, 700, 750, 800, 850,
+  900, 950, 1000, 1050, 1100,
+  1150, 1250, 1400, 1500, 1600,
+  1700, 1700, 1800, 1800, 1800,
+  1800, 1800, 1800, 1900, 1900,
+  1950, 2000, 2150, 2200, 2300,
+  2400, 2600, 2600, 2800, 3000,
+  3200, 3600, 4200, 5000, 5800,
+  6600, 7600, 8600, 9600, 10800,
+  11600, 12800, 14000, 15200, 16400,
+  17600, 19000, 20400, 23200, 24800,
+  26800, 28800, 31000, 33200, 35400,
+  37600, 39600, 42300, 45200, 47400,
+  250000, 500000, 750000, 1000000, 1250000,
+  1250000, 1250000, 1250000, 1250000, 1250000
+];
+
+const _ = (id) => document.getElementById(id);
+const v = (id) => {
+  const o = _(id);
+  const value = parseInt(o.value) || 0;
+  if(o.type === "checkbox") return o.checked ? 1 : 0;
+  if(o.min) return o.value = Math.max(Math.min(value, o.max), o.min);
+  return value;
+}
+const setValue = (id, value) => {
+  const o = _(id);
+  if(o.min) value = Math.max(Math.min(value, o.max), o.min);
+  o.value = value;
+  return value;
+};
+const setOptions = (id, iter, index) => {
+  const s = _(id);
+  let n = 0;
+  for(const i of iter){
+    const o = document.createElement("option");
+    o.textContent = i[0];
+    o.value = i[1];
+    s.appendChild(o);
+    n++;
+  }
+  s.selectedIndex = index || n - 1;
+};
+const ar = function* (n, m){
+  if(!m) yield ["装備なし", 0];
+  for(let i = 1; i < 100; i += n){
+    yield [`Lv.${i}`, i];
+  }
+  yield ["Lv.100", 100];
+};
+const g = function* (n){
+  for(let i = 0; i <= n; i++) yield [i, i];
+};
+const bonus = [
+  ["aogeba", 5, 25],
+  ["oshieno", 5, 15],
+  ["sweet", 10, 25],
+  ["seiken", 10, 25],
+  ["support", 10, 25]
+];
+const getMul = () => {
+  let mul = (100 + 10 * v("mentor")) * 99;
+  for(const [id, min, max] of bonus){
+    const lv = v(id);
+    if(lv) mul += min * 99 + (max - min) * (lv - 1);
+  }
+  return mul;
+};
+const getExp = (e) => {
+  let from = v("lv_from");
+  let to = v("lv_to");
+  let exp = 0;
+  if(e) switch(e.target.id){
+    case "lv_from":
+      if(from >= to) to = setValue("lv_to", from + 1);
+      updateNext();
+      break;
+    case "lv_to":
+      if(from >= to){
+        from = setValue("lv_from", to - 1);
+        updateNext();
+      }
+      break;
+  }
+  exp = v("next");
+  while(++from < to) exp += exptable[from];
+  return exp;
+};
+const calc = (e) => {
+  const x1 = getExp(e);
+  const n = getN();
+  const dx = Math.ceil(v("dungeon") * getMul() / 9900) * n;
+  const x2 = Math.max(x1 - dx, 0);
+  const c = Math.ceil(x2 / g1);
+  const num1 = Math.max(Math.ceil((x2 - g2 * c) / (g1 - g2)), 0);
+  const num2 = c - num1;
+  const gx = g1 * num1 + g2 * num2;
+  _("o1").innerHTML = (`必要経験値：${x1}`);
+  _("o2").innerHTML = (`獲得経験値：${dx}`);
+  _("o3").innerHTML = (`一致${num1}個　不一致${num2}個<br>${gx}/${x2}`);
+};
+const getN = () => {
+  if(v("auto")){
+    const d = v("dungeon");
+    const n = d ? Math.floor(getExp() / Math.ceil(d * getMul() / 9900)) : 0;
+    _("n").disabled = true;
+    return setValue("n", n);
+  }else{
+    _("n").disabled = false;
+    return v("n");
+  }
+};
+const updateNext = () => {
+  const n = exptable[v("lv_from")];
+  _("next_max").textContent = _("next").max = n;
+  setValue("next", n);
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  setOptions("dungeon", dungeon);
+  setOptions("aogeba", ar(5, 1));
+  setOptions("oshieno", ar(5));
+  setOptions("sweet", ar(20));
+  setOptions("seiken", ar(20));
+  setOptions("support", ar(20));
+  setOptions("mentor", g(6), 5);
+  _("f").addEventListener("change", calc);
+  _("f").addEventListener("focusin", (e) => {
+    if(e.target.type === "number") e.target.select();
+  });
+  updateNext();
+  calc();
+});
+</script>
+<form id=f>
+  <label for=lv_from>レベル</label>：<input type=number min=1 max=89 value=1 id=lv_from>→<input type=number min=2 max=90 value=40 id=lv_to><br>
+  <label for=next>次のレベルまで</label>：<input type=number min=1 value=1 id=next>（初期値：<span id=next_max></span>）
+  <div id=o1></div>
+  <hr>
+  <select id=dungeon></select><input type=checkbox id=auto checked><label for=auto>探索回数を自動計算</label>
+  <table>
+    <tr>
+      <th>AR装備
+      <th colspan=2>上限Lv.
+    <tr>
+      <td><label for=aogeba>仰げば尊し</label>
+      <td><select id=aogeba></select>
+      <td>
+    <tr>
+      <td><label for=oshieno>教えの庭にも</label>
+      <td><select id=oshieno></select>
+      <td>
+    <tr>
+      <td><label for=sweet>スウィート・ドリームス</label>
+      <td><select id=sweet></select>
+      <td rowspan=2><select id=support></select>
+    <tr>
+      <td><label for=seiken>聖拳の交わり</label>
+      <td><select id=seiken></select>
+  </table>
+  教え導く者を<select id=mentor></select>人編成して<input type=number min=0 max=999 value=0 id=n>回クリア
+  <div id=o2></div>
+  <hr>
+  必要な超成長
+  <div id=o3></div>
+  <hr>
+</form>
+<a href="/">戻る</a>
