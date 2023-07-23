@@ -9,6 +9,22 @@ var FILTER = {
   NAME: function(x){return x.name}
 };
 
+function r2n(r, cs){
+  switch(r){
+    case 5:
+      return 20;
+    case 4:
+      return 5;
+    case 0:
+      if(cs){
+        if(cs >= CS.ORDER[5] - 1) return 20;
+        if(cs >= CS.ORDER[4] - 1) return 5;
+      }
+    default:
+      return 1;
+  }
+}
+
 var calc = {
   version: 1,
   atk: 4000,
@@ -27,7 +43,6 @@ var calc = {
   savedata: [],
   init: function(){
     var c = this;
-    var nums = document.querySelectorAll('input[type="number"]');
     if(navigator.share){
       _("cc").style.display = "none";
     }else{
@@ -40,7 +55,9 @@ var calc = {
     this.arfilter.init();
     linkInput(c, "atk", "a");
     linkInput(c, "weapon", "w");
-    linkInput(c, "cs", "cs");
+    linkInput(c, "cs", "cs", function(){
+      setText("sax", "+" + r2n(CARD[c.card].rarity, c.cs));
+    });
     linkInput(c, "cLv", "cl");
     linkInput(c, "usecs", "uc");
     linkInput(c, "version", "sv");
@@ -50,22 +67,14 @@ var calc = {
       c.updateMultiplierOptions();
       c.checkCardSelected();
       c.arfilter.update(c.card);
-      if(CARD[c.card].rarity === 5){
-        setText("sax", "+20");
-      }else{
-        setText("sax", "+5");
-      }
+      setText("sax", "+" + r2n(CARD[c.card].rarity, c.cs));
     });
     _("pl").max = 70 + MAX_LEVEL_SEED;
     linkInput(c, "lv", "pl");
     linkInput(c, "ar", "rc", function(){
       if(c.active) c.updateEffectOptions();
       c.updateEquipableOptions();
-      if(AR[c.ar].arRarity === 5){
-        setText("rx", "+20");
-      }else{
-        setText("rx", "+5");
-      }
+      setText("rx", "+" + r2n(AR[c.ar].arRarity));
     });
     linkInput(c, "arLv", "rl");
     this.updateSaveMenu();
@@ -142,11 +151,11 @@ var calc = {
       c.update();
     };
     _("lx").onclick = function(){
-      setValue("pl", v("pl") + 10);
+      setValue("pl", v("pl") + 1);
       c.update();
     };
     _("lz").onclick = function(){
-      setValue("pl", v("pl") + 15);
+      setValue("pl", v("pl") + 10);
       c.update();
     };
     _("ly").onclick = function(){
@@ -162,7 +171,7 @@ var calc = {
       c.update();
     };
     _("sax").onclick = function(){
-      setValue("cl", v("cl") + (CARD[c.card].rarity === 5 ? 20 : 5));
+      setValue("cl", v("cl") + r2n(CARD[c.card].rarity, c.cs));
       c.update();
     };
     _("ra").onclick = function(){
@@ -174,7 +183,7 @@ var calc = {
       c.update();
     };
     _("rx").onclick = function(){
-      setValue("rl", v("rl") + (AR[c.ar].arRarity === 5 ? 20 : 5));
+      setValue("rl", v("rl") + r2n(AR[c.ar].arRarity));
       c.update();
     };
     _("rz").onclick = function(){
@@ -194,19 +203,16 @@ var calc = {
       for(var i = 1; i < o.length; i++) r.push(AR[o[i].value].getInfo());
       _("o").value = r.join("\n\n");
     };
-    for(var i = 0; i < nums.length; i++){
-      nums[i].onfocus = function(){
-        var elem = this;
-        setTimeout(function(){
-          try{
-            elem.setSelectionRange(0, elem.value.length);
-          }catch(e){
-            elem.select();
-          }
-        }, 0);
-      };
-    }
-    nums = null;
+    document.forms[0].onfocusin = function(e){
+      var elem = e.target;
+      if(elem.type === "number") setTimeout(function(){
+        try{
+          elem.setSelectionRange(0, elem.value.length);
+        }catch(e){
+          elem.select();
+        }
+      }, 0);
+    };
     _("dj").onclick = function(){
       download(Card.csv(CARD, language), "text/csv", t("housamo_card_ja.csv/housamo_card_en.csv"));
     };
@@ -469,7 +475,7 @@ var calc = {
           if(e.type === TYPE.ATK){
             var u = 0;
             while(u < 1 || u > 5){
-              u = prompt(t("所属メンバー (※1〜5)/Guildmates\n(1-5)"), "");
+              u = prompt(t("所属メンバー (※1〜5)/Guildmates\n(1-5)"), ep.unit || "");
               if(!u) return;
               u = parseInt(u, 10) || 0;
             }
@@ -685,8 +691,8 @@ var calc = {
     setText("lsef2", "効果2/Effect 2");
     setCheckGroup("stf2", TIMING, 17);
     setText("lpf", "常時/Static");
-    setText("lbaf", "特攻対象/A.Bonus");
-    setText("lbdf", "特防対象/D.Bonus");
+    setText("lbaf", "特攻対象/A.Advantage");
+    setText("lbdf", "特防対象/D.Advantage");
     setText("lnf", "状態無効/Nullify");
     setText("lqf", "装備可能/Equipable");
     setText("lccf", "CSの効果を除外する/Exclude CS Effects");
@@ -702,8 +708,8 @@ var calc = {
     setText("lref2", "効果(味方)/Effect(Ally)");
     setText("lref3", "効果(敵)/Effect(Enemy)");
     setText("lrpf", "常時/Static");
-    setText("lraf", "特攻対象/A.Bonus");
-    setText("lrdf", "特防対象/D.Bonus");
+    setText("lraf", "特攻対象/A.Advantage");
+    setText("lrdf", "特防対象/D.Advantage");
     setText("lrnf", "状態無効/Nullify");
     setText("lceq", "装備可能のみ/Can be Equipped only");
     setText("rrd", "ランダムAR/Random AR");

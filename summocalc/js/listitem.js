@@ -175,6 +175,7 @@ var VARIANT = ListItem.createList(
   ,["夜祭/NightFest"]
   ,["聖夜22/Xmas22"]
   ,["バレ23/Valentine23"]
+  ,["ジュラ/Jurassic"]
   ,["[期間限定]/[Limited]"]
   ,["[恒常]/[Permanent]"]
 ]);
