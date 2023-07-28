@@ -13,9 +13,14 @@
 window.addEventListener("load", () => {
   const attr = "火水木光影";
   const role = ["攻撃", "防御", "補助", "弱体化", "Spd操作", "View獲得", "回復", "特殊"];
+  const c = new Intl.Collator(undefined, {numeric: true}).compare;
+  const cc = (a, b) => c(
+    a.replace(/^(.+)の(.+)$/, "$2$1"),
+    b.replace(/^(.+)の(.+)$/, "$2$1")
+  );
   const ac = (a, b) => attr.indexOf(a) - attr.indexOf(b);
   const rc = (a, b) => role.indexOf(a) - role.indexOf(b);
-  csvViewer("loading", "lahhero.csv", undefined, [undefined, undefined, undefined, ac, rc, undefined, undefined]);
+  csvViewer("loading", "lahhero.csv", undefined, [c, c, cc, ac, rc, c, c]);
 });
 </script>
 <script src="js/csvviewer.js"></script>
