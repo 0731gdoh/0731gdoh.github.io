@@ -11,7 +11,11 @@
 "use strict";
 
 window.addEventListener("load", () => {
-  csvViewer("loading", "lahhero.csv");
+  const attr = "火水木光影";
+  const role = ["攻撃", "防御", "補助", "弱体化", "Spd操作", "View獲得", "回復", "特殊"];
+  const ac = (a, b) => attr.indexOf(a) - attr.indexOf(b);
+  const rc = (a, b) => role.indexOf(a) - role.indexOf(b);
+  csvViewer("loading", "lahhero.csv", undefined, [undefined, undefined, undefined, ac, rc, undefined, undefined]);
 });
 </script>
 <script src="js/csvviewer.js"></script>
