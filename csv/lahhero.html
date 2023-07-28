@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LAH ヒーロー">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#400">
+<link rel=stylesheet href="/theme/theme.css">
+<script src="/theme/theme.js"></script>
+<link rel=stylesheet href="css/csvviewer.css">
+<script>
+"use strict";
+
+window.addEventListener("load", () => {
+  csvViewer("loading", "lahhero.csv");
+});
+</script>
+<script src="js/csvviewer.js"></script>
+<title>LAH ヒーロー</title>
+<p id=loading>Now loading...</p>
+<p><a href="/">戻る</a></p>
