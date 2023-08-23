@@ -116,6 +116,32 @@ EffectParameter.prototype = {
       return a + ep.loop;
     }, 0);
     return this.loop;
+  },
+  hpPrompt: function(chara){
+    var hp = 0;
+    var maxHp = 0;
+    while(hp < 1){
+      hp = prompt(t(chara || "") + t("現在HP (※1以上の整数)/Current HP\n(Enter an integer greater than or equal to 1.)"), this.hp);
+      if(!hp) return false;
+      hp = parseInt(hp, 10) || 0;
+    }
+    while(maxHp < hp){
+      maxHp = prompt(t(chara || "") + t("最大HP (※/Max HP\n(Enter an integer greater than or equal to ") + hp + t("以上の整数)/.)"), Math.max(this.maxHp, hp));
+      if(!maxHp) return false;
+      maxHp = parseInt(maxHp, 10) || 0;
+    }
+    this.setHp(hp, maxHp);
+    return true;
+  },
+  setHp: function(hp, maxHp){
+    var target = this;
+    if(this.alt){
+      var n = this.effect.promptData.getDataNumFromHp(hp, maxHp);
+      target = this.alt[n];
+      target.setLevel(n);
+    }
+    target.hp = Math.max(Math.min(hp, maxHp), 1);
+    target.maxHp = Math.max(maxHp, 1);
   }
 };
 EffectParameter.createList = function(){
