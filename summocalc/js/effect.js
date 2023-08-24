@@ -286,7 +286,7 @@ PromptData.prototype = {
   prompt: function(ep){
     var lv = -1;
     if(this.label === "HP"){
-      ep.hpPrompt(this.title);
+      if(ep.hpPrompt(this.title)) return -1;
       return null;
     }else{
       while(lv < this.min || lv > this.max || isNaN(lv)){
@@ -309,6 +309,7 @@ PromptData.prototype = {
     return n;
   },
   getDataNumFromHp: function(hp, maxHp){
+    var n = 0;
     var p = hp * 100 / maxHp;
     this.data.some(function(v, i){
       if(v[0][0] === p || (v[0][1] < p && p < v[0][2])){

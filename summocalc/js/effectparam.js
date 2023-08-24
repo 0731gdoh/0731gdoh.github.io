@@ -138,7 +138,7 @@ EffectParameter.prototype = {
     if(this.alt){
       var n = this.effect.promptData.getDataNumFromHp(hp, maxHp);
       target = this.alt[n];
-      target.setLevel(n);
+      this.setLevel(n);
     }
     target.hp = Math.max(Math.min(hp, maxHp), 1);
     target.maxHp = Math.max(maxHp, 1);

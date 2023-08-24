@@ -475,6 +475,7 @@ var calc = {
       if(lv){
         if(e.promptData){
           lv = e.promptData.prompt(ep);
+          if(lv === null) return;
         }else if(e.isAffiliation()){
           lv = 0;
           while(lv < 1 || lv > 10){
@@ -574,7 +575,7 @@ var calc = {
             if(tLv) this.addStatus(e.link, tLv);
           }
         }
-        if(lv !== null) ep.setLevel(lv);
+        if(lv >= 0) ep.setLevel(lv);
       }else{
 //        if(e.link && e.isStackable() && this.es[e.link].loop > 1) ep = this.es[e.link];
         if(--ep.loop < 1) ep.clear();
