@@ -263,29 +263,43 @@ Effect.createList = function(a, pd){
 };
 
 function PromptData(x){
-  var threshold = x[3];
+  var sum = 0;
   this.title = x[1];
-  this.label = "[" + x[2] + ":";
-  this.min = threshold;
-  this.max = x[4];
-  this.data = x[5].map(function(v){
-    threshold += v[0];
+  this.label = x[2];
+  switch(this.label){
+    case "T":
+      this.min = 1;
+      this.max = 999;
+      break;
+    case "CP":
+      this.min = 0;
+      this.max = 100;
+      break;
+  }
+  this.data = x[3].map(function(v){
+    sum += v[0];
     return [v[0], [new Fraction(v[1] * 100, 100), new Fraction(v[2] * 100, 100)]];
   });
-  this.threshold = threshold;
+  if(this.max) this.threshold = this.min + sum;
 }
 PromptData.prototype = {
-  prompt: function(){
+  prompt: function(ep){
     var lv = -1;
-    while(lv < this.min || lv > this.max || isNaN(lv)){
-      lv = prompt(t(this.title) + t(" (※/\n(") + this.min + t("〜/-") + this.max + ")");
-      if(!lv) return null;
-      lv = parseInt(lv, 10);
+    if(this.label === "HP"){
+      if(ep.hpPrompt(this.title)) return -1;
+      return null;
+    }else{
+      while(lv < this.min || lv > this.max || isNaN(lv)){
+        lv = prompt(t(this.title) + t(" (※/\n(") + this.min + t("〜/-") + this.max + ")");
+        if(!lv) return null;
+        lv = parseInt(lv, 10);
+      }
+      return lv;
     }
-    return lv;
   },
   getDataNum: function(lv){
-    var n;
+    var n = 0;
+    if(this.label === "HP") return lv;
     lv -= this.min;
     this.data.some(function(v, i){
       lv -= v[0];
@@ -294,12 +308,30 @@ PromptData.prototype = {
     });
     return n;
   },
+  getDataNumFromHp: function(hp, maxHp){
+    var n = 0;
+    var p = hp * 100 / maxHp;
+    this.data.some(function(v, i){
+      if(v[0][0] === p || (v[0][1] < p && p < v[0][2])){
+        n = i;
+        return true;
+      }
+      return false;
+    });
+    return n;
+  },
   getValue: function(lv){
     return this.data[this.getDataNum(lv)][1];
   },
-  getLabel: function(lv){
-    if(lv < this.threshold) return this.label + lv + "]";
-    return this.label + this.threshold + "+]";
+  getLabel: function(ep){
+    var label = "[" + this.label + ":";
+    if(this.label === "HP"){
+      return label + ep.hp + "/" + ep.maxHp + "]";
+    }else{
+      var lv = ep.lv;
+      if(lv < this.threshold) return label + lv + "]";
+      return label + this.threshold + "+]";
+    }
   }
 };
 
@@ -403,7 +435,7 @@ var EFFECT = Effect.createList(
   ,["ATKボーナス[100%]", "", 0, 1, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED, TYPE.ATK]
   ,["強化反転/Buff Reversal", "きようかは", 0, 0.25, , EFFECT_FLAG.FIXED|EFFECT_FLAG.BUFF]
   ,["強化反転/Buff Reversal", "きようかは", 1, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.BUFF]
-  ,["攻撃力減少/Reduced ATK", "こうけけ", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["攻撃力減少/Reduced ATK", "こうけけん", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["特攻[6.0]/Advantage[6.0]", "とつ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,["CS変更：魔法/Change CS Type: Magic", "CS", 0, 0, 5, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,["攻撃力微増[AR]/Minor ATK Increase[AR]", "こうけひ", 0, 1.13, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
@@ -634,15 +666,21 @@ var EFFECT = Effect.createList(
   ,["閃き時強化[ヘカテー]/Glint Strengthening[Hecate]", "ひら", 1, 0.75, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,["注目時強化[シパクトリ]/Taunt Strengthening[Cipactli]", "ちゆ", 1, 0.75, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,["祝福時強化[AR]/Blessing Strengthening[AR]", "しゆく", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,["攻撃力激減", "こうけけき", 0, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
+  ,["全域特防[ジュラ]/Reduce All damage[Jurassic]", "せんいきと", 1, 0.1, WEAPON_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.WEAPON_WEAKNESS]
+  ,["奮起時強化/Arousal Strengthening", "ふん", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,["非弱体時強化[アルジャーノン]/Non-Debuff Strengthening[Algernon]", "ひしやくたいしき", 0, [1, 1.5], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
+  ,["攻撃力増加[オンブレティグレ]/ATK Increase[Hombre Tigre]", "こうけそ", 0, 3.0, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.ALT|EFFECT_FLAG.PROMPT]
+  ,["<*根性>時強化[ヤマサチヒコ]/Guts Strengthening[Yamasachihiko]", "こんし", 1, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ],[
-  ["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T", 1, 999,
+  ["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T",
     [[1, 1.6]
     ,[1, 1.5]
     ,[1, 1.4]
     ,[1, 1.3]
     ,[0, 1.2]
   ]]
-  ,["攻撃力増加[イツァムナー]", "イツァムナーのCP/Itzamna's CP", "CP", 0, 100,
+  ,["攻撃力増加[イツァムナー]", "イツァムナーのCP/Itzamna's CP", "CP",
     [[10, 1.2]
     ,[10, 1.4]
     ,[10, 1.6]
@@ -654,11 +692,18 @@ var EFFECT = Effect.createList(
     ,[10, 2.8]
     ,[11, 3.0]
   ]]
-  ,["攻撃力増加[装備者CP]", "装備者のCP/Equipper's CP", "CP", 0, 100,
+  ,["攻撃力増加[装備者CP]", "装備者のCP/Equipper's CP", "CP",
     [[1, 1.1]
     ,[30, 1.3]
     ,[40, 1.5]
     ,[29, 1.8]
     ,[1, 2.0]
+  ]]
+  ,["攻撃力増加[オンブレティグレ]", "オンブレティグレの/Hombre Tigre's", "HP",
+    [[[0, 0, 0], 1.0]
+    ,[[100, 0, 0], 1.2]
+    ,[[0, 50, 100], 1.5]
+    ,[[0, 5, 50], 2.0]
+    ,[[0, 0, 5], 3.0]
   ]]
 ]);

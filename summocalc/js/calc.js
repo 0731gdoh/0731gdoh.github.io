@@ -268,8 +268,13 @@ var calc = {
           bonus.push(loop);
         }else if(v.alt && !v.subsetOrder){
           bonus.push(e.index);
-          bonus.push(v.lv);
-          bonus.push(v.loop);
+          if(e.promptData.label === "HP"){
+            bonus.push(v.hp);
+            bonus.push(v.maxHp);
+          }else{
+            bonus.push(v.lv);
+            bonus.push(v.loop);
+          }
         }else{
           if(bonus.length) return true;
           s.write(i - n);
@@ -396,8 +401,9 @@ var calc = {
           }
           v.setLevel(owLv || lv, loop);
           if(e.type === TYPE.LIMIT){
-            v.hp = s.read();
-            v.maxHp = s.read();
+            var hp = s.read();
+            var maxHp = s.read();
+            v.setHp(hp, maxHp);
           }
           if(e.type === TYPE.ATK && e.isAffiliation()) v.unit = s.read();
           if(e.type === TYPE.CUSTOM){
@@ -429,10 +435,11 @@ var calc = {
         if(!n) bonus.forEach(function(v){
           var ep = es[v[0]];
           var e = EFFECT[v[0]];
-          var flag = Math.floor(v[2] / 100);
-          v[2] = v[2] % 100;
           if(!e || !ep || !ep.subsetOrder) return;
           if(e.subset){
+            var flag = Math.floor(v[2] / 100);
+            v[2] = v[2] % 100;
+
             if(flag & 2) v[1] += TAG_MAX;
             n = e.subset.get(v[1]);
             if(!n) return;
@@ -444,7 +451,11 @@ var calc = {
             }
             es[n].setLevel(1, v[2]);
           }else if(ep.alt){
-            ep.setLevel(v[1], v[2]);
+            if(e.promptData.label === "HP"){
+              ep.setHp(v[1], v[2]);
+            }else{
+              ep.setLevel(v[1], v[2]);
+            }
           }
         });
       }
@@ -463,7 +474,7 @@ var calc = {
       var e = ep.effect;
       if(lv){
         if(e.promptData){
-          lv = e.promptData.prompt();
+          lv = e.promptData.prompt(ep);
           if(lv === null) return;
         }else if(e.isAffiliation()){
           lv = 0;
@@ -517,20 +528,7 @@ var calc = {
         }
 
         if(e.type === TYPE.LIMIT){
-          var hp = 0;
-          var maxHp = 0;
-          while(hp < 1){
-            hp = prompt(t("現在HP (※1以上の整数)/Current HP\n(Enter an integer greater than or equal to 1.)"), ep.hp);
-            if(!hp) return;
-            hp = parseInt(hp, 10) || 0;
-          }
-          while(maxHp < hp){
-            maxHp = prompt(t("最大HP (※/Max HP\n(Enter an integer greater than or equal to ") + hp + t("以上の整数)/.)"), Math.max(ep.maxHp, hp));
-            if(!maxHp) return;
-            maxHp = parseInt(maxHp, 10) || 0;
-          }
-          ep.hp = hp || 1;
-          ep.maxHp = maxHp || 1;
+          if(!ep.hpPrompt()) return;
         }else if(e.type === TYPE.SEED){
           lv = e.baseValue[1];
           if(!lv){
@@ -543,7 +541,6 @@ var calc = {
         }else if(e.isFixed() || e.isLv1()){
           lv = 1;
         }
-//        ep.setLevel(lv);
         if(e.link){
           var tLoop = this.es[e.link].loop;
           var tE = EFFECT[e.link];
@@ -578,7 +575,7 @@ var calc = {
             if(tLv) this.addStatus(e.link, tLv);
           }
         }
-        ep.setLevel(lv);
+        if(lv >= 0) ep.setLevel(lv);
       }else{
 //        if(e.link && e.isStackable() && this.es[e.link].loop > 1) ep = this.es[e.link];
         if(--ep.loop < 1) ep.clear();
@@ -889,7 +886,7 @@ var calc = {
       csrate = CS[cs].getValue() * (1 + Math.LOG10E * Math.log(this.cLv) / 2);
       result.push(
         t("【チャージスキル】/【Charge Skill】"),
-        "　{Lv." + pad(this.cLv, 3) + "}　" + CS[cs] + " (x" + csrate + ")",
+        "　{Lv." + pad(this.cLv, 3) + "}　" + CS[cs] + t(" (x/ (") + csrate + t(")/x)"),
         LINE
       );
     }
@@ -958,9 +955,9 @@ var calc = {
           }else{
             label.splice(1, 0, pad(eLv || this.cLv, 3));
           }
-          if(count > 1) label.push("《x" + count + "》");
+          if(count > 1) label.push(t("《x/《") + count + t("》/x》"));
           label.push(e);
-          if(e.promptData) label.push(e.promptData.getLabel(eLv));
+          if(e.promptData) label.push(e.promptData.getLabel(ep));
 
           //連撃
           if(e.type === TYPE.COMBO && this.usecs) x = new Fraction(1);
@@ -1009,7 +1006,7 @@ var calc = {
             default:
               if(x - 0 && x.n !== x.d){
                 dmg = dmg.mul(x);
-                desc.push("x" + x);
+                desc.push(t("x/") + x + t("/x"));
               }
               break;
 
@@ -1022,7 +1019,7 @@ var calc = {
 
             case TYPE.ZERO:
               dmg = new Fraction(0);
-              desc.push("x0");
+              desc.push(t("x0/0x"));
               break;
 
             case TYPE.DEBUFF_OVERWRITE:
@@ -1087,7 +1084,7 @@ var calc = {
     result[6] += WEAPON[weapon];
     result.push(t("【ダメージ】/【Damage】"));
     dmg = dmg.mul(WEAPON[weapon].getValue());
-    result[6] += " (x" + WEAPON[weapon].getValue() + ")";
+    result[6] += t(" (x/ (") + WEAPON[weapon].getValue() + t(")/x)");
     if(multiplier > 4){
       multiplier = [
         [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
