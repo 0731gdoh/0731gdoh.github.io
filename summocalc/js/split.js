@@ -20,7 +20,6 @@ function generateTagData(s, flagNum, arTiming){
     }
     if(v){
       var tag = TAG[v];
-      var sf = ([TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS, TAG_TYPE.CWT_GROUP].indexOf(tag.type) === -1);
       var g = 0;
       timing = arTiming || timing;
       if(timing & TIMING_FLAG.CS){
@@ -32,13 +31,24 @@ function generateTagData(s, flagNum, arTiming){
       if(tag.type !== TAG_TYPE.CATEGORY){
         var f = (tag.type === TAG_TYPE.STATIC) ? TAG_FLAG_NUM.STATIC : flagNum;
         var b = (f < 3) ? timing : (timing || 1);
-        if(tag.type !== TAG_TYPE.SKIP){
-          if(r.has(v + g)){
-            r.set(v + g, r.get(v + g) | timing);
-          }else{
-            r.set(v + g, timing);
-          }
-          tag.setFlag(f, b);
+        var sf = true;
+        switch(tag.type){
+          case TAG_TYPE.SKIP:
+            break;
+          case TAG_TYPE.ALL_BUFFS:
+          case TAG_TYPE.ALL_DEBUFFS:
+            sf = false;
+          case TAG_TYPE.BUFF:
+          case TAG_TYPE.DEBUFF:
+            if(flagNum > 2) sf = false;
+          default:
+            if(r.has(v + g)){
+              r.set(v + g, r.get(v + g) | timing);
+            }else{
+              r.set(v + g, timing);
+            }
+            tag.setFlag(f, b);
+            break;
         }
         (flagNum < 3 ? tag.category : tag.subset).forEach(function(c){
           if(r.has(c + g)){
@@ -98,10 +108,22 @@ function splitSkills(s){
     var target = TAG.table.get(tname);
     var i = TAG.table.get(name);
     var key = match[2];
-    if(target && TAG[target].subset.length && [TAG_TYPE.SKILL, TAG_TYPE.ALL_BUFFS, TAG_TYPE.ALL_DEBUFFS, TAG_TYPE.CWT_GROUP].indexOf(TAG[target].type) === -1){
+    var tag = TAG[target || 0];
+    var subset = [];
+    switch(tag.type){
+      case TAG_TYPE.SKIP:
+      case TAG_TYPE.STATUS_GROUP:
+        set(key, ["", 0, timing, target, tname, false]);
+        subset = tag.subset;
+        break;
+      default:
+        set(key, [name, i, timing, target, tname, demerit]);
+        subset = tag.variant;
+        break;
+    }
+    if(subset.length){
       var evo = [];
-      set(key, ["", 0, timing, target, tname, false]);
-      TAG[target].subset.forEach(function(sub){
+      subset.forEach(function(sub){
         if(evo.indexOf(sub) === -1){
           var subtag = TAG[sub];
           var subname = t(subtag.name, 0);
@@ -115,8 +137,6 @@ function splitSkills(s){
           }
         }
       });
-    }else{
-      set(key, [name, i, timing, target, tname, demerit]);
     }
   });
   return result;

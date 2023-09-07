@@ -138,6 +138,7 @@ var VARIANT = ListItem.createList(
   ,["バレ17/Valentine17"]
   ,["海洋/Ocean"]
   ,["臨海/Seaside"]
+  ,["臨海17/Seaside17"]
   ,["ハロ/Halloween"]
   ,["ハロ17/Halloween17"]
   ,["秘島/Island"]
@@ -176,12 +177,37 @@ var VARIANT = ListItem.createList(
   ,["聖夜22/Xmas22"]
   ,["バレ23/Valentine23"]
   ,["ジュラ/Jurassic"]
-  ,["[期間限定]/[Limited]"]
-  ,["[恒常]/[Permanent]"]
+  ,["臨海23/Seaside23"]
 ]);
 
-var LIMITED_AR = ListItem.createList(
+var LIMITED = ListItem.createList(
   [[""]
   ,["期間限定/Limited"]
   ,["恒常/Permanent"]
 ]);
+
+var OBTAIN = ListItem.createList(
+  [["転光召喚/Transient Summon"]
+  ,["戦友召喚/Ally Summon"]
+  ,["イベント/Event"]
+  ,["メインクエスト/Main Quest"]
+  ,["フリークエスト/Free Quest"]
+  ,["アンドヴァリショップ/Andvari Shop"]
+]);
+
+var OR_AND = ListItem.createList(
+  [["OR"]
+  ,["AND"]
+  ,["NOT"]
+]);
+
+function bit2array(list, n, lang){
+  var i = 0;
+  var r = [];
+  while(n){
+    if(n & 1) r.push(t(list[i].name, lang));
+    i++;
+    n = n >> 1;
+  }
+  return r;
+}

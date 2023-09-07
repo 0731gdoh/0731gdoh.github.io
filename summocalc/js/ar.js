@@ -42,8 +42,8 @@ Record.prototype = {
       var name = t(CARD[z].name, lang);
       if(name !== e[e.length - 1]) e.push(name);
     });
-    if(this.guilds) e = e.concat(affs2array(GUILD, this.guilds, lang));
-    if(this.schools) e = e.concat(affs2array(SCHOOL, this.schools, lang));
+    if(this.guilds) e = e.concat(bit2array(GUILD, this.guilds, lang));
+    if(this.schools) e = e.concat(bit2array(SCHOOL, this.schools, lang));
     if(this.rarity && this.rarity !== EQUIP.ANY){
       var bit = this.rarity;
       var n = 0;
@@ -144,7 +144,7 @@ Record.createList = function(a){
     return new Record(i, id, v, limited);
   });
   result.ORDER = order;
-  result.LABELS = ["クエスト報酬/Quest Reward", "ショップ・イベント/Shop or Event", "AR召喚/AR Summons"];
+  result.LABELS = ["クエスト報酬/Quest Reward", "ショップ・イベント/Shop%%Event", "AR召喚/AR Summons"];
   return result;
 };
 Record.csv = function(list, x){

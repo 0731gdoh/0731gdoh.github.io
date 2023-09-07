@@ -350,9 +350,9 @@ var EFFECT = Effect.createList(
   ,["極限/Limit", "きよく", 0, 1, , , TYPE.LIMIT]
   ,["崩し/Break", "くす", 1, 1.2]
   ,["暗闇/Darkness", "くら", 0, 0.9]
-  ,["クリティカル/Crit", "くり", 0, 2]
-  ,["クリティカル+/Crit+", "くり", 0, 2.5]
-  ,["クリティカル++/Crit++", "くり", 0, 3]
+  ,["クリティカル/Critical", "くり", 0, 2]
+  ,["クリティカル+/Critical+", "くり", 0, 2.5]
+  ,["クリティカル++/Critical++", "くり", 0, 3]
   ,["激怒/Rage", "けき", 0, 1.25]
   ,["激怒/Rage", "けき", 1, 1.25]
   ,["激怒+/Rage+", "けき+", 0, 1.25]
@@ -672,6 +672,9 @@ var EFFECT = Effect.createList(
   ,["非弱体時強化[アルジャーノン]/Non-Debuff Strengthening[Algernon]", "ひしやくたいしき", 0, [1, 1.5], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
   ,["攻撃力増加[オンブレティグレ]/ATK Increase[Hombre Tigre]", "こうけそ", 0, 3.0, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.ALT|EFFECT_FLAG.PROMPT]
   ,["<*根性>時強化[ヤマサチヒコ]/Guts Strengthening[Yamasachihiko]", "こんし", 1, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,["攻防低下", "こうほ", 0, 0.5, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.PROMPT]
+  ,["攻防低下", "こうほ", 1, 3.0, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.PROMPT]
+  ,["攻撃力増加[ベヒモス]/ATK Increase[Behemoth]", "こうけそ", 0, 4.0, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.PROMPT]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T",
     [[1, 1.6]
@@ -705,5 +708,22 @@ var EFFECT = Effect.createList(
     ,[[0, 50, 100], 1.5]
     ,[[0, 5, 50], 2.0]
     ,[[0, 0, 5], 3.0]
+  ]]
+  ,["攻防低下", "CP", "CP",
+    [[31, 0.75]
+    ,[30, 0.7]
+    ,[39, 0.6]
+    ,[1, 0.5]
+  ]]
+  ,["*攻防低下", "CP", "CP",
+    [[31, 1.5]
+    ,[30, 2.0]
+    ,[39, 2.5]
+    ,[1, 3.0]
+  ]]
+  ,["攻撃力増加[ベヒモス]", "ベヒモスのCP/Behemoth's CP", "CP",
+    [[41, 2.0]
+    ,[40, 3.0]
+    ,[20, 4.0]
   ]]
 ]);
