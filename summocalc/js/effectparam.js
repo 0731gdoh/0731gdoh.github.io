@@ -7,10 +7,12 @@ function EffectParameter(e){
   if(e.subset){
     var order = [];
     var f = function(a, v){
+      var tag = TAG[v];
       var x = e.subset.get(v);
       if(x) a.push(x);
       x = e.subset.get(v + TAG_MAX);
       if(x) a.push(x);
+      if(tag.variant.length) return tag.variant.reduce(f, a);
       return a;
     };
     order.push(TAG.ORDER[0].reduce(f, []));

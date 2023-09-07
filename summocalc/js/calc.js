@@ -625,9 +625,11 @@ var calc = {
     setCheckGroup("wf", WEAPON, undefined, WEAPON.ORDER);
     setCheckGroup("cf", WEAPON, undefined, WEAPON.ORDER);
     setCheckGroup("rf", RARITY);
+    setCheckGroup("obf", OBTAIN, undefined, undefined, true);
+    setOptions("lmf", LIMITED);
     setOptions("vf", VARIANT);
-    setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language]);
-    setCheckGroup("sf", SCHOOL, undefined, SCHOOL.ORDER[language]);
+    setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language], true);
+    setCheckGroup("sf", SCHOOL, undefined, SCHOOL.ORDER[language], true);
     setCheckGroup("of", TEAM, undefined, TEAM.ORDER[language]);
     ["srf1", "srf2"].forEach(function(key, i){
       setOptions(key, RANGE);
@@ -640,7 +642,7 @@ var calc = {
     });
     this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
-    setOptions("rlf", LIMITED_AR);
+    setOptions("rlf", LIMITED);
     ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
       setOptions(key, TAG, function(x){
         return !x.index || x.checkFlag(i, TIMING_FLAG.AR);
@@ -679,6 +681,8 @@ var calc = {
     setText("lwf", "武器/Weapon");
     setText("lcf", "CSタイプ/CS Type");
     setText("lrf", "レア度/Rarity");
+    setText("lobf", "入手/Obtain");
+    setText("llmf", "期間限定/Limited");
     setText("lvf", "バージョン/Variant");
     setText("lgf", "ギルド/Guild");
     setText("lsf", "学園/School");
@@ -1125,9 +1129,14 @@ var calc = {
     weapon: 0,
     cs: 0,
     rarity: 0,
+    obtain: 0,
+    obtainMode: 0,
+    limited: 0,
     variant: 0,
     guild: 0,
+    guildMode: 0,
     school: 0,
+    schoolMode: 0,
     team: 0,
     timing1: TIMING_FLAG.ANY,
     timing2: TIMING_FLAG.ANY,
@@ -1150,9 +1159,14 @@ var calc = {
       linkCheckGroup(c, "weapon", "wf");
       linkCheckGroup(c, "cs", "cf");
       linkCheckGroup(c, "rarity", "rf");
+      linkCheckGroup(c, "obtain", "obf")
+      linkInput(c, "obtainMode", "obf_mode");
+      linkInput(c, "limited", "lmf");
       linkInput(c, "variant", "vf");
       linkCheckGroup(c, "guild", "gf");
+      linkInput(c, "guildMode", "gf_mode");
       linkCheckGroup(c, "school", "sf");
+      linkInput(c, "schoolMode", "sf_mode");
       linkCheckGroup(c, "team", "of");
       linkInput(c, "stef", "pf");
       linkInput(c, "bonus_a", "baf");
@@ -1201,7 +1215,7 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["ef", "wf", "cf", "rf", "vf", "gf", "sf", "of", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
+      ["ef", "wf", "cf", "rf", "obf", "obf_mode", "lmf", "vf", "gf", "gf_mode", "sf", "sf_mode", "of", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("xf", "");
@@ -1210,31 +1224,37 @@ var calc = {
       this.active = active;
       this.update();
     },
+    check: function(a, b, mode){
+      if(!b) return false;
+      switch(mode){
+        case 0:
+          return !(a & b);
+        case 1:
+          return (a & b) !== b;
+        case 2:
+          return !!(a & b);
+      }
+    },
     update: function(){
       var p = this;
       var nv = p.name.toLowerCase().replace(/[\u3041-\u3094]/g, function(match){
         return String.fromCharCode(match.charCodeAt(0) + 0x60);
       });
-      var vv = VARIANT[p.variant].name;
-      var pl = ["[恒常]", "[期間限定]"].indexOf(t(vv, 0));
+      var vv = t(VARIANT[p.variant].name);
       var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
-      if(!vv || vv[0] === "["){
-        vv = "";
-      }else{
-        vv = t(vv);
-      }
       setOptions("pc", CARD, function(x){
         if(!p.active) return true;
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
-        if(p.rarity && (1 << x.rarity & p.rarity) === 0) return false;
-        if(p.weapon && (1 << x.weapon[0] & p.weapon) === 0) return false;
-        if(p.cs && (1 << x.weapon[1] & p.cs) === 0) return false;
-        if(p.attribute && (1 << x.attribute & p.attribute) === 0) return false;
-        if(pl > -1 && x.limited !== pl) return false;
+        if(p.rarity && !(1 << x.rarity & p.rarity)) return false;
+        if(p.weapon && !(1 << x.weapon[0] & p.weapon)) return false;
+        if(p.cs && !(1 << x.weapon[1] & p.cs)) return false;
+        if(p.attribute && !(1 << x.attribute & p.attribute)) return false;
+        if(p.check(x.obtain, p.obtain, p.obtainMode)) return false;
+        if(p.limited && (p.limited === 1) !== x.limited) return false;
         if(vv && x.variant.indexOf(vv) === -1) return false;
-        if(p.guild && !(x.guilds & p.guild)) return false;
-        if(p.school && !(x.schools & p.school)) return false;
+        if(p.check(x.guilds, p.guild, p.guildMode)) return false;
+        if(p.check(x.schools, p.school, p.schoolMode)) return false;
         if(p.team && !(x.teams & p.team)) return false;
         if(p.ar && !x.canEquip(AR[p.ar])) return false;
         if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){

@@ -125,14 +125,3 @@ function splitSchoolNames(s){
 function splitTeamNames(s){
   return splitAffiliationNames(TEAM, s);
 }
-
-function affs2array(list, n, lang){
-  var i = 0;
-  var r = [];
-  while(n){
-    if(n & 1) r.push(t(list[i].name, lang));
-    i++;
-    n = n >> 1;
-  }
-  return r;
-}

@@ -139,7 +139,7 @@ function linkTextInput(obj, key, id, oninput){
     if(obj.active) obj.update();
   };
 }
-function setCheckGroup(id, list, br, order, btn){
+function setCheckGroup(id, list, br, order, sel, btn){
   var fieldset = _(id);
   var value = 0;
   if(!order) order = list.map(function(v, i){return i});
@@ -173,6 +173,17 @@ function setCheckGroup(id, list, br, order, btn){
       }
     });
     appendCheck(legend, id + "_all", value, "ALL");
+    if(sel){
+      var hr = document.createElement("hr");
+      var div = document.createElement("div");
+      var select =  document.createElement("select");
+      div.className = "bs";
+      select.id = id + "_mode";
+      div.appendChild(select);
+      fieldset.appendChild(hr);
+      fieldset.appendChild(div);
+      setOptions(select.id, OR_AND);
+    }
     if(btn){
       var button = document.createElement("input");
       button.id = id + "_btn";
