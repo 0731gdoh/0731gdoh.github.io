@@ -677,7 +677,7 @@ var EFFECT = Effect.createList(
   ,["攻撃力増加[ベヒモス]/ATK Increase[Behemoth]", "こうけそ", 0, 4, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.PROMPT]
   ,["<火傷>時強化[ハヌマン]/Burn Strengthening[Hanuman]", "やけとしき", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,["幻惑特攻[セト]/Advantage vs Dazzle[Seth]", "けんわくと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
-  ,["係留時強化[セト]/Anchor Strengthening[ Seth]", "けいり", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,["係留時強化[セト]/Anchor Strengthening[Seth]", "けいり", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", "T",
     [[1, 1.6]
