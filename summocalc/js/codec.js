@@ -22,7 +22,7 @@ Encoder.prototype = {
     var r = [];
     do{
       var n = v & 31;
-      v = v >> 5;
+      v >>= 5;
       if(r.length) n += 32;
       r.unshift(B64TABLE[n]);
     }while(v);
@@ -70,7 +70,7 @@ Decoder.prototype = {
       var n = B64TABLE.indexOf(this.data[this.pos++]);
       if(n < 0) return 0;
       if(n === 32 && !v) return -1;
-      v = v << 5;
+      v <<= 5;
       v += n & 31;
     }while(n & 32);
     return v;

@@ -15,8 +15,8 @@ function EffectParameter(e){
       if(tag.variant.length) return tag.variant.reduce(f, a);
       return a;
     };
-    order.push(TAG.ORDER[0].reduce(f, []));
-    order.push(TAG.ORDER[1].reduce(f, []));
+    order.push(TAG.LOCALE_ORDER[0].reduce(f, []));
+    order.push(TAG.LOCALE_ORDER[1].reduce(f, []));
     this.subsetOrder = order;
   }
 };

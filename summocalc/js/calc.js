@@ -391,7 +391,7 @@ var calc = {
               if(lv < 1000){
                 es[e.link].setLevel(1, 1);
               }
-              lv = lv % 1000;
+              lv %= 1000;
               if(EFFECT[e.link].isStackable() && es[e.link].loop) loopOw = true;
             }
           }
@@ -438,7 +438,7 @@ var calc = {
           if(!e || !ep || !ep.subsetOrder) return;
           if(e.subset){
             var flag = Math.floor(v[2] / 100);
-            v[2] = v[2] % 100;
+            v[2] %= 100;
 
             if(flag & 2) v[1] += TAG_MAX;
             n = e.subset.get(v[1]);
@@ -467,7 +467,7 @@ var calc = {
   addStatus: function(index, lv, group, mode){
     if(index > EFFECT_MAX){
       mode = Math.floor(index / EFFECT_MAX);
-      index = index % EFFECT_MAX;
+      index %= EFFECT_MAX;
     }
     if(index > 0){
       var ep = this.es[index];
@@ -618,35 +618,35 @@ var calc = {
     rf.active = 0;
     setOptions("sv", VERSION);
     setOptions("dm", THEME);
-    setOptions("w", WEAPON, FILTER.NAME, WEAPON.ORDER);
-    setOptions("cs", CS, FILTER.VALUE, CS.ORDER);
+    setOptions("w", WEAPON, {filter: FILTER.NAME});
+    setOptions("cs", CS, {filter: FILTER.VALUE});
     this.updateMultiplierOptions();
-    setCheckGroup("ef", ATTRIBUTE, undefined, ATTRIBUTE.ORDER);
-    setCheckGroup("wf", WEAPON, undefined, WEAPON.ORDER);
-    setCheckGroup("cf", WEAPON, undefined, WEAPON.ORDER);
+    setCheckGroup("ef", ATTRIBUTE);
+    setCheckGroup("wf", WEAPON, CHECK_GROUP.CHECK);
+    setCheckGroup("cf", WEAPON, CHECK_GROUP.CHECK);
     setCheckGroup("rf", RARITY);
-    setCheckGroup("obf", OBTAIN, undefined, undefined, true);
+    setCheckGroup("obf", OBTAIN, CHECK_GROUP.SELECT);
     setOptions("lmf", LIMITED);
-    setOptions("vf", VARIANT);
-    setCheckGroup("gf", GUILD, undefined, GUILD.ORDER[language], true);
-    setCheckGroup("sf", SCHOOL, undefined, SCHOOL.ORDER[language], true);
-    setCheckGroup("of", TEAM, undefined, TEAM.ORDER[language]);
+    setOptions("vf", VARIANT, {labels: VARIANT.LABELS});
+    setCheckGroup("gf", GUILD, CHECK_GROUP.SELECT);
+    setCheckGroup("sf", SCHOOL, CHECK_GROUP.SELECT);
+    setCheckGroup("of", TEAM);
     ["srf1", "srf2"].forEach(function(key, i){
       setOptions(key, RANGE);
       cf.updateEffectFilterOptions(i);
     });
     ["baf", "bdf", "nf", "pf"].forEach(function(key, i){
-      setOptions(key, TAG, function(x){
+      setOptions(key, TAG, {filter: function(x){
         return !x.index || x.checkFlag(i + 3, TIMING_FLAG.ANY);
-      }, TAG.ORDER[language], TAG.LABELS[i + 3]);
+      }, labels: TAG.LABELS[i + 3]});
     });
     this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
     setOptions("rlf", LIMITED);
     ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
-      setOptions(key, TAG, function(x){
+      setOptions(key, TAG, {filter: function(x){
         return !x.index || x.checkFlag(i, TIMING_FLAG.AR);
-      }, TAG.ORDER[language], TAG.LABELS[i]);
+      }, labels: TAG.LABELS[i]});
     });
     this.updateEffectOptions();
     setText("lsv", "モード/Mode");
@@ -679,7 +679,9 @@ var calc = {
     setText("lxf", "名前/Name");
     setText("lef", "属性/Attribute");
     setText("lwf", "武器/Weapon");
+    setText("lwf_c", "武器種変更を含む/Include Weapon Change");
     setText("lcf", "CSタイプ/CS Type");
+    setText("lcf_c", "CS変更を含む/Include CS Change");
     setText("lrf", "レア度/Rarity");
     setText("lobf", "入手/Obtain");
     setText("llmf", "期間限定/Limited");
@@ -688,14 +690,15 @@ var calc = {
     setText("lsf", "学園/School");
     setText("lof", "その他/Other");
     setText("lsef1", "効果1/Effect 1");
-    setCheckGroup("stf1", TIMING, 17);
+    setCheckGroup("stf1", TIMING);
     setText("lsef2", "効果2/Effect 2");
-    setCheckGroup("stf2", TIMING, 17);
+    setCheckGroup("stf2", TIMING);
     setText("lpf", "常時/Static");
     setText("lbaf", "特攻対象/A.Advantage");
     setText("lbdf", "特防対象/D.Advantage");
     setText("lnf", "状態無効/Nullify");
     setText("lqf", "装備可能/Equipable");
+    setText("legf", "ギルド制限を無視/Ignore Guild Limitations");
     setText("lccf", "CSの効果を除外する/Exclude CS Effects");
     setText("rd", "ランダムカード/Random Card");
     setText("fr", "リセット/Reset");
@@ -713,6 +716,7 @@ var calc = {
     setText("lrdf", "特防対象/D.Advantage");
     setText("lrnf", "状態無効/Nullify");
     setText("lceq", "装備可能のみ/Can be Equipped only");
+    setText("lreg", "ギルド制限を無視/Ignore Guild Limitations");
     setText("rrd", "ランダムAR/Random AR");
     setText("rfr", "リセット/Reset");
     setText("dd", "カードデータ: /Card Data: ");
@@ -792,38 +796,39 @@ var calc = {
     var es = this.es;
     var card = CARD[this.card];
     var ar = AR[this.ar];
-    var s = [0].concat(card.effects[0]).concat(card.effects[2]);
-    var labels = ["ピックアップ/PICK UP", "追加済み/Added"];
-    if(card.canEquip(ar)) ar.effects.forEach(function(x){
-      s.push(EFFECT_MAX * 2 + x);
-    });
-    s.push(0);
-    EFFECT.ORDER[language].forEach(function(x){
-      var order = es[x].subsetOrder;
-      if(es[x].loop) s.push(x);
-      if(order) order[language].forEach(function(z){
-        if(es[z].loop) s.push(z);
+    var order = [0];
+    var labels = ["追加済み/Added", "ピックアップ/PICK UP"];
+    EFFECT.LOCALE_ORDER[language].forEach(function(x){
+      var ss = es[x].subsetOrder;
+      if(es[x].loop) order.push(x);
+      if(ss) ss[language].forEach(function(z){
+        if(es[z].loop) order.push(z);
       });
     });
-    s = s.concat(EFFECT.ORDER[language]);
-    setOptions("os", es, FILTER.OFFENSE, s, labels.concat(EFFECT.LABELS[0]), EFFECT_MAX, p);
-    setOptions("ds", es, FILTER.DEFENSE, s, labels.concat(EFFECT.LABELS[1]), EFFECT_MAX, p);
+    order.push(0);
+    order = order.concat(card.effects[0]).concat(card.effects[2]);
+    if(card.canEquip(ar)) ar.effects.forEach(function(x){
+      order.push(EFFECT_MAX * 2 + x);
+    });
+    order = order.concat(EFFECT.LOCALE_ORDER[language]);
+    setOptions("os", es, {filter: FILTER.OFFENSE, order: order, labels: labels.concat(EFFECT.LABELS[0]), divisor: EFFECT_MAX, prefixes: p});
+    setOptions("ds", es, {filter: FILTER.DEFENSE, order: order, labels: labels.concat(EFFECT.LABELS[1]), divisor: EFFECT_MAX, prefixes: p});
   },
   updateEquipableOptions: function(){
-    var a = this.cardfilter.active;
-    var s = [0].concat(AR.ORDER);
+    var active = this.cardfilter.active;
+    var order = [0].concat(AR.ORDER);
     var labels = ["装備中/Equipped"].concat(AR.LABELS);
     var value = v("qf");
     this.cardfilter.active = 0;
     if(this.ar){
-      s.splice(1, 0, this.ar);
+      order.splice(1, 0, this.ar);
     }
-    setOptions("qf", AR, undefined, s, labels);
+    setOptions("qf", AR, {order: order, labels: labels});
     setValue("qf", value);
-    this.cardfilter.active = a;
+    this.cardfilter.active = active;
   },
   updateMultiplierOptions: function(){
-    setOptions("am", MULTIPLIER, undefined, MULTIPLIER.ORDER, MULTIPLIER.LABELS, 100, ["", this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？"]);
+    setOptions("am", MULTIPLIER, {labels: MULTIPLIER.LABELS, divisor: 100, prefixes: ["", this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？"]});
   },
   checkCardSelected: function(){
     if(this.card){
@@ -845,7 +850,7 @@ var calc = {
     var exdmg = 0;
     var atk = this.atk;
     var exatk = new Fraction(0);
-    var atkbonus = new Fraction(1);
+    var atkbonus = [];
     var weapon = this.weapon;
     var cs = this.cs;
     var csrate = 1;
@@ -894,7 +899,7 @@ var calc = {
         LINE
       );
     }
-    EFFECT.ORDER[language].forEach(function(v){
+    EFFECT.LOCALE_ORDER[language].forEach(function(v){
       if(v){
         var ep = es[v];
         params.push(ep);
@@ -983,7 +988,7 @@ var calc = {
             if(this.card && !(card.guilds & GUILD.exists)){
               x = new Fraction(0);
             }else if(e.type === TYPE.ATK){
-              x = x.add((ep.unit - 1) * 30, 100);
+              x = x.add((ep.unit - 1) * 3, 10);
               label.push(t("[所属メンバー:/[Guildmates:") + ep.unit + "]");
             }
           }
@@ -1016,7 +1021,7 @@ var calc = {
 
             case TYPE.ATK:
               if(x - 0){
-                atkbonus = atkbonus.add(x);
+                atkbonus.push(x);
                 desc.push("ATK+" + x.mul(100, 1) + "%");
               }
               break;
@@ -1078,12 +1083,14 @@ var calc = {
         result.pop();
       }
     }
-    atk = exatk.add(atk, 1).mul(atkbonus);
-    result[5] += atk;
-    atkbonus = atkbonus.add(-1, 1);
+    atk = exatk.add(atk, 1);
     desc = [];
     if(exatk.n) desc.push((exatk < 0 ? "" : "+") + exatk);
-    if(atkbonus.n) desc.push("+" + atkbonus.mul(100, 1) + "%");
+    atkbonus.forEach(function(x){
+      atk = x.add(1, 1).mul(atk);
+      desc.push("+" + x.mul(100, 1) + "%");
+    });
+    result[5] += atk;
     if(desc.length) result[5] += " (" + desc.join(", ") + ")";
     result[6] += WEAPON[weapon];
     result.push(t("【ダメージ】/【Damage】"));
@@ -1127,7 +1134,9 @@ var calc = {
     name: "",
     attribute: 0,
     weapon: 0,
+    weaponChange: 0,
     cs: 0,
+    csChange: 0,
     rarity: 0,
     obtain: 0,
     obtainMode: 0,
@@ -1149,6 +1158,7 @@ var calc = {
     bonus_b: 0,
     nullify: 0,
     ar: 0,
+    external: 0,
     exclude: 0,
     current: "",
     active: 0,
@@ -1157,7 +1167,9 @@ var calc = {
       linkTextInput(c, "name", "xf");
       linkCheckGroup(c, "attribute", "ef");
       linkCheckGroup(c, "weapon", "wf");
+      linkInput(c, "weaponChange", "wf_c");
       linkCheckGroup(c, "cs", "cf");
+      linkInput(c, "csChange", "cf_c");
       linkCheckGroup(c, "rarity", "rf");
       linkCheckGroup(c, "obtain", "obf")
       linkInput(c, "obtainMode", "obf_mode");
@@ -1173,6 +1185,7 @@ var calc = {
       linkInput(c, "bonus_d", "bdf");
       linkInput(c, "nullify", "nf");
       linkInput(c, "ar", "qf");
+      linkInput(c, "external", "egf");
       linkInput(c, "exclude", "ccf");
       linkCheckGroup(c, "timing1", "stf1", function(){
         c.updateEffectFilterOptions(0);
@@ -1194,9 +1207,9 @@ var calc = {
       var id = n ? "sef2" : "sef1";
       var r = n ? this.range2 : this.range1;
       var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.ANY;
-      setOptions(id, TAG, function(x){
+      setOptions(id, TAG, {filter: function(x){
         return !x.index || x.checkFlag(r, b);
-      }, TAG.ORDER[language], TAG.LABELS[r]);
+      }, labels: TAG.LABELS[r]});
     },
     updateToggleText: function(){
       _("fv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
@@ -1215,7 +1228,7 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["ef", "wf", "cf", "rf", "obf", "obf_mode", "lmf", "vf", "gf", "gf_mode", "sf", "sf_mode", "of", "pf", "baf", "bdf", "nf", "qf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
+      ["ef", "wf", "wf_c", "cf", "cf_c", "rf", "obf", "obf_mode", "lmf", "vf", "gf", "gf_mode", "sf", "sf_mode", "of", "pf", "baf", "bdf", "nf", "qf", "egf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("xf", "");
@@ -1227,6 +1240,8 @@ var calc = {
     check: function(a, b, mode){
       if(!b) return false;
       switch(mode){
+        case -1:
+          if(a & TIMING_FLAG.COMPOUND) return (a & b | TIMING_FLAG.COMPOUND) !== a;
         case 0:
           return !(a & b);
         case 1:
@@ -1235,33 +1250,54 @@ var calc = {
           return !!(a & b);
       }
     },
+    checkWeapon: function(mode, x){
+      var bit = [this.weapon, this.cs][mode];
+      var c = [this.weaponChange, this.csChange][mode];
+      return bit && !(1 << x.weapon[mode] & bit) && (!c || TAG.WCS[mode].every(function(w, i){
+        if(1 << i & bit){
+          if(!w) return true;
+          return x.tag[0].every(function(ie){
+            return ie[0] !== w;
+          });
+        }
+        return true;
+      }));
+    },
     update: function(){
       var p = this;
       var nv = p.name.toLowerCase().replace(/[\u3041-\u3094]/g, function(match){
         return String.fromCharCode(match.charCodeAt(0) + 0x60);
       });
-      var vv = t(VARIANT[p.variant].name);
+      var vid = VARIANT[p.variant].value;
+      var vv = VARIANT[p.variant].keyword;
       var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
-      setOptions("pc", CARD, function(x){
+      setOptions("pc", CARD, {filter: function(x){
         if(!p.active) return true;
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
         if(p.rarity && !(1 << x.rarity & p.rarity)) return false;
-        if(p.weapon && !(1 << x.weapon[0] & p.weapon)) return false;
-        if(p.cs && !(1 << x.weapon[1] & p.cs)) return false;
+        if(p.checkWeapon(0, x)) return false;
+        if(p.checkWeapon(1, x)) return false;
         if(p.attribute && !(1 << x.attribute & p.attribute)) return false;
         if(p.check(x.obtain, p.obtain, p.obtainMode)) return false;
         if(p.limited && (p.limited === 1) !== x.limited) return false;
         if(vv && x.variant.indexOf(vv) === -1) return false;
+        if(vid){
+          if(x.rarity < 3){
+            if(vid !== 1) return false;
+          }else if(x.id % 10 !== vid){
+            return false;
+          }
+        }
         if(p.check(x.guilds, p.guild, p.guildMode)) return false;
         if(p.check(x.schools, p.school, p.schoolMode)) return false;
         if(p.team && !(x.teams & p.team)) return false;
-        if(p.ar && !x.canEquip(AR[p.ar])) return false;
+        if(p.ar && !x.canEquip(AR[p.ar], p.external)) return false;
         if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
-          return (p.effect1 !== ie[0] % d) || !(ie[1] & p.timing1);
+          return (p.effect1 !== ie[0] % d) || p.check(ie[1], p.timing1, -1);
         })) return false;
         if(p.timing2 && p.effect2 && x.tag[p.range2].every(function(ie){
-          return (p.effect2 !== ie[0] % d) || !(ie[1] & p.timing2);
+          return (p.effect2 !== ie[0] % d) || p.check(ie[1], p.timing2, -1);
         })) return false;
         if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[(i + 3) % 6].every(function(ie){
@@ -1269,7 +1305,7 @@ var calc = {
           });
         })) return false;
         return true;
-      });
+      }});
       _("cx").innerHTML = "(" + (_("pc").length - 1) + "/" + (CARD.length - 1) + ")";
     }
   },
@@ -1288,6 +1324,7 @@ var calc = {
     nullify: 0,
     card: CARD[0],
     equipable: 1,
+    external: 1,
     current: "",
     active: 0,
     init: function(){
@@ -1305,6 +1342,7 @@ var calc = {
       linkInput(c, "bonus_d", "rdf");
       linkInput(c, "nullify", "rnf");
       linkInput(c, "equipable", "ceq");
+      linkInput(c, "external", "reg");
       this.update();
     },
     updateToggleText: function(){
@@ -1329,6 +1367,7 @@ var calc = {
       });
       setValue("rxf", "");
       setValue("ceq", 1);
+      setValue("reg", 1);
       this.active = active;
       this.update();
     },
@@ -1338,9 +1377,9 @@ var calc = {
         return String.fromCharCode(match.charCodeAt(0) - 0x60);
       });
       if(card !== undefined) p.card = CARD[card];
-      setOptions("rc", AR, function(x){
-        if(!p.active) return p.card.canEquip(x);
-        if(p.equipable && !p.card.canEquip(x)) return false;
+      setOptions("rc", AR, {filter: function(x){
+        if(!p.active) return p.card.canEquip(x, true);
+        if(p.equipable && !p.card.canEquip(x, p.external)) return false;
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
         if(p.rarity && (1 << x.arRarity & p.rarity) === 0) return false;
@@ -1353,7 +1392,7 @@ var calc = {
           });
         })) return false;
         return true;
-      }, AR.ORDER, AR.LABELS);
+      }, labels: AR.LABELS});
       _("rcx").innerHTML = "(" + (_("rc").length - 1) + "/" + (AR.length - 1) + ")";
     }
   }

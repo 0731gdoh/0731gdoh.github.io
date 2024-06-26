@@ -16,8 +16,9 @@ Affiliation.prototype = {
 Affiliation.createList = function(a){
   var table = new Map();
   var order = [[], []];
+  var q = [];
+  var br = 0;
   var k = [];
-  var selectable = 0;
   var exists = 0;
   var result = a.map(function(x, i){
     var v = 1 << i;
@@ -27,12 +28,13 @@ Affiliation.createList = function(a){
       return p1;
     });
     table.set(key || t(x, 0), v);
-    if(x[0] === "("){
-      selectable = selectable | v;
+    if("？未無".indexOf(x[0]) !== -1){
+      q.push(i);
     }else{
       order[0].push(i);
       order[1].push(i);
-      if(x[0] !== "？") exists = exists | v;
+      exists |= v;
+      ++br;
     }
     k.push(t(x, 1));
     return new Affiliation(i, x, v);
@@ -40,10 +42,12 @@ Affiliation.createList = function(a){
   order[1].sort(function(a, b){
     return k[a] < k[b] ? -1 : 1;
   });
+  order[0] = order[0].concat(q);
+  order[1] = order[1].concat(q);
   result.table = table;
-  result.selectable = selectable;
   result.exists = exists;
-  result.ORDER = order;
+  result.LOCALE_ORDER = order;
+  result.BR = [br];
   return result;
 };
 
@@ -52,6 +56,7 @@ var GUILD = Affiliation.createList(
   ,"インベイダーズ/Invaders"
   ,"ウォーモンガーズ/Warmongers"
   ,"エージェンツ/Agents"
+  ,"エクスターズ/Exters"
   ,"エンタティナーズ/Entertainers"
   ,"クラフターズ/Crafters"
   ,"クリエイターズ/Creators"
@@ -66,19 +71,15 @@ var GUILD = Affiliation.createList(
   ,"ルールメイカーズ/Rule Makers"
   ,"ワイズメン/The Wisemen"
   ,"ワンダラーズ/Wanderers"
-  ,"？？？"
-  ,"？？？？？"
-  ,"？？？？？？"
-  ,"？？？？？？？"
-  ,"？？？？？？？？"
-  ,"(設定可)/(Selectable)"
+  ,"<無>所属/Independent"
+  ,"<未>所属/Unaffiliated"
 ]);
 
 var SCHOOL = Affiliation.createList(
   ["<秋波原>学園/Akihabara Academy"
   ,"<飢野>学園/Ueno Academy"
   ,"<得真道>学園/Umamichi Academy"
-  ,"<王子坊>学園/Ojimachi Academy"
+  ,"<王子坊>学園/王子坊学園(Ojimachi Academy)"
   ,"学園<軍獄>？/Penitentia Academy?"
   ,"<歌舞輝蝶>学園/Kabukicho Academy"
   ,"<窯多>工業高等専門学校/Kamata Technical Academy"
@@ -89,15 +90,15 @@ var SCHOOL = Affiliation.createList(
   ,"<世耕>農業・林業学園"
   ,"<代神山>学園/Daikanyama Academy"
   ,"東京<サンタ>スクール/Tokyo Santa School"
-  ,"東京<消防>大学"
+  ,"東京<消防>大学/Fire and Disaster Mgmt. University"
   ,"<東都>学園/Togo Academy"
   ,"<豊舟>海洋学園/Toyosu Marine Academy"
-  ,"<中迦野>芸能学園"
+  ,"<中迦野>芸能学園/Nakano Performing Arts Academy"
   ,"<武玄>学園/Bukuro Academy"
   ,"<不死見>学園/Fujimi Academy"
   ,"<依々祇>学園/Yoyogi Academy"
   ,"<六本城>学園/Roppongi Academy"
-  ,"？？？"
+  ,"<？>？？"
 ]);
 
 var TEAM = Affiliation.createList(
