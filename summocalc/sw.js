@@ -1,10 +1,11 @@
-var CACHE_NAME = "sc-230917-1";
+var CACHE_NAME = "sc-240626-1";
 var urlsToCache = [
   ".",
   "index.html",
   "js/summocalc.js",
   "js/fraction.js",
   "js/listitem.js",
+  "js/variant.js",
   "js/affiliation.js",
   "js/split.js",
   "js/tag.js",
