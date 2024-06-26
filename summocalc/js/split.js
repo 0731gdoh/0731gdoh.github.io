@@ -9,23 +9,24 @@ function splitCharaNames(s){
 
 function generateTagData(s, flagNum, arTiming){
   var z = [];
-  var r = new Map();
+  var table = new Map();
   s.forEach(function(x){
     var v = x[1];
     var timing = x[2];
     if(flagNum === 3){
       if(x[5]) return;
       v = x[3] % TAG_MAX || TAG[v].bonusTarget;
-      timing = timing & TIMING_FLAG.CS;
+      timing &= ~TIMING_FLAG.NOT_CS;
     }
     if(v){
       var tag = TAG[v];
       var g = 0;
+      var compound = timing & TIMING_FLAG.COMPOUND;
       timing = arTiming || timing;
       if(timing & TIMING_FLAG.CS){
         g = TAG_MAX;
-        if(timing & TIMING_FLAG.NOT_CS){
-          timing = timing & TIMING_FLAG.NOT_CS;
+        if(!compound && timing & TIMING_FLAG.NOT_CS){
+          timing &= ~TIMING_FLAG.CS;
         }
       }
       if(tag.type !== TAG_TYPE.CATEGORY){
@@ -42,37 +43,41 @@ function generateTagData(s, flagNum, arTiming){
           case TAG_TYPE.DEBUFF:
             if(flagNum > 2) sf = false;
           default:
-            if(r.has(v + g)){
-              r.set(v + g, r.get(v + g) | timing);
+            if(table.has(v + g)){
+              table.get(v + g)[1] |= timing;
             }else{
-              r.set(v + g, timing);
+              var data = [v + g, timing];
+              z.push(data);
+              if(!compound) table.set(v + g, data);
             }
             tag.setFlag(f, b);
             break;
         }
         (flagNum < 3 ? tag.category : tag.subset).forEach(function(c){
-          if(r.has(c + g)){
-            r.set(c + g, r.get(c + g) | timing);
+          if(table.has(c + g)){
+            table.get(c + g)[1] |= timing;
           }else{
-            r.set(c + g, timing);
+            var subdata = [c + g, timing];
+            z.push(subdata);
+            if(!compound) table.set(c + g, subdata);
           }
           if(sf) TAG[c].setFlag(f, b);
         });
       }
     }
   });
-  r.forEach(function(value, key){
-    z.push([key, value]);
-  });
   return z;
 }
 
 function splitSkills(s){
-  var re = /^([a-z&]*)(.+)$/;
-  var bo = /^(.*[^に])に?((?:特攻|(デメリット))\[\d+\.\d+\]|(貫通))$/;
+  var re = /^([a-z&+]*)(.+)$/;
+  var bo = /^(.*[^に])に?((?:特攻|(デメリット))\[\d+\.\d+\]|に(貫通))$/;
   var result = new Map();
   var set = function(k, v){
-    if(v[2] & TIMING_FLAG.CS){
+    if(v[2] & TIMING_FLAG.COMPOUND){
+      k = v[2] + k;
+    }
+    if(v[2] & TIMING_FLAG.SALV){
       if(v[3]) v[3] += TAG_MAX;
       if(v[2] & TIMING_FLAG.NOT_CS){
         k = "&c" + k;
@@ -90,12 +95,25 @@ function splitSkills(s){
     var tname = "";
     var ignore = false;
     var demerit = false;
-    if(match[1]) timing = match[1].split("&").reduce(function(acc, cur){
-      var n = TIMING.table.get(cur);
-      if(n === undefined) throw new Error("キーワード「" + cur + "」は未定義です\n（" + s + "）");
-      acc = acc | (1 << n);
-      return acc;
-    }, 0);
+    if(match[1]){
+      var compound = match[1].indexOf("+") !== -1;
+      var sep = compound ? "+" : "&";
+      var salv = 0;
+      timing = match[1].split(sep).reduce(function(acc, cur){
+        var flag = 0;
+        if(cur === "x"){
+          salv = -1;
+        }else{
+          var n = TIMING.table.get(cur);
+          if(n === undefined) throw new Error("キーワード「" + cur + "」は未定義です\n（" + s + "）");
+          flag = (1 << n)
+          if(!salv && TIMING_FLAG.CS & flag) salv = 1;
+        }
+        return acc | flag;
+      }, 0);
+      if(salv === 1) timing |= TIMING_FLAG.SALV;
+      if(compound) timing |= TIMING_FLAG.COMPOUND;
+    }
     var name = match[2].replace(bo, function(m, p1, p2, p3, p4){
       tname = p1;
       if(p4){
@@ -148,7 +166,7 @@ function generateEffectData(s, group){
     var i = EFFECT.table.get(group ? "*" + value[0] : value[0]);
     if(i){
       var e = EFFECT[i];
-      var g = (value[2] & TIMING_FLAG.CS) ? EFFECT_MAX : 0;
+      var g = (value[2] & TIMING_FLAG.SALV) ? EFFECT_MAX : 0;
       if(!e.isToken()){
         if(value[3]){
           var n = i;
@@ -191,11 +209,11 @@ function registerBonusEffect(i, value){
       switch(tag.type){
         case TAG_TYPE.BUFF:
         case TAG_TYPE.ALL_BUFFS:
-          flag = flag | EFFECT_FLAG.BONUS_TO_BUFF;
+          flag |= EFFECT_FLAG.BONUS_TO_BUFF;
           break;
         case TAG_TYPE.DEBUFF:
         case TAG_TYPE.ALL_DEBUFFS:
-          flag = flag | EFFECT_FLAG.BONUS_TO_DEBUFF;
+          flag |= EFFECT_FLAG.BONUS_TO_DEBUFF;
       }
       o.flag = flag;
     }

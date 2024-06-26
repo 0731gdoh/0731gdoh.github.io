@@ -44,7 +44,7 @@ var ATTRIBUTE = ListItem.createList(
   ,["魔/Infernal", 128]
   ,["英雄/Valiant", 256]
   ,["世界/World", 512]
-  ,["無限/無限(Infinite)", 1024]
+  ,["無限/Infinity", 1024]
   ,["零/Null", 2048]
 ]);
 ATTRIBUTE.ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -64,7 +64,7 @@ var MULTIPLIER = ListItem.createList(
   ,["→魔/ → Infernal", 7]
   ,["→英雄/ → Valiant", 8]
   ,["→世界/ → World", 9]
-  ,["→無限/ → 無限(Infinite)", 10]
+  ,["→無限/ → Infinity", 10]
   ,["→零/ → Null", 11]
 ]);
 MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115];
@@ -132,54 +132,6 @@ var THEME = ListItem.createList(
   ,["ダーク/Dark"]
 ]);
 
-var VARIANT = ListItem.createList(
-  [[""]
-  ,["バレ/Valentine"]
-  ,["バレ17/Valentine17"]
-  ,["海洋/Ocean"]
-  ,["臨海/Seaside"]
-  ,["臨海17/Seaside17"]
-  ,["ハロ/Halloween"]
-  ,["ハロ17/Halloween17"]
-  ,["秘島/Island"]
-  ,["聖夜/Xmas"]
-  ,["聖夜17/Xmas17"]
-  ,["バレ18/Valentine18"]
-  ,["山/Gendarme"]
-  ,["夏祭/Festival"]
-  ,["砂旅/Journey"]
-  ,["宝船/T.Ship"]
-  ,["聖夜18/Xmas18"]
-  ,["節分/Setsubun"]
-  ,["バレ19/Valentine19"]
-  ,["夢/Nightmare"]
-  ,["渚/Fashionista"]
-  ,["海家/Beach"]
-  ,["ハロ19/Halloween19"]
-  ,["カナーン/Canaan"]
-  ,["聖夜19/Xmas19"]
-  ,["バレ20/Valentine20"]
-  ,["野営/Jamboree"]
-  ,["竜宮/Virtual"]
-  ,["福祭/Illusion"]
-  ,["聖夜20/Xmas20"]
-  ,["バレ21/Valentine21"]
-  ,["星空/Nightglows"]
-  ,["川/River"]
-  ,["地獄/Onsen"]
-  ,["ハロ21/Halloween21"]
-  ,["聖夜21/Xmas21"]
-  ,["バレ22/Valentine22"]
-  ,["13章/Ch.13"]
-  ,["プール/Pool"]
-  ,["浜辺/Dynamis"]
-  ,["夜祭/NightFest"]
-  ,["聖夜22/Xmas22"]
-  ,["バレ23/Valentine23"]
-  ,["ジュラ/Jurassic"]
-  ,["臨海23/Seaside23"]
-]);
-
 var LIMITED = ListItem.createList(
   [[""]
   ,["期間限定/Limited"]
@@ -207,7 +159,7 @@ function bit2array(list, n, lang){
   while(n){
     if(n & 1) r.push(t(list[i].name, lang));
     i++;
-    n = n >> 1;
+    n >>= 1;
   }
   return r;
 }

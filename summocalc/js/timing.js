@@ -15,11 +15,14 @@ Timing.prototype = {
 };
 Timing.createList = function(a){
   var table = new Map();
+  var br = 0;
   var r = a.map(function(v, i){
     table.set(v[1], i);
+    if(v[0][0] !== "C") ++br;
     return new Timing(i, v[0]);
   });
   r.table = table;
+  r.BR = [br];
   return r;
 };
 
@@ -48,26 +51,26 @@ var TIMING = Timing.createList(
 var TIMING_FLAG = {
   ANY: (1 << TIMING.length) - 1,
   CS: (1 << TIMING.table.get("c")) | (1 << TIMING.table.get("cx")),
-  AR: 1 << TIMING.length
+  AR: 1 << TIMING.length,
+  COMPOUND: 2 << TIMING.length,
+  SALV: 4 << TIMING.length,
 }
 TIMING_FLAG.NOT_CS = TIMING_FLAG.ANY - TIMING_FLAG.CS;
 
-function timing2str(timing, lang, cs){
-  timing = timing & TIMING_FLAG.ANY;
+function timing2str(timing, lang){
+  var brace = (timing & TIMING_FLAG.SALV) ? "}{" : "][";
+  var sep = (timing & TIMING_FLAG.COMPOUND) ? "+" : brace;
+  timing &= TIMING_FLAG.ANY;
   if(!timing){
     return "";
-  }else if(timing){
+  }else{
     var i = 0;
     var r = [];
     while(timing){
       if(timing & 1) r.push(t(TIMING[i].name, lang));
-      timing = timing >> 1;
+      timing >>= 1;
       i++;
     }
-    if(cs){
-      return "{" + r.join("}{") + "}";
-    }else{
-      return "[" + r.join("][") + "]";
-    }
+    return brace[1] + r.join(sep) + brace[0];
   }
 }
