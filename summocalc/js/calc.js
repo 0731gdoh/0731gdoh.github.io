@@ -1306,10 +1306,10 @@ var calc = {
   arfilter: {
     name: "",
     rarity: 0,
-    hp: 0,
-    atk: 0,
     target: 0,
     targetMode: 0,
+    hp: 0,
+    atk: 0,
     limited: 0,
     self: 0,
     ally: 0,
@@ -1327,10 +1327,10 @@ var calc = {
       var c = this;
       linkTextInput(c, "name", "rxf");
       linkCheckGroup(c, "rarity", "rrf");
-      linkInput(c, "hp", "rhf");
-      linkInput(c, "atk", "rkf");
       linkCheckGroup(c, "target", "rtf");
       linkInput(c, "targetMode", "rtf_mode");
+      linkInput(c, "hp", "rhf");
+      linkInput(c, "atk", "rkf");
       linkInput(c, "limited", "rlf");
       linkInput(c, "self", "ref1");
       linkInput(c, "ally", "ref2");
@@ -1360,7 +1360,7 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["rrf", "rhf", "rkf", "rtf", "rtf_mode", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
+      ["rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("rxf", "");
@@ -1381,10 +1381,9 @@ var calc = {
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
         if(p.rarity && (1 << x.arRarity & p.rarity) === 0) return false;
+        if(check(x.limitationType, p.target, p.targetMode)) return false;
         if(p.hp && x.hp < p.hp) return false;
         if(p.atk && x.value < p.atk) return false;
-        if(p.atk && x.value < p.atk) return false;
-        if(check(x.limitationType, p.target, p.targetMode)) return false;
         if(p.limited && (p.limited === 1) !== x.limited) return false;
         if([p.self, p.ally, p.enemy, p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[i % 6].every(function(ie){
