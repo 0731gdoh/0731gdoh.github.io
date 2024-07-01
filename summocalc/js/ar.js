@@ -1,6 +1,7 @@
 "use strict";
 
 function Record(index, id, x, limited){
+  var flag = 0;
   var skills = x.slice(1, 6).map(function(s){
     return splitSkills(s);
   });
@@ -24,6 +25,10 @@ function Record(index, id, x, limited){
   this.csBoost = x[14] || 0;
   this.csWeapon = x[15] || 0;
   this.limited = limited;
+  [this.chara.length, this.guilds, this.rarity && this.rarity !== EQUIP.ANY, this.attribute, this.weapon, this.rarity === EQUIP.ANY].forEach(function(v, i){
+    if(v) flag |= 1 << i;
+  });
+  this.limitationType = flag;
 }
 Record.prototype = {
   toString: function(){
@@ -261,7 +266,7 @@ var AR = Record.createList(
   ,[149, "新年に啜るは涙にあらず/新年に啜るは涙にあらず/しんねんにすするはなみだにあらず", true, "係留/祝福", "", "", "", "", 4, 300, 0, EQUIP.WOOD|EQUIP.INFERNAL, 0, "モウショウ/アマノジャク", "", ""]
   ,[148, "干支っ子たちの正月始め！/干支っ子たちの正月始め！/えとっこたちのしょうがつはじめ！", true, "特防[0.8]/閃き", "", "", "魔法", "", 3, 50, 0, 0, EQUIP.SHOT|EQUIP.MAGIC, "アギョウ/イナバ", "", ""]
   ,[150, "ぼくたちのチェックメイト/ぼくたちのチェックメイト/ぼくたちのちぇっくめいと", true, "獲得戦友ポイントアップ/攻撃強化", "攻撃強化", "", "", "", 5, 350, 0, EQUIP.INFERNAL|EQUIP.WORLD, 0, "", "ウォーモンガーズ", ""]
-  
+  ,[151, "君と駆けた不思議の街よ/君と駆けた不思議の街よ/きみとかけたふしぎのまちよ", true, "ギルド新加入認印獲得率アップ", "集中", "", "", "", 5, 150, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "", "ゲームマスターズ/未", ""]
   ,[1001, "開拓の誓い/Vow of Resurrection/かいたくのちかい", false, "", "CP増加", "", "", "恐怖", 5, 100, 0, EQUIP.NETHER, 0, "主人公/シロウ", "", ""]
   ,[1002, "無窮の誓い/Vow of Infinitude/むきゅうのちかい", false, "クリティカル", "", "", "", "マヒ", 5, 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ", "", ""]
   ,[1003, "豊穣の誓い/Vow of Abundance/ほうじょうのちかい", false, "HP回復", "", "", "", "告死", 5, 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ", "", ""]

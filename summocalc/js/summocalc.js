@@ -16,6 +16,19 @@ function t(str, x){
 function comma(n){
   return ("" + n).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
 }
+function check(a, b, mode){
+  if(!b) return false;
+  switch(mode){
+    case 0:
+      return !(a & b);
+    case 1:
+      return (a & b) !== b;
+    case 2:
+      return !!(a & b);
+    default:
+      return false;
+  }
+}
 function v(x, y){
   var o = _(x);
   var value = parseInt(o.value) || 0;
@@ -213,18 +226,18 @@ function setCheckGroup(id, list, optional){
   }
 }
 function appendCheck(container, id, value, text){
-  var check = document.createElement("input");
+  var checkbox = document.createElement("input");
   var label = document.createElement("label");
-  check.type = "checkbox";
-  check.id = id;
-  if(value) check.value = value;
+  checkbox.type = "checkbox";
+  checkbox.id = id;
+  if(value) checkbox.value = value;
   label.htmlFor = id;
   if(text){
     label.textContent = text;
   }else{
     label.id = "l" + id;
   }
-  container.appendChild(check);
+  container.appendChild(checkbox);
   container.appendChild(label);
 }
 function hideCurrent(obj){

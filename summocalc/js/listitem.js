@@ -147,6 +147,15 @@ var OBTAIN = ListItem.createList(
   ,["アンドヴァリショップ/Andvari Shop"]
 ]);
 
+var LIMITATION = ListItem.createList(
+  [["キャラ/Character"]
+  ,["ギルド/Guild"]
+  ,["レア度/Rarity"]
+  ,["属性/Attribute"]
+  ,["武器/Weapon"]
+  ,["制限なし/No Limit"]
+]);
+
 var OR_AND = ListItem.createList(
   [["OR"]
   ,["AND"]

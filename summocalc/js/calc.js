@@ -642,6 +642,7 @@ var calc = {
     });
     this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
+    setCheckGroup("rtf", LIMITATION, CHECK_GROUP.SELECT);
     setOptions("rlf", LIMITED);
     ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
       setOptions(key, TAG, {filter: function(x){
@@ -705,12 +706,13 @@ var calc = {
     setText("rfc", "AR装備フィルタ/AR Equipment Filter ");
     setText("lrxf", "名前/Name");
     setText("lrrf", "レア度/Rarity");
-    setText("lrhf", "HP基本値/Base HP")
-    setText("lrkf", "ATK基本値/Base ATK")
+    setText("lrtf", "装備制限/Limitation");
+    setText("lrhf", "HP基本値/Base HP");
+    setText("lrkf", "ATK基本値/Base ATK");
     setText("lrlf", "期間限定/Limited");
-    setText("lref1", "効果(自身)/Effect(Self)");
-    setText("lref2", "効果(味方)/Effect(Ally)");
-    setText("lref3", "効果(敵)/Effect(Enemy)");
+    setText("lref1", "効果(自身)/To Self");
+    setText("lref2", "効果(味方)/To Ally");
+    setText("lref3", "効果(敵)/To Enemy");
     setText("lrpf", "常時/Static");
     setText("lraf", "特攻対象/A.Advantage");
     setText("lrdf", "特防対象/D.Advantage");
@@ -1237,18 +1239,10 @@ var calc = {
       this.active = active;
       this.update();
     },
-    check: function(a, b, mode){
+    checkTiming: function(a, b){
       if(!b) return false;
-      switch(mode){
-        case -1:
-          if(a & TIMING_FLAG.COMPOUND) return (a & b | TIMING_FLAG.COMPOUND) !== a;
-        case 0:
-          return !(a & b);
-        case 1:
-          return (a & b) !== b;
-        case 2:
-          return !!(a & b);
-      }
+      if(a & TIMING_FLAG.COMPOUND) return (a & b | TIMING_FLAG.COMPOUND) !== a;
+      return check(a, b, 0);
     },
     checkWeapon: function(mode, x){
       var bit = [this.weapon, this.cs][mode];
@@ -1279,7 +1273,7 @@ var calc = {
         if(p.checkWeapon(0, x)) return false;
         if(p.checkWeapon(1, x)) return false;
         if(p.attribute && !(1 << x.attribute & p.attribute)) return false;
-        if(p.check(x.obtain, p.obtain, p.obtainMode)) return false;
+        if(check(x.obtain, p.obtain, p.obtainMode)) return false;
         if(p.limited && (p.limited === 1) !== x.limited) return false;
         if(vv && x.variant.indexOf(vv) === -1) return false;
         if(vid){
@@ -1289,15 +1283,15 @@ var calc = {
             return false;
           }
         }
-        if(p.check(x.guilds, p.guild, p.guildMode)) return false;
-        if(p.check(x.schools, p.school, p.schoolMode)) return false;
+        if(check(x.guilds, p.guild, p.guildMode)) return false;
+        if(check(x.schools, p.school, p.schoolMode)) return false;
         if(p.team && !(x.teams & p.team)) return false;
         if(p.ar && !x.canEquip(AR[p.ar], p.external)) return false;
         if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
-          return (p.effect1 !== ie[0] % d) || p.check(ie[1], p.timing1, -1);
+          return (p.effect1 !== ie[0] % d) || p.checkTiming(ie[1], p.timing1);
         })) return false;
         if(p.timing2 && p.effect2 && x.tag[p.range2].every(function(ie){
-          return (p.effect2 !== ie[0] % d) || p.check(ie[1], p.timing2, -1);
+          return (p.effect2 !== ie[0] % d) || p.checkTiming(ie[1], p.timing2);
         })) return false;
         if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[(i + 3) % 6].every(function(ie){
@@ -1312,6 +1306,8 @@ var calc = {
   arfilter: {
     name: "",
     rarity: 0,
+    target: 0,
+    targetMode: 0,
     hp: 0,
     atk: 0,
     limited: 0,
@@ -1331,6 +1327,8 @@ var calc = {
       var c = this;
       linkTextInput(c, "name", "rxf");
       linkCheckGroup(c, "rarity", "rrf");
+      linkCheckGroup(c, "target", "rtf");
+      linkInput(c, "targetMode", "rtf_mode");
       linkInput(c, "hp", "rhf");
       linkInput(c, "atk", "rkf");
       linkInput(c, "limited", "rlf");
@@ -1362,7 +1360,7 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["rrf", "rhf", "rkf", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
+      ["rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("rxf", "");
@@ -1383,6 +1381,7 @@ var calc = {
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
         if(p.rarity && (1 << x.arRarity & p.rarity) === 0) return false;
+        if(check(x.limitationType, p.target, p.targetMode)) return false;
         if(p.hp && x.hp < p.hp) return false;
         if(p.atk && x.value < p.atk) return false;
         if(p.limited && (p.limited === 1) !== x.limited) return false;
