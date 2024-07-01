@@ -825,4 +825,5 @@ var TAG = Tag.createList(
   ,[625, "強化転写(単)/Transfer buff (single)", "きようかて1", TAG_TYPE.ONE_SHOT, "強化転写"]
   ,[626, "火傷特攻/Advantage vs Burn", "やけと", TAG_TYPE.IRREMOVABLE_BUFF]
   ,[627, "火傷特攻[ファヴニル]", "", TAG_TYPE.IRREMOVABLE_BUFF, "火傷特攻/特攻追加系/攻撃増加系", , "火傷"]
+  ,[628, "ギルド新加入認印獲得率アップ/Increase drop rate of ギルド新加入認印", "きる", TAG_TYPE.STATIC, "報酬増加系"]
 ]);

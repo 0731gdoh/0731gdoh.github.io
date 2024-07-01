@@ -42,6 +42,7 @@ var VARIANT = Variant.createList(
   ,["バレンタイン/Valentine", "バレ"]
   ,["臨海学校/Seaside School", "臨海"]
   ,["ハロウィン/Halloween", "ハロ"]
+  ,["秘島/Lost Isle", "秘島"]
   ,["クリスマス/Xmas", "聖夜"]
   ,["本編/Main Story", "Ch."]
   ,"2017"
