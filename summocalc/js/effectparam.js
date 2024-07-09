@@ -132,18 +132,20 @@ EffectParameter.prototype = {
       if(!maxHp) return false;
       maxHp = parseInt(maxHp, 10) || 0;
     }
-    this.setHp(hp, maxHp);
-    return true;
+    return this.setHp(hp, maxHp);
   },
   setHp: function(hp, maxHp){
     var target = this;
+    var result = 1;
     if(this.alt){
       var n = this.effect.promptData.getDataNumFromHp(hp, maxHp);
       target = this.alt[n];
       this.setLevel(n);
+      result = -1;
     }
     target.hp = Math.max(Math.min(hp, maxHp), 1);
     target.maxHp = Math.max(maxHp, 1);
+    return result;
   }
 };
 EffectParameter.createList = function(){
