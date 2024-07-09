@@ -66,8 +66,9 @@ var MULTIPLIER = ListItem.createList(
   ,["→世界/ → World", 9]
   ,["→無限/ → Infinity", 10]
   ,["→零/ → Null", 11]
+  ,["→\u27e1\u20dd/ → \u27e1\u20dd", 12]
 ]);
-MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115];
+MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116];
 MULTIPLIER.LABELS = ["倍率/Multiplier", "属性/Attribute"];
 
 var RARITY = ListItem.createList(

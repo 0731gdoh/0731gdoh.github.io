@@ -1,5 +1,26 @@
 "use strict";
 
+function SkillData(k, v){
+  if(v[2] & TIMING_FLAG.COMPOUND){
+    k = v[2] + k;
+  }
+  if(v[2] & TIMING_FLAG.SALV){
+    if(v[3]) v[3] += TAG_MAX;
+    if(v[2] & TIMING_FLAG.NOT_CS){
+      k = "&c" + k;
+    }else{
+      k = "c" + k;
+    }
+  }
+  this.name = v[0];
+  this.index = v[1];
+  this.timing = v[2];
+  this.target = v[3];
+  this.targetName = v[4];
+  this.demerit = v[5];
+  this.key = k;
+}
+
 function splitCharaNames(s){
   if(!s) return [];
   return s.split("/").reduce(function(acc, cur){
@@ -10,12 +31,12 @@ function splitCharaNames(s){
 function generateTagData(s, flagNum, arTiming){
   var z = [];
   var table = new Map();
-  s.forEach(function(x){
-    var v = x[1];
-    var timing = x[2];
+  s.forEach(function(sd){
+    var v = sd.index;
+    var timing = sd.timing;
     if(flagNum === 3){
-      if(x[5]) return;
-      v = x[3] % TAG_MAX || TAG[v].bonusTarget;
+      if(sd.demerit) return;
+      v = sd.target % TAG_MAX || TAG[v].getTarget(flagNum);
       timing &= ~TIMING_FLAG.NOT_CS;
     }
     if(v){
@@ -74,20 +95,10 @@ function splitSkills(s){
   var bo = /^(.*[^に])に?((?:特攻|(デメリット))\[\d+\.\d+\]|に(貫通))$/;
   var result = new Map();
   var set = function(k, v){
-    if(v[2] & TIMING_FLAG.COMPOUND){
-      k = v[2] + k;
-    }
-    if(v[2] & TIMING_FLAG.SALV){
-      if(v[3]) v[3] += TAG_MAX;
-      if(v[2] & TIMING_FLAG.NOT_CS){
-        k = "&c" + k;
-      }else{
-        k = "c" + k;
-      }
-    }
-    if(!v[1] && v[0]) throw new Error("タグ「" + v[0] + "」は未登録です\n（" + s + "）");
-    if(result.has(k)) throw new Error("スキル「" + k + "」が重複しています\n（" + s + "）");
-    result.set(k, v);
+    var sd = new SkillData(k, v);
+    if(!sd.index && sd.name) throw new Error("タグ「" + sd.name + "」は未登録です\n（" + s + "）");
+    if(result.has(sd.key)) throw new Error("スキル「" + sd.key + "」が重複しています\n（" + s + "）");
+    result.set(sd.key, sd);
   };
   if(s) s.split("/").forEach(function(x){
     var match = x.match(re);
@@ -126,7 +137,7 @@ function splitSkills(s){
     var target = TAG.table.get(tname);
     var i = TAG.table.get(name);
     var key = match[2];
-    var tag = TAG[target || 0];
+    var tag = TAG[target];
     var subset = [];
     switch(tag.type){
       case TAG_TYPE.SKIP:
@@ -162,17 +173,17 @@ function splitSkills(s){
 
 function generateEffectData(s, group){
   var result = [];
-  s.forEach(function(value){
-    var i = EFFECT.table.get(group ? "*" + value[0] : value[0]);
+  s.forEach(function(sd){
+    var i = EFFECT.table.get(group ? "*" + sd.name : sd.name);
     if(i){
       var e = EFFECT[i];
-      var g = (value[2] & TIMING_FLAG.SALV) ? EFFECT_MAX : 0;
+      var g = (sd.timing & TIMING_FLAG.SALV) ? EFFECT_MAX : 0;
       if(!e.isToken()){
-        if(value[3]){
+        if(sd.target){
           var n = i;
           if(e.type === TYPE.BONUS || g){
-            n = e.subset.get(value[3]);
-            if(!n) n = registerBonusEffect(i, value);
+            n = e.subset.get(sd.target);
+            if(!n) n = registerBonusEffect(i, sd);
           }
           result.push(n + g);
         }else if(e.type !== TYPE.BONUS){
@@ -184,12 +195,12 @@ function generateEffectData(s, group){
   return result;
 }
 
-function registerBonusEffect(i, value){
-  var tag = TAG[value[3] % TAG_MAX];
+function registerBonusEffect(i, sd){
+  var tag = TAG[sd.target % TAG_MAX];
   var o = Object.create(EFFECT[i]);
   if(o.type !== TYPE.IGNORE){
     if(tag.type === TAG_TYPE.SPECIAL){
-      o.name = value[4] + value[0] + "/Bonus damage " + t(tag.name, 1) + value[0].replace(/^[^\[]+/, " ");
+      o.name = sd.targetName + sd.name + "/Bonus damage " + t(tag.name, 1) + sd.name.replace(/^[^\[]+/, " ");
     }else{
       [[3, "超特攻/Massive bonus"]
       ,[2, "大特攻/Greater bonus"]
@@ -197,13 +208,13 @@ function registerBonusEffect(i, value){
       ,[0, "与ダメージ減少/Decrease"]
       ].some(function(x){
         if(o.baseValue[0] >= x[0]){
-          o.name = value[4] + "に" + x[1] + " damage against " + t(tag.name, 1);
+          o.name = sd.targetName + "に" + x[1] + " damage against " + t(tag.name, 1);
           return true;
         }
         return false;
       });
     }
-    o.link = EFFECT.table.get("*" + value[4]) || 0;
+    o.link = EFFECT.table.get("*" + sd.targetName) || 0;
     if(!o.link){
       var flag = EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE;
       switch(tag.type){
@@ -218,11 +229,11 @@ function registerBonusEffect(i, value){
       o.flag = flag;
     }
   }
-  if(value[3] > TAG_MAX) o.csOnly = true;
+  if(sd.target > TAG_MAX) o.csOnly = true;
   o.index = EFFECT.length;
-  o.subset.set(value[3], o.index);
+  o.subset.set(sd.target, o.index);
   o.subset = null;
-  o.sp = [i, value[3]];
+  o.sp = [i, sd.target];
   EFFECT.push(o);
   return o.index;
 }

@@ -268,15 +268,16 @@ var calc = {
           bonus.push(loop);
         }else if(v.alt && !v.subsetOrder){
           bonus.push(e.index);
-          if(e.promptData.label === "HP"){
+          if(e.hasHpRef()){
             bonus.push(v.hp);
             bonus.push(v.maxHp);
           }else{
             bonus.push(v.lv);
             bonus.push(v.loop);
           }
+        }else if(bonus.length){
+          return true;
         }else{
-          if(bonus.length) return true;
           s.write(i - n);
           n = i;
           if(!e.isFixed() || !e.isStackable()){
@@ -285,7 +286,7 @@ var calc = {
             tmp.push(lv);
           }
           if(e.isStackable()) tmp.push(v.loop);
-          if(e.type === TYPE.LIMIT){
+          if(e.hasHpRef()){
             tmp.push(v.hp);
             tmp.push(v.maxHp);
           }
@@ -400,7 +401,7 @@ var calc = {
             if(loopOw) es[e.link].loop = loop;
           }
           v.setLevel(owLv || lv, loop);
-          if(e.type === TYPE.LIMIT){
+          if(e.hasHpRef()){
             var hp = s.read();
             var maxHp = s.read();
             v.setHp(hp, maxHp);
@@ -451,7 +452,7 @@ var calc = {
             }
             es[n].setLevel(1, v[2]);
           }else if(ep.alt){
-            if(e.promptData.label === "HP"){
+            if(e.hasHpRef()){
               ep.setHp(v[1], v[2]);
             }else{
               ep.setLevel(v[1], v[2]);
@@ -682,7 +683,7 @@ var calc = {
     setText("lwf", "武器/Weapon");
     setText("lwf_c", "武器種変更を含む/Include Weapon Change");
     setText("lcf", "CSタイプ/CS Type");
-    setText("lcf_c", "CS変更を含む/Include CS Change");
+    setText("lcf_c", "CS変更を含む/Include Change CS");
     setText("lrf", "レア度/Rarity");
     setText("lobf", "入手/Obtain");
     setText("llmf", "期間限定/Limited");
@@ -880,7 +881,7 @@ var calc = {
       setValue("cs", cs, true);
       result[1] = "　[Lv." + pad(this.lv, 3) + "]　" + card;
     }
-    if(this.ar && card.canEquip(ar)){
+    if(this.ar && card.canEquip(ar, true)){
       var stef = [];
       exatk = ar.getValue(this.arLv);
       cs += ar.csBoost;
@@ -945,6 +946,7 @@ var calc = {
           count = loop;
         }
         if(
+          (e.type === TYPE.REVERSAL && buffed) ||
           (e.link && es[e.link].getLoopSum()) ||
           (e.type === TYPE.NOT_BUFFED && buffed) ||
           (e.type === TYPE.NOT_DEBUFFED && debuffed)
@@ -1100,18 +1102,19 @@ var calc = {
     result[6] += t(" (x/ (") + WEAPON[weapon].getValue() + t(")/x)");
     if(multiplier > 4){
       multiplier = [
-        [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 4],
-        [3, 3, 4, 1, 3, 3, 2, 3, 4, 3, 3],
-        [3, 1, 3, 4, 3, 3, 2, 3, 4, 3, 3],
-        [3, 4, 1, 3, 3, 3, 2, 3, 4, 3, 3],
-        [3, 3, 3, 3, 3, 1, 2, 4, 3, 3, 3],
-        [3, 3, 3, 3, 1, 3, 2, 4, 3, 3, 3],
-        [3, 2, 2, 2, 2, 2, 2, 4, 1, 3, 3],
-        [3, 4, 4, 4, 3, 3, 1, 2, 4, 3, 3],
-        [3, 3, 3, 3, 4, 4, 4, 1, 2, 3, 3],
-        [4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1],
-        [1, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3]
+        [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 4, 1],
+        [3, 3, 4, 1, 3, 3, 2, 3, 4, 3, 3, 4],
+        [3, 1, 3, 4, 3, 3, 2, 3, 4, 3, 3, 4],
+        [3, 4, 1, 3, 3, 3, 2, 3, 4, 3, 3, 4],
+        [3, 3, 3, 3, 3, 1, 2, 4, 3, 3, 3, 4],
+        [3, 3, 3, 3, 1, 3, 2, 4, 3, 3, 3, 4],
+        [3, 2, 2, 2, 2, 2, 2, 4, 1, 3, 3, 4],
+        [3, 4, 4, 4, 3, 3, 1, 2, 4, 3, 3, 4],
+        [3, 3, 3, 3, 4, 4, 4, 1, 2, 3, 3, 4],
+        [4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
+        [1, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 1],
+        [4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 0]
       ][card.attribute][MULTIPLIER[multiplier % 100].getValue() - 1];
     }
     for(i = 1; i < 5; i++){
