@@ -96,6 +96,7 @@ var VARIANT = Variant.createList(
   ,"2024"
   ,["バレンタイン・クロスロード", "バレ24/Valentine24"]
   ,["本編第15章/Main Story Chapter 15", "15章24/Ch.1524"]
+  ,["ファビュラス・サマーホスト", "ホスト24/Host24"]
   ,"スロット/Slot"
   ,["[1枚目]/[1st Variant]", , 1]
   ,["[2枚目]/[2nd Variant]", , 2]
