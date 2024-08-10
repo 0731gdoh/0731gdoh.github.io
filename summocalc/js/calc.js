@@ -119,11 +119,13 @@ var calc = {
     };
     _("sr").onclick = function(){
       share({
+        title: document.title,
         text: _("o").value
       });
     };
     _("su").onclick = function(){
       share({
+        title: document.title,
         text: document.title,
         url: location.href
       });
@@ -988,13 +990,9 @@ var calc = {
           //武器種弱点
           if(e.type === TYPE.WEAPON_WEAKNESS && !((1 << weapon) & eV[1])) x = new Fraction(1);
           //支援効果
-          if(e.isAffiliation()){
-            if(this.card && !(card.guilds & GUILD.exists)){
-              x = new Fraction(0);
-            }else if(e.type === TYPE.ATK){
-              x = x.add((ep.unit - 1) * 3, 10);
-              label.push(t("[所属メンバー:/[Guildmates:") + ep.unit + "]");
-            }
+          if(e.type === TYPE.ATK && e.isAffiliation()){
+            x = x.add((ep.unit - 1) * 3, 10);
+            label.push(t("[所属メンバー:/[Guildmates:") + ep.unit + "]");
           }
 
           if(dow && e.isDebuff(group)){
@@ -1114,7 +1112,7 @@ var calc = {
         [3, 3, 3, 3, 4, 4, 4, 1, 2, 3, 3, 4],
         [4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
         [1, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 1],
-        [4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 0]
+        [4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 3]
       ][card.attribute][MULTIPLIER[multiplier % 100].getValue() - 1];
     }
     for(i = 1; i < 5; i++){
