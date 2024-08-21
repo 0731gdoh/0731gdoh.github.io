@@ -77,6 +77,7 @@ var GUILD = Affiliation.createList(
 
 var SCHOOL = Affiliation.createList(
   ["<秋波原>学園/Akihabara Academy"
+  ,"<天横>服飾アカデミア"
   ,"<飢野>学園/Ueno Academy"
   ,"<得真道>学園/Umamichi Academy"
   ,"<王子坊>学園/王子坊学園(Ojimachi Academy)"
