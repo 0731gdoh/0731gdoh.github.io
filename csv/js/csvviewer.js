@@ -226,7 +226,8 @@ const _thClick = (table, compareTable) => {
       const tbody = table.tBodies[0];
       const i = th.cellIndex;
       const rows = Array.from(tbody.rows);
-      const compare = compareTable[i] || new Intl.Collator(undefined, {numeric: true}).compare;
+      const _compare = compareTable[i] || new Intl.Collator(undefined, {numeric: true}).compare;
+      const compare = (a, b) => a && b ? _compare(a, b) * order : a || b ? _compare(b, a) : 0;
       const get = (row) => {
         const cell = row.cells[i];
         if(cell.classList.contains("checkable")) return cell.firstChild.checked ? "○" : "";
@@ -234,7 +235,7 @@ const _thClick = (table, compareTable) => {
       };
       let count = 0;
       order = (i === n) ? -order : 1;
-      rows.sort((a, b) => compare(get(a), get(b)) * order);
+      rows.sort((a, b) => compare(get(a), get(b)));
       n = i;
       for(const tr of rows){
         tbody.removeChild(tr);
