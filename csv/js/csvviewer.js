@@ -230,7 +230,7 @@ const _thClick = (table, compareTable) => {
       const compare = (a, b) => a && b ? _compare(a, b) * order : a || b ? _compare(b, a) : 0;
       const get = (row) => {
         const cell = row.cells[i];
-        if(cell.classList.contains("checkable")) return cell.firstChild.checked ? "○" : "";
+        if(cell.classList.contains("checkable")) return cell.firstChild.checked ? "○" : "×";
         return cell.textContent;
       };
       let count = 0;
