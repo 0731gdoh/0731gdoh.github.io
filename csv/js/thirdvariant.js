@@ -6,7 +6,7 @@ const countDays = (list) => {
     const since = toDate(row[1]);
     const until = toDate(row[2]);
     const days = (until.getTime() - since.getTime()) / (1000 * 60 * 60 * 24);
-    row.push(row[2] ? "○" : "");
+    row.push(row[2] ? "○" : "×");
     row.push((days | 0) + "");
     row.unshift(++i + "");
   }
