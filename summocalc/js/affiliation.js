@@ -106,6 +106,7 @@ var TEAM = Affiliation.createList(
   ["神宿<ワン>ダーフォー<ゲル>部/Shinjuku Academy Mountaineers"
   ,"<バズ>ル<ドリ>ーマーズ/Viral Influence"
   ,"八犬士/Eight Dog Warriors"
+  ,"世耕<山岳部>"
 ]);
 
 function splitAffiliationNames(aff, s){
