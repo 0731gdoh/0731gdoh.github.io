@@ -6,12 +6,15 @@
   "icons": [{
     "src": "/img/icon192.png",
     "sizes": "192x192",
-    "type": "image/png"
+    "type": "image/png",
+    "purpose": "any maskable"
   }, {
     "src": "/img/icon512.png",
     "sizes": "512x512",
-    "type": "image/png"
+    "type": "image/png",
+    "purpose": "any maskable"
   }],
-  "theme_color": "#000000",
-  "background_color": "#ddeeff"
+  "theme_color": "#000044",
+  "background_color": "#ddeeff",
+  "prefer_related_applications": false
 }
