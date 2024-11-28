@@ -279,7 +279,6 @@ const _load = (hash) => {
   let i = 0;
   let v = 0;
   let count = 0;
-  const length = source.length;
   for(const row of source){
     if(--i < 0){
       i = 5;
