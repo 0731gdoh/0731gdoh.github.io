@@ -1,6 +1,6 @@
 "use strict";
 
-const attr = ["", "全", "火", "水", "木", "天", "冥", "魔", "英雄", "世界", "無限", "零", "-"];
+const attr = ["", "全", "火", "水", "木", "天", "冥", "魔", "英雄", "世界", "無限", "零", "神", "-"];
 const weapon = ["", "斬撃", "突撃", "打撃", "射撃", "魔法", "横一文字", "狙撃", "全域", "無", "-"]
 
 const build = (list) => {
@@ -252,9 +252,7 @@ const save = () => {
   let i = 0;
   let v = 0;
   let count = 0;
-  let length = 0;
   for(const row of source){
-    length++;
     if(row[4].checkbox.checked){
       v = v | (1 << (5 - i));
       count++;
@@ -267,7 +265,7 @@ const save = () => {
   }
   if(i) result.push(b64[v]);
   history.replaceState(null, "", location.pathname + "#" + result.join(""));
-  document.title = `放サモ 恒常☆4チェッカー（${count}/${length}）`;
+  updateTitle(count, source.length);
 };
 
 const load = () => {
@@ -280,13 +278,22 @@ const _load = (hash) => {
   const result = [];
   let i = 0;
   let v = 0;
+  let count = 0;
   for(const row of source){
     if(--i < 0){
       i = 5;
       v = b64.indexOf(list.shift());
       if(v === -1) v = 0;
     }
-    row[4].checkbox.checked = !!(v & (1 << i));
+    if(v & (1 << i)){
+      row[4].checkbox.checked = true;
+      count++;
+    }
   }
   data[1][4].notify();
+  updateTitle(count, source.length);
+};
+
+const updateTitle = (count, length) => {
+  document.title = `放サモ 恒常☆4チェッカー（${count}/${length}）`;
 };
