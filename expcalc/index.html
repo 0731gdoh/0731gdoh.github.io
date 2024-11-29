@@ -27,7 +27,7 @@ input[type="number"] {
   width: 6rem;
 }
 input[type="checkbox"] {
-  margin: 0 0.4rem 0 1rem;
+  margin: 0 0.4rem 0 0.8rem;
 }
 table {
   border-collapse: collapse;
@@ -197,7 +197,8 @@ document.addEventListener("DOMContentLoaded", () => {
   <label for=next>次のレベルまで</label>：<input type=number min=1 value=1 id=next>（初期値：<span id=next_max></span>）
   <div id=o1></div>
   <hr>
-  <select id=dungeon></select><input type=checkbox id=auto checked><label for=auto>探索回数を自動計算</label>
+  <select id=dungeon></select>：<input type=number min=0 max=999 value=0 id=n>回
+  <input type=checkbox id=auto checked><label for=auto>探索回数を自動計算</label>
   <table>
     <tr>
       <th>AR装備
@@ -218,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <td><label for=seiken>聖拳の交わり</label>
       <td><select id=seiken></select>
   </table>
-  教え導く者を<select id=mentor></select>人編成して<input type=number min=0 max=999 value=0 id=n>回クリア
+  教え導く者/慕われる教師を<select id=mentor></select>人編成
   <div id=o2></div>
   <hr>
   必要な超成長
