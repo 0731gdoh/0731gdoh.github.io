@@ -77,9 +77,9 @@ var VARIANT = Variant.createList(
   ,"2021"
   ,["バレンタイン・コロッセオ/Battle of the Valentines", "バレ21/Valentine21"]
   ,["星空の転光機兵隊/Nightglows of the Starlit Sky", "星空21/Nightglows21"]
-  ,["サマーリバー・アドベンチャー", "川21/River21"]
+  ,["サマーリバー・アドベンチャー/Summer River Adventure", "川21/River21"]
   ,["摩訶不思議！？地獄の極楽温泉郷！/A Mystery Most Profound! Hell's Hot Paradise!", "地獄21/Onsen21"]
-  ,["特別警戒！ハロウィン警察隊", "ハロ21/Halloween21"]
+  ,["特別警戒！ハロウィン警察隊/Protect the Peace, Halloween Police!", "ハロ21/Halloween21"]
   ,["クリスマス・ショーダウン", "聖夜21/Xmas21"]
   ,"2022"
   ,["バレンタイン・ファンタジー/Valentine Fantasy", "バレ22/Valentine22"]
@@ -98,6 +98,8 @@ var VARIANT = Variant.createList(
   ,["本編第15章/Main Story Chapter 15", "15章24/Ch.1524"]
   ,["ファビュラス・サマーホスト", "ホスト24/Host24"]
   ,["トップオブ・サマーマウンテンズ！", "夏山24/Mountain24"]
+  ,["TOKYOダンシング・サタデー", "クラブ24/Nightclub24"]
+  ,["聖夜に変身！？マジカルスノーランド", "聖夜24/Xmas24"]
   ,"スロット/Slot"
   ,["[1枚目]/[1st Variant]", , 1]
   ,["[2枚目]/[2nd Variant]", , 2]

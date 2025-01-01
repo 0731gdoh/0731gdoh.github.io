@@ -268,7 +268,7 @@ var calc = {
           bonus.push(e.sp[0]);
           bonus.push(e.sp[1] % TAG_MAX);
           bonus.push(loop);
-        }else if(v.alt && !v.subsetOrder){
+        }else if(v.alt && !v.altLength){
           bonus.push(e.index);
           if(e.hasHpRef()){
             bonus.push(v.hp);
@@ -438,8 +438,8 @@ var calc = {
         if(!n) bonus.forEach(function(v){
           var ep = es[v[0]];
           var e = EFFECT[v[0]];
-          if(!e || !ep || !ep.subsetOrder) return;
-          if(e.subset){
+          if(!e || !ep) return;
+          if(ep.subsetOrder){
             var flag = Math.floor(v[2] / 100);
             v[2] %= 100;
 
@@ -453,7 +453,7 @@ var calc = {
               if(es[e.link].loop && EFFECT[e.link].isStackable()) es[e.link].loop = Math.min(v[2], 15);
             }
             es[n].setLevel(1, v[2]);
-          }else if(ep.alt){
+          }else if(ep.altLength){
             if(e.hasHpRef()){
               ep.setHp(v[1], v[2]);
             }else{
@@ -580,8 +580,7 @@ var calc = {
         }
         if(lv >= 0) ep.setLevel(lv);
       }else{
-//        if(e.link && e.isStackable() && this.es[e.link].loop > 1) ep = this.es[e.link];
-        if(--ep.loop < 1) ep.clear();
+        ep.decrementLoop();
       }
     }else if(!lv && confirm(t("全ての【/Are you sure you want to remove all 【") + t(["攻撃/Offense", "防御/Defense"][group]) + t("側補正】を削除しますか？/】 effects?"))){
       this.es.forEach(function(ep){
@@ -804,11 +803,17 @@ var calc = {
     var order = [0];
     var labels = ["追加済み/Added", "ピックアップ/PICK UP"];
     EFFECT.LOCALE_ORDER[language].forEach(function(x){
-      var ss = es[x].subsetOrder;
-      if(es[x].loop) order.push(x);
-      if(ss) ss[language].forEach(function(z){
-        if(es[z].loop) order.push(z);
-      });
+      var ep = es[x];
+      if(ep.loop) order.push(x);
+      if(ep.altLength){
+        ep.alt.forEach(function(z){
+          if(z.loop) order.push(z.index);
+        });
+      }else if(ep.subsetOrder){
+        ep.subsetOrder[language].forEach(function(z){
+          if(es[z].loop) order.push(z);
+        });
+      }
     });
     order.push(0);
     order = order.concat(card.effects[0]).concat(card.effects[2]);
@@ -908,7 +913,11 @@ var calc = {
       if(v){
         var ep = es[v];
         params.push(ep);
-        if(ep.subsetOrder){
+        if(ep.altLength){
+          ep.alt.forEach(function(x){
+            params.push(x);
+          });
+        }else if(ep.subsetOrder){
           ep.subsetOrder[language].forEach(function(x){
             params.push(es[x]);
           });
@@ -943,7 +952,7 @@ var calc = {
         if(e.isStackable()){
           if(loop && e.link && EFFECT[e.link].isStackable()){
             ep.loop = 1;
-            loop = Math.max(es[e.link].loop, 1);
+            loop = Math.max(es[e.link].getLoopSum(), 1);
           }
           count = loop;
         }

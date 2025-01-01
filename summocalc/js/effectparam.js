@@ -34,6 +34,15 @@ EffectParameter.prototype = {
     this.a = 0;
     this.unit = 0;
   },
+  decrementLoop: function(){
+    var target = this;
+    if(this.alt && this.altLength){
+      this.alt.forEach(function(ep){
+        if(ep.loop) target = ep;
+      });
+    }
+    if(--target.loop < 1) target.clear();
+  },
   clear: function(){
     if(this.exclusive){
       this.exclusive.forEach(function(ep){
@@ -42,22 +51,17 @@ EffectParameter.prototype = {
     }else{
       this._clear();
     }
-    if(this.alt && this.subsetOrder){
-      var last;
-      this.alt.forEach(function(ep){
-        if(ep.loop) last = ep;
-      });
-      if(last) last._clear();
-    }
     this.updateLabel();
   },
   updateLabel: function(){
     if(this.alt){
       var last;
       var n = 0;
+      var pd = this.effect.promptData;
       this.alt.forEach(function(ep){
         if(ep.loop){
-          ep.label = " #" + (++n);
+          ++n;
+          ep.label = pd ? " #" + n : (ep.lv ? " [Lv." + ep.lv + "]" : " [CS]");
           last = ep;
         }else{
           ep.label = "";
@@ -70,12 +74,26 @@ EffectParameter.prototype = {
     if(this.alt){
       var pd = this.effect.promptData;
       if(pd){
-        var target = this.alt[pd.getDataNum(lv)];
-        if(target !== this){
-          target.setLevel(lv, loop);
-          this.updateLabel();
-          return;
+        this.alt[pd.getDataNum(lv)]._setLevel(lv, loop);
+        return;
+      }else{
+        var target;
+        this.alt.some(function(ep){
+          if(!ep.loop){
+            if(!target) target = ep;
+          }else if(ep.lv === lv){
+            target = ep;
+            return true;
+          }
+          return false;
+        });
+        if(target){
+          target._setLevel(lv, loop);
+          if(target.loop) this.alt.sort(function(a, b){
+            return a.lv - b.lv;
+          });
         }
+        return;
       }
     }else if(this.effect.type === TYPE.SEED){
       if(this.exclusive[0] !== this){
@@ -91,14 +109,23 @@ EffectParameter.prototype = {
         if(ep !== this) ep.clear();
       });
     }
-    this.lv = lv;
+    this._setLevel(lv, loop);
+  },
+  _setLevel: function(lv, loop){
     if(!this.effect.isStackable()){
       this.loop = 1;
-    }else if(loop){
-      this.loop = Math.min(loop, 15);
-    }else if(this.loop < 15){
-      this.loop++;
+    }else{
+      var limit = this.getLoopLimit();
+      if(!limit){
+        return;
+      }else if(loop){
+        this.loop = Math.min(loop, limit);
+      }else if(this.loop < limit){
+        this.loop++;
+      }
     }
+    this.lv = lv;
+    this.updateLabel();
   },
   setCustom: function(n, d, a){
     this.c = new Fraction(n, d);
@@ -119,6 +146,10 @@ EffectParameter.prototype = {
     }, 0);
     return this.loop;
   },
+  getLoopLimit: function(){
+    if(this.alt) return 15 - this.getLoopSum() + this.loop;
+    return 15;
+  },
   hpPrompt: function(chara){
     var hp = 0;
     var maxHp = 0;
@@ -137,7 +168,7 @@ EffectParameter.prototype = {
   setHp: function(hp, maxHp){
     var target = this;
     var result = 1;
-    if(this.alt){
+    if(this.alt && this.effect.promptData){
       var n = this.effect.promptData.getDataNumFromHp(hp, maxHp);
       target = this.alt[n];
       this.setLevel(n);
@@ -177,7 +208,7 @@ EffectParameter.createList = function(){
           break;
       }
     }
-    if(e.hasAlt()) extend.push(ep);
+    if(e.isAlt()) extend.push(ep);
     if(e.equ){
       var equ = result[e.equ];
       if(!equ.exclusive) equ.exclusive = [equ];
@@ -186,20 +217,18 @@ EffectParameter.createList = function(){
   });
   extend.forEach(function(ep){
     var pd = ep.effect.promptData;
-    if(pd){
-      var length = pd.data.length;
-      var order = [];
-      var alt = [];
-      while(alt.length < length){
-        var o = new EffectParameter(ep.effect);
-        alt.push(o);
-        order.push(result.length);
-        result.push(o);
-        o.alt = alt;
-      }
-      ep.subsetOrder = [order, order];
-      ep.alt = alt;
+    var length = pd ? pd.data.length : 15;
+    var alt = [];
+    while(alt.length < length){
+      var o = new EffectParameter(ep.effect);
+      var index = result.length;
+      alt.push(o);
+      result.push(o);
+      o.alt = alt;
+      o.index = index;
     }
+    ep.altLength = length;
+    ep.alt = alt;
   });
   return result;
 };

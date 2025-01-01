@@ -25,7 +25,7 @@ function Record(index, id, x, limited){
   this.csBoost = x[14] || 0;
   this.csWeapon = x[15] || 0;
   this.limited = limited;
-  [this.chara.length, this.guilds, this.rarity && this.rarity !== EQUIP.ANY, this.attribute, this.weapon, this.rarity === EQUIP.ANY].forEach(function(v, i){
+  [this.chara.length, this.guilds, this.schools, this.rarity && this.rarity !== EQUIP.ANY, this.attribute, this.weapon, this.rarity === EQUIP.ANY].forEach(function(v, i){
     if(v) flag |= 1 << i;
   });
   this.limitationType = flag;
@@ -205,7 +205,8 @@ var EQUIP = {
   VALIANT: 1 << 8,
   WORLD: 1 << 9,
   INFINITY: 1 << 10,
-  NULL: 1 << 11
+  NULL: 1 << 11,
+  DIVINE: 1 << 12
 };
 
 var AR = Record.createList(
@@ -222,6 +223,7 @@ var AR = Record.createList(
   ,[119, "放課後の工房/Afterschool Workshop/ほうかごのこうぼう", false, "種獲得率アップ", "", "根性解除/根性耐性", "", "", 4, 300, EQUIP.ANY, 0, 0, "", "", ""]
   ,[134, "仕事終わりのひとときを/A Special Moment After Work/しごとおわりのひとときを", false, "獲得コインアップ/友情時強化", "", "", "", "", 4, 100, EQUIP.ANY, 0, 0, "", "", ""]
   ,[144, "ラストプレイヤー・オンステージ/Last Performer - On Stage!/らすとぷれいやー・おんすてーじ", false, "ARトークン獲得率アップ/弱体時強化[AR]", "", "", "", "", 4, 200, EQUIP.ANY, 0, 0, "", "", ""]
+  ,[153, "路地裏の事件簿/Back Alley Case Files/ろじうらのじけんぼ", false, "花獲得率アップ", "守護", "", "", "", 4, 250, EQUIP.ANY, 0, 0, "", "", ""]
   ,[102, "拮抗の例外処理？/Exception of Antagonism?/きっこうのれいがいしょり？", true, "強制移動無効(後)", "", "HP減少", "", "", 2, 150, 0, EQUIP.WATER, 0, "", "", ""]
   ,[103, "魔王と魔王/Dark Lords/まおうとまおう", true, "", "", "", "", "毒/猛毒", 3, 150, EQUIP.ANY, 0, 0, "", "", ""]
   ,[104, "仰げば尊し/Revere Thy Teachers/あおげばとうとし", false, "獲得経験値集約/獲得経験値アップ", "", "", "", "", 4, 100, EQUIP.ANY, 0, 0, "", "", ""]
@@ -268,6 +270,8 @@ var AR = Record.createList(
   ,[150, "ぼくたちのチェックメイト/ぼくたちのチェックメイト/ぼくたちのちぇっくめいと", true, "獲得戦友ポイントアップ/攻撃強化", "攻撃強化", "", "", "", 5, 350, 0, EQUIP.INFERNAL|EQUIP.WORLD, 0, "", "ウォーモンガーズ", ""]
   ,[151, "君と駆けた不思議の街よ/君と駆けた不思議の街よ/きみとかけたふしぎのまちよ", true, "ギルド新加入認印獲得率アップ", "集中", "", "", "", 5, 150, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "", "ゲームマスターズ/未", ""]
   ,[152, "あれからのファザーフッド/あれからのファザーフッド/あれからのふぁざーふっど", true, "獲得ランク経験値アップ", "", "幻惑", "", "", 5, 250, EQUIP.RARE1|EQUIP.RARE2, EQUIP.FIRE|EQUIP.AETHER, 0, "", "タオシーズ", ""]
+  ,[154, "神宿より、あいを込めて/From Shinjuku, with Our All/しんじゅくより、あいをこめて", true, "ギルド新加入認印獲得率アップ", "HP回復", "", "", "", 4, 150, EQUIP.ANY, 0, 0, "", "", ""]
+  ,[155, "みず入らずの初詣/みず入らずの初詣/みずいらずのはつもうで", true, "剛力/獲得経験値アップ", "", "", "", "", 5, 500, 0, 0, EQUIP.SLASH|EQUIP.SHOT|EQUIP.NONE, "", "", "神宿"]
   ,[1001, "開拓の誓い/Vow of Resurrection/かいたくのちかい", false, "", "CP増加", "", "", "恐怖", 5, 100, 0, EQUIP.NETHER, 0, "主人公/シロウ", "", ""]
   ,[1002, "無窮の誓い/Vow of Infinitude/むきゅうのちかい", false, "クリティカル", "", "", "", "マヒ", 5, 400, 0, EQUIP.AETHER, 0, "主人公/ケンゴ", "", ""]
   ,[1003, "豊穣の誓い/Vow of Abundance/ほうじょうのちかい", false, "HP回復", "", "", "", "告死", 5, 0, 0, EQUIP.WOOD, 0, "主人公/リョウタ", "", ""]
@@ -418,7 +422,7 @@ var AR = Record.createList(
   ,[1148, "家族の事が知りたくて/家族の事が知りたくて/かぞくのことがしりたくて", false, "閃き時強化[AR]", "", "", "", "マヒ", 4, 250, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "クロガネ/ヘパイストス", "", ""]
   ,[1149, "グリーンマジック/Green Magic/ぐりーんまじっく", false, "特防[0.7]/CP増加", "", "", "魔法", "", 4, 100, 0, 0, EQUIP.THRUST|EQUIP.SHOT|EQUIP.LONGSLASH, "シンノウ/ヴォーロス", "", ""]
   ,[1150, "お仕置きサンタの特訓/お仕置きサンタの特訓/おしおきさんたのとっくん", false, "闘志/根性", "根性", "", "", "", 5, 400, 0, 0, EQUIP.SLASH|EQUIP.SHOT, "ジェド/クランプス", "", ""]
-  ,[1151, "インソムニア・レメディ/インソムニア・レメディ/いんそむにあ・れめでぃ", false, "毒時強化/毒反転", "毒時強化/毒反転", "", "", "", 5, 250, 0, EQUIP.WOOD|EQUIP.AETHER|EQUIP.VALIANT, 0, "シンノウ/ヤスヨリ", "", ""]
+  ,[1151, "インソムニア・レメディ/インソムニア・レメディ/いんそむにあ・れめでぃ", false, "毒時強化[AR]/毒反転", "毒時強化[AR]/毒反転", "", "", "", 5, 250, 0, EQUIP.WOOD|EQUIP.AETHER|EQUIP.VALIANT, 0, "シンノウ/ヤスヨリ", "", ""]
   ,[1152, "スノー&シュガー/スノー&シュガー/すのー&しゅがー", true, "凍結耐性/HP減少反転/HP回復", "凍結耐性", "", "", "凍結", 4, 100, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "ジェド/ネクロス&バッカス", "", ""]
   ,[1153, "思い出のXmasディナー/思い出のXmasディナー/おもいでのXmasでぃなー", false, "被回復増加/守護", "被回復増加", "", "", "", 4, 0, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.AETHER, 0, "チョウジ/リョウタ", "", ""]
   ,[1154, "辺獄の子らに愛を/辺獄の子らに愛を/へんごくのこらにあいを", false, "特防[0.8]", "", "脱力", "打撃", "", 3, 100, 0, 0, EQUIP.SLASH|EQUIP.MAGIC, "ジズ/ハーロット", "", ""]
@@ -453,4 +457,9 @@ var AR = Record.createList(
   ,[1183, "ウォーター・ストライク！/ウォーター・ストライク！/うぉーたー・すとらいく！", false, "係留/弱体無効", "", "", "", "", 4, 0, 0, EQUIP.FIRE|EQUIP.VALIANT, 0, "オオグチマガミ/シヴァ", "", ""]
   ,[1184, "祭り漢のお通りよお/祭り漢のお通りよお/まつりおとこのおとおりよお", false, "HP回復/熱情に特攻[1.4]", "", "", "", "", 3, 100, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.WORLD, 0, "タヂカラオ/テスカトリポカ", "", ""]
   ,[1185, "お腹周りは引き締めて！/お腹周りは引き締めて！/おなかまわりはひきしめて！", false, "", "注目/CP増加", "", "", "", 3, 150, 0, EQUIP.WATER|EQUIP.AETHER, 0, "アラクネ/サンダーバード", "", ""]
+  ,[1186, "ダイブ・トゥ・ドリーム/ダイブ・トゥ・ドリーム/だいぶ・とぅ・どりーむ", false, "注目", "集中", "", "", "", 5, 400, 0, 0, EQUIP.SHOT|EQUIP.SNIPE, "アールプ/ホテイ", "", ""]
+  ,[1187, "ウェアリング・モンスター/ウェアリング・モンスター/うぇありんぐ・もんすたー", false, "CP増加", "CP増加", "", "", "", 5, 150, 0, 0, EQUIP.THRUST|EQUIP.SHOT, "アールプ/トウジ", "", "", 2]
+  ,[1188, "鬼ごっこまたしても/鬼ごっこまたしても/おにごっこまたしても", false, "加速/特防[0.8]", "加速", "", "射撃/狙撃", "", 4, 300, 0, 0, EQUIP.SLASH|EQUIP.BLOW|EQUIP.LONGSLASH, "ケンゴ/トウジ", "", ""]
+  ,[1189, "ハロウィンポリスBack！/ハロウィンポリスBack！/はろうぃんぽりすBack！", false, "再生に特攻[1.4]", "", "再生", "", "", 4, 200, 0, EQUIP.AETHER|EQUIP.NETHER, 0, "トウジ/ホテイ", "", ""]
+  ,[1190, "万聖節には合いの手を！/万聖節には合いの手を！/ばんせいせつにはあいのてを！", false, "烙印に特攻[1.2]", "", "HP減少", "", "", 3, 100, 0, 0, EQUIP.BLOW|EQUIP.LONGSLASH|EQUIP.SNIPE, "アザトース/エビス", "", ""]
 ]);
