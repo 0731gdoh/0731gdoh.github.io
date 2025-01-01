@@ -46,9 +46,9 @@ var ATTRIBUTE = ListItem.createList(
   ,["世界/World", 512]
   ,["無限/Infinity", 1024]
   ,["零/Null", 2048]
-  ,["\u2726\u20dd", 4096]
+  ,["神/Divine", 4096]
 ]);
-ATTRIBUTE.ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+ATTRIBUTE.ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
 var MULTIPLIER = ListItem.createList(
   [[""]
@@ -67,7 +67,7 @@ var MULTIPLIER = ListItem.createList(
   ,["→世界/ → World", 9]
   ,["→無限/ → Infinity", 10]
   ,["→零/ → Null", 11]
-  ,["→\u2726\u20dd/ → \u2726\u20dd", 12]
+  ,["→神/ → Divine", 12]
 ]);
 MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116];
 MULTIPLIER.LABELS = ["倍率/Multiplier", "属性/Attribute"];
@@ -152,6 +152,7 @@ var OBTAIN = ListItem.createList(
 var LIMITATION = ListItem.createList(
   [["キャラ/Character"]
   ,["ギルド/Guild"]
+  ,["学園/School"]
   ,["レア度/Rarity"]
   ,["属性/Attribute"]
   ,["武器/Weapon"]
