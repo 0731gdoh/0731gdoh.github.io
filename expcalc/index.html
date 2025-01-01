@@ -116,6 +116,7 @@ const bonus = [
   ["oshieno", 5, 15],
   ["sweet", 10, 25],
   ["seiken", 10, 25],
+  ["hatsumoude", 10, 25],
   ["support", 10, 25]
 ];
 const getMul = () => {
@@ -182,6 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setOptions("oshieno", ar(5));
   setOptions("sweet", ar(20));
   setOptions("seiken", ar(20));
+  setOptions("hatsumoude", ar(20));
   setOptions("support", ar(20));
   setOptions("mentor", g(6), 5);
   _("f").addEventListener("change", calc);
@@ -214,10 +216,13 @@ document.addEventListener("DOMContentLoaded", () => {
     <tr>
       <td><label for=sweet>スウィート・ドリームス</label>
       <td><select id=sweet></select>
-      <td rowspan=2><select id=support></select>
+      <td rowspan=3><select id=support></select>
     <tr>
       <td><label for=seiken>聖拳の交わり</label>
       <td><select id=seiken></select>
+    <tr>
+      <td><label for=hatsumoude>みず入らずの初詣</label>
+      <td><select id=hatsumoude></select>
   </table>
   教え導く者/慕われる教師を<select id=mentor></select>人編成
   <div id=o2></div>
