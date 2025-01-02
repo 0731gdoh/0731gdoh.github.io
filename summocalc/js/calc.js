@@ -1373,11 +1373,12 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
+      setValue("rbf_text", "");
+      this.updateThumbnail();
       ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("rxf", "");
-      setValue("rbf_text", "");
       setValue("ceq", 1);
       setValue("reg", 1);
       this.active = active;
@@ -1387,11 +1388,11 @@ var calc = {
       var s = toLowerKatakana(this.thumbnailText);
       var order = [0];
       var active = this.active;
+      this.active = 0;
       THUMBNAIL.forEach(function(x){
         if(x.value && (!s || x.name.toLowerCase().indexOf(s) !== -1)) order.push(x.index);
       });
       if(s && order.length === 2) order.shift();
-      this.active = 0;
       setOptions("rbf", THUMBNAIL, {order: order});
       this.active = active;
     },
