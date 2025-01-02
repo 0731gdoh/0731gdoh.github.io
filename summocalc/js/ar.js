@@ -222,7 +222,9 @@ function Thumbnail(index, name){
 }
 Thumbnail.prototype = {
   toString: function(){
-    return t(this.name) || "－";
+    var name = t(this.name) || "－";
+    if(name[0] === "(") name = t(this.name, 0) + name;
+    return name;
   },
   getValue: function(){
     return this.value;
@@ -232,22 +234,27 @@ Thumbnail.prototype = {
     return this.index;
   }
 };
-Thumbnail.createList = function(a){
+Thumbnail.createList = function(m, a){
   var result = [];
   var n = 0;
   var table = new Map();
+  var ex = new Map();
   var set = function(x){
     var tn = new Thumbnail(n++, x);
     result.push(tn);
     table.set(t(x, 0), tn);
   };
+  m.forEach(function(v){
+    ex.set(v[0], v[1]);
+  });
   set("");
   CARD.table.forEach(function(v, k){
     var x = CARD[v[0]].name;
-    if(x.indexOf("&")) x = x.split("/").map(function(s){
-      return s.split("&")[0];
+    if(x.indexOf("&") !== -1) x = x.split("/").map(function(s){
+      return s.split("&")[0] + (s[0] === "(" ? ")" : "");
     }).join("/");
     set(x);
+    if(ex.has(k)) set(ex.get(k));
   });
   a.forEach(function(x){
     set(x);
@@ -256,15 +263,16 @@ Thumbnail.createList = function(a){
   return result;
 };
 var THUMBNAIL = Thumbnail.createList(
-  ["アスタルテ/Astarte"
-  ,"オオナムチ/Onamuchi"
-  ,"バッカス/Bacchus"
-  ,"サロモンくん/Lil' Salomon/サロモンクン/アルス・アルマデル・サロモニス/Ars Almadel Salomonis"
+  [["アスタロト", "アスタルテ/Astarte"]
+  ,["ダイコク", "オオナムチ/Onamuchi"]
+  ,["ネクロス&バッカス", "バッカス/Bacchus"]
+],
+  ["サロモンくん/Lil' Salomon/サロモンクン/アルス・アルマデル・サロモニス/Ars Almadel Salomonis"
   ,"ヨグソトース/Yog-Sothoth"
   ,"トール/Thor"
   ,"フィッシャーキング/Fisher King"
-  ,"ユキムラ/Tukimura"
-  ,"黒き暴風/The Black Storm/クロキボウフウ/リヴァイアサン/Leviathan"
+  ,"ユキムラ/Yukimura"
+  ,"黒き暴風/The Black Storm/クロキボウフウ/リバイアサン/Leviathan"
 ]);
 
 var AR = Record.createList(
