@@ -1277,7 +1277,7 @@ var calc = {
       setOptions("pc", CARD, {filter: function(x){
         if(!p.active) return true;
         if(!x.index) return true;
-        if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
+        if(nv && x.name.toLowerCase().indexOf(nv) === -1) return false;
         if(p.rarity && !(1 << x.rarity & p.rarity)) return false;
         if(p.checkWeapon(0, x)) return false;
         if(p.checkWeapon(1, x)) return false;
@@ -1404,7 +1404,7 @@ var calc = {
         if(!p.active) return p.card.canEquip(x, true);
         if(p.equipable && !p.card.canEquip(x, p.external)) return false;
         if(!x.index) return true;
-        if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
+        if(nv && x.name.toLowerCase().indexOf(nv) === -1) return false;
         if(p.thumbnail && x.thumbnails.indexOf(p.thumbnail) === -1) return false;
         if(p.rarity && (1 << x.arRarity & p.rarity) === 0) return false;
         if(check(x.limitationType, p.target, p.targetMode)) return false;

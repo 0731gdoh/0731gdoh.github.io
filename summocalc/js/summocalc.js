@@ -30,12 +30,12 @@ function check(a, b, mode){
   }
 }
 function toLowerKatakana(str){
-  return str.toLowerCase().replace(/[\u3041-\u3094]/g, function(match){
+  return str.toLowerCase().replace(/\x2f/g, "%%").replace(/[\u3041-\u3094]/g, function(match){
     return String.fromCharCode(match.charCodeAt(0) + 0x60);
   });
 }
 function toLowerHiragana(str){
-  return str.toLowerCase().replace(/[\u30a1-\u30f4]/g, function(match){
+  return str.toLowerCase().replace(/\x2f/g, "%%").replace(/[\u30a1-\u30f4]/g, function(match){
     return String.fromCharCode(match.charCodeAt(0) - 0x60);
   });
 }
