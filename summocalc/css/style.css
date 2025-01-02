@@ -261,7 +261,8 @@ td:first-child {
 }
 #pc,
 #os,
-#ds {
+#ds,
+#rbf {
   width: 9.5rem;
 }
 #am {
