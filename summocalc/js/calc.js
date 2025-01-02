@@ -707,6 +707,7 @@ var calc = {
     setText("fr", "リセット/Reset");
     setText("rfc", "AR装備フィルタ/AR Equipment Filter ");
     setText("lrxf", "名前/Name");
+    setText("lrbf", "サムネイル/Thumbnail");
     setText("lrrf", "レア度/Rarity");
     setText("lrtf", "装備制限/Limitation");
     setText("lrhf", "HP基本値/Base HP");
@@ -1269,9 +1270,7 @@ var calc = {
     },
     update: function(){
       var p = this;
-      var nv = p.name.toLowerCase().replace(/[\u3041-\u3094]/g, function(match){
-        return String.fromCharCode(match.charCodeAt(0) + 0x60);
-      });
+      var nv = toLowerKatakana(p.name);
       var vid = VARIANT[p.variant].value;
       var vv = VARIANT[p.variant].keyword;
       var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
@@ -1315,6 +1314,8 @@ var calc = {
   },
   arfilter: {
     name: "",
+    thumbnailText: "",
+    thumbnail: 0,
     rarity: 0,
     target: 0,
     targetMode: 0,
@@ -1336,8 +1337,10 @@ var calc = {
     init: function(){
       var c = this;
       linkTextInput(c, "name", "rxf");
+      linkTextInput(c, "thumbnailText", "rbf_text");
       linkCheckGroup(c, "rarity", "rrf");
       linkCheckGroup(c, "target", "rtf");
+      linkInput(c, "thumbnail", "rbf");
       linkInput(c, "targetMode", "rtf_mode");
       linkInput(c, "hp", "rhf");
       linkInput(c, "atk", "rkf");
@@ -1370,26 +1373,39 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
+      ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("rxf", "");
+      setValue("rbf_text", "");
       setValue("ceq", 1);
       setValue("reg", 1);
       this.active = active;
       this.update();
     },
+    updateThumbnail: function(){
+      var s = toLowerKatakana(this.thumbnailText);
+      var order = [0];
+      var active = this.active;
+      THUMBNAIL.forEach(function(x){
+        if(x.value && (!s || x.name.toLowerCase().indexOf(s) !== -1)) order.push(x.index);
+      });
+      if(s && order.length === 2) order.shift();
+      this.active = 0;
+      setOptions("rbf", THUMBNAIL, {order: order});
+      this.active = active;
+    },
     update: function(card){
       var p = this;
-      var nv = p.name.toLowerCase().replace(/[\u30a1-\u30f4]/g, function(match){
-        return String.fromCharCode(match.charCodeAt(0) - 0x60);
-      });
+      var nv = toLowerHiragana(p.name);
       if(card !== undefined) p.card = CARD[card];
+      p.updateThumbnail();
       setOptions("rc", AR, {filter: function(x){
         if(!p.active) return p.card.canEquip(x, true);
         if(p.equipable && !p.card.canEquip(x, p.external)) return false;
         if(!x.index) return true;
         if(nv && (x.name.toLowerCase().indexOf(nv) === -1 || nv.indexOf("/") !== -1)) return false;
+        if(p.thumbnail && x.thumbnails.indexOf(p.thumbnail) === -1) return false;
         if(p.rarity && (1 << x.arRarity & p.rarity) === 0) return false;
         if(check(x.limitationType, p.target, p.targetMode)) return false;
         if(p.hp && x.hp < p.hp) return false;

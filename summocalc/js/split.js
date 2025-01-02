@@ -24,8 +24,21 @@ function SkillData(k, v){
 function splitCharaNames(s){
   if(!s) return [];
   return s.split("/").reduce(function(acc, cur){
+    if(cur[0] === "@") cur = cur.slice(1);
     return acc.concat(CARD.table.get(cur));
   }, []);
+}
+
+function splitThumbnailNames(sc, st){
+  var result = [];
+  var f = function(s){
+    if(s) s.split("/").forEach(function(x){
+      if(x[0] === "@") result.push(THUMBNAIL.table.get(x.slice(1)).count());
+    });
+  };
+  f(sc);
+  f(st);
+  return result;
 }
 
 function generateTagData(s, flagNum, arTiming){

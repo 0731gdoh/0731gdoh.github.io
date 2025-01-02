@@ -29,6 +29,16 @@ function check(a, b, mode){
       return false;
   }
 }
+function toLowerKatakana(str){
+  return str.toLowerCase().replace(/[\u3041-\u3094]/g, function(match){
+    return String.fromCharCode(match.charCodeAt(0) + 0x60);
+  });
+}
+function toLowerHiragana(str){
+  return str.toLowerCase().replace(/[\u30a1-\u30f4]/g, function(match){
+    return String.fromCharCode(match.charCodeAt(0) - 0x60);
+  });
+}
 function v(x, y){
   var o = _(x);
   var value = parseInt(o.value) || 0;
