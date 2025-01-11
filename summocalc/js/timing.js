@@ -51,9 +51,8 @@ var TIMING = Timing.createList(
 var TIMING_FLAG = {
   ANY: (1 << TIMING.length) - 1,
   CS: (1 << TIMING.table.get("c")) | (1 << TIMING.table.get("cx")),
-  AR: 1 << TIMING.length,
-  COMPOUND: 2 << TIMING.length,
-  SALV: 4 << TIMING.length,
+  COMPOUND: 1 << TIMING.length,
+  SALV: 2 << TIMING.length,
 }
 TIMING_FLAG.NOT_CS = TIMING_FLAG.ANY - TIMING_FLAG.CS;
 
@@ -73,4 +72,10 @@ function timing2str(timing, lang){
     }
     return brace[1] + r.join(sep) + brace[0];
   }
+}
+
+function checkTiming(a, b){
+  if(!b) return false;
+  if(a & TIMING_FLAG.COMPOUND) return (a & b | TIMING_FLAG.COMPOUND) !== a;
+  return check(a, b, 0);
 }

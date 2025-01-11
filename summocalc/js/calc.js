@@ -6,7 +6,8 @@ var FILTER = {
   VALUE: function(x){return x.getValue() - 0},
   OFFENSE: function(x){return x.group === 0 || x.group < 0},
   DEFENSE: function(x){return x.group === 1 || x.group < 0},
-  NAME: function(x){return x.name}
+  NAME: function(x){return x.name},
+  NOT_CS: function(x){return x.getValue() & TIMING_FLAG.NOT_CS}
 };
 
 function r2n(r, cs){
@@ -624,14 +625,14 @@ var calc = {
     setOptions("cs", CS, {filter: FILTER.VALUE});
     this.updateMultiplierOptions();
     setCheckGroup("ef", ATTRIBUTE);
-    setCheckGroup("wf", WEAPON, CHECK_GROUP.CHECK);
-    setCheckGroup("cf", WEAPON, CHECK_GROUP.CHECK);
+    setCheckGroup("wf", WEAPON, {check: true});
+    setCheckGroup("cf", WEAPON, {check: true});
     setCheckGroup("rf", RARITY);
-    setCheckGroup("obf", OBTAIN, CHECK_GROUP.SELECT);
+    setCheckGroup("obf", OBTAIN, {select: true});
     setOptions("lmf", LIMITED);
     setOptions("vf", VARIANT, {labels: VARIANT.LABELS});
-    setCheckGroup("gf", GUILD, CHECK_GROUP.SELECT);
-    setCheckGroup("sf", SCHOOL, CHECK_GROUP.SELECT);
+    setCheckGroup("gf", GUILD, {select: true});
+    setCheckGroup("sf", SCHOOL, {select: true});
     setCheckGroup("of", TEAM);
     ["srf1", "srf2"].forEach(function(key, i){
       setOptions(key, RANGE);
@@ -644,12 +645,17 @@ var calc = {
     });
     this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
-    setCheckGroup("rtf", LIMITATION, CHECK_GROUP.SELECT);
+    setCheckGroup("rtf", LIMITATION, {select: true});
     setOptions("rlf", LIMITED);
-    ["ref1", "ref2", "ref3", "raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
+    setCheckGroup("rif", CS_PLUS);
+    ["ruf1", "ruf2"].forEach(function(key, i){
+      setOptions(key, RANGE);
+      rf.updateEffectFilterOptions(i);
+    });
+    ["raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
       setOptions(key, TAG, {filter: function(x){
-        return !x.index || x.checkFlag(i, TIMING_FLAG.AR);
-      }, labels: TAG.LABELS[i]});
+        return !x.index || x.checkFlag(i + TAG_FLAG_NUM.AR + 3, TIMING_FLAG.ANY);
+      }, labels: TAG.LABELS[i + 3]});
     });
     this.updateEffectOptions();
     setText("lsv", "モード/Mode");
@@ -706,6 +712,8 @@ var calc = {
     setText("rd", "ランダムカード/Random Card");
     setText("fr", "リセット/Reset");
     setText("rfc", "AR装備フィルタ/AR Equipment Filter ");
+    setText("ltb4", "一般/General");
+    setText("ltb5", "スキル/Skill");
     setText("lrxf", "名前/Name");
     setText("lrbf", "サムネイル/Thumbnail");
     setText("lrrf", "レア度/Rarity");
@@ -713,9 +721,11 @@ var calc = {
     setText("lrhf", "HP基本値/Base HP");
     setText("lrkf", "ATK基本値/Base ATK");
     setText("lrlf", "期間限定/Limited");
-    setText("lref1", "効果(自身)/To Self");
-    setText("lref2", "効果(味方)/To Ally");
-    setText("lref3", "効果(敵)/To Enemy");
+    setText("lrif", "CS+");
+    setText("lref1", "効果1/Effect 1");
+    setCheckGroup("rmf1", TIMING, {filter: FILTER.NOT_CS});
+    setText("lref2", "効果2/Effect 2");
+    setCheckGroup("rmf2", TIMING, {filter: FILTER.NOT_CS});
     setText("lrpf", "常時/Static");
     setText("lraf", "特攻対象/A.Advantage");
     setText("lrdf", "特防対象/D.Advantage");
@@ -1250,11 +1260,6 @@ var calc = {
       this.active = active;
       this.update();
     },
-    checkTiming: function(a, b){
-      if(!b) return false;
-      if(a & TIMING_FLAG.COMPOUND) return (a & b | TIMING_FLAG.COMPOUND) !== a;
-      return check(a, b, 0);
-    },
     checkWeapon: function(mode, x){
       var bit = [this.weapon, this.cs][mode];
       var c = [this.weaponChange, this.csChange][mode];
@@ -1297,10 +1302,10 @@ var calc = {
         if(p.team && !(x.teams & p.team)) return false;
         if(p.ar && !x.canEquip(AR[p.ar], p.external)) return false;
         if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
-          return (p.effect1 !== ie[0] % d) || p.checkTiming(ie[1], p.timing1);
+          return (p.effect1 !== ie[0] % d) || checkTiming(ie[1], p.timing1);
         })) return false;
         if(p.timing2 && p.effect2 && x.tag[p.range2].every(function(ie){
-          return (p.effect2 !== ie[0] % d) || p.checkTiming(ie[1], p.timing2);
+          return (p.effect2 !== ie[0] % d) || checkTiming(ie[1], p.timing2);
         })) return false;
         if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[(i + 3) % 6].every(function(ie){
@@ -1322,9 +1327,13 @@ var calc = {
     hp: 0,
     atk: 0,
     limited: 0,
-    self: 0,
-    ally: 0,
-    enemy: 0,
+    csPlus: 0,
+    timing1: TIMING_FLAG.NOT_CS,
+    timing2: TIMING_FLAG.NOT_CS,
+    range1: 0,
+    range2: 0,
+    effect1: 0,
+    effect2: 0,
     stef: 0,
     bonus_a: 0,
     bonus_b: 0,
@@ -1345,9 +1354,21 @@ var calc = {
       linkInput(c, "hp", "rhf");
       linkInput(c, "atk", "rkf");
       linkInput(c, "limited", "rlf");
-      linkInput(c, "self", "ref1");
-      linkInput(c, "ally", "ref2");
-      linkInput(c, "enemy", "ref3");
+      linkCheckGroup(c, "csPlus", "rif");
+      linkCheckGroup(c, "timing1", "rmf1", function(){
+        c.updateEffectFilterOptions(0);
+      });
+      linkCheckGroup(c, "timing2", "rmf2", function(){
+        c.updateEffectFilterOptions(1);
+      });
+      linkInput(c, "range1", "ruf1", function(){
+        c.updateEffectFilterOptions(0);
+      });
+      linkInput(c, "range2", "ruf2", function(){
+        c.updateEffectFilterOptions(1);
+      });
+      linkInput(c, "effect1", "ref1");
+      linkInput(c, "effect2", "ref2");
       linkInput(c, "stef", "rpf");
       linkInput(c, "bonus_a", "raf");
       linkInput(c, "bonus_d", "rdf");
@@ -1355,6 +1376,14 @@ var calc = {
       linkInput(c, "equipable", "ceq");
       linkInput(c, "external", "reg");
       this.update();
+    },
+    updateEffectFilterOptions: function(n){
+      var id = n ? "ref2" : "ref1";
+      var r = (n ? this.range2 : this.range1);
+      var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.NOT_CS;
+      setOptions(id, TAG, {filter: function(x){
+        return !x.index || x.checkFlag(r + TAG_FLAG_NUM.AR, b);
+      }, labels: TAG.LABELS[r]});
     },
     updateToggleText: function(){
       _("rv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
@@ -1375,12 +1404,14 @@ var calc = {
       this.active = 0;
       setValue("rbf_text", "");
       this.updateThumbnail();
-      ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "ref3"].forEach(function(x){
+      ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rif", "rpf", "raf", "rdf", "rnf", "ruf1", "ruf2", "ref1", "ref2"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("rxf", "");
       setValue("ceq", 1);
       setValue("reg", 1);
+      setValue("rmf1", TIMING_FLAG.NOT_CS);
+      setValue("rmf2", TIMING_FLAG.NOT_CS);
       this.active = active;
       this.update();
     },
@@ -1412,9 +1443,16 @@ var calc = {
         if(p.hp && x.hp < p.hp) return false;
         if(p.atk && x.value < p.atk) return false;
         if(p.limited && (p.limited === 1) !== x.limited) return false;
-        if([p.self, p.ally, p.enemy, p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
-          return te && x.tag[i % 6].every(function(ie){
-            return te !== ie[0] || !(ie[1] & TIMING_FLAG.AR);
+        if(p.csPlus && !(1 << x.csBoost & p.csPlus)) return false;
+        if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
+          return p.effect1 !== ie[0] || checkTiming(ie[1], p.timing1);
+        })) return false;
+        if(p.timing2 && p.effect2 && x.tag[p.range2].every(function(ie){
+          return p.effect2 !== ie[0] || checkTiming(ie[1], p.timing2);
+        })) return false;
+        if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
+          return te && x.tag[(i + 3) % 6].every(function(ie){
+            return te !== ie[0];
           });
         })) return false;
         return true;

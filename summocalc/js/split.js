@@ -41,7 +41,7 @@ function splitThumbnailNames(sc, st){
   return result;
 }
 
-function generateTagData(s, flagNum, arTiming){
+function generateTagData(s, flagNum, ar){
   var z = [];
   var table = new Map();
   s.forEach(function(sd){
@@ -56,7 +56,6 @@ function generateTagData(s, flagNum, arTiming){
       var tag = TAG[v];
       var g = 0;
       var compound = timing & TIMING_FLAG.COMPOUND;
-      timing = arTiming || timing;
       if(timing & TIMING_FLAG.CS){
         g = TAG_MAX;
         if(!compound && timing & TIMING_FLAG.NOT_CS){
@@ -67,6 +66,7 @@ function generateTagData(s, flagNum, arTiming){
         var f = (tag.type === TAG_TYPE.STATIC) ? TAG_FLAG_NUM.STATIC : flagNum;
         var b = (f < 3) ? timing : (timing || 1);
         var sf = true;
+        if(ar) f += TAG_FLAG_NUM.AR;
         switch(tag.type){
           case TAG_TYPE.SKIP:
             break;
