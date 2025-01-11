@@ -159,6 +159,13 @@ var LIMITATION = ListItem.createList(
   ,["制限なし/No Limit"]
 ]);
 
+var CS_PLUS = ListItem.createList(
+  [["変更なし/No change"]
+  ,["CS威力増加/Increase CS Damage"]
+  ,["CS威力大増/Greatly increase CS Damage"]
+]);
+CS_PLUS.BR = [1, 2];
+
 var OR_AND = ListItem.createList(
   [["OR"]
   ,["AND"]

@@ -1,17 +1,12 @@
 "use strict";
 
 var language = 0;
-var CHECK_GROUP = {
-  SELECT: 1,
-  BUTTON: 2,
-  CHECK: 3
-};
 
 function _(id){
   return document.getElementById(id);
 }
 function t(str, x){
-  return str.indexOf("/") < 0 ? str : (str.split("/")[x === undefined ? language : x] || "").replace(/%%/g, "/");
+  return str.indexOf("/") === -1 ? str : (str.split("/")[x === undefined ? language : x] || "").replace(/%%/g, "/");
 }
 function comma(n){
   return ("" + n).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
@@ -176,22 +171,31 @@ function linkTextInput(obj, key, id, oninput){
     if(obj.active) obj.update();
   };
 }
-function setCheckGroup(id, list, optional){
+function setCheckGroup(id, list, params){
   var fieldset = _(id);
   var value = 0;
-  var order = list.LOCALE_ORDER ? list.LOCALE_ORDER[language] : list.ORDER || list.map(function(v, i){return i});
+  var filter, order, sel, chk;
+  if(params){
+    filter = params.filter;
+    order = params.order;
+    sel = params.select;
+    chk = params.check;
+  }
+  if(!order) order = list.LOCALE_ORDER ? list.LOCALE_ORDER[language] : list.ORDER || list.map(function(v, i){return i});
   if(fieldset.hasChildNodes()){
     var r = _(id).querySelectorAll("div > label");
     var i = 0;
     order.forEach(function(v){
-      if(list[v].name){
+      var x = list[v];
+      if(x.name && (!filter || filter(x))){
         var c = _(r[i].htmlFor);
         if(c.checked) value |= c.value;
-        r[i].textContent = list[v];
+        r[i].textContent = x;
         c.value = 1 << v;
         i++;
       }
     });
+    if(chk && r[i]) r[i].textContent = t(chk);
     setValue(id, value);
   }else{
     var legend = document.createElement("legend");
@@ -200,37 +204,29 @@ function setCheckGroup(id, list, optional){
     fieldset.appendChild(legend);
     fieldset.appendChild(container);
     order.forEach(function(v, i){
-      if(list[v].name){
+      var x = list[v];
+      if(x.name && (!filter || filter(x))){
         var div = document.createElement("div");
         div.className = "cb";
         value |= 1 << v;
-        appendCheck(div, id + i, 1 << v, list[v]);
+        appendCheck(div, id + i, 1 << v, x);
         if(list.BR && list.BR.indexOf(v) !== -1) container.appendChild(document.createElement("br"));
         container.appendChild(div);
       }
     });
     appendCheck(legend, id + "_all", value, "ALL");
-    if(optional === CHECK_GROUP.BUTTON){
-      var button = document.createElement("input");
-      button.id = id + "_btn";
-      button.type = "button";
-      button.value = "[0] ";
-      button.className = "ex";
-      fieldset.parentNode.insertBefore(button, fieldset);
-      fieldset.style.display = "none";
-    }else if(optional){
+    if(sel || chk){
       var hr = document.createElement("hr");
       var div = document.createElement("div");
       div.className = "bs";
       fieldset.appendChild(hr);
       fieldset.appendChild(div);
-      if(optional === CHECK_GROUP.SELECT){
+      if(chk) appendCheck(div, id + "_c", 0, t(chk));
+      if(sel){
         var select =  document.createElement("select");
         select.id = id + "_mode";
         div.appendChild(select);
-        setOptions(select.id, OR_AND);
-      }else if(optional === CHECK_GROUP.CHECK){
-        appendCheck(div, id + "_c");
+        setOptions(select.id, sel);
       }
     }
   }
@@ -240,13 +236,9 @@ function appendCheck(container, id, value, text){
   var label = document.createElement("label");
   checkbox.type = "checkbox";
   checkbox.id = id;
-  if(value) checkbox.value = value;
+  checkbox.value = value;
   label.htmlFor = id;
-  if(text){
-    label.textContent = text;
-  }else{
-    label.id = "l" + id;
-  }
+  label.textContent = text;
   container.appendChild(checkbox);
   container.appendChild(label);
 }

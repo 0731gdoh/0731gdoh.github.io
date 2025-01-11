@@ -232,12 +232,17 @@ table {
 }
 fieldset {
   padding: 0 0.2rem;
+  border: solid 1px;
+  border-radius: 0.2rem;
 }
 .nm {
   margin-left: -0.7rem;
 }
 .nm > hr {
   margin-left: 0.7rem;
+}
+fieldset .nm {
+  margin-bottom: 0.3rem;
 }
 .cb {
   display: inline-block;
@@ -280,10 +285,6 @@ td:first-child {
   border-radius: 0.2rem;
   margin-top: 1rem;
 }
-fieldset {
-  border: solid 1px;
-  border-radius: 0.2rem;
-}
 a {
   color: var(--color-link);
 }
@@ -312,11 +313,15 @@ a:visited {
 }
 #tb1,
 #tb2,
-#tb3 {
+#tb3,
+#tb4,
+#tb5 {
   display: none;
 }
 #ltb1,
-#tc1 {
+#tc1,
+#ltb4,
+#tc4 {
   background-color: #f001;
 }
 #ltb2,
@@ -324,7 +329,9 @@ a:visited {
   background-color: #0f01;
 }
 #ltb3,
-#tc3 {
+#tc3,
+#ltb5,
+#tc5 {
   background-color: #00f1;
 }
 .tl > label {
@@ -336,7 +343,9 @@ a:visited {
 }
 #tb1:checked ~ .tl > #ltb1,
 #tb2:checked ~ .tl > #ltb2,
-#tb3:checked ~ .tl > #ltb3 {
+#tb3:checked ~ .tl > #ltb3,
+#tb4:checked ~ .tl > #ltb4,
+#tb5:checked ~ .tl > #ltb5 {
   border-bottom: none;
 }
 .tc {
@@ -352,6 +361,8 @@ a:visited {
 }
 #tb1:checked ~ #tc1,
 #tb2:checked ~ #tc2,
-#tb3:checked ~ #tc3 {
+#tb3:checked ~ #tc3,
+#tb4:checked ~ #tc4,
+#tb5:checked ~ #tc5 {
   display: block;
 }

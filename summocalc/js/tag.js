@@ -28,7 +28,8 @@ var TAG_FLAG_NUM = {
   BONUS_A: 3,
   BONUS_D: 4,
   NULLIFY: 5,
-  STATIC: 6
+  STATIC: 6,
+  AR: 7
 };
 
 function Tag(index, x, category, subset, targetType, target, variant){
