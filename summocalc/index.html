@@ -132,7 +132,16 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
     <div class=cb><label for=rc id=lrc></label><select id=rc></select></div><input type=button id=rv><br>
     <div id=rw class=sb>
       <div class=cp><span id=rfc></span><span id=rcx></span></div>
-      <div class=tc><table>
+      <input type=radio name=tab2 id=tb4 checked>
+      <input type=radio name=tab2 id=tb5>
+      <div class=tl>
+        <div></div>
+        <label for=tb4 id=ltb4></label>
+        <div></div>
+        <label for=tb5 id=ltb5></label>
+        <div></div>
+      </div>
+      <div class=tc id=tc4><table>
         <tr>
           <td><label for=rxf id=lrxf></label>
           <td><input type=text id=rxf>
@@ -154,15 +163,18 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
         <tr>
           <td><label for=rlf id=lrlf></label>
           <td><select id=rlf></select>
+      </table>
+      <div class=nm><div class=cb><input type=checkbox id=ceq><label for=ceq id=lceq></label></div><div class=cb><input type=checkbox id=reg><label for=reg id=lreg></label></div></div></div>
+      <div class=tc id=tc5><table>
+        <tr>
+          <td><label id=lrif></label>
+          <td><fieldset id=rif></fieldset>
         <tr>
           <td><label for=ref1 id=lref1></label>
-          <td><select id=ref1 class=tag></select>
+          <td><fieldset id=rmf1></fieldset><select id=ref1 class=tag></select><select id=ruf1></select>
         <tr>
           <td><label for=ref2 id=lref2></label>
-          <td><select id=ref2 class=tag></select>
-        <tr>
-          <td><label for=ref3 id=lref3></label>
-          <td><select id=ref3 class=tag></select>
+          <td><fieldset id=rmf2></fieldset><select id=ref2 class=tag></select><select id=ruf2></select>
         <tr>
           <td><label for=rpf id=lrpf></label>
           <td><select id=rpf class=tag></select>
@@ -175,8 +187,7 @@ onerror = function(m, s, l, c, e){alert(m + "\n\n" + e.stack)};
         <tr>
           <td><label for=rnf id=lrnf></label>
           <td><select id=rnf class=tag></select>
-      </table>
-      <div class=nm><div class=cb><input type=checkbox id=ceq><label for=ceq id=lceq></label></div><div class=cb><input type=checkbox id=reg><label for=reg id=lreg></label></div></div></div>
+      </table></div>
       <div class=bs>
         <input type=button id=ri><input type=button id=rrd>
       </div>
