@@ -654,7 +654,7 @@ var calc = {
     });
     ["raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
       setOptions(key, TAG, {filter: function(x){
-        return !x.index || x.checkFlag(i + TAG_FLAG_NUM.AR + 3, TIMING_FLAG.ANY);
+        return !x.index || x.checkFlag(i + TAG_FLAG_NUM.AR + 3, TIMING_FLAG.NOT_CS);
       }, labels: TAG.LABELS[i + 3]});
     });
     this.updateEffectOptions();
