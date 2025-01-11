@@ -174,12 +174,12 @@ function linkTextInput(obj, key, id, oninput){
 function setCheckGroup(id, list, params){
   var fieldset = _(id);
   var value = 0;
-  var filter, order, select, check;
+  var filter, order, sel, chk;
   if(params){
     filter = params.filter;
     order = params.order;
-    select = params.select;
-    check = params.check;
+    sel = params.select;
+    chk = params.check;
   }
   if(!order) order = list.LOCALE_ORDER ? list.LOCALE_ORDER[language] : list.ORDER || list.map(function(v, i){return i});
   if(fieldset.hasChildNodes()){
@@ -195,6 +195,7 @@ function setCheckGroup(id, list, params){
         i++;
       }
     });
+    if(chk && r[i]) r[i].textContent = t(chk);
     setValue(id, value);
   }else{
     var legend = document.createElement("legend");
@@ -214,18 +215,18 @@ function setCheckGroup(id, list, params){
       }
     });
     appendCheck(legend, id + "_all", value, "ALL");
-    if(select || check){
+    if(sel || chk){
       var hr = document.createElement("hr");
       var div = document.createElement("div");
       div.className = "bs";
       fieldset.appendChild(hr);
       fieldset.appendChild(div);
-      if(check) appendCheck(div, id + "_c");
-      if(select){
+      if(chk) appendCheck(div, id + "_c", 0, t(chk));
+      if(sel){
         var select =  document.createElement("select");
         select.id = id + "_mode";
         div.appendChild(select);
-        setOptions(select.id, OR_AND);
+        setOptions(select.id, sel);
       }
     }
   }
@@ -235,13 +236,9 @@ function appendCheck(container, id, value, text){
   var label = document.createElement("label");
   checkbox.type = "checkbox";
   checkbox.id = id;
-  if(value) checkbox.value = value;
+  checkbox.value = value;
   label.htmlFor = id;
-  if(text){
-    label.textContent = text;
-  }else{
-    label.id = "l" + id;
-  }
+  label.textContent = text;
   container.appendChild(checkbox);
   container.appendChild(label);
 }

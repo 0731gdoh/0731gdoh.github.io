@@ -625,14 +625,14 @@ var calc = {
     setOptions("cs", CS, {filter: FILTER.VALUE});
     this.updateMultiplierOptions();
     setCheckGroup("ef", ATTRIBUTE);
-    setCheckGroup("wf", WEAPON, {check: true});
-    setCheckGroup("cf", WEAPON, {check: true});
+    setCheckGroup("wf", WEAPON, {check: "武器種変更を含む/Include Weapon Change"});
+    setCheckGroup("cf", WEAPON, {check: "CS変更を含む/Include Change CS"});
     setCheckGroup("rf", RARITY);
-    setCheckGroup("obf", OBTAIN, {select: true});
+    setCheckGroup("obf", OBTAIN, {select: OR_AND});
     setOptions("lmf", LIMITED);
     setOptions("vf", VARIANT, {labels: VARIANT.LABELS});
-    setCheckGroup("gf", GUILD, {select: true});
-    setCheckGroup("sf", SCHOOL, {select: true});
+    setCheckGroup("gf", GUILD, {select: OR_AND});
+    setCheckGroup("sf", SCHOOL, {select: OR_AND});
     setCheckGroup("of", TEAM);
     ["srf1", "srf2"].forEach(function(key, i){
       setOptions(key, RANGE);
@@ -645,7 +645,7 @@ var calc = {
     });
     this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
-    setCheckGroup("rtf", LIMITATION, {select: true});
+    setCheckGroup("rtf", LIMITATION, {select: OR_AND});
     setOptions("rlf", LIMITED);
     setCheckGroup("rif", CS_PLUS);
     ["ruf1", "ruf2"].forEach(function(key, i){
@@ -688,9 +688,7 @@ var calc = {
     setText("lxf", "名前/Name");
     setText("lef", "属性/Attribute");
     setText("lwf", "武器/Weapon");
-    setText("lwf_c", "武器種変更を含む/Include Weapon Change");
     setText("lcf", "CSタイプ/CS Type");
-    setText("lcf_c", "CS変更を含む/Include Change CS");
     setText("lrf", "レア度/Rarity");
     setText("lobf", "入手/Obtain");
     setText("llmf", "期間限定/Limited");
