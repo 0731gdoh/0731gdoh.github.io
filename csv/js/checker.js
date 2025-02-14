@@ -46,7 +46,7 @@ const _load = (hash) => {
       count++;
     }
   }
-  data[1][checkerIndex].notify();
+  data[1][CHECKER_INDEX].notify();
   updateTitle(count, source.length);
 };
 
