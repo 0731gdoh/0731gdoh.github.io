@@ -1,7 +1,8 @@
 "use strict";
 
-const attr = ["", "全", "火", "水", "木", "天", "冥", "魔", "英雄", "世界", "無限", "零", "神", "-"];
-const weapon = ["", "斬撃", "突撃", "打撃", "射撃", "魔法", "横一文字", "狙撃", "全域", "無", "-"]
+const CHECKER_INDEX = 4;
+const ATTR = ["", "全", "火", "水", "木", "天", "冥", "魔", "英雄", "世界", "無限", "零", "神", "-"];
+const WEAPON = ["", "斬撃", "突撃", "打撃", "射撃", "魔法", "横一文字", "狙撃", "全域", "無", "-"];
 
 const build = (list) => {
   const chara = [[], []];
@@ -15,8 +16,8 @@ const build = (list) => {
     }else{
       ar.push(row);
     }
-    row[0] = attr[row[0] || attr.length - 1];
-    row[1] = weapon[row[1] || weapon.length - 1];
+    row[0] = ATTR[row[0] || ATTR.length - 1];
+    row[1] = WEAPON[row[1] || WEAPON.length - 1];
     row.push({value: false});
   }
   for(const row of chara[0]) row.unshift(++i + "");
@@ -244,56 +245,3 @@ const source = [
   ,[0, 0, "ウォーター・ストライク！"]
 ];
 const data = build(source);
-
-const b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-
-const save = () => {
-  const result = [];
-  let i = 0;
-  let v = 0;
-  let count = 0;
-  for(const row of source){
-    if(row[4].checkbox.checked){
-      v = v | (1 << (5 - i));
-      count++;
-    }
-    if(++i === 6){
-      result.push(b64[v]);
-      v = 0;
-      i = 0;
-    }
-  }
-  if(i) result.push(b64[v]);
-  history.replaceState(null, "", location.pathname + "#" + result.join(""));
-  updateTitle(count, source.length);
-};
-
-const load = () => {
-  const hash = location.hash.slice(1);
-  if(hash) _load(hash);
-};
-
-const _load = (hash) => {
-  const list = Array.from(hash);
-  const result = [];
-  let i = 0;
-  let v = 0;
-  let count = 0;
-  for(const row of source){
-    if(--i < 0){
-      i = 5;
-      v = b64.indexOf(list.shift());
-      if(v === -1) v = 0;
-    }
-    if(v & (1 << i)){
-      row[4].checkbox.checked = true;
-      count++;
-    }
-  }
-  data[1][4].notify();
-  updateTitle(count, source.length);
-};
-
-const updateTitle = (count, length) => {
-  document.title = `放サモ 恒常☆4チェッカー（${count}/${length}）`;
-};
