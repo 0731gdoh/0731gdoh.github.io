@@ -148,27 +148,14 @@ Tag.createList = function(a){
     var targetType = 0;
     var target = 0;
     var bonus = 0;
-    if(v[3]) c = v[3].split("/").map(tget);
-    if(v[4]) s = v[4].split("/").map(tget);
-    if(v[6]) variant = v[6].split("/").map(tget);
     if(v[5]){
       targetType = v[5][0];
       target = tget(v[5][1]);
       bonus = tget(v[5][2]);
-/*
-      if(v[5][2]) c.push(tget(v[5][2]));
-      if(target){
-        switch(targetType){
-          case TAG_FLAG_NUM.BONUS_A:
-            c.push(tget("特攻"));
-            break;
-          case TAG_FLAG_NUM.BONUS_D:
-            c.push(tget("特防"));
-            break;
-        }
-      }
-*/
     }
+    if(v[3]) c = v[3].split("/").map(tget);
+    if(v[4]) s = v[4].split("/").map(tget);
+    if(v[6]) variant = v[6].split("/").map(tget);
     switch(v[2]){
       case TAG_TYPE.ALL_BUFFS:
         s = buff;
