@@ -50,7 +50,7 @@ var calc = {
       _("sr").style.display = "none";
       _("su").style.display = "none";
     }
-    if(!navigator.userAgent.match(/iP(hone|[ao]d)/) || isStandalone()) _("ms").style.display = "none";
+    if(navigator.standalone !== false) _("ms").style.display = "none";
     this.loadLanguage();
     this.cardfilter.init();
     this.arfilter.init();
@@ -825,7 +825,7 @@ var calc = {
       }
     });
     order.push(0);
-    order = order.concat(card.effects[0]).concat(card.effects[2]);
+    order = order.concat(card.effects[0], card.effects[2]);
     if(card.canEquip(ar)) ar.effects.forEach(function(x){
       order.push(EFFECT_MAX * 2 + x);
     });
