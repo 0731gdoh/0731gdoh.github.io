@@ -325,10 +325,6 @@ function download(data, mime, name){
     window.open("data:" + mime + ";charset=UTF-8,%EF%BB%BF" + encodeURIComponent(data));
   }
 }
-function isStandalone(){
-  if(matchMedia("(display-mode: standalone)").matches || navigator.standalone) return true;
-  return false;
-}
 function register(url){
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register(url).then(function(reg){
