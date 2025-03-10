@@ -81,12 +81,13 @@ function setOptions(id, list, params){
   var zeroCount = 0;
   var containers = [document.createDocumentFragment()];
   var ci = 0;
-  var filter, order, ogl, d;
+  var filter, order, ogl, d, text;
   if(params){
     filter = params.filter;
     order = params.order;
     ogl = params.labels;
     d = params.divisor;
+    text = params.text;
   }
   if(!order) order = list.LOCALE_ORDER ? list.LOCALE_ORDER[language] : list.ORDER || list.map(function(v, i){return i});
   if(ogl){
@@ -125,7 +126,7 @@ function setOptions(id, list, params){
     if(!filter || filter(x)){
       if(!i || v){
         var o = document.createElement("option");
-        o.textContent = d ? params.prefixes[Math.floor(v / d)] + x : x;
+        o.textContent = (!i && text) ? t(text) : d ? params.prefixes[Math.floor(v / d)] + x : x;
         o.value = v;
         containers[ci].appendChild(o);
       }

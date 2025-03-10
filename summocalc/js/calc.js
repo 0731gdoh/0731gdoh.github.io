@@ -196,6 +196,8 @@ var calc = {
     };
     _("rs").onclick = function(){
       if(confirm(t("リセットしますか？/Are you sure you want to reset?"))){
+        setValue("os", 0);
+        setValue("ds", 0);
         c.load(c.defaultHash);
         checkUpdate();
       }
@@ -1001,10 +1003,6 @@ var calc = {
           }
           //カスタム
           if(e.type === TYPE.CUSTOM) x = ep.getCustomMul();
-          //非強化時
-//          if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(1);
-          //非弱体時
-//          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(1);
           //武器種弱点
           if(e.type === TYPE.WEAPON_WEAKNESS && !((1 << weapon) & eV[1])) x = new Fraction(1);
           //支援効果
@@ -1061,10 +1059,6 @@ var calc = {
           if(e.type === TYPE.CUSTOM) x = ep.getCustomAdd();
           //種
           if(e.type === TYPE.SEED) x = new Fraction(eLv);
-          //非強化時
-//          if(e.type === TYPE.NOT_BUFFED && buffed) x = new Fraction(0);
-          //非弱体時
-//          if(e.type === TYPE.NOT_DEBUFFED && debuffed) x = new Fraction(0);
 
           if(x - 0){switch(e.type){
             default:
@@ -1172,6 +1166,8 @@ var calc = {
     timing2: TIMING_FLAG.ANY,
     range1: 0,
     range2: 0,
+    category1: 0,
+    category2: 0,
     effect1: 0,
     effect2: 0,
     stef: 0,
@@ -1220,16 +1216,27 @@ var calc = {
       linkInput(c, "range2", "srf2", function(){
         c.updateEffectFilterOptions(1);
       });
+      linkInput(c, "category1", "scf1", function(){
+        c.updateEffectFilterOptions(0, true);
+      });
+      linkInput(c, "category2", "scf2", function(){
+        c.updateEffectFilterOptions(1, true);
+      });
       linkInput(c, "effect1", "sef1");
       linkInput(c, "effect2", "sef2");
       this.update();
     },
-    updateEffectFilterOptions: function(n){
-      var id = n ? "sef2" : "sef1";
+    updateEffectFilterOptions: function(n, skip){
+      var i = n + 1;
       var r = n ? this.range2 : this.range1;
       var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.ANY;
-      setOptions(id, TAG, {filter: function(x){
-        return !x.index || x.checkFlag(r, b);
+      var c = (n ? this.category2 : this.category1);
+      var s = c && TAG[c].reading[0] !== "ん";
+      if(!skip) setOptions("scf" + i, TAG, {filter: function(x){
+        return !x.index || (x.type === TAG_TYPE.CATEGORY && x.checkFlag(r, b));
+      }, text: "カテゴリ：/Category: "});
+      setOptions("sef" + i, TAG, {filter: function(x){
+        return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && x.checkFlag(r, b));
       }, labels: TAG.LABELS[r]});
     },
     updateToggleText: function(){
@@ -1249,7 +1256,7 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["ef", "wf", "wf_c", "cf", "cf_c", "rf", "obf", "obf_mode", "lmf", "vf", "gf", "gf_mode", "sf", "sf_mode", "of", "pf", "baf", "bdf", "nf", "qf", "egf", "srf1", "srf2", "sef1", "sef2", "ccf"].forEach(function(x){
+      ["ef", "wf", "wf_c", "cf", "cf_c", "rf", "obf", "obf_mode", "lmf", "vf", "gf", "gf_mode", "sf", "sf_mode", "of", "pf", "baf", "bdf", "nf", "qf", "egf", "srf1", "srf2", "sef1", "sef2", "scf1", "scf2", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("xf", "");
@@ -1277,6 +1284,8 @@ var calc = {
       var vid = VARIANT[p.variant].value;
       var vv = VARIANT[p.variant].keyword;
       var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
+      var ef1 = p.effect1 || p.category1;
+      var ef2 = p.effect2 || p.category2;
       setOptions("pc", CARD, {filter: function(x){
         if(!p.active) return true;
         if(!x.index) return true;
@@ -1299,11 +1308,11 @@ var calc = {
         if(check(x.schools, p.school, p.schoolMode)) return false;
         if(p.team && !(x.teams & p.team)) return false;
         if(p.ar && !x.canEquip(AR[p.ar], p.external)) return false;
-        if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
-          return (p.effect1 !== ie[0] % d) || checkTiming(ie[1], p.timing1);
+        if(p.timing1 && ef1 && x.tag[p.range1].every(function(ie){
+          return (ef1 !== ie[0] % d) || checkTiming(ie[1], p.timing1);
         })) return false;
-        if(p.timing2 && p.effect2 && x.tag[p.range2].every(function(ie){
-          return (p.effect2 !== ie[0] % d) || checkTiming(ie[1], p.timing2);
+        if(p.timing2 && ef2 && x.tag[p.range2].every(function(ie){
+          return (ef2 !== ie[0] % d) || checkTiming(ie[1], p.timing2);
         })) return false;
         if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[(i + 3) % 6].every(function(ie){
@@ -1330,6 +1339,8 @@ var calc = {
     timing2: TIMING_FLAG.NOT_CS,
     range1: 0,
     range2: 0,
+    category1: 0,
+    category2: 0,
     effect1: 0,
     effect2: 0,
     stef: 0,
@@ -1365,6 +1376,12 @@ var calc = {
       linkInput(c, "range2", "ruf2", function(){
         c.updateEffectFilterOptions(1);
       });
+      linkInput(c, "category1", "rcf1", function(){
+        c.updateEffectFilterOptions(0, true);
+      });
+      linkInput(c, "category2", "rcf2", function(){
+        c.updateEffectFilterOptions(1, true);
+      });
       linkInput(c, "effect1", "ref1");
       linkInput(c, "effect2", "ref2");
       linkInput(c, "stef", "rpf");
@@ -1375,12 +1392,17 @@ var calc = {
       linkInput(c, "external", "reg");
       this.update();
     },
-    updateEffectFilterOptions: function(n){
-      var id = n ? "ref2" : "ref1";
+    updateEffectFilterOptions: function(n, skip){
+      var i = n + 1;
       var r = (n ? this.range2 : this.range1);
       var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.NOT_CS;
-      setOptions(id, TAG, {filter: function(x){
-        return !x.index || x.checkFlag(r + TAG_FLAG_NUM.AR, b);
+      var c = (n ? this.category2 : this.category1);
+      var s = c && TAG[c].reading[0] !== "ん";
+      setOptions("rcf" + i, TAG, {filter: function(x){
+        return !x.index || (x.type === TAG_TYPE.CATEGORY && x.checkFlag(r + TAG_FLAG_NUM.AR, b)) ;
+      }, text: "カテゴリ：/Category: "});
+      setOptions("ref" + i, TAG, {filter: function(x){
+        return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && x.checkFlag(r + TAG_FLAG_NUM.AR, b));
       }, labels: TAG.LABELS[r]});
     },
     updateToggleText: function(){
@@ -1402,7 +1424,7 @@ var calc = {
       this.active = 0;
       setValue("rbf_text", "");
       this.updateThumbnail();
-      ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rif", "rpf", "raf", "rdf", "rnf", "ruf1", "ruf2", "ref1", "ref2"].forEach(function(x){
+      ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rif", "rpf", "raf", "rdf", "rnf", "ruf1", "ruf2", "ref1", "ref2", "rcf1", "rcf2"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("rxf", "");
@@ -1428,6 +1450,8 @@ var calc = {
     update: function(card){
       var p = this;
       var nv = toLowerHiragana(p.name);
+      var ef1 = p.effect1 || p.category1;
+      var ef2 = p.effect2 || p.category2;
       if(card !== undefined) p.card = CARD[card];
       p.updateThumbnail();
       setOptions("rc", AR, {filter: function(x){
@@ -1442,11 +1466,11 @@ var calc = {
         if(p.atk && x.value < p.atk) return false;
         if(p.limited && (p.limited === 1) !== x.limited) return false;
         if(p.csPlus && !(1 << x.csBoost & p.csPlus)) return false;
-        if(p.timing1 && p.effect1 && x.tag[p.range1].every(function(ie){
-          return p.effect1 !== ie[0] || checkTiming(ie[1], p.timing1);
+        if(p.timing1 && ef1 && x.tag[p.range1].every(function(ie){
+          return ef1 !== ie[0] || checkTiming(ie[1], p.timing1);
         })) return false;
-        if(p.timing2 && p.effect2 && x.tag[p.range2].every(function(ie){
-          return p.effect2 !== ie[0] || checkTiming(ie[1], p.timing2);
+        if(p.timing2 && ef2 && x.tag[p.range2].every(function(ie){
+          return ef2 !== ie[0] || checkTiming(ie[1], p.timing2);
         })) return false;
         if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
           return te && x.tag[(i + 3) % 6].every(function(ie){
