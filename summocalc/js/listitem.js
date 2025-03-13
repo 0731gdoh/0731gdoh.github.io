@@ -123,9 +123,9 @@ var VERSION = ListItem.createList(
 ]);
 
 var RANGE = ListItem.createList(
-  [["自身に/to self"]
-  ,["味方に/to ally"]
-  ,["敵に/to enemy"]
+  [["自身/Self"]
+  ,["味方/Ally"]
+  ,["敵/Enemy"]
 ]);
 
 var THEME = ListItem.createList(
@@ -166,7 +166,7 @@ var CS_PLUS = ListItem.createList(
 ]);
 CS_PLUS.BR = [1, 2];
 
-var OR_AND = ListItem.createList(
+var OR_AND_NOT = ListItem.createList(
   [["OR"]
   ,["AND"]
   ,["NOT"]

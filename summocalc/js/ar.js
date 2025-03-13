@@ -81,7 +81,7 @@ Record.prototype = {
     if(!e.length) e.push(t("(制限なし)/(No limit)", lang));
     return e;
   },
-  getInfo: function(){
+  getInfo: function(hideTiming){
     var r = [
       RARITY[this.arRarity] + " " + this,
       "[HP+" + this.hp + " / ATK+" + (this.value - 0) + "]",
@@ -102,7 +102,7 @@ Record.prototype = {
         var tag = TAG[d[0] % TAG_MAX];
         if(i < 3 && tag.category.length){
           ex = ex.concat(tag.category.slice(1));
-          if(!tag.reading) return 0;
+          if(!tag.reading || tag.reading.indexOf(" ") !== -1) return 0;
           ex.push(tag.category[0]);
         }
         if(i > 2 && tag.subset.length) ex = ex.concat(tag.subset);
@@ -125,10 +125,18 @@ Record.prototype = {
           c.push(tag);
           return 0;
         }
-        return tag;
+        if(hideTiming) return tag;
+        return timing2str(d[1]) + t(s[i][0]) + tag + t(s[i][1]);
       }).filter(function(x){return x});
       if(c.length) r.push(c.join("/"));
-      if(tags.length) r.push(t(s[i][0]) + tags.join("/") + t(s[i][1]));
+      if(tags.length){
+        if(hideTiming){
+          r.push(t(s[i][0]) + tags.join("/") + t(s[i][1]));
+        }else{
+          r.push(tags.join("/"));
+        }
+      }
+      if(i === 2) hideTiming = true;
     });
     return r.join("\n");
   },
