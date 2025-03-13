@@ -630,14 +630,14 @@ var calc = {
     setCheckGroup("wf", WEAPON, {check: "武器種変更を含む/Include Weapon Change"});
     setCheckGroup("cf", WEAPON, {check: "CS変更を含む/Include Change CS"});
     setCheckGroup("rf", RARITY);
-    setCheckGroup("obf", OBTAIN, {select: OR_AND});
+    setCheckGroup("obf", OBTAIN, {select: OR_AND_NOT});
     setOptions("lmf", LIMITED);
     setOptions("vf", VARIANT, {labels: VARIANT.LABELS});
-    setCheckGroup("gf", GUILD, {select: OR_AND});
-    setCheckGroup("sf", SCHOOL, {select: OR_AND});
+    setCheckGroup("gf", GUILD, {select: OR_AND_NOT});
+    setCheckGroup("sf", SCHOOL, {select: OR_AND_NOT});
     setCheckGroup("of", TEAM);
     ["srf1", "srf2"].forEach(function(key, i){
-      setOptions(key, RANGE);
+      setCheckGroup(key, RANGE);
       cf.updateEffectFilterOptions(i);
     });
     ["baf", "bdf", "nf", "pf"].forEach(function(key, i){
@@ -647,11 +647,11 @@ var calc = {
     });
     this.updateEquipableOptions();
     setCheckGroup("rrf", RARITY);
-    setCheckGroup("rtf", LIMITATION, {select: OR_AND});
+    setCheckGroup("rtf", LIMITATION, {select: OR_AND_NOT});
     setOptions("rlf", LIMITED);
     setCheckGroup("rif", CS_PLUS);
     ["ruf1", "ruf2"].forEach(function(key, i){
-      setOptions(key, RANGE);
+      setCheckGroup(key, RANGE);
       rf.updateEffectFilterOptions(i);
     });
     ["raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
@@ -1164,8 +1164,8 @@ var calc = {
     team: 0,
     timing1: TIMING_FLAG.ANY,
     timing2: TIMING_FLAG.ANY,
-    range1: 0,
-    range2: 0,
+    range1: 7,
+    range2: 7,
     category1: 0,
     category2: 0,
     effect1: 0,
@@ -1210,10 +1210,10 @@ var calc = {
       linkCheckGroup(c, "timing2", "stf2", function(){
         c.updateEffectFilterOptions(1);
       });
-      linkInput(c, "range1", "srf1", function(){
+      linkCheckGroup(c, "range1", "srf1", function(){
         c.updateEffectFilterOptions(0);
       });
-      linkInput(c, "range2", "srf2", function(){
+      linkCheckGroup(c, "range2", "srf2", function(){
         c.updateEffectFilterOptions(1);
       });
       linkInput(c, "category1", "scf1", function(){
@@ -1228,16 +1228,21 @@ var calc = {
     },
     updateEffectFilterOptions: function(n, skip){
       var i = n + 1;
-      var r = n ? this.range2 : this.range1;
+      var rb = bits((n ? this.range2 : this.range1) || 7);
       var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.ANY;
       var c = (n ? this.category2 : this.category1);
       var s = c && TAG[c].reading[0] !== "ん";
+      var checkFlag = function(x){
+        return rb.some(function(r){
+          return x.checkFlag(r, b);
+        });
+      };
       if(!skip) setOptions("scf" + i, TAG, {filter: function(x){
-        return !x.index || (x.type === TAG_TYPE.CATEGORY && x.checkFlag(r, b));
+        return !x.index || (x.type === TAG_TYPE.CATEGORY && checkFlag(x));
       }, text: "カテゴリ：/Category: "});
       setOptions("sef" + i, TAG, {filter: function(x){
-        return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && x.checkFlag(r, b));
-      }, labels: TAG.LABELS[r]});
+        return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && checkFlag(x));
+      }, labels: TAG.LABELS[0]});
     },
     updateToggleText: function(){
       _("fv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
@@ -1256,12 +1261,14 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["ef", "wf", "wf_c", "cf", "cf_c", "rf", "obf", "obf_mode", "lmf", "vf", "gf", "gf_mode", "sf", "sf_mode", "of", "pf", "baf", "bdf", "nf", "qf", "egf", "srf1", "srf2", "sef1", "sef2", "scf1", "scf2", "ccf"].forEach(function(x){
+      ["ef", "wf", "wf_c", "cf", "cf_c", "rf", "obf", "obf_mode", "lmf", "vf", "gf", "gf_mode", "sf", "sf_mode", "of", "pf", "baf", "bdf", "nf", "qf", "egf", "sef1", "sef2", "scf1", "scf2", "ccf"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("xf", "");
       setValue("stf1", TIMING_FLAG.ANY);
       setValue("stf2", TIMING_FLAG.ANY);
+      setValue("srf1", 7);
+      setValue("srf2", 7);
       this.active = active;
       this.update();
     },
@@ -1286,6 +1293,15 @@ var calc = {
       var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
       var ef1 = p.effect1 || p.category1;
       var ef2 = p.effect2 || p.category2;
+      var rg = [p.range1, p.range2].map(function(r){
+        var a = bits(r);
+        if(!r) return function(){return false};
+        return function(x, fn){
+          return a.every(function(range){
+            return x.tag[range].every(fn);
+          });
+        };
+      });
       setOptions("pc", CARD, {filter: function(x){
         if(!p.active) return true;
         if(!x.index) return true;
@@ -1308,10 +1324,10 @@ var calc = {
         if(check(x.schools, p.school, p.schoolMode)) return false;
         if(p.team && !(x.teams & p.team)) return false;
         if(p.ar && !x.canEquip(AR[p.ar], p.external)) return false;
-        if(p.timing1 && ef1 && x.tag[p.range1].every(function(ie){
+        if(p.timing1 && ef1 && rg[0](x, function(ie){
           return (ef1 !== ie[0] % d) || checkTiming(ie[1], p.timing1);
         })) return false;
-        if(p.timing2 && ef2 && x.tag[p.range2].every(function(ie){
+        if(p.timing2 && ef2 && rg[1](x, function(ie){
           return (ef2 !== ie[0] % d) || checkTiming(ie[1], p.timing2);
         })) return false;
         if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
@@ -1337,8 +1353,8 @@ var calc = {
     csPlus: 0,
     timing1: TIMING_FLAG.NOT_CS,
     timing2: TIMING_FLAG.NOT_CS,
-    range1: 0,
-    range2: 0,
+    range1: 7,
+    range2: 7,
     category1: 0,
     category2: 0,
     effect1: 0,
@@ -1370,10 +1386,10 @@ var calc = {
       linkCheckGroup(c, "timing2", "rmf2", function(){
         c.updateEffectFilterOptions(1);
       });
-      linkInput(c, "range1", "ruf1", function(){
+      linkCheckGroup(c, "range1", "ruf1", function(){
         c.updateEffectFilterOptions(0);
       });
-      linkInput(c, "range2", "ruf2", function(){
+      linkCheckGroup(c, "range2", "ruf2", function(){
         c.updateEffectFilterOptions(1);
       });
       linkInput(c, "category1", "rcf1", function(){
@@ -1394,16 +1410,21 @@ var calc = {
     },
     updateEffectFilterOptions: function(n, skip){
       var i = n + 1;
-      var r = (n ? this.range2 : this.range1);
+      var rb = bits((n ? this.range2 : this.range1) || 7);
       var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.NOT_CS;
       var c = (n ? this.category2 : this.category1);
       var s = c && TAG[c].reading[0] !== "ん";
+      var checkFlag = function(x){
+        return rb.some(function(r){
+          return x.checkFlag(r + TAG_FLAG_NUM.AR, b);
+        });
+      };
       setOptions("rcf" + i, TAG, {filter: function(x){
-        return !x.index || (x.type === TAG_TYPE.CATEGORY && x.checkFlag(r + TAG_FLAG_NUM.AR, b)) ;
+        return !x.index || (x.type === TAG_TYPE.CATEGORY && checkFlag(x)) ;
       }, text: "カテゴリ：/Category: "});
       setOptions("ref" + i, TAG, {filter: function(x){
-        return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && x.checkFlag(r + TAG_FLAG_NUM.AR, b));
-      }, labels: TAG.LABELS[r]});
+        return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && checkFlag(x));
+      }, labels: TAG.LABELS[0]});
     },
     updateToggleText: function(){
       _("rv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
@@ -1424,7 +1445,7 @@ var calc = {
       this.active = 0;
       setValue("rbf_text", "");
       this.updateThumbnail();
-      ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rif", "rpf", "raf", "rdf", "rnf", "ruf1", "ruf2", "ref1", "ref2", "rcf1", "rcf2"].forEach(function(x){
+      ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rif", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "rcf1", "rcf2"].forEach(function(x){
         setValue(x, 0);
       });
       setValue("rxf", "");
@@ -1432,6 +1453,8 @@ var calc = {
       setValue("reg", 1);
       setValue("rmf1", TIMING_FLAG.NOT_CS);
       setValue("rmf2", TIMING_FLAG.NOT_CS);
+      setValue("ruf1", 7);
+      setValue("ruf2", 7);
       this.active = active;
       this.update();
     },
@@ -1452,6 +1475,15 @@ var calc = {
       var nv = toLowerHiragana(p.name);
       var ef1 = p.effect1 || p.category1;
       var ef2 = p.effect2 || p.category2;
+      var rg = [p.range1, p.range2].map(function(r){
+        var a = bits(r);
+        if(!r) return function(){return false};
+        return function(x, fn){
+          return a.every(function(range){
+            return x.tag[range].every(fn);
+          });
+        };
+      });
       if(card !== undefined) p.card = CARD[card];
       p.updateThumbnail();
       setOptions("rc", AR, {filter: function(x){
@@ -1466,10 +1498,10 @@ var calc = {
         if(p.atk && x.value < p.atk) return false;
         if(p.limited && (p.limited === 1) !== x.limited) return false;
         if(p.csPlus && !(1 << x.csBoost & p.csPlus)) return false;
-        if(p.timing1 && ef1 && x.tag[p.range1].every(function(ie){
+        if(p.timing1 && ef1 && rg[0](x, function(ie){
           return ef1 !== ie[0] || checkTiming(ie[1], p.timing1);
         })) return false;
-        if(p.timing2 && ef2 && x.tag[p.range2].every(function(ie){
+        if(p.timing2 && ef2 && rg[1](x, function(ie){
           return ef2 !== ie[0] || checkTiming(ie[1], p.timing2);
         })) return false;
         if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){

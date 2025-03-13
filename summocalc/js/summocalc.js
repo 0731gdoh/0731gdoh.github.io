@@ -11,6 +11,16 @@ function t(str, x){
 function comma(n){
   return ("" + n).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
 }
+function bits(n){
+  var a = [];
+  var b = 0;
+  while(n){
+    if(n & 1) a.push(b);
+    n >>= 1;
+    ++b;
+  }
+  return a;
+}
 function check(a, b, mode){
   if(!b) return false;
   switch(mode){
