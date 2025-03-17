@@ -26,6 +26,31 @@ function r2n(r, cs){
   }
 }
 
+function Tab(id){
+  this.label = _(id);
+  this.set = new Set();
+}
+Tab.prototype = {
+  getMarkDirty: function(defaultValue, id, skip){
+    var o = _("l" + id);
+    var c = this;
+    return function(value){
+      if(value !== defaultValue){
+        if(!skip) o.classList.add("dirty");
+        c.set.add(id);
+      }else{
+        if(!skip) o.classList.remove("dirty");
+        c.set.delete(id);
+      }
+      if(c.set.size){
+        c.label.classList.add("dirty");
+      }else{
+        c.label.classList.remove("dirty");
+      }
+    };
+  }
+};
+
 var calc = {
   version: 1,
   atk: 4000,
@@ -74,7 +99,7 @@ var calc = {
     linkInput(c, "lv", "pl");
     linkInput(c, "ar", "rc", function(){
       if(c.active) c.updateEffectOptions();
-      c.updateEquipableOptions();
+      c.cardfilter.updateEquipableOptions(c.ar);
       setText("rx", "+" + r2n(AR[c.ar].arRarity));
     });
     linkInput(c, "arLv", "rl");
@@ -510,27 +535,7 @@ var calc = {
         }
 
         if(e.type === TYPE.CUSTOM && !ep.loop){
-          var n = 0;
-          var d = 0;
-          var a = -1;
-          while(n < 1){
-            n = prompt(t("ダメージ倍率の分子 (※1以上の整数)/Numerator of damage multiplier\n(Enter an integer greater than or equal to 1.)"), 1);
-            if(!n) return;
-            n = parseInt(n, 10) || 0;
-          }
-          while(d < 1){
-            d = prompt(t("ダメージ倍率の分母 (※1以上の整数)/Denominator of damage multiplier\n(Enter an integer greater than or equal to 1.)"), 1);
-            if(!d) return;
-            d = parseInt(d, 10) || 0;
-          }
-          while(a < 0){
-            a = prompt(t("追加ダメージ (※0以上の整数)/Additional damage\n(Enter an integer greater than or equal to 0.)"), 0);
-            if(!a) return;
-            a = parseInt(a, 10);
-            if(a !== a) a = -1;
-          }
-          if(n === d && !a) return;
-          ep.setCustom(n, d, a);
+          if(!ep.customPrompt()) return;
         }
 
         if(e.type === TYPE.LIMIT){
@@ -612,139 +617,48 @@ var calc = {
     this.update();
   },
   updateTexts: function(){
-    var cf = this.cardfilter;
-    var rf = this.arfilter;
-    var cb = cf.active;
-    var rb = rf.active;
     this.active = 0;
-    cf.updateToggleText();
-    rf.updateToggleText();
-    cf.active = 0;
-    rf.active = 0;
     setOptions("sv", VERSION);
     setOptions("dm", THEME);
     setOptions("w", WEAPON, {filter: FILTER.NAME});
     setOptions("cs", CS, {filter: FILTER.VALUE});
     this.updateMultiplierOptions();
-    setCheckGroup("ef", ATTRIBUTE);
-    setCheckGroup("wf", WEAPON, {check: "武器種変更を含む/Include Weapon Change"});
-    setCheckGroup("cf", WEAPON, {check: "CS変更を含む/Include Change CS"});
-    setCheckGroup("rf", RARITY);
-    setCheckGroup("obf", OBTAIN, {select: OR_AND_NOT});
-    setOptions("lmf", LIMITED);
-    setOptions("vf", VARIANT, {labels: VARIANT.LABELS});
-    setCheckGroup("gf", GUILD, {select: OR_AND_NOT});
-    setCheckGroup("sf", SCHOOL, {select: OR_AND_NOT});
-    setCheckGroup("of", TEAM);
-    ["srf1", "srf2"].forEach(function(key, i){
-      setCheckGroup(key, RANGE);
-      cf.updateEffectFilterOptions(i);
-    });
-    ["baf", "bdf", "nf", "pf"].forEach(function(key, i){
-      setOptions(key, TAG, {filter: function(x){
-        return !x.index || x.checkFlag(i + 3, TIMING_FLAG.ANY);
-      }, labels: TAG.LABELS[i + 3]});
-    });
-    this.updateEquipableOptions();
-    setCheckGroup("rrf", RARITY);
-    setCheckGroup("rtf", LIMITATION, {select: OR_AND_NOT});
-    setOptions("rlf", LIMITED);
-    setCheckGroup("rif", CS_PLUS);
-    ["ruf1", "ruf2"].forEach(function(key, i){
-      setCheckGroup(key, RANGE);
-      rf.updateEffectFilterOptions(i);
-    });
-    ["raf", "rdf", "rnf", "rpf"].forEach(function(key, i){
-      setOptions(key, TAG, {filter: function(x){
-        return !x.index || x.checkFlag(i + TAG_FLAG_NUM.AR + 3, TIMING_FLAG.NOT_CS);
-      }, labels: TAG.LABELS[i + 3]});
-    });
     this.updateEffectOptions();
-    setText("lsv", "モード/Mode");
-    setText("ldm", "テーマ/Theme");
-    setText("lpc", "カード/Card");
-    setText("lpl", "カードLv/Card Lv");
-    setText("lw", "武器/Weapon");
-    setText("lcl", "神器Lv/S.A.Lv");
-    setText("luc", "CSを使用/Use CS");
-    setText("lrc", "AR");
-    setText("lrl", "AR Lv");
-    setText("los", "攻撃側/Offense");
-    setText("oa", "追加/Add");
-    setText("or", "削除/Remove");
-    setText("lds", "防御側/Defense");
-    setText("da", "追加/Add");
-    setText("dr", "削除/Remove");
-    setText("lel", "効果Lv/Effect Lv");
-    setText("lal", "毎回尋ねる/Ask Each Time");
-    setText("lam", "属性相性/Attribute");
-    setText("cc", "コピー/Copy");
-    setText("sr", "結果を共有/Share Result" );
-    setText("su", "URLを共有/Share URL");
-    setText("rs", "リセット/Reset");
-    setText("sl", "English/日本語");
-    setText("fc", "カードフィルタ/Filter ");
-    setText("ltb1", "一般/General");
-    setText("ltb2", "所属タグ/Affiliation");
-    setText("ltb3", "スキル/Skill");
-    setText("lxf", "名前/Name");
-    setText("lef", "属性/Attribute");
-    setText("lwf", "武器/Weapon");
-    setText("lcf", "CSタイプ/CS Type");
-    setText("lrf", "レア度/Rarity");
-    setText("lobf", "入手/Obtain");
-    setText("llmf", "期間限定/Limited");
-    setText("lvf", "バージョン/Variant");
-    setText("lgf", "ギルド/Guild");
-    setText("lsf", "学園/School");
-    setText("lof", "その他/Other");
-    setText("lsef1", "効果1/Effect 1");
-    setCheckGroup("stf1", TIMING);
-    setText("lsef2", "効果2/Effect 2");
-    setCheckGroup("stf2", TIMING);
-    setText("lpf", "常時/Static");
-    setText("lbaf", "特攻対象/A.Advantage");
-    setText("lbdf", "特防対象/D.Advantage");
-    setText("lnf", "状態無効/Nullify");
-    setText("lqf", "装備可能/Equipable");
-    setText("legf", "ギルド制限を無視/Ignore Guild Limitations");
-    setText("lccf", "CSの効果を除外する/Exclude CS Effects");
-    setText("rd", "ランダムカード/Random Card");
-    setText("fr", "リセット/Reset");
-    setText("rfc", "AR装備フィルタ/AR Equipment Filter ");
-    setText("ltb4", "一般/General");
-    setText("ltb5", "スキル/Skill");
-    setText("lrxf", "名前/Name");
-    setText("lrbf", "サムネイル/Thumbnail");
-    setText("lrrf", "レア度/Rarity");
-    setText("lrtf", "装備制限/Limitation");
-    setText("lrhf", "HP基本値/Base HP");
-    setText("lrkf", "ATK基本値/Base ATK");
-    setText("lrlf", "期間限定/Limited");
-    setText("lrif", "CS+");
-    setText("lref1", "効果1/Effect 1");
-    setCheckGroup("rmf1", TIMING, {filter: FILTER.NOT_CS});
-    setText("lref2", "効果2/Effect 2");
-    setCheckGroup("rmf2", TIMING, {filter: FILTER.NOT_CS});
-    setText("lrpf", "常時/Static");
-    setText("lraf", "特攻対象/A.Advantage");
-    setText("lrdf", "特防対象/D.Advantage");
-    setText("lrnf", "状態無効/Nullify");
-    setText("lceq", "装備可能のみ/Can be Equipped only");
-    setText("lreg", "ギルド制限を無視/Ignore Guild Limitations");
-    setText("rrd", "ランダムAR/Random AR");
-    setText("rfr", "リセット/Reset");
-    setText("dd", "カードデータ: /Card Data: ");
-    setText("ad", "ARデータ: /AR Data: ");
-    setText("ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'.");
-    setText("um", "新しいデータがあります/New data is available.");
-    setText("ub", "更新/Update");
-    setText("ri", "一覧表示/List");
-    setText("svd", "保存/Save");
-    setText("ldd", "読込/Load");
-    setText("dld", "削除/Delete");
-    cf.active = cb;
-    rf.active = rb;
+    setTextAll([
+      ["lsv", "モード/Mode"],
+      ["ldm", "テーマ/Theme"],
+      ["lpc", "カード/Card"],
+      ["lpl", "カードLv/Card Lv"],
+      ["lw", "武器/Weapon"],
+      ["lcl", "神器Lv/S.A.Lv"],
+      ["luc", "CSを使用/Use CS"],
+      ["lrc", "AR"],
+      ["lrl", "AR Lv"],
+      ["los", "攻撃側/Offense"],
+      ["oa", "追加/Add"],
+      ["or", "削除/Remove"],
+      ["lds", "防御側/Defense"],
+      ["da", "追加/Add"],
+      ["dr", "削除/Remove"],
+      ["lel", "効果Lv/Effect Lv"],
+      ["lal", "毎回尋ねる/Ask Each Time"],
+      ["lam", "属性相性/Attribute"],
+      ["cc", "コピー/Copy"],
+      ["sr", "結果を共有/Share Result" ],
+      ["su", "URLを共有/Share URL"],
+      ["rs", "リセット/Reset"],
+      ["sl", "English/日本語"],
+      ["dd", "カードデータ: /Card Data: "],
+      ["ad", "ARデータ: /AR Data: "],
+      ["ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'."],
+      ["um", "新しいデータがあります/New data is available."],
+      ["ub", "更新/Update"],
+      ["svd", "保存/Save"],
+      ["ldd", "読込/Load"],
+      ["dld", "削除/Delete"]
+    ]);
+    this.cardfilter.updateTexts(this.ar);
+    this.arfilter.updateTexts();
     this.active = 1;
   },
   updateSaveMenu: function(){
@@ -834,19 +748,6 @@ var calc = {
     order = order.concat(EFFECT.LOCALE_ORDER[language]);
     setOptions("os", es, {filter: FILTER.OFFENSE, order: order, labels: labels.concat(EFFECT.LABELS[0]), divisor: EFFECT_MAX, prefixes: p});
     setOptions("ds", es, {filter: FILTER.DEFENSE, order: order, labels: labels.concat(EFFECT.LABELS[1]), divisor: EFFECT_MAX, prefixes: p});
-  },
-  updateEquipableOptions: function(){
-    var active = this.cardfilter.active;
-    var order = [0].concat(AR.ORDER);
-    var labels = ["装備中/Equipped"].concat(AR.LABELS);
-    var value = v("qf");
-    this.cardfilter.active = 0;
-    if(this.ar){
-      order.splice(1, 0, this.ar);
-    }
-    setOptions("qf", AR, {order: order, labels: labels});
-    setValue("qf", value);
-    this.cardfilter.active = active;
   },
   updateMultiplierOptions: function(){
     setOptions("am", MULTIPLIER, {labels: MULTIPLIER.LABELS, divisor: 100, prefixes: ["", this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？"]});
@@ -1162,87 +1063,105 @@ var calc = {
     school: 0,
     schoolMode: 0,
     team: 0,
-    timing1: TIMING_FLAG.ANY,
-    timing2: TIMING_FLAG.ANY,
-    range1: 7,
-    range2: 7,
-    category1: 0,
-    category2: 0,
-    effect1: 0,
-    effect2: 0,
-    stef: 0,
-    bonus_a: 0,
-    bonus_b: 0,
-    nullify: 0,
+    ef: [
+      new EffectFilter(1, ["stf", "srf", "scf", "sef"]),
+      new EffectFilter(2, ["stf", "srf", "scf", "sef"]),
+      new StaticEffectFilter(["baf", "bdf", "nf", "pf"])
+    ],
     ar: 0,
     external: 0,
     exclude: 0,
-    current: "",
+    defaultValues: new Map(),
     active: 0,
     init: function(){
       var c = this;
-      linkTextInput(c, "name", "xf");
-      linkCheckGroup(c, "attribute", "ef");
-      linkCheckGroup(c, "weapon", "wf");
-      linkInput(c, "weaponChange", "wf_c");
-      linkCheckGroup(c, "cs", "cf");
-      linkInput(c, "csChange", "cf_c");
-      linkCheckGroup(c, "rarity", "rf");
-      linkCheckGroup(c, "obtain", "obf")
-      linkInput(c, "obtainMode", "obf_mode");
-      linkInput(c, "limited", "lmf");
-      linkInput(c, "variant", "vf");
-      linkCheckGroup(c, "guild", "gf");
-      linkInput(c, "guildMode", "gf_mode");
-      linkCheckGroup(c, "school", "sf");
-      linkInput(c, "schoolMode", "sf_mode");
-      linkCheckGroup(c, "team", "of");
-      linkInput(c, "stef", "pf");
-      linkInput(c, "bonus_a", "baf");
-      linkInput(c, "bonus_d", "bdf");
-      linkInput(c, "nullify", "nf");
-      linkInput(c, "ar", "qf");
-      linkInput(c, "external", "egf");
-      linkInput(c, "exclude", "ccf");
-      linkCheckGroup(c, "timing1", "stf1", function(){
-        c.updateEffectFilterOptions(0);
+      this.tabs = [
+        new Tab("ltb1"),
+        new Tab("ltb2"),
+        new Tab("ltb3")
+      ];
+      linkAll(c, [
+        ["weaponChange", "wf_c"],
+        ["csChange", "cf_c"],
+        ["obtainMode", "obf_mode"],
+        ["guildMode", "gf_mode"],
+        ["schoolMode", "sf_mode"],
+        ["external", "egf"],
+        ["exclude", "ccf"]
+      ]);
+      linkAll(c, [
+        ["name", "xf"],
+        ["attribute", "ef"],
+        ["weapon", "wf"],
+        ["cs", "cf"],
+        ["rarity", "rf"],
+        ["obtain", "obf"],
+        ["limited", "lmf"],
+        ["variant", "vf"],
+        ["ar", "qf"]
+      ], this.tabs[0]);
+      linkAll(c, [
+        ["guild", "gf"],
+        ["school", "sf"],
+        ["team", "of"]
+      ], this.tabs[1]);
+      this.ef.forEach(function(ef){
+        ef.init(c, c.tabs[2]);
       });
-      linkCheckGroup(c, "timing2", "stf2", function(){
-        c.updateEffectFilterOptions(1);
-      });
-      linkCheckGroup(c, "range1", "srf1", function(){
-        c.updateEffectFilterOptions(0);
-      });
-      linkCheckGroup(c, "range2", "srf2", function(){
-        c.updateEffectFilterOptions(1);
-      });
-      linkInput(c, "category1", "scf1", function(){
-        c.updateEffectFilterOptions(0, true);
-      });
-      linkInput(c, "category2", "scf2", function(){
-        c.updateEffectFilterOptions(1, true);
-      });
-      linkInput(c, "effect1", "sef1");
-      linkInput(c, "effect2", "sef2");
       this.update();
     },
-    updateEffectFilterOptions: function(n, skip){
-      var i = n + 1;
-      var rb = bits((n ? this.range2 : this.range1) || 7);
-      var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.ANY;
-      var c = (n ? this.category2 : this.category1);
-      var s = c && TAG[c].reading[0] !== "ん";
-      var checkFlag = function(x){
-        return rb.some(function(r){
-          return x.checkFlag(r, b);
-        });
-      };
-      if(!skip) setOptions("scf" + i, TAG, {filter: function(x){
-        return !x.index || (x.type === TAG_TYPE.CATEGORY && checkFlag(x));
-      }, text: "カテゴリ：/Category: "});
-      setOptions("sef" + i, TAG, {filter: function(x){
-        return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && checkFlag(x));
-      }, labels: TAG.LABELS[0]});
+    updateEquipableOptions: function(ar){
+      var active = this.active;
+      var order = [0].concat(AR.ORDER);
+      var labels = ["装備中/Equipped"].concat(AR.LABELS);
+      var value = v("qf");
+      this.active = 0;
+      if(ar) order.splice(1, 0, ar);
+      setOptions("qf", AR, {order: order, labels: labels});
+      setValue("qf", value);
+      this.active = active;
+    },
+    updateTexts: function(ar){
+      var active = this.active;
+      this.active = 0;
+      this.updateToggleText();
+      setCheckGroup("ef", ATTRIBUTE);
+      setCheckGroup("wf", WEAPON, {check: "武器種変更を含む/Include Weapon Change"});
+      setCheckGroup("cf", WEAPON, {check: "CS変更を含む/Include Change CS"});
+      setCheckGroup("rf", RARITY);
+      setCheckGroup("obf", OBTAIN, {select: OR_AND_NOT});
+      setOptions("lmf", LIMITED);
+      setOptions("vf", VARIANT, {labels: VARIANT.LABELS});
+      this.updateEquipableOptions(ar);
+      setCheckGroup("gf", GUILD, {select: OR_AND_NOT});
+      setCheckGroup("sf", SCHOOL, {select: OR_AND_NOT});
+      setCheckGroup("of", TEAM);
+      this.ef.forEach(function(ef){
+        ef.updateTexts();
+      });
+      setTextAll([
+        ["fc", "カードフィルタ/Filter "],
+        ["ltb1", "一般/General"],
+        ["ltb2", "所属タグ/Affiliation"],
+        ["ltb3", "スキル/Skill"],
+        ["lxf", "名前/Name"],
+        ["lef", "属性/Attribute"],
+        ["lwf", "武器/Weapon"],
+        ["lcf", "CSタイプ/CS Type"],
+        ["lrf", "レア度/Rarity"],
+        ["lobf", "入手/Obtain"],
+        ["llmf", "期間限定/Limited"],
+        ["lvf", "バージョン/Variant"],
+        ["lgf", "ギルド/Guild"],
+        ["lsf", "学園/School"],
+        ["lof", "その他/Other"],
+        ["lqf", "装備可能/Equipable"],
+        ["legf", "ギルド制限を無視/Ignore Guild Limitations"],
+        ["lccf", "CSの効果を除外する/Exclude CS Effects"],
+        ["rd", "ランダムカード/Random Card"],
+        ["fr", "リセット/Reset"]
+      ]);
+      this.active = active;
     },
     updateToggleText: function(){
       _("fv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
@@ -1252,8 +1171,6 @@ var calc = {
         _("sw").style.display = "block";
       }else{
         _("sw").style.display = "none";
-        hideCurrent(this);
-        this.current = "";
       }
       this.update();
       this.updateToggleText();
@@ -1261,14 +1178,9 @@ var calc = {
     reset: function(){
       var active = this.active;
       this.active = 0;
-      ["ef", "wf", "wf_c", "cf", "cf_c", "rf", "obf", "obf_mode", "lmf", "vf", "gf", "gf_mode", "sf", "sf_mode", "of", "pf", "baf", "bdf", "nf", "qf", "egf", "sef1", "sef2", "scf1", "scf2", "ccf"].forEach(function(x){
-        setValue(x, 0);
+      this.defaultValues.forEach(function(value, key){
+        setValue(key, value);
       });
-      setValue("xf", "");
-      setValue("stf1", TIMING_FLAG.ANY);
-      setValue("stf2", TIMING_FLAG.ANY);
-      setValue("srf1", 7);
-      setValue("srf2", 7);
       this.active = active;
       this.update();
     },
@@ -1290,17 +1202,8 @@ var calc = {
       var nv = toLowerKatakana(p.name);
       var vid = VARIANT[p.variant].value;
       var vv = VARIANT[p.variant].keyword;
-      var d = p.exclude ? TAG_MAX * 10 : TAG_MAX;
-      var ef1 = p.effect1 || p.category1;
-      var ef2 = p.effect2 || p.category2;
-      var rg = [p.range1, p.range2].map(function(r){
-        var a = bits(r);
-        if(!r) return function(){return false};
-        return function(x, fn){
-          return a.every(function(range){
-            return x.tag[range].every(fn);
-          });
-        };
+      var fs = this.ef.map(function(ef){
+        return ef.getFilter(p.exclude);
       });
       setOptions("pc", CARD, {filter: function(x){
         if(!p.active) return true;
@@ -1324,16 +1227,8 @@ var calc = {
         if(check(x.schools, p.school, p.schoolMode)) return false;
         if(p.team && !(x.teams & p.team)) return false;
         if(p.ar && !x.canEquip(AR[p.ar], p.external)) return false;
-        if(p.timing1 && ef1 && rg[0](x, function(ie){
-          return (ef1 !== ie[0] % d) || checkTiming(ie[1], p.timing1);
-        })) return false;
-        if(p.timing2 && ef2 && rg[1](x, function(ie){
-          return (ef2 !== ie[0] % d) || checkTiming(ie[1], p.timing2);
-        })) return false;
-        if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
-          return te && x.tag[(i + 3) % 6].every(function(ie){
-            return te !== ie[0] % d;
-          });
+        if(fs.some(function(f){
+          return f && f(x);
         })) return false;
         return true;
       }});
@@ -1351,14 +1246,11 @@ var calc = {
     atk: 0,
     limited: 0,
     csPlus: 0,
-    timing1: TIMING_FLAG.NOT_CS,
-    timing2: TIMING_FLAG.NOT_CS,
-    range1: 7,
-    range2: 7,
-    category1: 0,
-    category2: 0,
-    effect1: 0,
-    effect2: 0,
+    ef: [
+      new EffectFilter(1, ["rmf", "ruf", "rcf", "ref"], true),
+      new EffectFilter(2, ["rmf", "ruf", "rcf", "ref"], true),
+      new StaticEffectFilter(["raf", "rdf", "rnf", "rpf"], true)
+    ],
     stef: 0,
     bonus_a: 0,
     bonus_b: 0,
@@ -1366,65 +1258,67 @@ var calc = {
     card: CARD[0],
     equipable: 1,
     external: 1,
-    current: "",
+    defaultValues: new Map(),
     active: 0,
     init: function(){
       var c = this;
-      linkTextInput(c, "name", "rxf");
-      linkTextInput(c, "thumbnailText", "rbf_text");
-      linkCheckGroup(c, "rarity", "rrf");
-      linkCheckGroup(c, "target", "rtf");
-      linkInput(c, "thumbnail", "rbf");
-      linkInput(c, "targetMode", "rtf_mode");
-      linkInput(c, "hp", "rhf");
-      linkInput(c, "atk", "rkf");
-      linkInput(c, "limited", "rlf");
-      linkCheckGroup(c, "csPlus", "rif");
-      linkCheckGroup(c, "timing1", "rmf1", function(){
-        c.updateEffectFilterOptions(0);
+      this.tabs = [
+        new Tab("ltb4"),
+        new Tab("ltb5")
+      ];
+      linkAll(c, [
+        ["thumbnailText", "rbf_text"],
+        ["targetMode", "rtf_mode"]
+      ]);
+      linkAll(c, [
+        ["equipable", "ceq"],
+        ["external", "reg"]
+      ], this.tabs[0], true);
+      linkAll(c, [
+        ["name", "rxf"],
+        ["rarity", "rrf"],
+        ["target", "rtf"],
+        ["thumbnail", "rbf"],
+        ["hp", "rhf"],
+        ["atk", "rkf"],
+        ["limited", "rlf"]
+      ], this.tabs[0]);
+      linkInput(c, "csPlus", "rif", c.tabs[1]);
+      this.ef.forEach(function(ef){
+        ef.init(c, c.tabs[1]);
       });
-      linkCheckGroup(c, "timing2", "rmf2", function(){
-        c.updateEffectFilterOptions(1);
-      });
-      linkCheckGroup(c, "range1", "ruf1", function(){
-        c.updateEffectFilterOptions(0);
-      });
-      linkCheckGroup(c, "range2", "ruf2", function(){
-        c.updateEffectFilterOptions(1);
-      });
-      linkInput(c, "category1", "rcf1", function(){
-        c.updateEffectFilterOptions(0, true);
-      });
-      linkInput(c, "category2", "rcf2", function(){
-        c.updateEffectFilterOptions(1, true);
-      });
-      linkInput(c, "effect1", "ref1");
-      linkInput(c, "effect2", "ref2");
-      linkInput(c, "stef", "rpf");
-      linkInput(c, "bonus_a", "raf");
-      linkInput(c, "bonus_d", "rdf");
-      linkInput(c, "nullify", "rnf");
-      linkInput(c, "equipable", "ceq");
-      linkInput(c, "external", "reg");
       this.update();
     },
-    updateEffectFilterOptions: function(n, skip){
-      var i = n + 1;
-      var rb = bits((n ? this.range2 : this.range1) || 7);
-      var b = (n ? this.timing2 : this.timing1) || TIMING_FLAG.NOT_CS;
-      var c = (n ? this.category2 : this.category1);
-      var s = c && TAG[c].reading[0] !== "ん";
-      var checkFlag = function(x){
-        return rb.some(function(r){
-          return x.checkFlag(r + TAG_FLAG_NUM.AR, b);
-        });
-      };
-      setOptions("rcf" + i, TAG, {filter: function(x){
-        return !x.index || (x.type === TAG_TYPE.CATEGORY && checkFlag(x)) ;
-      }, text: "カテゴリ：/Category: "});
-      setOptions("ref" + i, TAG, {filter: function(x){
-        return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && checkFlag(x));
-      }, labels: TAG.LABELS[0]});
+    updateTexts: function(){
+      var active = this.active;
+      this.active = 0;
+      this.updateToggleText();
+      setCheckGroup("rrf", RARITY);
+      setCheckGroup("rtf", LIMITATION, {select: OR_AND_NOT});
+      setOptions("rlf", LIMITED);
+      setCheckGroup("rif", CS_PLUS);
+      this.ef.forEach(function(ef){
+        ef.updateTexts();
+      });
+      setTextAll([
+        ["rfc", "AR装備フィルタ/AR Equipment Filter "],
+        ["ltb4", "一般/General"],
+        ["ltb5", "スキル/Skill"],
+        ["lrxf", "名前/Name"],
+        ["lrbf", "サムネイル/Thumbnail"],
+        ["lrrf", "レア度/Rarity"],
+        ["lrtf", "装備制限/Limitation"],
+        ["lrhf", "HP基本値/Base HP"],
+        ["lrkf", "ATK基本値/Base ATK"],
+        ["lrlf", "期間限定/Limited"],
+        ["lrif", "CS+"],
+        ["lceq", "装備可能のみ/Can be Equipped only"],
+        ["lreg", "ギルド制限を無視/Ignore Guild Limitations"],
+        ["ri", "一覧表示/List"],
+        ["rrd", "ランダムAR/Random AR"],
+        ["rfr", "リセット/Reset"]
+      ]);
+      this.active = active;
     },
     updateToggleText: function(){
       _("rv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
@@ -1434,27 +1328,18 @@ var calc = {
         _("rw").style.display = "block";
       }else{
         _("rw").style.display = "none";
-        hideCurrent(this);
-        this.current = "";
       }
       this.update();
       this.updateToggleText();
     },
     reset: function(){
       var active = this.active;
+      var c = this;
       this.active = 0;
-      setValue("rbf_text", "");
-      this.updateThumbnail();
-      ["rbf", "rrf", "rtf", "rtf_mode", "rhf", "rkf", "rlf", "rif", "rpf", "raf", "rdf", "rnf", "ref1", "ref2", "rcf1", "rcf2"].forEach(function(x){
-        setValue(x, 0);
+      this.defaultValues.forEach(function(value, key){
+        setValue(key, value);
+        if(key === "rbf_text") c.updateThumbnail();
       });
-      setValue("rxf", "");
-      setValue("ceq", 1);
-      setValue("reg", 1);
-      setValue("rmf1", TIMING_FLAG.NOT_CS);
-      setValue("rmf2", TIMING_FLAG.NOT_CS);
-      setValue("ruf1", 7);
-      setValue("ruf2", 7);
       this.active = active;
       this.update();
     },
@@ -1473,16 +1358,8 @@ var calc = {
     update: function(card){
       var p = this;
       var nv = toLowerHiragana(p.name);
-      var ef1 = p.effect1 || p.category1;
-      var ef2 = p.effect2 || p.category2;
-      var rg = [p.range1, p.range2].map(function(r){
-        var a = bits(r);
-        if(!r) return function(){return false};
-        return function(x, fn){
-          return a.every(function(range){
-            return x.tag[range].every(fn);
-          });
-        };
+      var fs = this.ef.map(function(ef){
+        return ef.getFilter();
       });
       if(card !== undefined) p.card = CARD[card];
       p.updateThumbnail();
@@ -1498,16 +1375,8 @@ var calc = {
         if(p.atk && x.value < p.atk) return false;
         if(p.limited && (p.limited === 1) !== x.limited) return false;
         if(p.csPlus && !(1 << x.csBoost & p.csPlus)) return false;
-        if(p.timing1 && ef1 && rg[0](x, function(ie){
-          return ef1 !== ie[0] || checkTiming(ie[1], p.timing1);
-        })) return false;
-        if(p.timing2 && ef2 && rg[1](x, function(ie){
-          return ef2 !== ie[0] || checkTiming(ie[1], p.timing2);
-        })) return false;
-        if([p.bonus_a, p.bonus_d, p.nullify, p.stef].some(function(te, i){
-          return te && x.tag[(i + 3) % 6].every(function(ie){
-            return te !== ie[0];
-          });
+        if(fs.some(function(f){
+          return f && f(x);
         })) return false;
         return true;
       }, labels: AR.LABELS});

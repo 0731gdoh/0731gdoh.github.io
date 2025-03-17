@@ -73,9 +73,3 @@ function timing2str(timing, lang){
     return brace[1] + r.join(sep) + brace[0];
   }
 }
-
-function checkTiming(a, b){
-  if(!b) return false;
-  if(a & TIMING_FLAG.COMPOUND) return (a & b | TIMING_FLAG.COMPOUND) !== a;
-  return check(a, b, 0);
-}

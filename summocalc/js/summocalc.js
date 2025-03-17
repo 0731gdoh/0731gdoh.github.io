@@ -85,6 +85,10 @@ function setValue(id, value, skipUpdate, zeroCount){
     if(o.oninput) o.oninput();
   }
 }
+function setDefaultValue(listener, id, value){
+  if(listener.defaultValues) listener.defaultValues.set(id, value);
+  setValue(id, value);
+}
 function setOptions(id, list, params){
   var elem = _(id);
   var value = v(id);
@@ -150,6 +154,11 @@ function setOptions(id, list, params){
   setValue(id, value, true, zeroCount);
   if(elem.onchange && v(id) !== value) elem.onchange();
 }
+function setTextAll(a){
+  a.forEach(function(x){
+    setText(x[0], x[1]);
+  });
+}
 function setText(id, str){
   var o = _(id);
   if(o.type === "button"){
@@ -166,20 +175,73 @@ function selectRandomly(id){
     if(o.onchange) o.onchange();
   }
 }
-function linkInput(obj, key, id, onchange){
-  setValue(id, obj[key]);
+function linkAll(obj, a, fn, skip){
+  a.forEach(function(x){
+    linkInput(obj, x[0], x[1], fn, skip);
+  });
+}
+function linkInput(obj, key, id, fn, skip){
+  var o = _(id);
+  var listener;
+  if(obj.length){
+    listener = obj[0];
+    obj = obj[1];
+  }else{
+    listener = obj;
+  }
+  if(fn && fn.getMarkDirty){
+    fn = fn.getMarkDirty(obj[key], id, skip);
+  }
+  setDefaultValue(listener, id, obj[key]);
+  if(o.tagName === "FIELDSET"){
+    setCheckGroupLink(listener, obj, key, id, fn);
+  }else if(o.type === "text"){
+    setTextInputLink(listener, obj, key, id, fn);
+  }else{
+    setInputLink(listener, obj, key, id, fn);
+  }
+}
+function setInputLink(listener, obj, key, id, fn){
   _(id).onchange = function(){
-    obj[key] = v(id);
-    if(onchange) onchange();
-    if(obj.active) obj.update();
+    var value = v(id);
+    obj[key] = value;
+    if(fn) fn(value);
+    if(listener.active) listener.update();
   };
 }
-function linkTextInput(obj, key, id, oninput){
-  setValue(id, obj[key]);
+function setTextInputLink(listener, obj, key, id, fn){
   _(id).oninput = function(){
-    obj[key] = _(id).value;
-    if(oninput) oninput();
-    if(obj.active) obj.update();
+    var value = _(id).value;
+    obj[key] = value;
+    if(fn) fn(value);
+    if(listener.active) listener.update();
+  };
+}
+function setCheckGroupLink(listener, obj, key, id, fn){
+  _(id).onchange = function(evt){
+    var a = _(id).querySelector("legend > input");
+    var r = _(id).querySelectorAll(".cb > input");
+    var s = _(id).querySelectorAll(".cb > label");
+    var x = [];
+    var n = 0;
+    if(evt && evt.target === a){
+      if(a.checked) n = a.value - 0;
+      for(var i = 0; i < r.length; i++){
+        r[i].checked = a.checked;
+        if(a.checked) x.push(s[i].textContent);
+      }
+    }else{
+      for(var i = 0; i < r.length; i++){
+        if(r[i].checked){
+          n |= r[i].value;
+          x.push(s[i].textContent);
+        }
+      }
+      a.checked = !(a.value - n);
+    }
+    obj[key] = n;
+    if(fn) fn(n);
+    if(listener.active) listener.update();
   };
 }
 function setCheckGroup(id, list, params){
@@ -252,52 +314,6 @@ function appendCheck(container, id, value, text){
   label.textContent = text;
   container.appendChild(checkbox);
   container.appendChild(label);
-}
-function hideCurrent(obj){
-  if(obj.current){
-    _(obj.current).style.display = "none";
-    _(obj.current + "_btn").classList.remove("ac");
-  }
-}
-function linkCheckGroup(obj, key, id, onchange){
-  var btn = id + "_btn";
-  setValue(id, obj[key]);
-  if(_(btn)) _(btn).onclick = function(){
-    hideCurrent(obj);
-    if(obj.current === id){
-      obj.current = "";
-    }else{
-      obj.current = id;
-      _(id).style.display = "block";
-      _(btn).classList.add("ac");
-    }
-  };
-  _(id).onchange = function(evt){
-    var a = _(id).querySelector("legend > input");
-    var r = _(id).querySelectorAll(".cb > input");
-    var s = _(id).querySelectorAll(".cb > label");
-    var x = [];
-    var n = 0;
-    if(evt && evt.target === a){
-      if(a.checked) n = a.value - 0;
-      for(var i = 0; i < r.length; i++){
-        r[i].checked = a.checked;
-        if(a.checked) x.push(s[i].textContent);
-      }
-    }else{
-      for(var i = 0; i < r.length; i++){
-        if(r[i].checked){
-          n |= r[i].value;
-          x.push(s[i].textContent);
-        }
-      }
-      a.checked = !(a.value - n);
-    }
-    obj[key] = n;
-    if(_(btn)) _(btn).value = "[" + x.length + "] " + x.join("|");
-    if(onchange) onchange();
-    if(obj.active) obj.update();
-  };
 }
 function copyText(id){
   var r = 1;

@@ -780,6 +780,9 @@ var EFFECT = Effect.createList(
   ,[413, "<*火傷>時強化[プロメテウス]/Burn Strengthening[Prometheus]", "やけとしき", 1, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[414, "<*暴走>時強化[アメノウズメ]/Berserk Strengthening[Ame-no-Uzume]", "ほうそしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[415, "<*暴走+>時強化[アメノウズメ]/Berserk+ Strengthening[Ame-no-Uzume]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[416, "攻撃力増加[チョウジ]/ATK Increase[Choji]", "こうけそ", 0, 2, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.ALT]
+  ,[417, "加速時強化[ウィリー]/Acceleration Strengthening[Willie]", "かそ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[418, "斬撃特防/Reduce Slash damage", "さんけきと", 1, 0.7, WEAPON_FLAG.SLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
@@ -837,5 +840,11 @@ var EFFECT = Effect.createList(
     ,[1, 1.8]
     ,[1, 2.0]
     ,[1, 2.5]
+  ]]
+  ,["攻撃力増加[チョウジ]", "チョウジの/Choji's", PROMPT_TYPE.HP,
+    [[[0, 0, 0], 1]
+    ,[[100, 0, 0], 2.0]
+    ,[[0, 51, 100], 1.5]
+    ,[[0, 0, 51], 1.2]
   ]]
 ]);
