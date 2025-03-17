@@ -1,4 +1,4 @@
-var CACHE_NAME = "sc-250314-1";
+var CACHE_NAME = "sc-250317-1";
 var urlsToCache = [
   ".",
   "index.html",
@@ -15,6 +15,7 @@ var urlsToCache = [
   "js/ar.js",
   "js/codec.js",
   "js/effectparam.js",
+  "js/effectfilter.js",
   "js/calc.js",
   "css/style.css"
 ];

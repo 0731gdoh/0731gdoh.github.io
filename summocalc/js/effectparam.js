@@ -1,5 +1,11 @@
 "use strict";
 
+var EP_MAX_VALUE = 0x7fffffff;
+
+function capValue(x){
+  return Math.min(x, EP_MAX_VALUE);
+}
+
 function EffectParameter(e){
   this.effect = e;
   this.group = this.effect.group;
@@ -128,14 +134,38 @@ EffectParameter.prototype = {
     this.updateLabel();
   },
   setCustom: function(n, d, a){
-    this.c = new Fraction(n, d);
-    this.a = a;
+    this.c = new Fraction(capValue(n), capValue(d));
+    this.a = capValue(a);
   },
   getCustomMul: function(){
     return this.c || new Fraction(1);
   },
   getCustomAdd: function(){
     return new Fraction(this.a);
+  },
+  customPrompt: function(){
+    var n = 0;
+    var d = 0;
+    var a = -1;
+    while(n < 1 || n > EP_MAX_VALUE){
+      n = prompt(t("ダメージ倍率の分子 (※1以上の整数)/Numerator of damage multiplier\n(Enter an integer greater than or equal to 1.)"), 1);
+      if(!n) return false;
+      n = parseInt(n, 10) || 0;
+    }
+    while(d < 1 || d > EP_MAX_VALUE){
+      d = prompt(t("ダメージ倍率の分母 (※1以上の整数)/Denominator of damage multiplier\n(Enter an integer greater than or equal to 1.)"), 1);
+      if(!d) return false;
+      d = parseInt(d, 10) || 0;
+    }
+    while(a < 0 || a > EP_MAX_VALUE){
+      a = prompt(t("追加ダメージ (※0以上の整数)/Additional damage\n(Enter an integer greater than or equal to 0.)"), 0);
+      if(!a) return false;
+      a = parseInt(a, 10);
+      if(a !== a) a = -1;
+    }
+    if(n === d && !a) return false;
+    this.setCustom(n, d, a);
+    return true;
   },
   setUnitNum: function(u){
     this.unit = u;
@@ -153,12 +183,12 @@ EffectParameter.prototype = {
   hpPrompt: function(chara){
     var hp = 0;
     var maxHp = 0;
-    while(hp < 1){
+    while(hp < 1 || hp > EP_MAX_VALUE){
       hp = prompt(t(chara || "") + t("現在HP (※1以上の整数)/Current HP\n(Enter an integer greater than or equal to 1.)"), this.hp);
       if(!hp) return false;
       hp = parseInt(hp, 10) || 0;
     }
-    while(maxHp < hp){
+    while(maxHp < hp || maxHp > EP_MAX_VALUE){
       maxHp = prompt(t(chara || "") + t("最大HP (※/Max HP\n(Enter an integer greater than or equal to ") + hp + t("以上の整数)/.)"), Math.max(this.maxHp, hp));
       if(!maxHp) return false;
       maxHp = parseInt(maxHp, 10) || 0;
@@ -168,6 +198,8 @@ EffectParameter.prototype = {
   setHp: function(hp, maxHp){
     var target = this;
     var result = 1;
+    hp = capValue(hp);
+    maxHp = capValue(maxHp);
     if(this.alt && this.effect.promptData){
       var n = this.effect.promptData.getDataNumFromHp(hp, maxHp);
       target = this.alt[n];
