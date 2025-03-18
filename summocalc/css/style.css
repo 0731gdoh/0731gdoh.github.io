@@ -13,6 +13,7 @@
   --color-link-active: #e00;
   --color-link-visited: #808;
   --color-check: #08f;
+  --color-check-unmatched: #777;
   --color-dirty: #c84;
 }
 [data-theme="0"].dark,
@@ -34,7 +35,8 @@
   --color-link: #8ad;
   --color-link-active: #d8a;
   --color-link-visited: #a8d;
-  --color-check: #136;
+  --color-check: #138;
+  --color-check-unmatched: #333;
   --color-dirty: #842;
 }
 * {
@@ -382,4 +384,10 @@ td .dirty {
   height: 0.8rem;
   border-radius: 0.4rem;
   background-color: var(--color-dirty);
+}
+.unmatched {
+  opacity: 0.3;
+}
+.unmatched > input[type="checkbox"] {
+  accent-color: var(--color-check-unmatched);
 }
