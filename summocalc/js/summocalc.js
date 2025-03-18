@@ -222,20 +222,15 @@ function setCheckGroupLink(listener, obj, key, id, fn){
     var a = _(id).querySelector("legend > input");
     var r = _(id).querySelectorAll(".cb > input");
     var s = _(id).querySelectorAll(".cb > label");
-    var x = [];
     var n = 0;
     if(evt && evt.target === a){
       if(a.checked) n = a.value - 0;
       for(var i = 0; i < r.length; i++){
         r[i].checked = a.checked;
-        if(a.checked) x.push(s[i].textContent);
       }
     }else{
       for(var i = 0; i < r.length; i++){
-        if(r[i].checked){
-          n |= r[i].value;
-          x.push(s[i].textContent);
-        }
+        if(r[i].checked) n |= r[i].value;
       }
       a.checked = !(a.value - n);
     }
@@ -314,6 +309,16 @@ function appendCheck(container, id, value, text){
   label.textContent = text;
   container.appendChild(checkbox);
   container.appendChild(label);
+}
+function markUnmatched(id, flag){
+  var r = _(id).querySelectorAll(".cb > input");
+  for(var i = 0; i < r.length; i++){
+    if(!flag || flag & r[i].value){
+      r[i].parentNode.classList.remove("unmatched");
+    }else{
+      r[i].parentNode.classList.add("unmatched");
+    }
+  }
 }
 function copyText(id){
   var r = 1;

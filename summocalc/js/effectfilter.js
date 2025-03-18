@@ -61,21 +61,39 @@ EffectFilter.prototype = {
   },
   getFilter: function(exclude){
     var effect = this.effect || this.category;
-    var timing = this.timing
-    var a = bits(this.range);
+    var timing = this.timing;
+    var rb = bits(this.range);
     var d = exclude ? TAG_MAX * 10 : TAG_MAX;
+    this.mark();
     if(!effect || !timing || !this.range){
       this.markDirty(false);
       return;
     }
     this.markDirty(true);
     return function(x){
-      return a.every(function(range){
+      return rb.every(function(range){
         return x.tag[range].every(function(ie){
           return (effect !== ie[0] % d) || checkTiming(ie[1], timing);
         });
       });
     };
+  },
+  mark: function(){
+    var tag = TAG[this.effect || this.category];
+    var timing = this.timing || TIMING_FLAG.ANY;
+    var range = this.range || 7;
+    var n = this.ar ? TAG_FLAG_NUM.AR : 0;
+    var tFlag = 0;
+    var rFlag = 0;
+    [1, 2, 4].forEach(function(bit, i){
+      var flag = tag.flags[i + n];
+      if(flag){
+        if(range & bit) tFlag |= flag;
+        if(timing & flag) rFlag |= bit;
+      }
+    });
+    markUnmatched(this.ids[0], tFlag);
+    markUnmatched(this.ids[1], rFlag);
   }
 };
 
