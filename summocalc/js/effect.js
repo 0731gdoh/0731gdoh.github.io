@@ -600,7 +600,7 @@ var EFFECT = Effect.createList(
   ,[233, "攻撃力増加[バレ]/ATK Increase[Valentine]", "こうけそ", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
   ,[234, "防御力増加[バレ]/Defense Increase[Valentine]", "ほう", 1, 0.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
   ,[235, "食べちゃうぞ", "たへ", 1, 0.01, 10000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,[236, "魅了時弱化[ペルーン]/Charm Weakening[Perun]", "みりようしし", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
+  ,[236, "魅了時弱化[ペルーン=AR]/Charm Weakening[Perun]", "みりようしし", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[237, "斬撃・横一文字弱点/Slash%%Long-Slash Weakness", "さんけきよ", 1, 1.2, WEAPON_FLAG.SLASH|WEAPON_FLAG.LONGSLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[238, "武器種弱点[1.2]/Weapon Weakness[1.2]", "ふき", 1, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,[239, "打撃と斬撃と横一文字への大特防/Reduce Blow%%Slash%%Long-Slash damage", "たけきとさ", 1, 0.1, WEAPON_FLAG.BLOW|WEAPON_FLAG.SLASH|WEAPON_FLAG.LONGSLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
@@ -737,7 +737,7 @@ var EFFECT = Effect.createList(
   ,[370, "魅了大特攻[テュアリング]/Big Advantage vs Charm[Tuaring]", "みり", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[371, "威圧時弱化[タイシャクテン]/Oppression Weakening[Taishakuten]", "いあつし", 0, 0.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[372, "注目時強化[タイシャクテン]/Taunt Strengthening[Taishakuten]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
-  ,[373, "注目時弱化/Taunt Weakening", "ちゆうもくしし", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[373, "注目時弱化[クランプス]/Taunt Weakening[Krampus]", "ちゆうもくしし", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[374, "閃き時強化[マサノリ]/Taunt Strengthening[Masanori]", "ひらめきし", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[375, "射撃弱点[エイタ=ソール]/Shot Weakness[Eita]", "しやけきし", 1, 2.5, WEAPON_FLAG.SHOT, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[376, "射撃弱点[マサノリ]/Shot Weakness[Masanori]", "しやけきし", 1, 2, WEAPON_FLAG.SHOT, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
@@ -783,6 +783,9 @@ var EFFECT = Effect.createList(
   ,[416, "攻撃力増加[チョウジ]/ATK Increase[Choji]", "こうけそ", 0, 2, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.ALT]
   ,[417, "加速時強化[ウィリー]/Acceleration Strengthening[Willie]", "かそ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[418, "斬撃特防/Reduce Slash damage", "さんけきと", 1, 0.7, WEAPON_FLAG.SLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[419, "<*凍結>特攻/Advantage vs Freeze", "とう", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
+  ,[420, "加速時強化[グンゾウ]/Acceleration Strengthening[Gunzo]", "かそ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[421, "魅了時弱化[ツァトグァ=バティム]/Charm Weakening[Tsathoggua]", "みりようしし", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
