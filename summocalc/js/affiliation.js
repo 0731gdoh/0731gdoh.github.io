@@ -95,6 +95,7 @@ var SCHOOL = Affiliation.createList(
   ,"<東都>学園/Togo Academy"
   ,"<豊舟>海洋学園/Toyosu Marine Academy"
   ,"<中迦野>芸能学園/Nakano Performing Arts Academy"
+  ,"<日暮離>通信学園"
   ,"<武玄>学園/Bukuro Academy"
   ,"<不死見>学園/Fujimi Academy"
   ,"<依々祇>学園/Yoyogi Academy"
