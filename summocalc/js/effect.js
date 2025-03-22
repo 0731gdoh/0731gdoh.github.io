@@ -717,7 +717,7 @@ var EFFECT = Effect.createList(
   ,[350, "<*弱点>特攻[タケマル]/Advantage vs Weakness[Takemaru]", "しやくて", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[351, "祝福時強化[マサシ]/Blessing Strengthening[Masashi]", "しゆく", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[352, "毒大特攻/Big Advantage vs Poison", "とくた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
-  ,[353, "×<閃き大特攻>", "ひらめきた", 2, , , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_BUFF]
+  ,[353, "×<閃き大特攻>", "ひらめきた", 2, , , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_BUFF]
   ,[354, "<強化反転>時強化/Buff Reversal Strengthening", "きようか", 0, 12, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[355, "<*強化反転>時強化/Buff Reversal Strengthening", "きようか", 1, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[356, "[その他の解除可能な強化]/[Other removable buffs]", "んき", 0, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.BUFF]
