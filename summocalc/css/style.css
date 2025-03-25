@@ -15,6 +15,8 @@
   --color-check: #08f;
   --color-check-unmatched: #777;
   --color-dirty: #c84;
+  --bgcolor-header: #bbb;
+  --color-salv: #00f;
 }
 [data-theme="0"].dark,
 [data-theme="2"] {
@@ -38,6 +40,8 @@
   --color-check: #138;
   --color-check-unmatched: #333;
   --color-dirty: #842;
+  --bgcolor-header: #222;
+  --color-salv: #78d;
 }
 * {
   margin: 0;
@@ -314,7 +318,8 @@ a:visited {
 #tb2,
 #tb3,
 #tb4,
-#tb5 {
+#tb5,
+.hide {
   display: none;
 }
 #ltb1,
@@ -390,4 +395,54 @@ td .dirty {
 }
 .unmatched > input[type="checkbox"] {
   accent-color: var(--color-check-unmatched);
+}
+.skilldata {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+}
+.skilldata th:first-child {
+  width: 15%;
+}
+.skilldata td,
+.skilldata th {
+  text-align: center;
+  font-family: "Courier", monospace;
+  font-size: small;
+  border: 1px solid var(--color);
+  padding: 0.2rem;
+  overflow-wrap: break-word;
+  line-height: 1.1;
+}
+.skilldata td div {
+  margin: 0.5rem 0;
+}
+.salv {
+  font-style: italic;
+  color: var(--color-salv);
+}
+.skilldata .odd {
+  background-color: #8882;
+}
+.skilldata th {
+  background-color: var(--bgcolor-header);
+}
+caption {
+  text-align: left;
+  font-family: "Courier", monospace;
+  font-size: medium;
+  margin: 0.2rem;
+}
+#dw {
+  position: relative;
+  display: none;
+  background-image: linear-gradient(var(--bgcolor-sub-from), var(--bgcolor-sub-to));
+  background-color: var(--bgcolor-sub-from);
+  border: solid 1px;
+  border-color: var(--border-sub, revert);
+  border-radius: 0.2rem;
+  margin: 0.2rem;
+  margin-top: 0;
+  padding: 0.2rem;
 }

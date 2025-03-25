@@ -30,19 +30,19 @@ var TIMING = Timing.createList(
   [["登場時/Joining Battle", "j"]
   ,["フェーズ開始時/Phase Start", "p"]
   ,["ターン開始時/Turn Start", "t"]
-  ,["敵ターン開始時/Enemy Turn Start", "et"]
   ,["移動後/Post-Move", "pm"]
   ,["移動フェーズ終了後/End of Movement Phase", "em"]
   ,["非移動後/Post-No Move", "nm"]
   ,["攻撃時/Attacking", "a"]
   ,["攻撃後/Post-Attack", "pa"]
   ,["空振り時/Missed Attack", "ma"]
+  ,["敵ターン開始時/Enemy Turn Start", "et"]
   ,["ダメージ時/Attacked", "ba"]
   ,["対ダメージ/Counter", "cd"]
   ,["ダメージ後/Post-Damage", "pd"]
+  ,["退場時/Defeat", "ud"]
   ,["強化後/Post-Buff", "b"]
   ,["弱体後/Post-Debuff", "d"]
-  ,["退場時/Defeat", "ud"]
   ,["[間接]/[Indirect]", "id"]
   ,["CS", "c"]
   ,["CS発動後/After CS", "cx"]
@@ -53,6 +53,7 @@ var TIMING_FLAG = {
   CS: (1 << TIMING.table.get("c")) | (1 << TIMING.table.get("cx")),
   COMPOUND: 1 << TIMING.length,
   SALV: 2 << TIMING.length,
+  STATIC: 4 << TIMING.length
 }
 TIMING_FLAG.NOT_CS = TIMING_FLAG.ANY - TIMING_FLAG.CS;
 

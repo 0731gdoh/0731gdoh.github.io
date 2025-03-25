@@ -82,6 +82,129 @@ Card.prototype = {
     if(x.guilds & guilds) return true;
     if(x.schools & this.schools) return true;
     return false;
+  },
+  writeTable: function(table){
+    var count = 0;
+    var header = [""];
+    var order = [27, 0, 1, 2, 19, 3, 4, 5, 6, 23, 26, 7, 8, 9, 10, 24, 11, 12, 13, 20, 14, 15, 25, 16, 17, 18, 21, 22];
+    var data = TIMING.map(function(x){
+      return [t(x.name), [], [], []];
+    });
+    var st = [
+      "移動時/When Moving",
+      "強制移動時/During Forced Move",
+      "アイテム入手時/When Obtaining Items",
+      "勝利時/Upon Victory",
+      "特攻/Attack Advantage",
+      "特防/Defense Advantage",
+      "状態異常時/When Under Status Effect",
+      "状態特攻/Status Advantage"
+    ].map(function(x){
+      return [t(x), [], [], []];
+    });
+    RANGE.forEach(function(x){
+      header.push(t(x.name));
+    });
+    this.tag.forEach(function(tags, ti){
+      var ex = [];
+      tags.forEach(function(x){
+        var i = ti;
+        var tag = TAG[x[0] % TAG_MAX];
+        var name = t(tag.name);
+        var isCS = x[0] > TAG_MAX;
+        var isSALV = x[1] & TIMING_FLAG.SALV;
+        if(ex.indexOf(tag.index) !== -1 || tag.type === TAG_TYPE.STATUS_GROUP || tag.type === TAG_TYPE.WEAPON_GROUP) return;
+        if(i < 3 && tag.category.length){
+          ex = ex.concat(tag.category.slice(1));
+          if(!tag.reading || tag.reading.indexOf(" ") !== -1) return;
+          ex.push(tag.category[0]);
+        }
+        if(i === 5 && tag.subset.length){
+          ex = ex.concat(tag.subset);
+        }
+        if(i === 3 && tag.variant.length){
+          ex = ex.concat(tag.variant);
+        }
+        switch(i){
+          case 3:
+          case 4:
+            var bonus = [];
+            if(!x[2].length) return;
+            if(x[2].every(function(b){
+              var match = TAG[b].name.match(/\[([0-9.]+)\]/);
+              if(!match) return false;
+              bonus.push(match[1]);
+              return true;
+            })){
+              name += "[" + bonus.join("/") + "]";
+            }else{
+              name = t(name + "に貫通/Ignore " + name);
+            }
+            if(isCS) i = 0;
+            break;
+          case 5:
+            name = t(name + "無効/Nullify " + name);
+            break;
+        }
+        if(i < 3){
+          if(tag.type === TAG_TYPE.STATIC){
+            var tm = 3;
+            ["移動力", "強制", "率"].some(function(w, n){
+              if(tag.name.indexOf(w) === -1) return false;
+              tm = n;
+              return true;
+            });
+            if(!tag.name.match(/^(?:特[攻防]|デメリット|武器種弱点|.+に貫通)/)) st[tm][1].push([name, isSALV]);
+            return;
+          }
+          bits(x[1] & TIMING_FLAG.ANY).forEach(function(n){
+          
+            data[n][i + 1].push([name, isSALV]);
+          });
+        }else if(x[1] || i !== 5){
+          if(i === 3 && tag.type !== TAG_TYPE.SKILL) i += 3;
+          st[i + 1][1].push([name, isSALV]);
+        }
+      });
+    });
+    data = data.concat(st);
+    data.push(header);
+    if(!table.firstChild){
+      var caption = document.createElement("caption");
+      table.appendChild(caption);
+      data.forEach(function(row, ri){
+        var tr = document.createElement("tr");
+        row.forEach(function(d, ci){
+          var cell = document.createElement(ri && ci ? "td" : "th");
+          tr.appendChild(cell);
+        });
+        table.appendChild(tr);
+      });
+      table.className = "skilldata";
+    }
+    order.forEach(function(index, ri){
+      var row = data[index];
+      var hide = true;
+      var tr = table.rows[ri];
+      row.forEach(function(d, ci){
+        var cell = tr.cells[ci];
+        if(ri && ci){
+          while(cell.firstChild) cell.removeChild(cell.firstChild);
+          d.forEach(function(x){
+            var div = document.createElement("div");
+            div.textContent = x[0];
+            div.className = x[1] ? "salv" : "";
+            cell.appendChild(div);
+          });
+          if(d.length) hide = false;
+        }else{
+          cell.textContent = d;
+        }
+      });
+      tr.className = ri && hide ? "hide" : (count++ & 1) ? "odd" : "even";
+    });
+    table.caption.textContent = this;
+    return table;
   }
 };
 Card.createList = function(a){
@@ -155,7 +278,7 @@ Card.csv = function(list, x){
         var skip = [];
         r.push(z.map(function(a){
           var tag = TAG[a[0] % TAG_MAX];
-          if(!tag.reading || skip.indexOf(tag.index) !== -1) return 0;
+          if(!tag.reading || skip.indexOf(tag.index) !== -1 || !a[1]) return 0;
           switch(tag.type){
             case TAG_TYPE.ALL_BUFFS:
             case TAG_TYPE.ALL_DEBUFFS:
@@ -1052,8 +1175,8 @@ var CARD = Card.createList(
   ,[2782, "", "", "", "", 0, ["c極限/c全方向移動力増加[解除不可]/c移動力増加(全)/pm守護/b根性/pm非弱体時強化[アマノジャク]/j全方向移動力増加[解除不可]/移動力増加(全)/pm奮起/bCP増加/d熱情/p回避/j強化反転時強化", "*", "*"], 4, 7, 2, 4, 540, 6337]
   ,[2791, "ヒッポリュトス/Hippolytus", "ルールメイカーズ", "世耕", "", 0, ["c烙印に特攻[1.5]/cCP増加/t武器種変更：打撃/魅了x/p浄化/t弱体解除(単)/pa&bCP増加/t奮起/j剛力", "pHP減少反転/idHP回復", "c烙印/pa呪い"], 3, 4, 4, 4, 245, 6559]
   ,[2792, "", "", "", "", 0, ["c烙印に特攻[2.0]/cCP増加/t武器種変更：打撃/t極限/魅了x/p浄化/t弱体解除(単)/pa&bCP増加/t奮起/j剛力/j防御強化", "tHP減少反転/idHP回復/p魅了耐性", "c烙印/pa呪い/pa妨害"], 4, 4, 4, 4, 485, 6326]
-  ,[2801, "コクリュウギケン/(Hei Long Yi Quan)", "ワンダラーズ", "水道帳", "", 0, ["c強化転写(単)/c強化を貼付(味方から)/c熱情/c閃き/c聖油/c弱体無効/不動に特攻[1.5]/paCP増加/p弱体無効/p防御強化/烙印x/ba奮起", "c強化を複製/cHP回復/em熱情/em閃き/em聖油/p弱体無効", "c不動/a不動/paCP吸収/cd魅了"], 3, 3, 6, 6, 295, 6559]
-  ,[2802, "", "", "", "", 0, ["c強化転写(全)/c強化を貼付(味方から)/c熱情/c閃き/c聖油/c弱体無効/不動に特攻[2.0]/pa&b&jCP増加/p弱体無効/p防御強化/烙印x/ba奮起/baHP回復", "*", "*"], 5, 3, 6, 6, 1194, 4356]
+  ,[2801, "コクリュウギケン/(Hei Long Yi Quan)", "ワンダラーズ", "水道帳", "", 0, ["c強化転写(単)/c強化を貼付(味方から)/c&x熱情/c&x閃き/c&x聖油/c弱体無効/不動に特攻[1.5]/paCP増加/p弱体無効/p防御強化/烙印x/ba奮起", "c強化を複製/cHP回復/em熱情/em閃き/em聖油/p弱体無効", "c不動/a不動/paCP吸収/cd魅了"], 3, 3, 6, 6, 295, 6559]
+  ,[2802, "", "", "", "", 0, ["c強化転写(全)/c強化を貼付(味方から)/c&x熱情/c&x閃き/c&x聖油/c弱体無効/不動に特攻[2.0]/pa&b&jCP増加/p弱体無効/p防御強化/烙印x/ba奮起/baHP回復", "*", "*"], 5, 3, 6, 6, 1194, 4356]
   ,[2811, "プロメテウス/Prometheus", "ワンダラーズ", "秋波原", "", 0, ["cHP回復/c火傷に特攻[1.5]/弱点x/pdCP増加/ba頑強/p&bHP回復/p熱情/pd奮起", "cHP減少反転/c&idHP回復/pHP減少反転/id&pHP回復/t火傷/p熱情", "t火傷/p威圧"], 3, 2, 1, 7, 102, 2998]
   ,[2812, "", "", "", "", 0, ["cHP回復/c火傷に特攻[3.0]/弱点x/pdCP増加/ba頑強/p&bHP回復/pm浄化/t弱体解除(単)/a守護/p熱情/pd奮起", "cHP減少反転/c&idHP回復/pHP減少反転/id&pHP回復/j火傷時強化[プロメテウス]/t火傷/a守護/p熱情", "p引き寄せ(1マス)/t火傷/p威圧"], 5, 2, 7, 7, 339, 3161]
   ,[2821, "ベルフェゴール/(Belphegor)", "バーサーカーズ", "武玄", "", 0, ["c熱情/c弱体解除(単)/a弱体無効/a&pmCP増加/pm祝福/pm閃き/j祝福時強化[ベルフェゴール]/pmHP回復/j友時強化[ベルフェゴール]/pd奮起", "c熱情/c弱体解除(単)/a弱体無効/a&pmCP増加/pm祝福/j祝福時強化[ベルフェゴール]/pmHP回復/j友時強化[ベルフェゴール]/pd奮起", "aCP減少"], 3, 6, 4, 6, 262, 6338]
