@@ -20,7 +20,6 @@ function SkillData(k, v){
   this.targetType = v[5];
   this.skipBonusTag = v[6];
   this.key = k;
-  this.d = v;
 }
 
 function splitCharaNames(s){
