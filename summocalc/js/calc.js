@@ -94,6 +94,7 @@ var calc = {
       c.checkCardSelected();
       c.arfilter.update(c.card);
       setText("sax", "+" + r2n(CARD[c.card].rarity, c.cs));
+      if(c.card) CARD[c.card].writeTable(_("sd"));
     });
     _("pl").max = 70 + MAX_LEVEL_SEED;
     linkInput(c, "lv", "pl");
@@ -254,6 +255,9 @@ var calc = {
       var x = _("dm").selectedIndex;
       document.documentElement.dataset.theme = x;
       localStorage.setItem("theme", x);
+    };
+    _("sci").onchange = function(){
+      _("dw").style.display = _("sci").checked ? "block" : "none";
     };
     this.save();
     this.load(location.hash.slice(1), true);
@@ -627,6 +631,7 @@ var calc = {
     setTextAll([
       ["lsv", "モード/Mode"],
       ["ldm", "テーマ/Theme"],
+      ["lsci", "スキルテーブルを表示/Show Skill Table"],
       ["lpc", "カード/Card"],
       ["lpl", "カードLv/Card Lv"],
       ["lw", "武器/Weapon"],
@@ -657,6 +662,7 @@ var calc = {
       ["ldd", "読込/Load"],
       ["dld", "削除/Delete"]
     ]);
+    CARD[this.card].writeTable(_("sd"));
     this.cardfilter.updateTexts(this.ar);
     this.arfilter.updateTexts();
     this.active = 1;

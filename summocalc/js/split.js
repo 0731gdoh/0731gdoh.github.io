@@ -20,6 +20,7 @@ function SkillData(k, v){
   this.targetType = v[5];
   this.skipBonusTag = v[6];
   this.key = k;
+  this.d = v;
 }
 
 function splitCharaNames(s){
@@ -47,21 +48,41 @@ function generateTagData(s, flagNum, ar){
   var table = new Map();
   var setFlag = function(t, b){
     var f = (t.type === TAG_TYPE.STATIC) ? TAG_FLAG_NUM.STATIC : flagNum;
-    if(f > 2) b = b || 1;
     if(ar) f += TAG_FLAG_NUM.AR;
     t.setFlag(f, b);
+  };
+  var update = function(key, timing, bv){
+    var data = table.get(key)
+    data[1] |= timing;
+    if(bv){
+      if(!data[2]){
+        data[2] = [bv];
+      }else if(data[2].indexOf(bv) === -1){
+        data[2] = data[2].concat(bv);
+      }
+    }
   };
   s.forEach(function(sd){
     var v = sd.index;
     var timing = sd.timing;
+    var bonus = 0;
+    var bv = 0;
+    var skipFlag = false;
     if(flagNum > 2){
-      if(sd.skipBonusTag) return;
       if(sd.targetType === flagNum){
+        bv = v;
         v = sd.target % TAG_MAX;
       }else{
+        bv = TAG[v].bonus;
         v = TAG[v].getTarget(flagNum);
       }
+      if(bv) bonus = [bv];
       timing &= ~TIMING_FLAG.NOT_CS;
+      if(sd.skipBonusTag){
+        skipFlag = true;
+      }else{
+        timing |= TIMING_FLAG.STATIC;
+      }
     }
     if(v){
       var tag = TAG[v];
@@ -74,44 +95,55 @@ function generateTagData(s, flagNum, ar){
         }
       }
       if(tag.type !== TAG_TYPE.CATEGORY){
-        var sf = true;
+        var skipSubFlag = false;
+        var skipSubBonus = false;
         var ex = flagNum < 3 ? tag.category : tag.subset;
         if(tag.bonus && flagNum === 0){
           ex = ex.concat(tag.bonus, TAG[tag.bonus].category);
         }
         switch(tag.type){
-          case TAG_TYPE.SKIP:
+          case TAG_TYPE.SKILL:
+            skipSubBonus = true;
+            break;
+          case TAG_TYPE.STATIC:
+            timing |= TIMING_FLAG.STATIC;
             break;
           case TAG_TYPE.ALL_BUFFS:
           case TAG_TYPE.ALL_DEBUFFS:
-            sf = false;
+            skipSubFlag = true;
           case TAG_TYPE.BUFF:
           case TAG_TYPE.DEBUFF:
-            if(flagNum > 2) sf = false;
-          default:
-            if(table.has(v + g)){
-              table.get(v + g)[1] |= timing;
-            }else{
-              var data = [v + g, timing];
-              z.push(data);
-              if(!compound) table.set(v + g, data);
-            }
-            setFlag(tag, timing);
+            if(flagNum > 2) skipSubFlag = true;
             break;
+        }
+        if(tag.type !== TAG_TYPE.SKIP){
+          if(table.has(v + g)){
+            update(v + g, timing, bv);
+          }else{
+            var data = [v + g, timing, bonus];
+            z.push(data);
+            if(!compound) table.set(v + g, data);
+          }
+          if(!skipFlag) setFlag(tag, timing);
+        }
+        if(skipSubFlag || skipSubBonus){
+          bv = 0;
+          bonus = 0;
         }
         ex.forEach(function(c){
           var subtiming = timing;
           if(TAG[c].type === TAG_TYPE.STATIC){
             subtiming &= ~TIMING_FLAG.NOT_CS;
+            subtiming |= TIMING_FLAG.STATIC;
           }
           if(table.has(c + g)){
-            table.get(c + g)[1] |= subtiming;
+            update(c + g, subtiming, bv);
           }else{
-            var subdata = [c + g, subtiming];
+            var subdata = [c + g, subtiming, bonus];
             z.push(subdata);
             if(!compound) table.set(c + g, subdata);
           }
-          if(sf) setFlag(TAG[c], subtiming);
+          if(!skipSubFlag && !skipFlag) setFlag(TAG[c], subtiming);
         });
       }
     }
@@ -147,7 +179,7 @@ function splitSkills(s){
         }else{
           var n = TIMING.table.get(cur);
           if(n === undefined) throw new Error("キーワード「" + cur + "」は未定義です\n（" + s + "）");
-          flag = (1 << n)
+          flag = (1 << n);
           if(!salv && TIMING_FLAG.CS & flag) salv = 1;
         }
         return acc | flag;

@@ -116,7 +116,7 @@ StaticEffectFilter.prototype = {
   updateTexts: function(){
     var labels = ["特攻対象/A.Adv.", "特防対象/D.Adv.", "状態無効/Nullify", "常時/Static"];
     var n = this.ar ? TAG_FLAG_NUM.AR + 3 : 3;
-    var flag = this.ar ? TIMING_FLAG.NOT_CS : TIMING_FLAG.ANY;
+    var flag = TIMING_FLAG.STATIC;
     this.ids.forEach(function(key, i){
       setOptions(key, TAG, {filter: function(x){
         return !x.index || x.checkFlag(i + n, flag);
@@ -130,7 +130,7 @@ StaticEffectFilter.prototype = {
     return function(x){
       return a.some(function(te, i){
         return te && x.tag[(i + 3) % 6].every(function(ie){
-          return te !== ie[0] % d;
+          return te !== ie[0] % d || checkTiming(ie[1], TIMING_FLAG.STATIC);
         });
       });
     };
