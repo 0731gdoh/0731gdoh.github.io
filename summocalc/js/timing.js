@@ -53,7 +53,8 @@ var TIMING_FLAG = {
   CS: (1 << TIMING.table.get("c")) | (1 << TIMING.table.get("cx")),
   COMPOUND: 1 << TIMING.length,
   SALV: 2 << TIMING.length,
-  STATIC: 4 << TIMING.length
+  STATIC: 4 << TIMING.length,
+  NOT_TEMPORARY: 8 << TIMING.length,
 }
 TIMING_FLAG.NOT_CS = TIMING_FLAG.ANY - TIMING_FLAG.CS;
 

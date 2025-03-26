@@ -68,15 +68,16 @@ function generateTagData(s, flagNum, ar){
     var bv = 0;
     var skipFlag = false;
     if(flagNum > 2){
+      timing &= ~TIMING_FLAG.NOT_CS;
       if(sd.targetType === flagNum){
         bv = v;
         v = sd.target % TAG_MAX;
+        if(!(timing & TIMING_FLAG.STATIC)) timing |= TIMING_FLAG.NOT_TEMPORARY;
       }else{
         bv = TAG[v].bonus;
         v = TAG[v].getTarget(flagNum);
       }
       if(bv) bonus = [bv];
-      timing &= ~TIMING_FLAG.NOT_CS;
       if(sd.skipBonusTag){
         skipFlag = true;
       }else{
@@ -105,7 +106,9 @@ function generateTagData(s, flagNum, ar){
             skipSubBonus = true;
             break;
           case TAG_TYPE.STATIC:
-            timing |= TIMING_FLAG.STATIC;
+            if(!(timing & TIMING_FLAG.STATIC)){
+              timing |= (TIMING_FLAG.STATIC | TIMING_FLAG.NOT_TEMPORARY);
+            }
             break;
           case TAG_TYPE.ALL_BUFFS:
           case TAG_TYPE.ALL_DEBUFFS:
@@ -175,6 +178,8 @@ function splitSkills(s){
         var flag = 0;
         if(cur === "x"){
           salv = -1;
+        }else if(cur === "z"){
+          flag = TIMING_FLAG.STATIC;
         }else{
           var n = TIMING.table.get(cur);
           if(n === undefined) throw new Error("キーワード「" + cur + "」は未定義です\n（" + s + "）");
