@@ -422,6 +422,9 @@ td .dirty {
   font-style: italic;
   color: var(--color-salv);
 }
+.temporary {
+  font-weight: bold;
+}
 .skilldata .odd {
   background-color: #8882;
 }
