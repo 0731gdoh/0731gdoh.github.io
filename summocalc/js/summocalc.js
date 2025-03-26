@@ -175,12 +175,12 @@ function selectRandomly(id){
     if(o.onchange) o.onchange();
   }
 }
-function linkAll(obj, a, fn, skip){
+function linkAll(obj, a, fn, skip, index){
   a.forEach(function(x){
-    linkInput(obj, x[0], x[1], fn, skip);
+    linkInput(obj, x[0], x[1], fn, skip, index);
   });
 }
-function linkInput(obj, key, id, fn, skip){
+function linkInput(obj, key, id, fn, skip, index){
   var o = _(id);
   var listener;
   if(obj.length){
@@ -188,6 +188,10 @@ function linkInput(obj, key, id, fn, skip){
     obj = obj[1];
   }else{
     listener = obj;
+  }
+  if(index !== undefined){
+    obj = obj[key];
+    key = index;
   }
   if(fn && fn.getMarkDirty){
     fn = fn.getMarkDirty(obj[key], id, skip);

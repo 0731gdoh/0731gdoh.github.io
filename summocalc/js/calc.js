@@ -1072,7 +1072,7 @@ var calc = {
     ef: [
       new EffectFilter(1, ["stf", "srf", "scf", "sef"]),
       new EffectFilter(2, ["stf", "srf", "scf", "sef"]),
-      new StaticEffectFilter(["baf", "bdf", "nf", "pf"])
+      new StaticEffectFilter(["baf", "bdf", "nf", "pf", "zf"])
     ],
     ar: 0,
     external: 0,
@@ -1255,7 +1255,7 @@ var calc = {
     ef: [
       new EffectFilter(1, ["rmf", "ruf", "rcf", "ref"], true),
       new EffectFilter(2, ["rmf", "ruf", "rcf", "ref"], true),
-      new StaticEffectFilter(["raf", "rdf", "rnf", "rpf"], true)
+      new StaticEffectFilter(["raf", "rdf", "rnf", "rpf", "rzf"], true)
     ],
     stef: 0,
     bonus_a: 0,
