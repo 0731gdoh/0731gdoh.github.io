@@ -115,16 +115,13 @@ Card.prototype = {
         var isSALV = x[1] & TIMING_FLAG.SALV;
         var isTmp = (x[1] & TIMING_FLAG.STATIC) && !(x[1] & TIMING_FLAG.NOT_TEMPORARY);
         if(ex[ei].indexOf(tag.index) !== -1 || tag.type === TAG_TYPE.STATUS_GROUP || tag.type === TAG_TYPE.WEAPON_GROUP) return;
-        if(i < 3 && tag.category.length){
+        if(i > 2){
+          if(i === 5 && tag.subset.length) ex[ei] = ex[ei].concat(tag.subset);
+          if(tag.variant.length) ex[ei] = ex[ei].concat(tag.variant);
+        }else if(tag.category.length){
           ex[ei] = ex[ei].concat(tag.category.slice(1));
           if(!tag.reading || tag.reading.indexOf(" ") !== -1) return;
           ex[ei].push(tag.category[0]);
-        }
-        if(i === 5 && tag.subset.length){
-          ex[ei] = ex[ei].concat(tag.subset);
-        }
-        if(i === 3 && tag.variant.length){
-          ex[ei] = ex[ei].concat(tag.variant);
         }
         switch(i){
           case 3:

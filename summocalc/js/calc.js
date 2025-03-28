@@ -64,6 +64,7 @@ var calc = {
   ar: 0,
   arLv: 1,
   multiplier: 0,
+  skilltable: 0,
   active: 1,
   defaultHash: "",
   savedata: [],
@@ -94,7 +95,8 @@ var calc = {
       c.checkCardSelected();
       c.arfilter.update(c.card);
       setText("sax", "+" + r2n(CARD[c.card].rarity, c.cs));
-      if(c.card) CARD[c.card].writeTable(_("sd"));
+      if(c.card) c.skilltable = c.card;
+      CARD[c.skilltable].writeTable(_("sd"));
     });
     _("pl").max = 70 + MAX_LEVEL_SEED;
     linkInput(c, "lv", "pl");
@@ -371,6 +373,7 @@ var calc = {
       if(this.arfilter.active) this.arfilter.toggle();
       this.cardfilter.reset();
       this.arfilter.reset();
+      if(!index) this.skilltable = 0;
       setValue("pc", index);
       n = s.read();
       index = 0;
@@ -662,7 +665,7 @@ var calc = {
       ["ldd", "読込/Load"],
       ["dld", "削除/Delete"]
     ]);
-    CARD[this.card].writeTable(_("sd"));
+    CARD[this.skilltable].writeTable(_("sd"));
     this.cardfilter.updateTexts(this.ar);
     this.arfilter.updateTexts();
     this.active = 1;

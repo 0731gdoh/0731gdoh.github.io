@@ -101,12 +101,14 @@ Record.prototype = {
       var tags = x.map(function(d){
         var tag = TAG[d[0] % TAG_MAX];
         if(!d[1]) return 0;
-        if(i < 3 && tag.category.length){
+        if(i > 2){
+          if(tag.subset.length) ex = ex.concat(tag.subset);
+          if(tag.variant.length) ex = ex.concat(tag.variant);
+        }else if(tag.category.length){
           ex = ex.concat(tag.category.slice(1));
           if(!tag.reading || tag.reading.indexOf(" ") !== -1) return 0;
           ex.push(tag.category[0]);
         }
-        if(i > 2 && tag.subset.length) ex = ex.concat(tag.subset);
         if(tag.name.indexOf("に貫通") !== -1){
           s[3][0] = "/Ignore ";
           s[3][1] = s[3][1].replace("特攻", "貫通");
@@ -179,7 +181,7 @@ Record.csv = function(list, x){
       v.tag.forEach(function(z){
         r.push(z.map(function(a){
           var tag = TAG[a[0] % TAG_MAX];
-          if(tag.type === TAG_TYPE.CATEGORY || !a[1]) return 0;
+          if(tag.type === TAG_TYPE.CATEGORY) return 0;
           return timing2str(a[1], x) + t(tag.name, x);
         }).filter(function(n){return n}).join("/"));
       });
