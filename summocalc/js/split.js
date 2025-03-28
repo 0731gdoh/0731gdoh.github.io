@@ -225,7 +225,7 @@ function splitSkills(s){
         subset = tag.variant;
         break;
     }
-    if(subset.length){
+    if(subset.length && ttype === TAG_FLAG_NUM.BONUS_A){
       var evo = [];
       subset.forEach(function(sub){
         if(evo.indexOf(sub) === -1){
