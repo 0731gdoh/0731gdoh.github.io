@@ -17,6 +17,8 @@
   --color-dirty: #c84;
   --bgcolor-header: #bbb;
   --color-salv: #00f;
+  --color-tooltip: #fff;
+  --bgcolor-tooltip: #333e;
 }
 [data-theme="0"].dark,
 [data-theme="2"] {
@@ -42,6 +44,8 @@
   --color-dirty: #842;
   --bgcolor-header: #222;
   --color-salv: #78d;
+  --color-tooltip: #000;
+  --bgcolor-tooltip: #aaae;
 }
 * {
   margin: 0;
@@ -448,4 +452,23 @@ caption {
   margin: 0.2rem;
   margin-top: 0;
   padding: 0.2rem;
+}
+.tooltip {
+  position: relative;
+}
+.tooltip:hover::after {
+  position: absolute;
+  content: attr(data-tooltip);
+  display: block;
+  left: 50%;
+  bottom: 100%;
+  translate: -50% 0;
+  border-radius: 0.3rem;
+  padding: 0.3rem;
+  color: var(--color-tooltip);
+  background-color: var(--bgcolor-tooltip);
+  width: 100%;
+  white-space: pre-wrap;
+  font-style: normal;
+  font-weight: normal;
 }
