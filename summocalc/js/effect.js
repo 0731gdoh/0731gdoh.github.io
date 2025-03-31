@@ -193,7 +193,7 @@ Effect.prototype = {
   },
   hasHpRef: function(){
     if(this.promptData) return this.promptData.type === PROMPT_TYPE.HP;
-    return this.type === TYPE.LIMIT
+    return this.type === TYPE.LIMIT;
   }
 };
 Effect.createList = function(a, pd){
@@ -798,7 +798,7 @@ var EFFECT = Effect.createList(
   ,[431, "非弱体時強化[スズカ]/Non-Debuff Strengthening[Suzuka]", "ひしやくたいしき", 0, [1, 2], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
   ,[432, "<*弱点>時強化/Weakness Strengthening", "しやくて", 1, 0.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[433, "恐怖時弱化[シロウ]/Fear Weakening[Shiro]", "きようふ", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
-  ,[434, "閃き大特攻/Big Advantage vs Glint", "ひらめきた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_BUFF]
+  ,[434, "閃き大特攻/Big Advantage vs Glint", "ひらめきた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,[435, "虚飾時強化/Flamboyance Strengthening", "きよしよくしき", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[436, "攻撃力激減[ボヘミオ]/ATK Vastly Down[Bohemio]", "こうけけき", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ],[

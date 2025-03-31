@@ -421,3 +421,4 @@ onload = function(){
 onhashchange = function(){
   location.reload();
 };
+window.addEventListener("touchstart", function(){}, {passive: true});
