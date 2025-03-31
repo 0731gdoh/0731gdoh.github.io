@@ -162,6 +162,9 @@ var calc = {
     _("rd").onclick = function(){
       selectRandomly("pc");
     };
+    _("rcb").onclick = function(){
+      selectRandomly("pc");
+    };
     _("fv").onclick = function(){
       c.cardfilter.toggle();
     };
@@ -635,6 +638,7 @@ var calc = {
       ["lsv", "モード/Mode"],
       ["ldm", "テーマ/Theme"],
       ["lsci", "スキルテーブルを表示/Show Skill Table"],
+      ["rcb", "ランダム/Random"],
       ["lpc", "カード/Card"],
       ["lpl", "カードLv/Card Lv"],
       ["lw", "武器/Weapon"],

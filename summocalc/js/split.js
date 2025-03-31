@@ -221,6 +221,7 @@ function splitSkills(s){
         subset = tag.subset;
         break;
       default:
+        name = t(TAG[i].name, 2) || name;
         set(key, [name, i, timing, target, tname, ttype, skip]);
         subset = tag.variant;
         break;
