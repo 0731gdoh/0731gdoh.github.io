@@ -344,3 +344,5 @@ const download = (data, name) => {
   link.click();
   URL.revokeObjectURL(url);
 };
+
+window.addEventListener("touchstart", () => {}, {passive: true});
