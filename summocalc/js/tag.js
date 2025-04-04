@@ -172,8 +172,11 @@ Tag.createList = function(a){
       bonus = tget(v[6][2]);
     }
     if(v[4]){
-      c = v[4].split("/").map(tget);
-      if(v[4][0] === "[") timing = c[0];
+      c = v[4].split("/").map(function(x){
+        var n = tget(x);
+        if(x[0] === "[") timing = n;
+        return n;
+      });
     }
     if(v[5]) s = v[5].split("/").map(tget);
     if(v[7]) variant = v[7].split("/").map(tget);
@@ -259,7 +262,7 @@ var TAG = Tag.createList(
   ,[7, "防御力が上昇する状態/Status that raise defense", "ほう1", "", TAG_TYPE.STATUS_GROUP, "", "外壁/頑強/金剛/守護/聖油/防御強化"]
   ,[8, "CP減少/Deplete CP", "CPけ", "", TAG_TYPE.ONE_SHOT, "CP減少系"]
   ,[9, "CP増加/Increase CP", "CPそ", "", TAG_TYPE.ONE_SHOT, "CP増加系"]
-  ,[10, "CS封印/CS Lock", "CSふ", "", TAG_TYPE.DEBUFF, "CS封印系", "", "", "CS封印[解除不可]"]
+  ,[10, "CS封印/CS Lock", "CSふ", "CS封印/CS Lock", TAG_TYPE.DEBUFF, "CS封印系", "", "", "CS封印[解除不可]"]
   ,[11, "CS変更/Change CS", "CSへ", "", TAG_TYPE.BUFF]
   ,[12, "CS変更：打撃/Change CS: Blow", "CSへ3", "", TAG_TYPE.BUFF, "CS変更"]
   ,[13, "CS変更：魔法/Change CS: Magic", "CSへ5", "", TAG_TYPE.BUFF, "CS変更"]
@@ -317,7 +320,7 @@ var TAG = Tag.createList(
   ,[65, "クリティカル+/Critical+", "くり+", "与ダメx2.5~5.0/Deal 2.5~5.0x", TAG_TYPE.BUFF, "攻撃増加系"]
   ,[66, "クリティカル++/Critical++", "くり++", "与ダメx3.0~6.0/Deal 3.0~6.0x", TAG_TYPE.BUFF, "攻撃増加系"]
   ,[67, "契約の代償/Contractual Dues", "けいやた", "被ダメ+10000\n発動率-100%\n[非 @$]/Take +10000\nSkill Rate -100%\n[Not @$]/悪魔の契約", TAG_TYPE.IRREMOVABLE_DEBUFF, "被ダメージ追加系/発動率減少系"]
-  ,[68, "係留/Anchor", "けいり", "", TAG_TYPE.BUFF, "強制移動無効系", , [-1, , "強制移動無効(全)"]]
+  ,[68, "係留/Anchor", "けいり", "$/$/強制移動無効(全)", TAG_TYPE.BUFF, "強制移動無効系", , [-1, , "強制移動無効(全)"]]
   ,[69, "激怒/Rage", "けき", "与ダメx1.25~2.5\n被ダメx1.25~2.5/Deal 1.25~2.5x\nTake 1.25~2.5x", TAG_TYPE.BUFF, "攻撃増加系/防御減少系"]
   ,[70, "激怒+/Rage+", "けき+", "与ダメx1.25~2.5\n被ダメx1.25/Deal 1.25~2.5x\nTake 1.25x", TAG_TYPE.BUFF, "攻撃増加系/防御減少系"]
   ,[71, "激怒+時強化/Rage+ Strengthening", "けきしき+", "発動率+30%\n[@$]/Skill Rate +30%\n[@$]/激怒+", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
@@ -579,7 +582,7 @@ var TAG = Tag.createList(
   ,[327, "CP吸収/Absorb CP", "CPき", "", TAG_TYPE.ONE_SHOT, "CP減少/CP減少系"]
   ,[328, "弱体HP減/Debuff HP Reduction", "しやくたいHP", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[弱体後]"]
   ,[329, "無垢なる獣/Pure Beast", "むく", "", TAG_TYPE.SKILL]
-  ,[330, "浄化/Purification", "しようか", "", TAG_TYPE.BUFF, "[ターン開始時]"]
+  ,[330, "浄化/Purification", "しようか", "自身に$/$ from self/弱体解除(単)", TAG_TYPE.BUFF, "[ターン開始時]"]
   ,[331, "滋養時強化[サルタヒコ]/Nourishment Strengthening[Sarutahiko]", "しようしき さ", "与ダメx2.5\n[@$]/Deal 2.5x\n[@$]/滋養", TAG_TYPE.IRREMOVABLE_BUFF, "滋養時強化/攻撃増加系"]
   ,[332, "凍結耐性/Freeze Resistance", "とうけたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "凍結"]]
   ,[333, "弱体転写/Transfer debuff", "しやくたいて", "", TAG_TYPE.ONE_SHOT, "複製・貼付系"]
@@ -737,7 +740,7 @@ var TAG = Tag.createList(
   ,[485, "ダメージ後回避耐性付与", "ためこかい", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ダメージ後]"]
   ,[486, "獣蹄のサマリヤ王/Beastly Samalian King", "しゆうて", "", TAG_TYPE.SKILL]
   ,[487, "厄災の連鎖/Chains of Calamity", "やく", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ダメージ時]"]
-  ,[488, "崩し特攻/Advantage vs Break", "くすしと", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "崩し", "特攻[1.5]"]]
+  ,[488, "崩し特攻/Advantage vs Break", "くすと", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "崩し", "特攻[1.5]"]]
   ,[489, "全域特防[ビッグフット]", "", "", TAG_TYPE.IRREMOVABLE_BUFF, "全域特防/特防付与系/防御増加系", , [TAG_FLAG_NUM.BONUS_D, "全域", "特防[0.8]"]]
   ,[490, "HPが継続回復する状態/Healing status", "HPけい", "", TAG_TYPE.STATUS_GROUP, "", "再生/祝福/滋養/聖油"]
   ,[491, "凍結時弱化/Freeze Weakening", "とうけしし", "", TAG_TYPE.IRREMOVABLE_DEBUFF]
@@ -885,7 +888,7 @@ var TAG = Tag.createList(
   ,[633, "聖油時強化[ティンダロス]/Unction Strengthening[Tindalos]", "せいしき て", "与ダメx2.0\n[@$]/Deal 2.0x\n[@$]/聖油", TAG_TYPE.IRREMOVABLE_BUFF, "聖油時強化/攻撃増加系"]
   ,[634, "非強化時弱化/Non-Buff Weakening", "ひきようしし", "", TAG_TYPE.IRREMOVABLE_DEBUFF]
   ,[635, "非強化時弱化[タローマティ]/Non-Buff Weakening[Taromaiti]", "ひきようしし た", "被ダメx1.5\n[非 @$]/Take 1.5x\n[Not @$]/強化(解除可)", TAG_TYPE.IRREMOVABLE_DEBUFF, "非強化時弱化/防御減少系"]
-  ,[636, "空振り時HP激減/Major HP Decrease on Missed Attack", "からHP", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[空振り時]"]
+  ,[636, "空振り時HP激減/Major HP Decrease on Missed Attack", "からHPけき", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[空振り時]"]
   ,[637, "退場時崩し付与/Break on Defeat", "たいしよくす", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[退場時]"]
   ,[638, "被ダメージ増加/Increased Incoming Damage", "ひため", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,[639, "被ダメージ増加[ナタ]", "", "被ダメx1.3 → x2.5/Take 1.3x → 2.5x", TAG_TYPE.IRREMOVABLE_DEBUFF, "被ダメージ増加/防御減少系"]
@@ -982,7 +985,7 @@ var TAG = Tag.createList(
   ,[730, "CSが封印される状態", "CS", "", TAG_TYPE.STATUS_GROUP, "", "CS封印/暗闇/二重封印"]
   ,[731, "注目時強化[サトルヌス]/Taunt Strengthening[Saturnus]", "ちゆしき さと", "与ダメx2.0\n[@$]/Deal 2.0x\n[@$]/注目", TAG_TYPE.IRREMOVABLE_BUFF, "注目時強化/攻撃増加系"]
   ,[732, "ターン開始時防御貫通", "たあほう", "", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]"]
-  ,[733, "照準", "しようしゆ", "被ダメx1.5~3.0/Take 1.5~3.0x", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
+  ,[733, "照準", "しようしゆ", "自身に$\n\n被ダメx1.5~3.0/$ on self\n\nTake 1.5~3.0x/照準解除", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系/[ダメージ後]"]
   ,[734, "照準解除", "しようしゆか", "", TAG_TYPE.UNKNOWN, "状態耐性系/状態解除系"]
   ,[735, "閃き時強化[トムテ]/Glint Strengthening[Tomte]", "ひらしき と", "与ダメx2.0\n[@$]/Deal 2.0x\n[@$]/閃き", TAG_TYPE.IRREMOVABLE_BUFF, "閃き時強化/攻撃増加系"]
   ,[736, "対ダメージCP増加", "たいためCP", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[対ダメージ]"]
@@ -1109,4 +1112,15 @@ var TAG = Tag.createList(
   ,[857, "結縁：怒/Affinity: Anger", "", "", TAG_TYPE.UNKNOWN, "攻撃増加系"]
   ,[858, "結縁：愛/Affinity: Love", "", "", TAG_TYPE.UNKNOWN, "HP回復系"]
   ,[859, "結縁：妬/Affinity: Envy", "", "", TAG_TYPE.UNKNOWN, "CP増加系"]
+  ,[860, "空振り時HP減少", "からHPけん", "自身に$/$ on self/HP減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "[空振り時]"]
+  ,[861, "空振り時HP超激減", "からHPち", "自身に$/$ on self/HP減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "[空振り時]"]
+  ,[862, "威圧時強化/Oppression Strengthening", "いあしき", "与ダメx8.0\n[@$]/Deal 8.0x\n[@$]/威圧", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,[863, "マヒ時強化/Paralysis Strengthening", "まひしき", "与ダメx8.0\n[@$]/Deal 8.0x\n[@$]/マヒ", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,[864, "恐怖時強化/Fear Strengthening", "きようふしき", "与ダメx8.0\n[@$]/Deal 8.0x\n[@$]/恐怖", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,[865, "不動時強化[ガーゴイル]/Immobility Strengthening[Gargoyle]", "ふとしき か", "与ダメx8.0\n[@$]/Deal 8.0x\n[@$]/不動", TAG_TYPE.IRREMOVABLE_BUFF, "不動時強化/攻撃増加系"]
+  ,[866, "崩し時強化/Break Strengthening", "くすしき", "与ダメx8.0\n[@$]/Deal 8.0x\n[@$]/崩し", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,[867, "CS変更：狙撃/Change CS: Snipe", "CSへ6", "", TAG_TYPE.BUFF, "CS変更"]
+  ,[868, "HP減少(%)/Decrease HP (%)", "HPけ%", "", TAG_TYPE.ONE_SHOT, "HP減少/HP減少系"]
+  ,[869, "ダメージ時HP減少[ジャージーデビル]", "", "自身に$\n(10%)/$ on self\n(10%)/HP減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "ダメージ時HP減少/[ダメージ時]"]
+  ,[870, "祝福時弱化[ジゾウ]/Blessing Weakening[Ksitigarbha]", "しゆくしし し", "与ダメx0.5\n[@$]/Deal 0.5x\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_DEBUFF, "祝福時弱化/攻撃減少系"]
 ]);
