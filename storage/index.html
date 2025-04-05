@@ -42,11 +42,14 @@ const getDescription = (title, key) => {
   return key;
 };
 
-const getStorageDescription = (key) => {  switch(key){
+const getStorageDescription = (key) => {
+  switch(key){
     case "language":
       return "ダメージ計算機の言語設定";
     case "theme":
       return "サイトのテーマ設定";
+    case "offline":
+      return "ダメージ計算機のオフライン対応モード";
     default:
       if(/slot\d/.test(key)){
         return getSlotDescription(key);
