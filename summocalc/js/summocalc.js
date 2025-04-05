@@ -361,8 +361,22 @@ function download(data, mime, name){
     window.open("data:" + mime + ";charset=UTF-8,%EF%BB%BF" + encodeURIComponent(data));
   }
 }
+function getStorageItem(key){
+  try{
+    return localStorage.getItem(key);
+  }catch(e){}
+  return "";
+}
+function setStorageItem(key, value){
+  try{
+    localStorage.setItem(key, value);
+  }catch(e){}
+}
 function register(url){
-  if("serviceWorker" in navigator){
+  if(!("serviceWorker" in navigator)) return;
+  var offline = getStorageItem("offline");
+  if(window.matchMedia("(display-mode: standalone)").matches){
+    if(!offline) setStorageItem("offline", "1");
     navigator.serviceWorker.register(url).then(function(reg){
       var updatefound = function(){
         reg.installing.onstatechange = function(){
@@ -372,6 +386,17 @@ function register(url){
       if(reg.waiting) return showUpdateMessage(reg);
       if(reg.installing) updatefound();
       reg.onupdatefound = updatefound;
+    });
+  }else if(offline !== "1"){
+    navigator.serviceWorker.getRegistrations().then(function(list){
+      list.forEach(function(reg){
+        reg.unregister();
+      });
+    });
+    if(caches) caches.keys().then(function(keys){
+      keys.forEach(function(key){
+        caches.delete(key);
+      });
     });
   }
 }
