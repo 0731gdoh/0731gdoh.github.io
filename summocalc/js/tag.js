@@ -661,7 +661,7 @@ var TAG = Tag.createList(
   ,[406, "スキル発動率増加/Skill Rate Increase", "すきるはそ", "発動率+20%/Skill Rate +20%", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
   ,[407, "次ターン引き寄せ[味方]/Draw in next turn[allies]", "つきひき", "", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]"]
   ,[408, "次ターン引き寄せ[敵味方]/Draw in next turn[enemies\nallies]", "つきひき", "", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]"]
-  ,[409, "根性時強化[桜の山AR]/Guts Strengthening[Cherry Blossoms AR]", "こんししき Aさ", "CP増加\n[@$]/Increase CP\n[@$]/根性", TAG_TYPE.IRREMOVABLE_BUFF, "根性時強化/CP増加系"]
+  ,[409, "根性時強化[桜の山AR]/Guts Strengthening[Mountain AR]", "こんししき Aさ", "CP増加\n[@$]/Increase CP\n[@$]/根性", TAG_TYPE.IRREMOVABLE_BUFF, "根性時強化/CP増加系"]
   ,[410, "挺身の構え/Stance of the Volunteer", "てい", "", TAG_TYPE.IRREMOVABLE_BUFF, "[ダメージ時]"]
   ,[411, "攻撃力が上昇する状態(解除可能)/Status that raise attack (removable)", "こうりよくしよ", "", TAG_TYPE.STATUS_GROUP, "", "意気/疑念/極限/クリティカル/クリティカル+/クリティカル++/激怒/激怒+/攻撃強化/剛力/集中/滋養/闘志/毒反転/熱情/暴走/暴走+/無窮"]
   ,[412, "移動力増加(縦+2)/Increase movement (vertical +2)", "いとそう12", "", TAG_TYPE.STATIC, "移動力増加/移動力増加(縦)"]
