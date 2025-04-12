@@ -2,7 +2,9 @@
 
 const initTheme = () => {
   const m = window.matchMedia("(prefers-color-scheme: dark)");
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || 0;
+  const theme = localStorage.getItem("theme");
+  if(theme === "0") localStorage.removeItem("theme");
+  document.documentElement.dataset.theme = theme || 0;
   if(m.matches){
     document.documentElement.classList.add("dark");
   }
@@ -53,14 +55,18 @@ const createThemeSelector = () => {
 const updateTheme = (e) => {
   const n = e.currentTarget.selectedIndex;
   document.documentElement.dataset.theme = n;
-  localStorage.setItem("theme", n);
+  if(n){
+    localStorage.setItem("theme", n);
+  }else{
+    localStorage.removeItem("theme");
+  }
 };
 
 const checkStorageUpdate = (e) => {
-  if(e.key === "theme"){
+  if(e.key === "theme" || !e.key){
     const select = document.getElementById("theme_select");
-    if(select) select.selectedIndex = e.newValue;
-    document.documentElement.dataset.theme = e.newValue;
+    if(select) select.selectedIndex = e.newValue || 0;
+    document.documentElement.dataset.theme = e.newValue || 0;
   }
 };
 

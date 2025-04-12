@@ -522,7 +522,7 @@ var EFFECT = Effect.createList(
   ,[155, "<呪い>時強化[ヴォルフ]/Curse Strengthening[Volkh]", "のろ", 0, 5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[156, "攻撃力低下/ATK Reduction", "こうけて", 0, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,[157, "非弱体時弱化/Non-Debuff Weakening", "ひしやくたいしし", 0, [1, 0.5], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
-  ,[158, "非弱体時弱化/Non-Debuff Weakening", "ひし", 1, [1.9, 2.5], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
+  ,[158, "非弱体時弱化/Non-Debuff Weakening", "ひしやくたいしし", 1, [1.9, 2.5], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
   ,[159, "特殊耐性[0.01]/Special Resistance[0.01]", "とくし", 1, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,[160, "憑依/Possession", "ひよ", 0, 1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.TOKEN]
   ,[161, "疑念-<憑依>/Doubt", "きね", 0, [10, 0.1], , EFFECT_FLAG.FIXED]
@@ -808,6 +808,7 @@ var EFFECT = Effect.createList(
   ,[441, "崩し時強化/Break Strengthening", "くすしし", 0, 8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[442, "CS変更：狙撃/Change CS: Snipe", "CS", 0, 0, 6, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,[443, "祝福時弱化[ジゾウ]/Blessing Weakening[Ksitigarbha]", "しゆくふくしし", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[444, "非弱体時強化[ウランバートル#1]/Non-Debuff Strengthening[Ulaanbaatar]", "ひしやくたいしき", 1, [1, 0.3], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
