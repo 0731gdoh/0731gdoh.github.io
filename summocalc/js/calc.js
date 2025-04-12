@@ -259,7 +259,11 @@ var calc = {
     _("dm").onchange = function(){
       var x = _("dm").selectedIndex;
       document.documentElement.dataset.theme = x;
-      localStorage.setItem("theme", x);
+      if(x){
+        setStorageItem("theme", x);
+      }else{
+        removeStorageItem("theme");
+      }
     };
     _("sci").onchange = function(){
       _("dw").style.display = _("sci").checked ? "block" : "none";
@@ -609,16 +613,12 @@ var calc = {
     this.updateEffectOptions();
   },
   loadLanguage: function(){
-    try{
-      language = parseInt(localStorage.getItem("language") || 0, 10);
-    }catch(e){}
+    language = parseInt(getStorageItem("language") || 0, 10);
     this.updateTexts();
   },
   setLanguage: function(x){
     language = x;
-    try{
-      localStorage.setItem("language", language);
-    }catch(e){}
+    setStorageItem("language", x);
     this.updateTexts();
     this.active = 0;
     this.cardfilter.update();
@@ -679,11 +679,7 @@ var calc = {
     var data = [];
     for(var i = 0; i < 9; i++){
       var label = "#" + (i + 1) + ": ";
-      var value = "";
-      try{
-        value = localStorage.getItem("slot" + i) || "";
-      }catch(e){}
-      value = value.split("#");
+      var value = getStorageItem("slot" + i).split("#");
       if(value.length === 2 && value[0] && value[1]){
         var name = decodeURIComponent(value[0]);
         if(name.length > 49) name = name.slice(0, 49) + "…";
@@ -709,9 +705,7 @@ var calc = {
         var data = location.hash;
         if(data.length < 2) data = "#" + this.defaultHash;
         if(name.length > 50) name = name.slice(0, 50);
-        try{
-          localStorage.setItem("slot" + i, encodeURIComponent(name) + data);
-        }catch(e){}
+        setStorageItem("slot" + i, encodeURIComponent(name) + data);
         this.updateSaveMenu();
       }
     }
@@ -727,9 +721,7 @@ var calc = {
     var i = Math.max(_("ssf").selectedIndex, 0);
     var label = "#" + (i + 1);
     if(this.savedata[i] && confirm(t(label + " を削除しますか？/Are you sure you want to delete " + label + " ?"))){
-      try{
-        localStorage.removeItem("slot" + i);
-      }catch(e){}
+      removeStorageItem("slot" + i);
       this.updateSaveMenu();
     }
   },

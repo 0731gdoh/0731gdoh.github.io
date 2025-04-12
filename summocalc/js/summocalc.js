@@ -363,13 +363,18 @@ function download(data, mime, name){
 }
 function getStorageItem(key){
   try{
-    return localStorage.getItem(key);
+    return localStorage.getItem(key) || "";
   }catch(e){}
   return "";
 }
 function setStorageItem(key, value){
   try{
     localStorage.setItem(key, value);
+  }catch(e){}
+}
+function removeStorageItem(key){
+  try{
+    localStorage.removeItem(key);
   }catch(e){}
 }
 function register(url){
@@ -425,7 +430,9 @@ function checkUpdate(){
 }
 function initTheme(){
   var m = window.matchMedia("(prefers-color-scheme: dark)");
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || 0;
+  var theme = getStorageItem("theme");
+  if(theme === "0") removeStorageItem("theme");
+  document.documentElement.dataset.theme = theme || 0;
   if(m.matches){
     document.documentElement.classList.add("dark");
   }
@@ -436,6 +443,13 @@ function initTheme(){
       document.documentElement.classList.remove("dark");
     }
   });
+  window.addEventListener("storage", checkStorageUpdate);
+}
+function checkStorageUpdate(e){
+  if(e.key === "theme" || !e.key){
+    _("dm").selectedIndex = e.newValue || 0;
+    document.documentElement.dataset.theme = e.newValue || 0;
+  }
 }
 initTheme();
 
