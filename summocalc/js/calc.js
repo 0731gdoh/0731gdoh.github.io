@@ -567,7 +567,7 @@ var calc = {
           lv = 1;
         }
         if(e.link){
-          var tLoop = this.es[e.link].loop;
+          var tEp = this.es[e.link];
           var tE = EFFECT[e.link];
           var tLv = 0;
           if(e.type === TYPE.DEBUFF_OVERWRITE){
@@ -578,13 +578,13 @@ var calc = {
               tLv = parseInt(tLv, 10);
             }
             if(tLv){
-              this.es[e.link].setLevel(1, tLv);
+              tEp.setLevel(1, tLv);
             }else if(tLv === 0){
-              this.es[e.link].clear();
+              tEp.clear();
             }
-          }else if(tLoop){
-            if(tE.isStackable() && ep.loop){
-              tLv = this.es[e.link].lv;
+          }else if(tEp.getLoopSum()){
+            if(tE.isStackable() && tEp.loop && ep.loop){
+              tLv = tEp.lv;
               this.addStatus(e.link, tLv || 1, undefined, tLv ? 0 : 1);
             }
           }else if(!e.isNonStatus()){
