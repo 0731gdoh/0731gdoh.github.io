@@ -662,6 +662,7 @@ var calc = {
       ["sl", "English/日本語"],
       ["dd", "カードデータ: /Card Data: "],
       ["ad", "ARデータ: /AR Data: "],
+      ["cg", "更新履歴/Updates"],
       ["ms", "「ホーム画面に追加」機能でインストールできます/You can install this by 'Add to Home Screen'."],
       ["um", "新しいデータがあります/New data is available."],
       ["ub", "更新/Update"],
