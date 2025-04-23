@@ -467,7 +467,7 @@ caption {
   padding: 0.3rem;
   color: var(--color-tooltip);
   background-color: var(--bgcolor-tooltip);
-  width: 100%;
+  width: 110%;
   white-space: pre-wrap;
   font-style: normal;
   font-weight: normal;
