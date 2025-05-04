@@ -77,7 +77,7 @@ var GUILD = Affiliation.createList(
 
 var SCHOOL = Affiliation.createList(
   ["<秋波原>学園/Akihabara Academy"
-  ,"<天横>服飾アカデミア"
+  ,"<天横>服飾アカデミア/Ameyoko Fashion Academy"
   ,"<飢野>学園/Ueno Academy"
   ,"<得真道>学園/Umamichi Academy"
   ,"<王子坊>学園/王子坊学園(Ojimachi Academy)"
@@ -87,7 +87,7 @@ var SCHOOL = Affiliation.createList(
   ,"<鬼王>警察学校/Kiou Police Academy"
   ,"<究段>武道学園"
   ,"<神宿>学園/Shinjuku Academy"
-  ,"<水道帳>商業学校"
+  ,"<水道帳>商業学校/Suidocho Business Academy"
   ,"<世耕>農業・林業学園"
   ,"<代神山>学園/Daikanyama Academy"
   ,"東京<サンタ>スクール/Tokyo Santa School"
