@@ -32,8 +32,15 @@ var TAG_FLAG_NUM = {
   STATIC: 6,
   AR: 7
 };
+var TAG_BDI = {
+  BUFF: 1,
+  DEBUFF: 2,
+  IRREMOVABLE: 4,
+  IRREMOVABLE_BUFF: 5,
+  IRREMOVABLE_DEBUFF: 6
+};
 
-function Tag(index, x, category, subset, targetType, target, variant, bonus, timing, link, irremovable){
+function Tag(index, x, category, subset, targetType, target, variant, bonus, timing, link, bdi){
   this.index = index;
   this.name = x[0].replace(/#\d/, "");
   this.reading = x[1];
@@ -47,7 +54,7 @@ function Tag(index, x, category, subset, targetType, target, variant, bonus, tim
   this.bonus = bonus;
   this.timing = timing;
   this.link = link;
-  this.irremovable = irremovable;
+  this.bdi = bdi;
   this.flags = [];
   if(!index){
     this.sortkey = 0;
@@ -164,8 +171,9 @@ Tag.createList = function(a){
     var bonus = 0;
     var match = re.exec(t(v[0], 0));
     var timing = 0;
-    var link = t(v[2], 2).split(",").map(function(x){return tget(x)});
-    var irremovable = false;
+    var bdi = 0;
+    var link = t(v[2], 2);
+    link = link.indexOf(",") === -1 ? tget(link) : link.split(",").map(function(x){return tget(x)});
     if(v[6]){
       targetType = v[6][0];
       target = tget(v[6][1]);
@@ -196,23 +204,25 @@ Tag.createList = function(a){
       case TAG_TYPE.BUFF:
         c.push(tget("強化"));
         c.push(tget("強化(解除可)"));
+        bdi = TAG_BDI.BUFF
         break;
       case TAG_TYPE.IRREMOVABLE_BUFF:
         c.push(tget("強化"));
         c.push(tget("強化(解除不可)"));
-        irremovable = true;
+        bdi = TAG_BDI.IRREMOVABLE_BUFF;
         break;
       case TAG_TYPE.DEBUFF:
         c.push(tget("弱体"));
         c.push(tget("弱体(解除可)"));
+        bdi = TAG_BDI.DEBUFF
         break;
       case TAG_TYPE.IRREMOVABLE_DEBUFF:
         c.push(tget("弱体"));
         c.push(tget("弱体(解除不可)"));
-        irremovable = true;
+        bdi = TAG_BDI.IRREMOVABLE_DEBUFF
         break;
     }
-    tag = new Tag(i, v, c, s, targetType, target, variant, bonus, timing, link, irremovable);
+    tag = new Tag(i, v, c, s, targetType, target, variant, bonus, timing, link, bdi);
     result.push(tag);
     if(i && tag.reading){
       var o = orderData[tag.sortkey] || [];
