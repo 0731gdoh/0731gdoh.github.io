@@ -19,6 +19,8 @@
   --color-salv: #00f;
   --color-tooltip: #fff;
   --bgcolor-tooltip: #333e;
+  --bgcolor-buff: #225e;
+  --bgcolor-debuff: #422e;
 }
 [data-theme="0"].dark,
 [data-theme="2"] {
@@ -46,6 +48,8 @@
   --color-salv: #78d;
   --color-tooltip: #000;
   --bgcolor-tooltip: #aaae;
+  --bgcolor-buff: #99be;
+  --bgcolor-debuff: #a99e;
 }
 * {
   margin: 0;
@@ -463,12 +467,21 @@ caption {
   left: 50%;
   bottom: 100%;
   translate: -50% 0;
+  border: 1px solid var(--bgcolor-tooltip);
   border-radius: 0.3rem;
   padding: 0.3rem;
   color: var(--color-tooltip);
   background-color: var(--bgcolor-tooltip);
-  width: 110%;
+  width: 105%;
   white-space: pre-wrap;
   font-style: normal;
   font-weight: normal;
+}
+.buff:hover::after {
+  border-color: #00f;
+  background-color: var(--bgcolor-buff);
+}
+.debuff:hover::after {
+  border-color: #f00;
+  background-color: var(--bgcolor-debuff);
 }

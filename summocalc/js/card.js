@@ -119,11 +119,12 @@ Card.prototype = {
         var isSALV = x[1] & TIMING_FLAG.SALV;
         var isTmp = (x[1] & TIMING_FLAG.STATIC) && !(x[1] & TIMING_FLAG.NOT_TEMPORARY);
         var tooltip = t(tag.description);
+        var border = tag.bdi & 3;
         if(tag.timing) tooltip = t(TAG[tag.timing].name) + "\n" + (tooltip || t("追加スキル/Additional Skill"));
         if(tag.link){
           var nth = 0;
           tooltip = tooltip.replace(/\$/g, function(){
-            return t(TAG[tag.link[tag.link.length === 1 ? 0 : nth++]].name);
+            return t(TAG[tag.link.length ? tag.link[nth++] : tag.link].name);
           });
         }
         if(ex[ei].indexOf(tag.index) !== -1 || tag.type === TAG_TYPE.STATUS_GROUP || tag.type === TAG_TYPE.WEAPON_GROUP) return;
@@ -165,7 +166,7 @@ Card.prototype = {
               tm = n;
               return true;
             });
-            if(!tag.name.match(/^(?:特[攻防]|デメリット|武器種弱点|.+に貫通)/)) st[tm][1].push([name, isSALV, isTmp, tooltip]);
+            if(!tag.name.match(/^(?:特[攻防]|デメリット|武器種弱点|.+に貫通)/)) st[tm][1].push([name, isSALV, isTmp, tooltip, border]);
             return;
           }else if(tag.target && !tooltip){
             if(tag.bonus){
@@ -181,16 +182,16 @@ Card.prototype = {
               }
             }
           }
-          if(tag.irremovable){
+          if(tag.bdi & TAG_BDI.IRREMOVABLE){
             tooltip = (tooltip || name) + "\n\n" + t("解除不可/Irremovable");
           }
           bits(x[1] & TIMING_FLAG.ANY).forEach(function(n){
           
-            data[n][i + 1].push([name, isSALV, isTmp, tooltip]);
+            data[n][i + 1].push([name, isSALV, isTmp, tooltip, border]);
           });
         }else if(x[1] || i !== 5){
           if(i === 3 && tag.type !== TAG_TYPE.SKILL) i += 3;
-          st[i + 1][1].push([name, isSALV, isTmp, tooltip]);
+          st[i + 1][1].push([name, isSALV, isTmp, tooltip, border]);
         }
       });
     });
@@ -224,6 +225,7 @@ Card.prototype = {
             if(x[1]) div.classList.add("salv");
             if(x[2]) div.classList.add("temporary");
             div.dataset.tooltip = x[3] || x[0];
+            if(x[4]) div.classList.add(["", "buff", "debuff"][x[4]]);
             cell.appendChild(div);
           });
           if(d.length) hide = false;
