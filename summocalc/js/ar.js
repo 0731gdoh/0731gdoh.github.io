@@ -95,6 +95,7 @@ Record.prototype = {
       ["/D.Advantage from ", "に特防/"],
       ["/Nullify ", "無効/"]
     ];
+    if(this.csBoost) r.push(CS_PLUS[this.csBoost] + t("(+/ (+") + this.csBoost + ")");
     this.tag.forEach(function(x, i){
       var ex = [];
       var c = [];
