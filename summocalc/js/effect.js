@@ -669,7 +669,7 @@ var EFFECT = Effect.createList(
   ,[302, "<*劫火>大特攻/Big Advantage vs Conflagration", "こうかた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[303, "幻惑特攻[タンガロア∞]/Advantage vs Dazzle[Tangaroa∞]", "けんわくと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[304, "<*烙印>特攻[タンガロア∞]/Advantage vs Stigma[Tangaroa∞]", "らく", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,[305, "<*妨害>特攻/Advantage vs Obstruct", "ほうか", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[305, "<*妨害>特攻/Advantage vs Obstruct", "ほうかいと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[306, "幻惑時弱化/Dazzle Weakening", "けん", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[307, "支援効果[攻撃・防御]/Affiliation Effects[ATK%%DEF]", "", 0, 1.5, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.AFFILIATION]
   ,[308, "支援効果[攻撃・防御]/Affiliation Effects[ATK%%DEF]", "", 1, 0.95, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.AFFILIATION, ,-0.5]
@@ -686,7 +686,7 @@ var EFFECT = Effect.createList(
   ,[319, "脱力特攻/Advantage vs Drain", "たつ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[320, "暗闇特攻[アステリオス]/Advantage vs Darkness[Asterius]", "くらやみと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[321, "根性時強化[レイヴ]/Guts Strengthening[Leib]", "こんし", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
-  ,[322, "告死時弱化[ブギーマン]/Countdown Weakening[Boogeyman]", "こく", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
+  ,[322, "告死時弱化[ブギーマン]/Countdown Weakening[Boogeyman]", "こくししし", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[323, "<幻惑>時強化/Dazzle Strengthening", "けんわくし", 0, 4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[324, "閃き時強化[ヘカテー]/Glint Strengthening[Hecate]", "ひら", 1, 0.75, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[325, "注目時強化[シパクトリ]/Taunt Strengthening[Cipactli]", "ちゆうもくしき", 1, 0.75, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
@@ -809,6 +809,8 @@ var EFFECT = Effect.createList(
   ,[442, "CS変更：狙撃/Change CS: Snipe", "CS", 0, 0, 6, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,[443, "祝福時弱化[ジゾウ]/Blessing Weakening[Ksitigarbha]", "しゆくふくしし", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[444, "非弱体時強化[ウランバートル#1]/Non-Debuff Strengthening[Ulaanbaatar]", "ひしやくたいしき", 1, [1, 0.3], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
+  ,[445, "告死時強化[シノ]/Countdown Strengthening[Shino]", "こくししき", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
+  ,[446, "妨害時弱化/Obstruct Weakening", "ほうかいし", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
