@@ -59,15 +59,20 @@ function Card(index, id, name, variant, guilds, schools, teams, obtain, e, x){
   this.notag = !n;
 }
 Card.prototype = {
+  getName: function(){
+    if(this.name.indexOf("//") !== -1) return this.name.split("//")[1];
+    return this.name;
+  },
   toString: function(){
-    var name = t(this.name) + t("/ ");
-    if(!this.name) return "－";
-    if(name[0] === "(") name = t(this.name, 0) + name;
-    if(!this.growth.n) name = "× " + name;
-    if(this.notag) name = "※ " + name;
-    if(this.rarity < 3) return name + "(" + ATTRIBUTE[this.attribute] + ")";
-    if(this.variant) return name + "(" + t(this.variant).slice(0, -2) + ")";
-    return name + "☆" + this.rarity;
+    var name = this.getName();
+    var r = t(name) + t("/ ");
+    if(!name) return "－";
+    if(r[0] === "(") r = t(name, 0) + r;
+    if(!this.growth.n) r = "× " + r;
+    if(this.notag) r = "※ " + r;
+    if(this.rarity < 3) return r + "(" + ATTRIBUTE[this.attribute] + ")";
+    if(this.variant) return r + "(" + t(this.variant).slice(0, -2) + ")";
+    return r + "☆" + this.rarity;
   },
   getValue: function(lv, enemy){
     if(enemy) return this.growth.add(this.baseAtk, 98).mul((lv || 1) - 1, 1).add(this.baseAtk, 1).round();
@@ -83,160 +88,6 @@ Card.prototype = {
     if(x.guilds & guilds) return true;
     if(x.schools & this.schools) return true;
     return false;
-  },
-  writeTable: function(table){
-    var count = 0;
-    var header = [""];
-    var order = [27, 0, 1, 2, 19, 3, 4, 5, 6, 23, 26, 7, 8, 9, 10, 24, 11, 12, 13, 20, 14, 15, 25, 16, 17, 18, 21, 22];
-    var data = TIMING.map(function(x){
-      return [t(x.name), [], [], []];
-    });
-    var st = [
-      "移動時/When Moving",
-      "強制移動時/During Forced Move",
-      "アイテム入手時/When Obtaining Items",
-      "勝利時/Upon Victory",
-      "特攻/Attack Advantage",
-      "特防/Defense Advantage",
-      "状態異常時/When Under Status Effect",
-      "状態特攻/Status Advantage"
-    ].map(function(x){
-      return [t(x), [], [], []];
-    });
-    var nullify = function(name){
-      return t(name + "無効/Nullify " + name);
-    };
-    RANGE.forEach(function(x){
-      header.push(t(x.name));
-    });
-    this.tag.forEach(function(tags, ti){
-      var ex = [[], []];
-      tags.forEach(function(x){
-        var i = ti;
-        var tag = TAG[x[0] % TAG_MAX];
-        var name = t(tag.name);
-        var ei = x[0] > TAG_MAX ? 1 : 0;
-        var isSALV = x[1] & TIMING_FLAG.SALV;
-        var isTmp = (x[1] & TIMING_FLAG.STATIC) && !(x[1] & TIMING_FLAG.NOT_TEMPORARY);
-        var tooltip = t(tag.description);
-        var border = tag.bdi & 3;
-        if(tag.timing) tooltip = t(TAG[tag.timing].name) + "\n" + (tooltip || t("追加スキル/Additional Skill"));
-        if(tag.link){
-          var nth = 0;
-          tooltip = tooltip.replace(/\$/g, function(){
-            return t(TAG[tag.link.length ? tag.link[nth++] : tag.link].name);
-          });
-        }
-        if(ex[ei].indexOf(tag.index) !== -1 || tag.type === TAG_TYPE.STATUS_GROUP || tag.type === TAG_TYPE.WEAPON_GROUP) return;
-        if(i > 2){
-          if(i === 5 && tag.subset.length) ex[ei] = ex[ei].concat(tag.subset);
-          if(tag.variant.length) ex[ei] = ex[ei].concat(tag.variant);
-        }else if(tag.category.length){
-          ex[ei] = ex[ei].concat(tag.category.slice(1));
-          if(!tag.reading || tag.reading.indexOf(" ") !== -1) name = t(TAG[tag.category[0]].name);
-          ex[ei].push(tag.category[0]);
-        }
-        switch(i){
-          case 3:
-          case 4:
-            if(!x[2].length) return;
-            var bonus = "[" + x[2].map(function(b){
-              return TAG[b].description;
-            }).join("/") + "]";
-            if(tag.type === TAG_TYPE.SKILL && tag.subset.length){
-              var skills = tag.subset.map(function(sub){
-                return t(TAG[sub].name);
-              });
-              if(tag.name.indexOf("スキル") === -1) skills.unshift(name);
-              tooltip = skills.join("\n");
-            }
-            if(!tooltip) tooltip = name;
-            name += bonus;
-            if(x[0] > TAG_MAX && (x[1] & TIMING_FLAG.NOT_TEMPORARY)) i = 0;
-            break;
-          case 5:
-            name = nullify(name);
-            break;
-        }
-        if(i < 3){
-          if(tag.type === TAG_TYPE.STATIC){
-            var tm = 3;
-            ["移動力", "強制", "率"].some(function(w, n){
-              if(tag.name.indexOf(w) === -1) return false;
-              tm = n;
-              return true;
-            });
-            if(!tag.name.match(/^(?:特[攻防]|デメリット|武器種弱点|.+に貫通)/)) st[tm][1].push([name, isSALV, isTmp, tooltip, border]);
-            return;
-          }else if(tag.target && !tooltip){
-            if(tag.bonus){
-              tooltip = t(TAG[tag.bonus].name);
-            }else{
-              var target = TAG[tag.target];
-              if(target.subset.length){
-                tooltip = target.subset.map(function(sub){
-                  return nullify(t(TAG[sub].name));
-                }).join("\n");
-              }else{
-                tooltip = nullify(t(target.name));
-              }
-            }
-          }
-          if(tag.bdi & TAG_BDI.IRREMOVABLE){
-            tooltip = (tooltip || name) + "\n\n" + t("解除不可/Irremovable");
-          }
-          bits(x[1] & TIMING_FLAG.ANY).forEach(function(n){
-          
-            data[n][i + 1].push([name, isSALV, isTmp, tooltip, border]);
-          });
-        }else if(x[1] || i !== 5){
-          if(i === 3 && tag.type !== TAG_TYPE.SKILL) i += 3;
-          st[i + 1][1].push([name, isSALV, isTmp, tooltip, border]);
-        }
-      });
-    });
-    data = data.concat(st);
-    data.push(header);
-    if(!table.firstChild){
-      var caption = document.createElement("caption");
-      table.appendChild(caption);
-      data.forEach(function(row, ri){
-        var tr = document.createElement("tr");
-        row.forEach(function(d, ci){
-          var cell = document.createElement(ri && ci ? "td" : "th");
-          tr.appendChild(cell);
-        });
-        table.appendChild(tr);
-      });
-      table.className = "skilldata";
-    }
-    order.forEach(function(index, ri){
-      var row = data[index];
-      var hide = true;
-      var tr = table.rows[ri];
-      row.forEach(function(d, ci){
-        var cell = tr.cells[ci];
-        if(ri && ci){
-          while(cell.firstChild) cell.removeChild(cell.firstChild);
-          d.forEach(function(x){
-            var div = document.createElement("div");
-            div.textContent = x[0];
-            div.className = "tooltip";
-            if(x[1]) div.classList.add("salv");
-            if(x[2]) div.classList.add("temporary");
-            div.dataset.tooltip = x[3] || x[0];
-            if(x[4]) div.classList.add(["", "buff", "debuff"][x[4]]);
-            cell.appendChild(div);
-          });
-          if(d.length) hide = false;
-        }else{
-          cell.textContent = d;
-        }
-      });
-      tr.className = ri && hide ? "hide" : (count++ & 1) ? "odd" : "even";
-    });
-    table.caption.textContent = this;
-    return table;
   }
 };
 Card.createList = function(a){
@@ -264,7 +115,9 @@ Card.createList = function(a){
       if(v[6] > 2) table.set(t(name, 0), same);
       e = v[5];
     }else{
-      variant = v[0].slice(1);
+      var splitted = v[0].slice(1).split("/#");
+      variant = splitted[0];
+      if(splitted[1]) name += "//" + splitted[1];
       if(v[1]) guilds = splitGuildNames(v[1]);
       if(v[2]) schools = splitSchoolNames(v[2]);
       if(v[3]) teams = splitTeamNames(v[3]);
@@ -288,7 +141,7 @@ Card.csv = function(list, x){
       var r = [
         v.index,
         v.rarity,
-        t(v.name, x),
+        t(v.getName(), x),
         t(v.variant, x),
         v.limited ? "○" : "",
         t(ATTRIBUTE[v.attribute].name, x),
@@ -340,6 +193,7 @@ var CARD = Card.createList(
   [[0, "", "", "", "", 0, ["", "", ""], 0, 0, 0, 0, 0, 0]
   ,[11, "主人公/Protagonist/シュジンコウ/プレイヤー/Player", "サモナーズ", "神宿", "", OBTAIN_FLAG.MAIN, ["c弱体解除(単)/aクリティカル/pm弱体解除(単)/pmHP回復", "pa弱体解除(単)", "pa強化解除(単)"], 3, 1, 1, 1, 241, 5064]
   ,[12, "", "", "", "", OBTAIN_FLAG.MAIN, ["c弱体解除(単)/c全方向移動力増加/c&z移動力増加(全)/aクリティカル/pm弱体解除(単)/pmHP回復/射狙撃に特防[0.7]", "*", "pa強化解除(単)/pm引き寄せ(2マス)"], 4, 1, 1, 1, 500, 5000]
+  ,[13, "@16章25/Ch.1625/#フューチャーヒーロー/(Future Hero)", "", "", "", 0, ["cHP回復(%)/cクリティカル+/移動力増加(全)/a&pd弱体解除(単)/弱点に特攻[2.0]/j全方向移動力増加[解除不可]/z移動力増加(全+2)/p連撃/aCP増加/ba根性/pmクリティカル/j攻撃強化/j防御強化/emクリティカル++", "", "c引き寄せ(2マス)/c強化解除(全)/pm引き寄せ(1マス)/a強化解除(単)/a弱点"], 5, 12, 7, 7, 1378, 4286]
   ,[21, "シロウ/Shiro", "サモナーズ", "神宿", "", OBTAIN_FLAG.ALLY|OBTAIN_FLAG.MAIN, ["pa弱体解除(単)", "pm奮起/pa弱体解除(単)", "c恐怖/pa恐怖/a呪い"], 3, 6, 5, 5, 175, 5324]
   ,[22, "", "", "", "", 0, ["pCP増加/p恐怖耐性/恐怖に特攻[2.0]/pa弱体解除(単)", "p恐怖耐性/pa弱体解除(単)/nm根性", "c恐怖/pa恐怖/p恐怖時弱化[シロウ]/a呪い"], 4, 6, 5, 5, 370, 4627]
   ,[23, "@バレ17/Valentine17", "", "", "", 0, ["cHP回復/p暴走/p暴走+/pm&tHP回復/tCP増加/t滋養", "cHP回復/pm&tHP回復/tCP増加/t滋養/pm祝福", "a呪い"], 4, 2, 5, 5, 399, 3710]
@@ -412,7 +266,7 @@ var CARD = Card.createList(
   ,[233, "@聖夜20/Xmas20", "", "", "", 0, ["c熱情/c祝福/p祝福/p守護/a&bCP増加/j祝福時強化[チョウジ]/p弱体無効/祝福に特攻[1.5]", "aCP増加/j祝福時強化[チョウジ]/emクリティカル+/pdHP回復/b祝福", "a脱力/c祝福"], 4, 5, 4, 4, 558, 5770]
   ,[241, "ジュウゴ/Jugo", "未", "究段", "", 0, ["aクリティカル/pd闘志", "pdCP増加", "c火傷/pa&a崩し/pa&a吹き飛ばし(1マス)"], 3, 2, 3, 2, 200, 4996]
   ,[242, "", "", "", "", 0, ["*", "*", "*"], 4, 2, 2, 5, 405, 6100]
-  ,[243, "@川21/River21", "", "", "", 0, ["c呪いに特攻[2.5]/c烙印に特攻[2.5]/c告死に特攻[2.5]/pm弱体を複製(敵に)/j呪い時強化[ジュウゴ]/t呪い/pm弱体解除(全)/j烙印時強化/t烙印/j告死時強化/t告死/aクリティカル++/dHP回復/ba根性", "cCP増加", "pm弱体転写(全)/pm呪い/pm烙印/pm告死"], 4, 4, 4, 5, 437, 6081]
+  ,[243, "@川21/River21", "", "", "", 0, ["c呪いに特攻[2.5]/c烙印に特攻[2.5]/c告死に特攻[2.5]/pm弱体を複製(敵に)/j呪い時強化[ジュウゴ]/t呪い/pm弱体解除(全)/j烙印時強化/t烙印/j告死時強化[ジュウゴ]/t告死/aクリティカル++/dHP回復/ba根性", "cCP増加", "pm弱体転写(全)/pm呪い/pm烙印/pm告死"], 4, 4, 4, 5, 437, 6081]
   ,[251, "マガン/Macan", "バーサーカーズ", "武玄", "", 0, ["c闘志/pdCP増加/pm頑強/pm根性/p攻撃強化", "c闘志", ""], 3, 4, 3, 2, 198, 5798]
   ,[252, "", "", "", "", 0, ["c闘志/pd&pCP増加/pm頑強/p極限/pm根性/pm&pHP回復/j根性時強化[マガン]/j非根性時強化/p剛力", "*", ""], 5, 4, 2, 2, 805, 6195]
   ,[253, "", "", "", "", 0, ["c束縛/強制移動無効(全)/p不動/pHP回復/p根性/j弱体時強化[マガン]/t頑強/pdCP増加/p攻撃強化", "p根性", "c束縛"], 4, 2, 3, 8, 469, 5650]
@@ -485,7 +339,7 @@ var CARD = Card.createList(
   ,[502, "", "", "", "", 0, ["*", "*", ""], 4, 3, 5, 5, 402, 5297]
   ,[511, "ニャルラトテプ/Nyarlathotep", "ミッショネルズ/エンタティナーズ/無", "代神山", "", 0, ["pm頑強/pm極限/a回避/恐怖に特攻[1.5]", "", "c恐怖/cd幻惑/cd恐怖"], 3, 4, 3, 5, 201, 5595]
   ,[512, "", "", "", "", 0, ["pm頑強/pm極限/a回避/発狂に特攻[1.5]/恐怖に特攻[1.5]/emクリティカル+", "", "c恐怖/p確率発狂/id発狂/pm発狂時弱化[ニャルラトテプ☆4]/cd幻惑/a恐怖時弱化[ニャルラトテプ]/cd恐怖/cd強化反転"], 4, 4, 5, 5, 400, 5704]
-  ,[513, "@15章24/Ch.1524", "", "", "", 0, ["c発狂に特攻[2.0]/cターン開始時回避/c&t回避/pm連撃/pm武器種変更：魔法/baHP回復/p全方向移動力大増/z移動力増加(全+4)/p弱体後確率弱体解除/d弱体解除(単)/恐怖x/烙印x/a閃き/em発狂/z移動力減少(縦)/em発狂時強化", "cターン開始時回避/c&t回避/cHP回復/pm連撃/pm武器種変更：魔法/p弱体後確率弱体解除/id弱体解除(単)/em発狂/em発狂時強化", "pm連撃/cdCP減少/p&em発狂/pmダメージ時HP激減/idHP減少/pm発狂時弱化[限定ニャルラトテプ]/pターン開始時強化解除/et強化解除(単)"], 5, 1, 1, 1, 448, 4302]
+  ,[513, "@15章24/Ch.1524", "", "", "", 0, ["c発狂に特攻[2.0]/cターン開始時回避/c&t回避/pm連撃/pm武器種変更：魔法/baHP回復/p全方向移動力大増[+4]/z移動力増加(全+4)/p弱体後確率弱体解除/d弱体解除(単)/恐怖x/烙印x/a閃き/em発狂/z移動力減少(縦)/em発狂時強化", "cターン開始時回避/c&t回避/cHP回復/pm連撃/pm武器種変更：魔法/p弱体後確率弱体解除/id弱体解除(単)/em発狂/em発狂時強化", "pm連撃/cdCP減少/p&em発狂/pmダメージ時HP激減/idHP減少/pm発狂時弱化[限定ニャルラトテプ]/pターン開始時強化解除/et強化解除(単)"], 5, 1, 1, 1, 448, 4302]
   ,[521, "シュテン/Shuten", "未", "神宿", "", 0, ["pm加速/p剛力/pmクリティカル", "pm攻撃強化/pmCP増加/pm守護/pm頑強", "c呪い"], 3, 3, 3, 4, 201, 5796]
   ,[522, "", "", "", "", 0, ["pm加速/p剛力/継続ダメージを受ける状態(解除可能)に特攻[1.5]/bCP増加/pmクリティカル", "p剛力/pm熱情/pmクリティカル/pm攻撃強化/pmCP増加/pm守護/pm頑強", "c呪い/cd猛毒"], 4, 3, 2, 4, 399, 4802]
   ,[523, "@山18/Gendarme18", "", "", "", 0, ["c熱情/p奮起/アスリートに特攻[1.5]/p金剛/混乱に特攻[2.0]/強化反転に特攻[1.5]/t弱体解除(単)/p剛力", "c熱情/p奮起/pm攻撃強化/pmCP増加/pm守護/pm頑強", "p混乱/idHP減少/p強化反転"], 4, 5, 1, 7, 521, 5881]
@@ -568,7 +422,7 @@ var CARD = Card.createList(
   ,[732, "", "", "", "", -1, ["*", "*", "*"], 4, 2, 4, 4, 618, 4756]
   ,[733, "@聖夜19/Xmas19", "", "", "", 0, ["cx閃き/cx熱情/cx連撃/p&ba回避/p闘志/pmCP増加/pHP回復/移動力増加(縦)/pm奮起/祝福に特攻[1.4]/祝福に特攻[2.0]/j祝福時強化[シトリー]/j&a祝福/pm強化を複製", "j祝福時強化[シトリー]/j&pm祝福/pm強化転写(全)/pm強化を貼付(味方から)/pm&cx閃き/pm&cx熱情/pm&cx連撃/pm回避/pm闘志/pm奮起", "cd呪い/a祝福"], 4, 4, 2, 3, 464, 5660]
   ,[741, "ツァトグァ/Tsathoggua", "タイクーンズ", "六本城", "", 0, ["c不動/cHP回復/pd再生/pHP回復", "pCP増加", "a吹き飛ばし(3マス)/aCP減少"], 3, 3, 2, 4, 205, 6299]
-  ,[742, "", "", "", "", 0, ["c不動/cHP回復/チートと名の付くスキルに特攻[2.0]/pd再生/j全方向移動力大増/z移動力増加(全+4)/ba守護/pHP回復", "ba守護/pCP増加", "pa強化無効/a吹き飛ばし(3マス)/aCP減少"], 5, 3, 4, 4, 780, 6178]
+  ,[742, "", "", "", "", 0, ["c不動/cHP回復/チートと名の付くスキルに特攻[2.0]/pd再生/j全方向移動力大増[+4]/z移動力増加(全+4)/ba守護/pHP回復", "ba守護/pCP増加", "pa強化無効/a吹き飛ばし(3マス)/aCP減少"], 5, 3, 4, 4, 780, 6178]
   ,[743, "@渚19/Fashionista19", "", "", "", 0, ["cxHP回復/cx注目/強制移動無効(全)/p不動/pHP回復/t注目時強化[ツァトグァ]/pd再生/ma弱体解除(単)/ba頑強/t&maCP増加", "cxHP回復/p熱情/ba回避/pd再生/tCP増加/maHP回復", "t引き寄せ(1マス)/p魅了時弱化[ツァトグァ]/cd魅了"], 4, 5, 9, 8, 120, 1880]
   ,[751, "ホウゲン/Hogen", "未", "鬼王", "", 0, ["c回避/p根性/移動力増加(横)/pクリティカル+/斬撃に特防[0.7]", "c回避", "a束縛"], 3, 4, 1, 7, 263, 6221]
   ,[752, "", "", "", "", 0, ["*", "*", "*"], 4, 4, 1, 7, 488, 6547]
@@ -581,7 +435,7 @@ var CARD = Card.createList(
   ,[771, "ザオウ/Zao", "未", "神宿", "ワンゲル", OBTAIN_FLAG.SHOP|OBTAIN_FLAG.EVENT, ["c根性/cCP増加/p根性/pd闘志/pd&pCP増加/pd金剛/山に篭る者に特攻[1.5]", "c根性/cCP増加/pd闘志/pdCP増加/pd金剛", ""], 3, 4, 3, 4, 281, 6109]
   ,[772, "", "", "", "", -1, ["*", "*", ""], 4, 4, 2, 4, 470, 6451]
   ,[773, "@山18/Gendarme18", "", "", "", 0, ["c根性/cCP増加/p金剛/a滋養/根性に特攻[1.6]/山に篭る者に特攻[1.5]", "c根性/cCP増加/a根性/a滋養/p闘志", "pa強化解除(単)/pa強化無効"], 5, 4, 5, 5, 786, 4348]
-  ,[774, "@夏山24/Mountain24", "", "", "", 0, ["c横移動力増加/c&z移動力増加(横)/c根性/cクリティカル/射撃に特防[0.7]/j全方向移動力大増/z移動力増加(全+4)/pmCP増加/j剛力/p閃き/崩しx/pm根性時強化[ザオウ]/pm奮起", "c根性/j剛力/pm金剛/pm熱情/pm根性時強化[ザオウ]", "pm崩し"], 4, 3, 1, 7, 727, 6997]
+  ,[774, "@夏山24/Mountain24", "", "", "", 0, ["c横移動力増加/c&z移動力増加(横)/c根性/cクリティカル/射撃に特防[0.7]/j全方向移動力大増[+4]/z移動力増加(全+4)/pmCP増加/j剛力/p閃き/崩しx/pm根性時強化[ザオウ]/pm奮起", "c根性/j剛力/pm金剛/pm熱情/pm根性時強化[ザオウ]", "pm崩し"], 4, 3, 1, 7, 727, 6997]
   ,[781, "チェルノボーグ/Chernobog", "未", "神宿", "ワンゲル", 0, ["p根性/p守護/p弱体無効", "", "c告死/a凍結/a威圧/aCP減少/a呪い/aHP減少"], 3, 6, 3, 3, 296, 6715]
   ,[782, "", "", "", "", 0, ["p根性/p守護/p弱体無効/p凍結耐性/aCP増加/告死に特攻[1.5]", "p凍結耐性", "c告死/a&t凍結/p凍結時防御弱化/a威圧/aCP吸収/a呪い/aHP減少"], 5, 6, 1, 1, 960, 6275]
   ,[783, "@海家19/Beach19", "", "", "", 0, ["cクリティカル/p不動/b弱体無効/b聖油/a祝福/paCP増加", "cクリティカル/cHP回復/paHP回復/b聖油/pa熱情/a祝福/paCP増加", "a火傷/a凍結/aHP減少"], 5, 2, 6, 4, 840, 6280]
@@ -695,6 +549,7 @@ var CARD = Card.createList(
   ,[1091, "シノ/Shino", "アウトローズ", "？", "八犬士", 0, ["p根性/緑を育む者に特攻[1.5]/pm頑強/paHP回復", "p攻撃強化", "c呪い"], 3, 7, 1, 1, 263, 5346]
   ,[1092, "", "", "", "", 0, ["p根性/緑を育む者に特攻[1.5]/pm頑強/告死に特攻[4.0]/魅了x/paHP回復/paCP増加/斬撃に特防[0.7]", "*", "c告死/a告死"], 5, 7, 2, 2, 736, 5665]
   ,[1093, "@バレ19/Valentine19", "", "", "", 0, ["cクリティカル+/pm頑強/pm&paCP増加/pm極限/pa再生/paHP回復/斬撃に特防[0.7]/p根性", "pm頑強/a根性", ""], 5, 1, 4, 4, 810, 5290]
+  ,[1094, "@16章25/Ch.1625", "未", "", "", 0, ["c根性/cクリティカル+/c告死に特攻[2.0]/pm告死/pm告死時強化[シノ]/pa&tCP増加/t根性/移動不能になる状態x/b奮起/j全方向移動力大増[+2]/z移動力増加(全+2)", "pm祝福/j祝福時強化[シノ]/j闘志/b奮起/j祈り/j根性/em弱体解除(全)", "c告死"], 5, 12, 2, 8, 329, 3611]
   ,[1101, "ムサシ/Musashi", "ワイズメン/クラフターズ/無", "究段/？", "", 0, ["c金剛/cHP回復/pm連撃/弱点に特攻[1.5]/maCP増加/ma集中/p根性/pクリティカル+/斬撃に特防[0.7]", "c金剛/cHP回復", "pa弱点"], 3, 1, 1, 1, 285, 5830]
   ,[1102, "", "", "", "", 0, ["*", "*", "*"], 4, 1, 1, 7, 461, 6081]
   ,[1111, "アマツマラ/Amatsumara", "クラフターズ", "窯多", "", 0, ["pm集中/aクリティカル", "pa剛力", "c威圧/c吹き飛ばし(1マス)/pa吹き飛ばし(2マス)"], 3, 2, 3, 4, 230, 5642]
@@ -1286,4 +1141,8 @@ var CARD = Card.createList(
   ,[3127, "", "", "", "", -1, ["*", "*", "*"], 2, 7, 2, 2, 91, 7174]
   ,[3128, "", "", "", "", -1, ["*", "*", "*"], 2, 8, 2, 2, 91, 7174]
   ,[3129, "", "", "", "", -1, ["*", "*", "*"], 2, 9, 2, 2, 91, 7174]
+  ,[3131, "フーヴァー/(Hoover)", "エージェンツ", "？", "", 0, ["c回避/p&em弱体無効/p回避", "em弱体無効", "c妨害/cHP減少/a妨害/pa連撃/cdスキル封印/cd暗闇/cdHP減少"], 3, 11, 3, 4, 44, 1354]
+  ,[3132, "", "", "", "", 0, ["c回避/p&em弱体無効/ba守護/p回避/p閃き", "c回避/em弱体無効", "c妨害/cHP減少/p妨害時弱化/a妨害/pa連撃/p混乱/id&cdHP減少/cdスキル封印/cd暗闇"], 4, 11, 4, 4, 131, 1351]
+  ,[3141, "オニャンコポン/Onyankopon", "ルールメイカーズ", "東都", "", 0, ["c根性/cHP回復/j根性/pm係留/t閃き", "cHP回復/pmCS変更：全域/aHP回復(%)/ma根性/pm係留/maCP増加", "emCS変更：無/cd束縛/a照準/id照準解除"], 3, 9, 3, 2, 176, 6338]
+  ,[3142, "", "", "", "", 0, ["c根性/cHP回復/j根性/em守護/pm係留/maCP増加/t閃き/t集中", "cHP回復/cCP増加/j&ma根性/emCS変更：全域/aHP回復(%)/em守護/pm係留/maCP増加", "*"], 4, 9, 3, 5, 344, 6289]
 ]);

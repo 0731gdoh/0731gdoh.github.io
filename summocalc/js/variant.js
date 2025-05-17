@@ -102,6 +102,7 @@ var VARIANT = Variant.createList(
   ,["聖夜に変身！？マジカルスノーランド", "聖夜24/Xmas24"]
   ,"2025"
   ,["バレンタイン・アイドルライブ！", "バレ25/Valentine25"]
+  ,["本編第16章/Main Story Chapter 16", "16章25/Ch.1625"]
   ,"スロット/Slot"
   ,["[1枚目]/[1st Variant]", , 1]
   ,["[2枚目]/[2nd Variant]", , 2]
