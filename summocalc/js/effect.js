@@ -670,7 +670,7 @@ var EFFECT = Effect.createList(
   ,[303, "幻惑特攻[タンガロア∞]/Advantage vs Dazzle[Tangaroa∞]", "けんわくと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[304, "<*烙印>特攻[タンガロア∞]/Advantage vs Stigma[Tangaroa∞]", "らく", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[305, "<*妨害>特攻/Advantage vs Obstruct", "ほうかいと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,[306, "幻惑時弱化[キリト]/Dazzle Weakening[Kirito]", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
+  ,[306, "幻惑時弱化[キリト]/Dazzle Weakening[Kirito]", "けん", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[307, "支援効果[攻撃・防御]/Affiliation Effects[ATK%%DEF]", "", 0, 1.5, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.AFFILIATION]
   ,[308, "支援効果[攻撃・防御]/Affiliation Effects[ATK%%DEF]", "", 1, 0.95, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.AFFILIATION, ,-0.5]
   ,[309, "支援効果[ステータス]/Affiliation Effects[Basic Stats]", "", 0, 0.05, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.AFFILIATION, TYPE.ATK, 1.5]
