@@ -150,14 +150,16 @@ var OBTAIN = ListItem.createList(
 ]);
 
 var LIMITATION = ListItem.createList(
-  [["キャラ/Character"]
-  ,["ギルド/Guild"]
+  [["ギルド/Guild"]
   ,["学園/School"]
+  ,["その他/Other"]
+  ,["キャラ/Character"]
   ,["レア度/Rarity"]
   ,["属性/Attribute"]
   ,["武器/Weapon"]
   ,["制限なし/No Limit"]
 ]);
+LIMITATION.BR = [3, 7];
 
 var CS_PLUS = ListItem.createList(
   [["変更なし/No change"]
