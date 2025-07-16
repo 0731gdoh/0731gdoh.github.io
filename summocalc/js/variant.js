@@ -84,7 +84,7 @@ var VARIANT = Variant.createList(
   ,"2022"
   ,["バレンタイン・ファンタジー/Valentine Fantasy", "バレ22/Valentine22"]
   ,["本編第13章/Main Story Chapter 13", "13章22/Ch.1322"]
-  ,["サマープール・トワイライト", "プール22/Pool22"]
+  ,["サマープール・トワイライト/Summer Pool Twilight", "プール22/Pool22"]
   ,["アキバ・アンド・ドラゴンズ！", "浜辺22/Dynamis22"]
   ,["歌舞伎町ナイトフェスティバル", "夜祭22/NightFest22"]
   ,["聖夜に輝くギャングスター", "聖夜22/Xmas22"]
@@ -94,7 +94,7 @@ var VARIANT = Variant.createList(
   ,["マリンリゾート・クライシス！", "臨海23/Seaside23"]
   ,["オオエド・クリスマス", "聖夜23/Xmas23"]
   ,"2024"
-  ,["バレンタイン・クロスロード", "バレ24/Valentine24"]
+  ,["バレンタイン・クロスロード/Valentine's Crossroads", "バレ24/Valentine24"]
   ,["本編第15章/Main Story Chapter 15", "15章24/Ch.1524"]
   ,["ファビュラス・サマーホスト", "ホスト24/Host24"]
   ,["トップオブ・サマーマウンテンズ！", "夏山24/Mountain24"]
