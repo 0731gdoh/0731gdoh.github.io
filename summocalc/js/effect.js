@@ -813,6 +813,8 @@ var EFFECT = Effect.createList(
   ,[446, "妨害時弱化/Obstruct Weakening", "ほうかいし", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[447, "<幻惑>時弱化[チェルノボーグ]/Dazzle Weakening[Chernobog]", "けんわくしし", 0, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[448, "祝福特攻/Advantage vs Blessing", "しゆくふくと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_BUFF]
+  ,[449, "スキル封印時防御弱化/Skill Lock Weakened Defense", "すき", 1, 0, 2000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
+  ,[450, "滋養大特攻/Big Advantage vs Nourishment", "しようた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_BUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
