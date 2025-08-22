@@ -466,7 +466,7 @@ var TAG = Tag.createList(
   ,[201, "火傷時弱化[ジェド]/Burn Weakening[Ded]", "やけしし し", "被ダメx1.5\n[@$]/Take 1.5x\n[@$]/火傷", TAG_TYPE.IRREMOVABLE_DEBUFF, "火傷時弱化/防御減少系"]
   ,[202, "友情時強化/Friendship Strengthening", "ゆうしよ", "与ダメx1.5\n[@$]/Deal 1.5x\n[@$]/結縁：友", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,[203, "烙印/Stigma", "らく", "被ダメx1.15~2.3\nHP減少150~300/Take 1.15~2.3x\nDecrease HP 150~300", TAG_TYPE.DEBUFF, "防御減少系/HP減少系"]
-  ,[204, "連撃/Combo", "れん", "二回攻撃\n非CS時与ダメx0.6/Attack twice\nDeal 0.6x except CS", TAG_TYPE.BUFF, "攻撃増加系"]
+  ,[204, "連撃/Combo", "れん", "二回攻撃\n\n非CS時与ダメx0.6/Attack twice\nDeal 0.6x except CS", TAG_TYPE.BUFF, "攻撃増加系"]
   ,[205, "斬撃/Slash", "1", "", TAG_TYPE.WEAPON]
   ,[206, "突撃/Thrust", "2", "", TAG_TYPE.WEAPON]
   ,[207, "打撃/Blow", "3", "", TAG_TYPE.WEAPON]
@@ -1160,4 +1160,5 @@ var TAG = Tag.createList(
   ,[895, "スキル封印時防御弱化/Skill Lock Weakened Defense", "すきるふしほ", "被ダメ+2000\n[@$]/Take +2000\n[@$]/スキル封印", TAG_TYPE.IRREMOVABLE_DEBUFF, "被ダメージ追加系"]
   ,[896, "滋養大特攻/Big Advantage vs Nourishment", "しようた", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "滋養", "特攻[2.0]"]]
   ,[897, "外壁時強化/Outer Wall Strengthening", "かいへしき", "発動率+10%\n[@$]/Skill Rate +10%\n[@$]/外壁", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
+  ,[898, "ターン開始時クリティカル", "たあくり", "(HPが最大値の時)\n自身に$/(when HP is at max)\n$ on self/クリティカル", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]"]
 ]);
