@@ -817,14 +817,18 @@ var calc = {
             return t(TAG[tag.link.length ? tag.link[nth++] : tag.link].name);
           });
         }
-        if(ex[ei].indexOf(tag.index) !== -1 || tag.type === TAG_TYPE.STATUS_GROUP || tag.type === TAG_TYPE.WEAPON_GROUP) return;
+        if(tag.type === TAG_TYPE.STATUS_GROUP || tag.type === TAG_TYPE.WEAPON_GROUP) return;
         if(i > 2){
+          if(ex[ei].indexOf(tag.index) !== -1) return;
           if(i === 5 && tag.subset.length) ex[ei] = ex[ei].concat(tag.subset);
           if(tag.variant.length) ex[ei] = ex[ei].concat(tag.variant);
-        }else if(tag.category.length){
-          ex[ei] = ex[ei].concat(tag.category.slice(1));
-          if(!tag.reading || tag.reading.indexOf(" ") !== -1) name = t(TAG[tag.category[0]].name);
-          ex[ei].push(tag.category[0]);
+        }else{
+          if(ex[ei].indexOf(tag.index) !== -1 && x[3]) return;
+          if(tag.category.length){
+            ex[ei] = ex[ei].concat(tag.category.slice(1));
+            if(!tag.reading || tag.reading.indexOf(" ") !== -1) name = t(TAG[tag.category[0]].name);
+            ex[ei].push(tag.category[0]);
+          }
         }
         switch(i){
           case 3:

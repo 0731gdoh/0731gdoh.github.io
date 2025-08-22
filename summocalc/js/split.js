@@ -51,7 +51,7 @@ function generateTagData(s, flagNum, ar){
     t.setFlag(f, b);
   };
   var update = function(key, timing, bv){
-    var data = table.get(key)
+    var data = table.get(key);
     data[1] |= timing;
     if(bv){
       if(!data[2]){
@@ -138,12 +138,12 @@ function generateTagData(s, flagNum, ar){
             subtiming &= ~TIMING_FLAG.NOT_CS;
             subtiming |= TIMING_FLAG.STATIC;
           }
-          if(table.has(c + g)){
-            update(c + g, subtiming, bv);
+          if(table.has(c + g + TAG_MAX * 10)){
+            update(c + g + TAG_MAX * 10, subtiming, bv);
           }else{
-            var subdata = [c + g, subtiming, bonus];
+            var subdata = [c + g, subtiming, bonus, true];
             z.push(subdata);
-            if(!compound) table.set(c + g, subdata);
+            if(!compound) table.set(c + g + TAG_MAX * 10, subdata);
           }
           if(!skipSubFlag && !skipFlag) setFlag(TAG[c], subtiming);
         });

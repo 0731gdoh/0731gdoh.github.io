@@ -1,12 +1,11 @@
 "use strict";
 
 function gcd(n, m){
-  if(n > m){
+  while(n){
     var t = n;
-    n = m;
+    n = m % n;
     m = t;
   }
-  if(n) return gcd(m % n, n);
   return m;
 }
 
