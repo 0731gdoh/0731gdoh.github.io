@@ -17,6 +17,9 @@ const initTheme = () => {
   });
   document.addEventListener("DOMContentLoaded", createThemeSelector);
   window.addEventListener("storage", checkStorageUpdate);
+  window.addEventListener("pageshow", function(e){
+    if(e.persisted) checkStorageUpdate();
+  });
 };
 
 const createThemeSelector = () => {
@@ -63,10 +66,11 @@ const updateTheme = (e) => {
 };
 
 const checkStorageUpdate = (e) => {
-  if(e.key === "theme" || !e.key){
+  const newValue = (e ? e.newValue : localStorage.getItem("theme")) || 0;
+  if(!e || e.key === "theme" || !e.key){
     const select = document.getElementById("theme_select");
-    if(select) select.selectedIndex = e.newValue || 0;
-    document.documentElement.dataset.theme = e.newValue || 0;
+    if(select) select.selectedIndex = newValue;
+    document.documentElement.dataset.theme = newValue;
   }
 };
 
