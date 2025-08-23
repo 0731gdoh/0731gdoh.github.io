@@ -8,8 +8,10 @@ function _(id){
 function t(str, x){
   return str.indexOf("/") === -1 ? str : (str.split("/")[x === undefined ? language : x] || "").replace(/%%/g, "/");
 }
-function comma(n){
-  return ("" + n).replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+function separate(n){
+  return ("" + n).replace(/^-?\d+/, function(match){
+    return match.replace(/(\d)(?=(\d{3})+$)/g, "$1,");
+  });
 }
 function bits(n){
   var a = [];
@@ -444,11 +446,15 @@ function initTheme(){
     }
   });
   window.addEventListener("storage", checkStorageUpdate);
+  window.addEventListener("pageshow", function(e){
+    if(e.persisted) checkStorageUpdate();
+  });
 }
 function checkStorageUpdate(e){
-  if(e.key === "theme" || !e.key){
-    _("dm").selectedIndex = e.newValue || 0;
-    document.documentElement.dataset.theme = e.newValue || 0;
+  var newValue = (e ? e.newValue : getStorageItem("theme")) || 0;
+  if(!e || e.key === "theme" || !e.key){
+    _("dm").selectedIndex = newValue;
+    document.documentElement.dataset.theme = newValue;
   }
 }
 initTheme();

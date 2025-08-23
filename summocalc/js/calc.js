@@ -65,6 +65,7 @@ var calc = {
   arLv: 1,
   multiplier: 0,
   skilltable: 0,
+  separator: getStorageItem("separator") === "1",
   active: 1,
   defaultHash: "",
   savedata: [],
@@ -106,10 +107,16 @@ var calc = {
       setText("rx", "+" + r2n(AR[c.ar].arRarity));
     });
     linkInput(c, "arLv", "rl");
+    linkInput(c, "separator", "ts", function(){
+      setStorageItem("separator", c.separator ? "1" : "0");
+    });
     this.updateSaveMenu();
-    window.onstorage = function(){
+    window.addEventListener("storage", function(){
       c.updateSaveMenu();
-    };
+    });
+    window.addEventListener("pageshow", function(e){
+      if(e.persisted) c.updateSaveMenu();
+    });
     _("svd").onclick = function(){
       c.saveToStorage();
     };
@@ -655,6 +662,7 @@ var calc = {
       ["lel", "効果Lv/Effect Lv"],
       ["lal", "毎回尋ねる/Ask Each Time"],
       ["lam", "属性相性/Attribute"],
+      ["lts", "3桁区切り/Thousands Separator"],
       ["cc", "コピー/Copy"],
       ["sr", "結果を共有/Share Result" ],
       ["su", "URLを共有/Share URL"],
@@ -945,6 +953,7 @@ var calc = {
     var card = CARD[this.card];
     var ar = AR[this.ar];
     var multiplier = this.multiplier;
+    var separator = this.separator ? separate : function(x){return x};
     var desc = [];
     var params = [];
     var result = [
@@ -970,7 +979,7 @@ var calc = {
       var stef = [];
       exatk = ar.getValue(this.arLv);
       cs += ar.csBoost;
-      if(exatk > 0) stef.push("ATK+" + exatk);
+      if(exatk > 0) stef.push("ATK+" + separator(exatk));
       if(ar.csBoost > 0) stef.push(t("CS威力" + ["増加/I", "大増/Greatly i"][ar.csBoost - 1] + "ncrease CS Damage"));
       if(ar.csWeapon){
         if(this.usecs) weapon = ar.csWeapon;
@@ -1066,7 +1075,7 @@ var calc = {
           //極限
           if(e.type === TYPE.LIMIT){
             x = x.mul(2 * ep.maxHp - ep.hp, ep.maxHp);
-            label.push("[HP:" + ep.hp + "/" + ep.maxHp + "]");
+            label.push("[HP:" + separator(ep.hp) + "/" + separator(ep.maxHp) + "]");
           }
           //カスタム
           if(e.type === TYPE.CUSTOM) x = ep.getCustomMul();
@@ -1131,13 +1140,13 @@ var calc = {
             default:
               x = x.round();
               exdmg += x;
-              desc.push(t("ダメージ/Damage") + (x < 0 ? "" : "+") + x);
+              desc.push(t("ダメージ/Damage") + (x < 0 ? "" : "+") + separator(x));
               break;
 
             case TYPE.SEED:
             case TYPE.ATK:
               exatk = exatk.add(x);
-              desc.push("ATK" + (x < 0 ? "" : "+") + x);
+              desc.push("ATK" + (x < 0 ? "" : "+") + separator(x));
               break;
 
             case TYPE.WEAPON:
@@ -1166,12 +1175,12 @@ var calc = {
     }
     atk = exatk.add(atk, 1);
     desc = [];
-    if(exatk.n) desc.push((exatk < 0 ? "" : "+") + exatk);
+    if(exatk.n) desc.push((exatk < 0 ? "" : "+") + separator(exatk));
     atkbonus.forEach(function(x){
       atk = x.add(1, 1).mul(atk);
       desc.push("+" + x.mul(100, 1) + "%");
     });
-    result[5] += atk;
+    result[5] += separator(atk);
     if(desc.length) result[5] += " (" + desc.join(", ") + ")";
     result[6] += WEAPON[weapon];
     result.push(t("【ダメージ】/【Damage】"));
@@ -1199,7 +1208,7 @@ var calc = {
       if(!multiplier || i === multiplier){
         x = Math.ceil(Math.max(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg, 0));
         if(i === 3 || multiplier) this.setTitle(x);
-        result.push("　[" + attr + "]: " + x);
+        result.push("　[" + attr + "]: " + separator(x));
       }
     }
     result.push(LINE);
