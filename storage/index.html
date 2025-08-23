@@ -50,6 +50,8 @@ const getStorageDescription = (key) => {
       return "サイトのテーマ設定";
     case "offline":
       return "ダメージ計算機のオフライン対応モード";
+    case "separator":
+      return "ダメージ計算機の桁区切り設定";
     default:
       if(/slot\d/.test(key)){
         return getSlotDescription(key);
