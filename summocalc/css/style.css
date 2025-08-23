@@ -144,6 +144,11 @@ textarea {
   font-family: "Courier", monospace;
   white-space: pre;
 }
+#op{
+  line-height: normal;
+  text-align: right;
+  margin-bottom: 0.8rem;
+}
 #rs,
 #cc,
 #sr,
