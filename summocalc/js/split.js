@@ -134,16 +134,18 @@ function generateTagData(s, flagNum, ar){
         }
         ex.forEach(function(c){
           var subtiming = timing;
+          var subkeyadd = (flagNum < 3) ? TAG_MAX * 10 : 0;
           if(TAG[c].type === TAG_TYPE.STATIC){
             subtiming &= ~TIMING_FLAG.NOT_CS;
             subtiming |= TIMING_FLAG.STATIC;
           }
-          if(table.has(c + g + TAG_MAX * 10)){
-            update(c + g + TAG_MAX * 10, subtiming, bv);
+          if(table.has(c + g + subkeyadd)){
+            update(c + g + subkeyadd, subtiming, bv);
           }else{
-            var subdata = [c + g, subtiming, bonus, true];
+            var subdata = [c + g, subtiming, bonus];
+            if(flagNum < 3) subdata.push(true);
             z.push(subdata);
-            if(!compound) table.set(c + g + TAG_MAX * 10, subdata);
+            if(!compound) table.set(c + g + subkeyadd, subdata);
           }
           if(!skipSubFlag && !skipFlag) setFlag(TAG[c], subtiming);
         });
