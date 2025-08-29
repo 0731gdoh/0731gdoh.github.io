@@ -815,6 +815,10 @@ var EFFECT = Effect.createList(
   ,[448, "祝福特攻/Advantage vs Blessing", "しゆくふくと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_BUFF]
   ,[449, "スキル封印時防御弱化/Skill Lock Weakened Defense", "すき", 1, 0, 2000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[450, "滋養大特攻/Big Advantage vs Nourishment", "しようた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_BUFF]
+  ,[451, "混乱特攻/Advantage vs Confusion", "こんら", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
+  ,[452, "<暴走+>時強化[ヴァプラ]/Berserk+ Strengthening[Vapula]", "ほうそ+", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[453, "束縛大特攻/Big Advantage vs Bind", "そくはくた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
+  ,[454, "全域特防[AR]/Reduce All damage[AR]", "せんいきと", 1, 0.7, WEAPON_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]

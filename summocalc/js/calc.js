@@ -65,7 +65,7 @@ var calc = {
   arLv: 1,
   multiplier: 0,
   skilltable: 0,
-  separator: getStorageItem("separator") === "1",
+  separator: 0,
   active: 1,
   defaultHash: "",
   savedata: [],
@@ -107,6 +107,7 @@ var calc = {
       setText("rx", "+" + r2n(AR[c.ar].arRarity));
     });
     linkInput(c, "arLv", "rl");
+    this.separator = getStorageItem("separator") === "1";
     linkInput(c, "separator", "ts", function(){
       setStorageItem("separator", c.separator ? "1" : "0");
     });
