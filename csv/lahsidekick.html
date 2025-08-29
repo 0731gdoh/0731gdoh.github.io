@@ -11,69 +11,13 @@
 "use strict";
 
 window.addEventListener("load", () => {
-  const f = (a, b) => "DCBAS".indexOf(a[0]) - "DCBAS".indexOf(b[0]);
-  csvViewer("loading", "lahsidekick.csv", "", [undefined, undefined, undefined, f, f, f, f, undefined]);
+  const bonus = ["EXP", "ラフ", "リレ", "PQ", "証"];
+  const rc = (a, b) => "DCBAS".indexOf(a[0]) - "DCBAS".indexOf(b[0]);
+  const bc = (a, b) => bonus.indexOf(a) - bonus.indexOf(b);
+  csvViewer("loading", "lahsidekick.csv", "", [undefined, undefined, undefined, rc, rc, rc, rc, bc]);
 });
 </script>
 <script src="js/csvviewer.js"></script>
-<style>
-#corr thead {
-  background-color: #fe04;
-}
-#corr td {
-  min-width: 4rem;
-}
-#corr .odd {
-  background-color: #ff84;
-}
-</style>
 <title>LAH サイドキック</title>
-<table id=corr>
-  <thead>
-    <tr>
-      <th>
-      <th>HP
-      <th>Atk
-      <th>Spd
-      <th>View
-      <th>Score
-  <tbody>
-    <tr>
-      <th>S
-      <td>100
-      <td>50
-      <td>5
-      <td>100
-      <td>+5
-    <tr class=odd>
-      <th>A
-      <td>85
-      <td>42
-      <td>4
-      <td>85
-      <td>+4
-    <tr>
-      <th>B
-      <td>70
-      <td>34
-      <td>3
-      <td>70
-      <td>+3
-    <tr class=odd>
-      <th>C
-      <td>55
-      <td>26
-      <td>2
-      <td>55
-      <td>+2
-    <tr>
-      <th>D
-      <td>40
-      <td>18
-      <td>1
-      <td>40
-      <td>+1
-</table>
-<hr>
 <p id=loading>Now loading...</p>
 <p><a href="/">戻る</a></p>
