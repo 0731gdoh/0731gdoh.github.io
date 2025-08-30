@@ -108,6 +108,9 @@
 .零 {
   color: fuchsia;
 }
+.神 {
+  color: #3cc;
+}
 #b {
   width: 15rem;
   height: 3rem;
@@ -122,7 +125,7 @@
 const attributeTable = [
   ["火", "水", "木", "天", "冥"],
   ["魔", "英雄", "世界"],
-  ["全", "無限", "零"]
+  ["全", "無限", "零", "神"]
 ];
 const weaponTable = [
   ["斬撃", "突撃", "打撃", "射撃", "魔法"],
@@ -176,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <title>属性・武器種ガチャ</title>
 <div id=c>
   <input type=button value="回す" id=b>
-  <input type=checkbox id=r><label for=r>確定枠</label>
+  <input type=checkbox id=r checked><label for=r>確定枠</label>
   <div id=o></div>
   <div id=n></div>
 </div>
