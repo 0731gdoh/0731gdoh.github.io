@@ -239,6 +239,7 @@ Thumbnail.prototype = {
   toString: function(){
     var name = t(this.name) || "－";
     if(name[0] === "(") name = t(this.name, 0) + name;
+    if(this.value && Thumbnail.secret) name = "[" + this.value + "] " + name;
     return name;
   },
   getValue: function(){
@@ -265,7 +266,7 @@ Thumbnail.createList = function(m, a){
   set("");
   CARD.table.forEach(function(v, k){
     var x = CARD[v[0]].name;
-    if(x.indexOf("&") !== -1) x = x.split("/").map(function(s){
+    if(x.indexOf("&") !== -1) x = x.replace(/ (and|&) /, "&").split("/").map(function(s){
       return s.split("&")[0] + (s[0] === "(" ? ")" : "");
     }).join("/");
     set(x);

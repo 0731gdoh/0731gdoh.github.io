@@ -1524,6 +1524,11 @@ var calc = {
       var order = [0];
       var active = this.active;
       this.active = 0;
+      Thumbnail.secret = false;
+      if(s[0] === "#"){
+        Thumbnail.secret = true;
+        s = s.slice(1);
+      }
       THUMBNAIL.forEach(function(x){
         if(x.value && (!s || x.name.toLowerCase().indexOf(s) !== -1)) order.push(x.index);
       });
