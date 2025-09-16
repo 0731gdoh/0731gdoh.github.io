@@ -24,6 +24,7 @@
   --bgcolor-buff: #225e;
   --border-debuff: #f00;
   --bgcolor-debuff: #422e;
+  --color-form: #17e;
 }
 [data-theme="0"].dark,
 [data-theme="2"] {
@@ -56,6 +57,7 @@
   --bgcolor-buff: #99be;
   --border-debuff: #b00;
   --bgcolor-debuff: #b99e;
+  --color-form: #08f;
 }
 * {
   margin: 0;
@@ -103,6 +105,10 @@ label,
 .cp {
   margin: 0.3rem;
 }
+input[type="button"] {
+  padding: revert;
+  color: var(--color-form);
+}
 * + input[type="button"] {
   margin-left: 0.5rem;
 }
@@ -113,11 +119,12 @@ select {
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
-  padding: 0.2rem;
+  padding: revert;
   margin-left: 0.2rem;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  color: var(--color-form);
 }
 input[type="text"] {
   padding: 0.2rem;
