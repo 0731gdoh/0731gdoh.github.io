@@ -107,6 +107,8 @@ label,
 }
 input[type="button"] {
   padding: revert;
+}
+input[type="button"]:enabled {
   color: var(--color-form);
 }
 * + input[type="button"] {
@@ -124,6 +126,8 @@ select {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+select:enabled {
   color: var(--color-form);
 }
 input[type="text"] {

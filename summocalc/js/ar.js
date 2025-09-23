@@ -238,7 +238,7 @@ function Thumbnail(index, name){
 Thumbnail.prototype = {
   toString: function(){
     var name = t(this.name) || "－";
-    if(name[0] === "(") name = t(this.name, 0) + name;
+    if(name[0] === "[") name = t(this.name, 0) + name;
     if(this.value && Thumbnail.secret) name = "[" + this.value + "] " + name;
     return name;
   },
@@ -267,7 +267,7 @@ Thumbnail.createList = function(m, a){
   CARD.table.forEach(function(v, k){
     var x = CARD[v[0]].name;
     if(x.indexOf("&") !== -1) x = x.replace(/ (and|&) /, "&").split("/").map(function(s){
-      return s.split("&")[0] + (s[0] === "(" ? ")" : "");
+      return s.split("&")[0] + (s[0] === "[" ? "]" : "");
     }).join("/");
     set(x);
     if(ex.has(k)) set(ex.get(k));
