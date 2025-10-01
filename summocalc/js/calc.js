@@ -287,7 +287,7 @@ var calc = {
     var card = CARD[this.card];
     var ar = AR[this.ar];
     s.write(card.id);
-    if(card.canEquip(ar)){
+    if(card.canEquip(ar, true)){
       s.write(ar.id);
     }else{
       s.write(AR[0].id);
@@ -757,7 +757,7 @@ var calc = {
     });
     order.push(0);
     order = order.concat(card.effects[0], card.effects[2]);
-    if(card.canEquip(ar)) ar.effects.forEach(function(x){
+    if(card.canEquip(ar, true)) ar.effects.forEach(function(x){
       order.push(EFFECT_MAX * 2 + x);
     });
     order = order.concat(EFFECT.LOCALE_ORDER[language]);
