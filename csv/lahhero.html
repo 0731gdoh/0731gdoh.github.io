@@ -15,7 +15,7 @@ window.addEventListener("load", () => {
   const role = ["攻撃", "防御", "補助", "弱体化", "Spd操作", "View獲得", "回復", "特殊"];
   const office = ["??", "MA", "SH", "AK", "IH", "GA", "GE", "CB", "GF", "GD", "NP", "PF", "HL", "HE", "BC", "LS", "UE", "JD", "NO"];
   const c = new Intl.Collator(undefined, {numeric: true}).compare;
-  const r = (s) => s.replace(/^(.+)の(.+)$/, "$2$1");
+  const r = (s) => s.replace(/^(.+)の(.+)$/, "$2v");
   const u = (s) => s.replace(/^.+\|/, "");
   const cc = (a, b) => c(r(a), r(b));
   const ac = (a, b) => attr.indexOf(a) - attr.indexOf(b);
