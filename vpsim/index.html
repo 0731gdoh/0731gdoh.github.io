@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LAH VPシミュレータ（β）">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#400">
+<link rel=stylesheet href="/theme/theme.css">
+<script src="/theme/theme.js"></script>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  font-family: "Courier", monospace;
+  font-size: small;
+  box-sizing: border-box;
+}
+fieldset {
+  margin: 1rem;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+.itemblock {
+  margin: 0.2rem;
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  background-color: #8884;
+}
+.titlebar {
+  display: flex;
+  padding: 0.2rem;
+  padding-left: 0.8rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background-color: #6663;
+  justify-content: space-between;
+  align-items: center;
+}
+.itemblock:first-of-type .upbutton {
+  visibility: hidden;
+}
+.content {
+  padding: 0.5rem;
+}
+input[type="number"] {
+  padding: revert;
+  margin: 0 0.5rem;
+  text-align: right;
+  width: 5rem;
+}
+input[list]::-webkit-list-button {
+  order: -1;
+}
+input[type="number"].lv {
+  width: 3rem;
+}
+input[type="button"] {
+  padding: revert;
+}
+.plusbutton {
+  height: 2.2rem;
+  width: 2.2rem;
+  border-radius: 1.1rem;
+}
+input[type="checkbox"] {
+  margin: 0 0.4rem;
+}
+button {
+  appearance: none;
+  margin: 0 0.4rem;
+  border: none;
+  background-color: transparent;
+  font-size: medium;
+}
+.hidecolor input[type="color"] {
+  width: 0;
+  height: 0;
+  appearance: none;
+}
+.colorlabel {
+  margin-right: 1rem;
+}
+label {
+  display: inline-block;
+}
+hr {
+  margin: 0.5rem 0.2rem;
+}
+.grid {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr;
+  gap: 0.4rem;
+}
+.grid label {
+  align-items: center;
+}
+.grid label.number {
+  display: grid;
+  grid-template-columns: subgrid;
+  gap: 0;
+  grid-column: 1 / 3;
+}
+.grid label.checkbox {
+  grid-column: 3 / 5;
+}
+.header {
+  margin-top: 0.3rem;
+  padding: 0.2rem;
+}
+.footer {
+  text-align: right;
+  padding: 0.3rem;
+  margin-bottom: 0.4rem;
+}
+output {
+  margin: 0.5rem;
+}
+.footer output {
+  font-size: medium;
+}
+.disabled span {
+  opacity: 0.5;
+}
+p {
+  margin: 2.5rem 1rem;
+}
+datalist {
+  display: none;
+}
+</style>
+<script>
+"use strict";
+
+const checkColorPicker = () => {
+  const color = document.createElement("input");
+  color.type = "color";
+  color.value = "invalid";
+  return color.type === "color" && color.value !== "invalid";
+};
+
+const randomColor = () => {
+  const r = () => (0x120 + Math.floor(Math.random() * 0x80)).toString(16).slice(1);
+  return `#${r()}${r()}${r()}`;
+};
+
+const count = (s) => {
+  return [...new Intl.Segmenter().segment(s)].length;
+};
+
+class Unit {
+  constructor(name){
+    this.name = name;
+    this.params = new Map([
+      ["View", 1500],
+      ["SK View", 350],
+      ["SKを使用", true],
+      ["ファン数", 1000],
+      ["ファン数を使用", false],
+      ["刻印", 0],
+      ["color", ""],
+      ["モクダイLv.", 100],
+      ["モクダイ装備", false],
+      ["コウキLv.", 100],
+      ["コウキ装備", false],
+      ["ナリヒトLv.", 100],
+      ["ボレアリスLv.", 100],
+      ["ボレアリス装備", false],
+      ["ダンゾーLv.", 100],
+      ["ダンゾー装備", false],
+      ["メリデLv.", 100],
+      ["メリデ装備", false],
+      ["ヨハックLv.", 100],
+      ["ヨハック装備", false],
+      ["ヤスヒコLv.", 100],
+    ]);
+  }
+  static maxValue = new Map([
+    ["View", 9999],
+    ["SK View", 500],
+    ["ファン数", 1000],
+    ["刻印", 100],
+  ]);
+  static suggests = new Map([
+    ["SK View", [500, 425, 350, 275, 200]],
+  ]);
+}
+
+class Action {
+  constructor(unit){
+    this.unit = unit;
+    this.name = unit ? unit.name : "";
+    this.params = new Map([
+      ["View", unit ? -1 : 1500],
+      ["注目", false],
+      ["発破/発破+", 0],
+      ["ナリヒト装備", unit ? false : undefined],
+      ["color", unit ? unit.params.get("color") : ""],
+      ["消費VP", 0],
+      ["刻印を適用", unit ? false : undefined],
+      ["消費減少", 0],
+      ["覚醒", false],
+      ["消費増加", 0],
+      ["過消費", false],
+      ["最終コスト", -1],
+      ["VP獲得", 0],
+      ["協奏", false],
+      ["ヤスヒコ装備", unit ? false : undefined],
+      ["COMBO", 0],
+      ["COMBO継続", true],
+      ["COMBO加算", 1],
+    ]);
+  }
+  static maxValue = new Map([
+    ["View", 9999],
+    ["発破/発破+", 1000],
+    ["消費VP", 99999],
+    ["消費減少", 99999],
+    ["消費増加", 99999],
+    ["VP獲得", 99999],
+    ["COMBO", 99],
+    ["COMBO加算", 9],
+  ]);
+  static suggests = new Map([
+    ["発破/発破+", [1000, 500]],
+    ["消費減少", [3000, 2000, 1500, 1250, 1000, 500]],
+  ]);
+}
+
+class BaseManager {
+  constructor(id, item){
+    const fieldset = document.getElementById(id);
+    const button = document.createElement("input");
+    this.container = document.createElement("div");
+    this.Item = item;
+    this.data = [];
+    button.type = "button";
+    button.value = "＋";
+    button.className = "plusbutton";
+    button.addEventListener("click", this.createAddButtonHandler());
+    fieldset.appendChild(this.container);
+    fieldset.appendChild(button);
+    fieldset.addEventListener("focusin", this.createFocusinHandler());
+    fieldset.addEventListener("focusout", this.createFocusoutHandler());
+    this.datalist = new Map();
+    if(item.suggests){
+      let index = 0;
+      for(const [key, value] of item.suggests){
+        const id = `${this.constructor.name}-${index++}`;
+        this.appendDatalist(fieldset, id, value);
+        this.datalist.set(key, id);
+      }
+    }
+  }
+  createAddButtonHandler(){
+    return () => {
+      this.addItem();
+    };
+  }
+  createFocusoutHandler(){
+    return (e) => {
+      const elem = e.target;
+      if(["number", "text"].includes(elem.type) && elem.list){
+        if(!elem.value) elem.value = elem.dataset.backup;
+        delete elem.dataset.backup;
+      }
+    };
+  }
+  createFocusinHandler(){
+    return (e) => {
+      const elem = e.target;
+      if(["number", "text"].includes(elem.type)){
+        if(elem.list){
+          elem.dataset.backup = elem.value;
+          elem.value = "";
+        }else{
+          setTimeout(function(){
+            try{
+              elem.setSelectionRange(0, elem.value.length);
+            }catch(e){
+              elem.select();
+            }
+          }, 0);
+        }
+      }
+    };
+  }
+  appendDatalist(parent, id, list){
+    const datalist = document.createElement("datalist");
+    datalist.id = id;
+    for(const value of list){
+      const option = document.createElement("option");
+      option.textContent = value;
+      datalist.appendChild(option);
+    }
+    parent.appendChild(datalist);
+  }
+  addItem(...args){
+    const item = new this.Item(...args);
+    this.data.push(item);
+    this.appendElement(item);
+    this.update("add", item);
+  }
+  removeItem(item){
+    const index = this.data.indexOf(item);
+    if(index === -1) return;
+    this.data.splice(index, 1);
+    this.container.children[index].remove();
+    this.update("remove", item);
+  }
+  moveItem(item){
+    const b = this.data.indexOf(item);
+    const a = b - 1;
+    if(a >= 0){
+      const children = this.container.children;
+      [this.data[a], this.data[b]] = [this.data[b], this.data[a]];
+      this.container.insertBefore(children[b], children[a]);
+      this.update("move");
+    }
+  }
+  setParams(item, key, value){
+    item.params.set(key, value);
+    this.update("set", item);
+  }
+  appendElement(item){
+    const div = document.createElement("div");
+    const bar = document.createElement("div");
+    const left = document.createElement("output");
+    const right = document.createElement("div");
+    const header = this.createHeader(item);
+    const footer = this.createFooter(item);
+    let initialColor = item.params.get("color");
+    if(!initialColor){
+      const color = document.createElement("input");
+      const label = document.createElement("label");
+      initialColor = randomColor();
+      color.type = "color";
+      color.value = initialColor;
+      color.addEventListener("change", this.createColorChangeHandler(div, item));
+      label.className = "colorlabel";
+      label.textContent = "🌈";
+      label.appendChild(color);
+      right.appendChild(label);
+      item.params.set("color", initialColor);
+    }
+    div.style.backgroundColor = initialColor + "40";
+    div.className = "itemblock";
+    bar.className = "titlebar";
+    this.appendButton(right, "🔼", this.createMoveItemHandler(item)).className = "upbutton";
+    this.appendButton(right, "❌", this.createRemoveItemHandler(item));
+    if(item.name) left.value = item.name;
+    bar.appendChild(left);
+    bar.appendChild(right);
+    div.appendChild(bar);
+    if(header){
+      header.className = "header";
+      div.appendChild(header);
+      this.appendHR(div);
+    }
+    this.container.appendChild(div);
+    this.appendContent(div, item);
+    if(footer){
+      this.appendHR(div);
+      footer.className = "footer";
+      div.appendChild(footer);
+    }
+  }
+  createColorChangeHandler(div, item){
+    return (e) => {
+      const color = e.target.value;
+      div.style.backgroundColor = color + "40";
+      this.setParams(item, "color", color);
+    };
+  }
+  createMoveItemHandler(item){
+    return () => {
+      this.moveItem(item);
+    };
+  }
+  createRemoveItemHandler(item){
+    return () => {
+      this.removeItem(item);
+    };
+  }
+  appendButton(parent, label, onclick){
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", onclick);
+    parent.appendChild(button);
+    return button;
+  }
+  appendContent(parent, item){
+    const content = document.createElement("div");
+    const gridA = document.createElement("div");
+    const gridB = document.createElement("div");
+    let current = gridA;
+    gridA.className = "grid";
+    gridB.className = "grid";
+    content.className = "content";
+    content.appendChild(gridA);
+    this.appendHR(content);
+    content.appendChild(gridB);
+    parent.appendChild(content);
+    for(const [key, value] of item.params){
+      if(key === "color"){
+        current = gridB;
+      }else{
+        this.appendInput(current, item, key, value);
+      }
+    }
+  }
+  appendHR(parent){
+    parent.appendChild(document.createElement("hr"));
+  }
+  appendInput(parent, item, key, value){
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    const text = document.createElement("span");
+    const list = this.datalist.get(key);
+    text.textContent = key;
+    label.appendChild(input);
+    switch(typeof value){
+      case "number":
+        if(0 > value){
+          value = 0;
+          input.disabled = true;
+          label.classList.add("disabled");
+        }
+        label.insertBefore(text, input);
+        label.classList.add("number");
+        input.type = "number";
+        input.value = value;
+        input.min = 0;
+        if(key.endsWith("Lv.")){
+          input.max = 100;
+          input.classList.add("lv");
+        }else{
+          input.max = this.Item.maxValue.get(key);
+        }
+        input.addEventListener("change", this.createNumberChangeHandler(item, key));
+        break;
+      case "undefined":
+        value = false;
+        input.disabled = true;
+        label.classList.add("disabled");
+      case "boolean":
+        label.appendChild(text);
+        label.classList.add("checkbox");
+        input.type = "checkbox";
+        input.checked = value;
+        input.addEventListener("change", this.createCheckboxChangeHandler(item, key));
+        break;
+    }
+    parent.appendChild(label);
+    if(list) input.setAttribute("list", list);
+  }
+  createNumberChangeHandler(item, key){
+    return (e) => {
+      const value = Math.min(e.target.max, Math.max(0, e.target.value | 0));
+      e.target.value = value;
+      this.setParams(item, key, value);
+    };
+  }
+  createCheckboxChangeHandler(item, key){
+    return (e) => {
+      this.setParams(item, key, e.target.checked);
+    };
+  }
+  createHeader(){
+
+  }
+  createFooter(){
+
+  }
+  update(type, item){
+
+  }
+}
+
+class UnitManager extends BaseManager{
+  constructor(id, timeline){
+    super(id, Unit);
+    this.names = new Set();
+    this.timeline = timeline;
+  }
+  askName(){
+    let name = "";
+    let length = -1;
+    while(0 > length){
+      name = prompt("名前を入力してください（10文字以内）", name);
+      length = count(name);
+      if(this.names.has(name)){
+        alert(`ERROR: ${name}は既に存在しています`);
+        length = -1;
+      }else if(length > 10){
+        alert(`ERROR: 文字数オーバーです（${length}）`);
+        length = -1;
+      }
+    }
+    this.names.add(name);
+    return name;
+  }
+  addItem(){
+    const name = this.askName();
+    if(name) super.addItem(name);
+  }
+  removeItem(item){
+    this.names.delete(item.name);
+    super.removeItem(item);
+  }
+  createFooter(item){
+    const footer = document.createElement("div");
+    const button = document.createElement("input");
+    button.type = "button";
+    button.value = "タイムラインに追加";
+    button.addEventListener("click", this.createAddTimelineButtonHandler(item));
+    footer.appendChild(button);
+    return footer;
+  }
+  createAddTimelineButtonHandler(item){
+    return () => {
+      this.timeline.addItem(item);
+    };
+  }
+  update(type, item){
+    switch(type){
+      case "add":
+      case "move":
+        break;
+      case "remove":
+      case "set":
+        this.timeline.update(`${type}-unit`, item);
+    }
+  }
+}
+
+class TimelineManager extends BaseManager{
+  constructor(id){
+    super(id, Action);
+    this.insertInitialVP();
+    this.initialVP = 1;
+  }
+  insertInitialVP(){
+    const div = document.createElement("div");
+    const content = document.createElement("div");
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    content.appendChild(label);
+    label.textContent = "ViewPower";
+    input.type = "number";
+    input.min = 1;
+    input.max = 999999;
+    input.value = 1;
+    input.addEventListener("change", this.createInitialVPHandler());
+    label.appendChild(input);
+    div.className = "itemblock";
+    content.className = "content";
+    div.appendChild(content);
+    this.container.parentNode.insertBefore(div, this.container);
+  }
+  createInitialVPHandler(){
+    return (e) => {
+      const value = Math.min(e.target.max, Math.max(0, e.target.value | 0));
+      e.target.value = value;
+      this.initialVP = value;
+      this.update();
+    };
+  }
+  createHeader(){
+    const header = document.createElement("div");
+    const output = document.createElement("output");
+    output.textContent = "ViewPower 0";
+    header.appendChild(output);
+    return header;
+  }
+  createFooter(){
+    const footer = document.createElement("div");
+    const output = document.createElement("output");
+    output.textContent = "ViewPower 0";
+    footer.appendChild(output);
+    return footer;
+  }
+  calc(item, currentVP, comboCount, block){
+    const get = (key) => {
+      let value;
+      if(item.unit) value = item.unit.params.get(key);
+      return value || item.params.get(key) || 0;
+    };
+    const equip = (key) => {
+      let value
+      if(!get(key + "装備")) return 0;
+      value = Math.floor(get(key + "Lv.") / 10);
+      return 5 > value ? 0 : value;
+    };
+    let view = get("View");
+    let gain = get("VP獲得");
+    let combo = this.combo(comboCount);
+    let cost = get("消費VP");
+    const viewUp = 100 + equip("モクダイ") + equip("コウキ") + equip("ナリヒト") * 2;
+    const gainUp = 100 + equip("ボレアリス") + equip("ダンゾー");
+    const meride = equip("メリデ") * 25;
+    const yohack = equip("ヨハック") * 30;
+    const yasuhiko = equip("ヤスヒコ") * 40;
+    const color = get("color");
+    const comboInput = block.querySelectorAll(`input[type="number"]`)[7];
+    if(get("COMBO継続")){
+      comboInput.value = comboCount;
+      item.params.set("COMBO", comboCount);
+      comboInput.disabled = true;
+      comboInput.parentNode.classList.add("disabled");
+    }else{
+      comboCount = get("COMBO");
+      comboInput.disabled = false;
+      comboInput.parentNode.classList.remove("disabled");
+    }
+    block.style.backgroundColor = color + "40";
+    if(get("SKを使用")) view += get("SK View");
+    view = Math.floor(view * viewUp / 100);
+    if(get("注目")) view = Math.floor(view * 15 / 10);
+    if(get("ファン数を使用")) view += get("ファン数");
+    view += get("発破/発破+");
+    block.querySelector("input").value = view;
+    if(0 > currentVP){
+      block.querySelector(".header output").value = "\u2937 VPが足りません";
+    }else{
+      if(meride) currentVP += Math.floor(view * combo * meride / 10000);
+      block.querySelector(".header output").value = `\u2937 ViewPower ${currentVP}`;
+    }
+    if(get("刻印を適用")){
+      const lv = get("刻印");
+      cost = Math.floor(cost * (1000 - lv * 2) / 1000);
+    }
+    if(get("過消費")) cost *= 2;
+    if(get("覚醒")) cost = Math.floor(cost / 2);
+    cost = Math.max(0, cost + get("消費増加") - get("消費減少"));
+    block.querySelectorAll(`input[type="number"]`)[5].value = cost;
+    if(cost > currentVP){
+      block.querySelector(".footer output").value = "\u2937 VPが足りません";
+      return -1;
+    }
+    currentVP -= cost;
+    gain = Math.floor(gain * gainUp / 100);
+    if(get("協奏")) gain = Math.floor(gain * 15 / 10);
+    currentVP += Math.floor(gain * combo / 10);
+    currentVP += Math.floor(view * combo / 10);
+    comboCount += get("COMBO加算");
+    combo = this.combo(comboCount);
+    if(yohack) currentVP += Math.floor(Math.floor(view * yohack / 1000) * combo / 10);
+    if(yasuhiko) currentVP += Math.floor(Math.floor(view * yasuhiko / 1000) * combo / 10);
+    block.querySelector(".footer output").value = `\u2937 ViewPower ${currentVP}`;
+    return [currentVP, comboCount]
+  }
+  combo(n){
+    if(!n) return 10;
+    return Math.min(15, n + 9);
+  }
+  update(type, item){
+    const block = this.container.querySelectorAll(".itemblock");
+    let vp = this.initialVP;
+    let cc = 0;
+    let n = 0;
+    for(const data of this.data){
+      if(type === "remove-unit" && data.unit === item){
+        data.unit = -1;
+        block[n].style.opacity = 0.4;
+        block[n].querySelector(".titlebar output").value = "削除済";
+        block[n].querySelector(".header output").value = block[n].querySelector(".footer output").value = "\u2937 ViewPower -";
+      }else if(data.unit !== -1){
+        [vp, cc] = this.calc(data, vp, cc, block[n]);
+      }
+      n++;
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const tm = new TimelineManager("timeline");
+  const um = new UnitManager("unit", tm);
+  if(checkColorPicker()) document.documentElement.classList.add("hidecolor");
+});
+</script>
+<title>LAH VPシミュレータ（β）</title>
+<form>
+  <fieldset id=unit>
+    <legend>キャラ</legend>
+  </fieldset>
+  <fieldset id=timeline>
+    <legend>タイムライン</legend>
+  </fieldset>
+</form>
+<p>
+  <a href="/">戻る</a>
+</p>
