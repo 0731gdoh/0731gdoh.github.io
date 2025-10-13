@@ -110,6 +110,11 @@ hr {
   padding: 0.3rem;
   margin-bottom: 0.4rem;
 }
+#timeline .footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 output {
   margin: 0.5rem;
 }
@@ -185,28 +190,34 @@ class Unit {
 
 class Action {
   constructor(unit){
-    this.unit = unit;
-    this.name = unit ? unit.name : "";
-    this.params = new Map([
-      ["View", unit ? -1 : 1500],
-      ["注目", false],
-      ["発破/発破+", 0],
-      ["ナリヒト装備", unit ? false : undefined],
-      ["color", unit ? unit.params.get("color") : ""],
-      ["消費VP", 0],
-      ["刻印を適用", unit ? false : undefined],
-      ["消費減少", 0],
-      ["覚醒", false],
-      ["消費増加", 0],
-      ["過消費", false],
-      ["最終コスト", -1],
-      ["VP獲得", 0],
-      ["協奏", false],
-      ["ヤスヒコ装備", unit ? false : undefined],
-      ["COMBO", 0],
-      ["COMBO継続", true],
-      ["COMBO加算", 1],
-    ]);
+    if(unit instanceof Action){
+      this.unit = unit.unit;
+      this.name = unit.name;
+      this.params = new Map(unit.params);
+    }else{
+      this.unit = unit;
+      this.name = unit ? unit.name : "";
+      this.params = new Map([
+        ["View", unit ? -1 : 1500],
+        ["注目", false],
+        ["発破/発破+", 0],
+        ["ナリヒト装備", unit ? false : undefined],
+        ["color", unit ? unit.params.get("color") : ""],
+        ["消費VP", 0],
+        ["刻印を適用", unit ? false : undefined],
+        ["消費減少", 0],
+        ["覚醒", false],
+        ["消費増加", 0],
+        ["過消費", false],
+        ["最終コスト", -1],
+        ["VP獲得", 0],
+        ["協奏", false],
+        ["ヤスヒコ装備", unit ? false : undefined],
+        ["COMBO", 0],
+        ["COMBO継続", true],
+        ["COMBO加算", 1],
+      ]);
+    }
   }
   static maxValue = new Map([
     ["View", 9999],
@@ -297,6 +308,7 @@ class BaseManager {
     this.data.push(item);
     this.appendElement(item);
     this.update("add", item);
+    return item;
   }
   removeItem(item){
     const index = this.data.indexOf(item);
@@ -304,6 +316,7 @@ class BaseManager {
     this.data.splice(index, 1);
     this.container.children[index].remove();
     this.update("remove", item);
+    return item;
   }
   moveItem(item){
     const b = this.data.indexOf(item);
@@ -480,6 +493,29 @@ class UnitManager extends BaseManager{
     super(id, Unit);
     this.names = new Set();
     this.timeline = timeline;
+    this.insertConfigPanel();
+    this.autoadd = true;
+  }
+  insertConfigPanel(){
+    const div = document.createElement("div");
+    const content = document.createElement("div");
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    content.appendChild(label);
+    input.type = "checkbox";
+    input.checked = true;
+    input.addEventListener("change", this.createConfigPanelHandler());
+    label.appendChild(input);
+    label.appendChild(document.createTextNode("キャラ作成時にタイムラインに自動追加"));
+    div.className = "itemblock";
+    content.className = "content";
+    div.appendChild(content);
+    this.container.parentNode.insertBefore(div, this.container);
+  }
+  createConfigPanelHandler(){
+    return (e) => {
+      this.autoadd = e.target.checked;
+    };
   }
   askName(){
     let name = "";
@@ -500,7 +536,10 @@ class UnitManager extends BaseManager{
   }
   addItem(){
     const name = this.askName();
-    if(name) super.addItem(name);
+    if(name){
+      const item = super.addItem(name);
+      if(this.autoadd) this.timeline.addItem(item);
+    }
   }
   removeItem(item){
     this.names.delete(item.name);
@@ -571,12 +610,24 @@ class TimelineManager extends BaseManager{
     header.appendChild(output);
     return header;
   }
-  createFooter(){
+  createFooter(item){
     const footer = document.createElement("div");
+    const div = document.createElement("div");
+    const button = document.createElement("input");
     const output = document.createElement("output");
+    button.type = "button";
+    button.value = "複製";
+    button.addEventListener("click", this.createCloneButtonHandler(item));
     output.textContent = "ViewPower 0";
+    div.appendChild(button);
+    footer.appendChild(div);
     footer.appendChild(output);
     return footer;
+  }
+  createCloneButtonHandler(item){
+    return () => {
+      this.addItem(item);
+    };
   }
   calc(item, currentVP, comboCount, block){
     const get = (key) => {
@@ -634,7 +685,7 @@ class TimelineManager extends BaseManager{
     block.querySelectorAll(`input[type="number"]`)[5].value = cost;
     if(cost > currentVP){
       block.querySelector(".footer output").value = "\u2937 VPが足りません";
-      return -1;
+      return [-1, 0];
     }
     currentVP -= cost;
     gain = Math.floor(gain * gainUp / 100);
