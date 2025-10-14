@@ -19,7 +19,7 @@ fieldset {
   padding: 0.5rem;
   border-radius: 0.5rem;
 }
-.itemblock {
+.panel {
   margin: 0.2rem;
   border: 1px solid black;
   border-radius: 0.5rem;
@@ -34,7 +34,7 @@ fieldset {
   justify-content: space-between;
   align-items: center;
 }
-.itemblock:first-of-type .upbutton {
+.panel:first-of-type .upbutton {
   visibility: hidden;
 }
 .content {
@@ -98,6 +98,9 @@ hr {
   gap: 0;
   grid-column: 1 / 3;
 }
+#timeline .grid label.number {
+  grid-column: span 2;
+}
 .grid label.checkbox {
   grid-column: 3 / 5;
 }
@@ -138,6 +141,22 @@ datalist {
 .hide label.combo,
 .hide label.combo + label {
   display: revert;
+}
+.expand input {
+  display: none;
+}
+.expand .plus,
+.expand input:checked ~ .minus {
+  display: none;
+}
+.expand .minus,
+.expand input:checked ~ .plus {
+  display: block;
+  font-size: medium;
+  font-weight: bold;
+}
+.titlebar:has(input:checked) ~ :is(.header, .content, hr) {
+  display: none;
 }
 </style>
 <script>
@@ -220,6 +239,7 @@ class Action {
         ["消費増加", 0],
         ["過消費", false],
         ["最終コスト", -1],
+        ["消費後VP", -1],
         ["VP獲得", 0],
         ["協奏", false],
         ["ヤスヒコ装備", unit ? false : undefined],
@@ -256,8 +276,8 @@ class BaseManager {
     button.value = "＋";
     button.className = "plusbutton";
     button.addEventListener("click", this.createAddButtonHandler());
-    fieldset.appendChild(this.container);
-    fieldset.appendChild(button);
+    fieldset.append(this.container);
+    fieldset.append(button);
     fieldset.addEventListener("focusin", this.createFocusinHandler());
     fieldset.addEventListener("focusout", this.createFocusoutHandler());
     this.datalist = new Map();
@@ -269,6 +289,8 @@ class BaseManager {
         this.datalist.set(key, id);
       }
     }
+    this.insertAutoCollapse();
+    this.autoCollapse = true;
   }
   createAddButtonHandler(){
     return () => {
@@ -303,20 +325,38 @@ class BaseManager {
       }
     };
   }
+  insertAutoCollapse(){
+    const content = document.createElement("div");
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    content.append(label);
+    input.type = "checkbox";
+    input.checked = true;
+    input.addEventListener("change", this.createAutoCollapseHandler());
+    label.append(input);
+    label.append(document.createTextNode("追加時に他を折りたたむ"));
+    this.insertPanel(content);
+  }
+  createAutoCollapseHandler(){
+    return (e) => {
+      this.autoCollapse = e.target.checked;
+    };
+  }
   appendDatalist(parent, id, list){
     const datalist = document.createElement("datalist");
     datalist.id = id;
     for(const value of list){
       const option = document.createElement("option");
       option.textContent = value;
-      datalist.appendChild(option);
+      datalist.append(option);
     }
-    parent.appendChild(datalist);
+    parent.append(datalist);
   }
   addItem(...args){
     const item = new this.Item(...args);
     this.data.push(item);
-    this.appendElement(item);
+    if(this.autoCollapse) this.collapseAll();
+    this.appendPanel(item);
     this.update("add", item);
     return item;
   }
@@ -334,7 +374,7 @@ class BaseManager {
     if(a >= 0){
       const children = this.container.children;
       [this.data[a], this.data[b]] = [this.data[b], this.data[a]];
-      this.container.insertBefore(children[b], children[a]);
+      children[b].after(children[a]);
       this.update("move");
     }
   }
@@ -342,47 +382,71 @@ class BaseManager {
     item.params.set(key, value);
     this.update("set", item);
   }
-  appendElement(item){
+  insertPanel(content){
+    const div = document.createElement("div");
+    div.className = "panel";
+    content.className = "content";
+    div.append(content);
+    this.container.before(div);
+  }
+  appendPanel(item){
     const div = document.createElement("div");
     const bar = document.createElement("div");
-    const left = document.createElement("output");
+    
+    const left = document.createElement("div");
     const right = document.createElement("div");
+    const label = document.createElement("label");
+    const plus = document.createElement("div");
+    const minus = document.createElement("div");
+    const checkbox = document.createElement("input");
+    const title = document.createElement("output");
     const header = this.createHeader(item);
     const footer = this.createFooter(item);
     let initialColor = item.params.get("color");
     if(!initialColor){
       const color = document.createElement("input");
-      const label = document.createElement("label");
+      const rainbow = document.createElement("label");
       initialColor = randomColor();
       color.type = "color";
       color.value = initialColor;
       color.addEventListener("change", this.createColorChangeHandler(div, item));
-      label.className = "colorlabel";
-      label.textContent = "🌈";
-      label.appendChild(color);
-      right.appendChild(label);
+      rainbow.className = "colorlabel";
+      rainbow.textContent = "🌈";
+      rainbow.append(color);
+      right.append(rainbow);
       item.params.set("color", initialColor);
     }
     div.style.backgroundColor = initialColor + "40";
-    div.className = "itemblock";
+    div.className = "panel";
     bar.className = "titlebar";
     this.appendButton(right, "🔼", this.createMoveItemHandler(item)).className = "upbutton";
     this.appendButton(right, "❌", this.createRemoveItemHandler(item));
-    if(item.name) left.value = item.name;
-    bar.appendChild(left);
-    bar.appendChild(right);
-    div.appendChild(bar);
+    if(item.name) title.value = item.name;
+    checkbox.type = "checkbox"
+    plus.textContent = "[+]";
+    minus.textContent = "[-]";
+    plus.className = "plus";
+    minus.className = "minus";
+    label.className = "expand";
+    label.append(checkbox);
+    label.append(plus);
+    label.append(minus);
+    left.append(label);
+    left.append(title);
+    bar.append(left);
+    bar.append(right);
+    div.append(bar);
     if(header){
       header.className = "header";
-      div.appendChild(header);
+      div.append(header);
       this.appendHR(div);
     }
-    this.container.appendChild(div);
+    this.container.append(div);
     this.appendContent(div, item);
     if(footer){
       this.appendHR(div);
       footer.className = "footer";
-      div.appendChild(footer);
+      div.append(footer);
     }
   }
   createColorChangeHandler(div, item){
@@ -407,7 +471,7 @@ class BaseManager {
     button.type = "button";
     button.textContent = label;
     button.addEventListener("click", onclick);
-    parent.appendChild(button);
+    parent.append(button);
     return button;
   }
   appendContent(parent, item){
@@ -418,10 +482,10 @@ class BaseManager {
     gridA.className = "grid";
     gridB.className = "grid";
     content.className = "content";
-    content.appendChild(gridA);
+    content.append(gridA);
     this.appendHR(content);
-    content.appendChild(gridB);
-    parent.appendChild(content);
+    content.append(gridB);
+    parent.append(content);
     for(const [key, value] of item.params){
       if(key === "color"){
         current = gridB;
@@ -431,26 +495,24 @@ class BaseManager {
     }
   }
   appendHR(parent){
-    parent.appendChild(document.createElement("hr"));
+    parent.append(document.createElement("hr"));
   }
-  getAdditionalClassName(key){
-    return "";
-  }
+  static classNameTable = new Map();
   appendInput(parent, item, key, value){
     const label = document.createElement("label");
     const input = document.createElement("input");
     const text = document.createElement("span");
     const list = this.datalist.get(key);
-    const className = this.getAdditionalClassName(key);
+    const className = this.constructor.classNameTable.get(key);
     text.textContent = key;
-    label.appendChild(input);
+    label.append(input);
     switch(typeof value){
       case "number":
         if(0 > value){
           value = 0;
           input.disabled = true;
         }
-        label.insertBefore(text, input);
+        label.prepend(text);
         label.classList.add("number");
         input.type = "number";
         input.value = value;
@@ -467,7 +529,7 @@ class BaseManager {
         value = false;
         input.disabled = true;
       case "boolean":
-        label.appendChild(text);
+        label.append(text);
         label.classList.add("checkbox");
         input.type = "checkbox";
         input.checked = value;
@@ -475,7 +537,7 @@ class BaseManager {
         break;
     }
     if(className) label.classList.add(className);
-    parent.appendChild(label);
+    parent.append(label);
     if(list) input.setAttribute("list", list);
   }
   createNumberChangeHandler(item, key){
@@ -499,6 +561,9 @@ class BaseManager {
   update(type, item){
 
   }
+  collapseAll(){
+    for(const checkbox of this.container.querySelectorAll(".expand input")) checkbox.checked = true;
+  }
 }
 
 class UnitManager extends BaseManager{
@@ -507,27 +572,23 @@ class UnitManager extends BaseManager{
     this.names = new Set();
     this.timeline = timeline;
     this.insertConfigPanel();
-    this.autoadd = true;
+    this.autoAdd = true;
   }
   insertConfigPanel(){
-    const div = document.createElement("div");
     const content = document.createElement("div");
     const label = document.createElement("label");
     const input = document.createElement("input");
-    content.appendChild(label);
+    content.append(label);
     input.type = "checkbox";
     input.checked = true;
     input.addEventListener("change", this.createConfigPanelHandler());
-    label.appendChild(input);
-    label.appendChild(document.createTextNode("キャラ作成時にタイムラインに自動追加"));
-    div.className = "itemblock";
-    content.className = "content";
-    div.appendChild(content);
-    this.container.parentNode.insertBefore(div, this.container);
+    label.append(input);
+    label.append(document.createTextNode("タイムラインに自動追加"));
+    this.insertPanel(content);
   }
   createConfigPanelHandler(){
     return (e) => {
-      this.autoadd = e.target.checked;
+      this.autoAdd = e.target.checked;
     };
   }
   askName(){
@@ -551,7 +612,7 @@ class UnitManager extends BaseManager{
     const name = this.askName();
     if(name){
       const item = super.addItem(name);
-      if(this.autoadd) this.timeline.addItem(item);
+      if(this.autoAdd) this.timeline.addItem(item);
     }
   }
   removeItem(item){
@@ -564,7 +625,7 @@ class UnitManager extends BaseManager{
     button.type = "button";
     button.value = "タイムラインに追加";
     button.addEventListener("click", this.createAddTimelineButtonHandler(item));
-    footer.appendChild(button);
+    footer.append(button);
     return footer;
   }
   createAddTimelineButtonHandler(item){
@@ -591,22 +652,18 @@ class TimelineManager extends BaseManager{
     this.initialVP = 1;
   }
   insertInitialVP(){
-    const div = document.createElement("div");
     const content = document.createElement("div");
     const label = document.createElement("label");
     const input = document.createElement("input");
-    content.appendChild(label);
+    content.append(label);
     label.textContent = "ViewPower";
     input.type = "number";
     input.min = 1;
     input.max = 999999;
     input.value = 1;
     input.addEventListener("change", this.createInitialVPHandler());
-    label.appendChild(input);
-    div.className = "itemblock";
-    content.className = "content";
-    div.appendChild(content);
-    this.container.parentNode.insertBefore(div, this.container);
+    label.append(input);
+    this.insertPanel(content);
   }
   createInitialVPHandler(){
     return (e) => {
@@ -620,7 +677,7 @@ class TimelineManager extends BaseManager{
     const header = document.createElement("div");
     const output = document.createElement("output");
     output.textContent = "ViewPower 0";
-    header.appendChild(output);
+    header.append(output);
     return header;
   }
   createFooter(item){
@@ -632,9 +689,9 @@ class TimelineManager extends BaseManager{
     button.value = "複製";
     button.addEventListener("click", this.createCloneButtonHandler(item));
     output.textContent = "ViewPower 0";
-    div.appendChild(button);
-    footer.appendChild(div);
-    footer.appendChild(output);
+    div.append(button);
+    footer.append(div);
+    footer.append(output);
     return footer;
   }
   createCloneButtonHandler(item){
@@ -642,10 +699,11 @@ class TimelineManager extends BaseManager{
       this.addItem(item);
     };
   }
-  getAdditionalClassName(key){
-    if(key === "COMBO") return "combo";
-    return "";
-  }
+  static classNameTable = new Map([
+    ["COMBO", "combo"],
+    ["最終コスト", "cost"],
+    ["消費後VP", "spend"],
+  ]);
   calc(item, currentVP, comboCount, block){
     const get = (key) => {
       let value;
@@ -704,12 +762,13 @@ class TimelineManager extends BaseManager{
     if(get("過消費")) cost *= 2;
     if(get("覚醒")) cost = Math.floor(cost / 2);
     cost = Math.max(0, cost + get("消費増加") - get("消費減少"));
-    block.querySelectorAll(`input[type="number"]`)[5].value = cost;
+    block.querySelector(".cost input").value = cost;
     if(cost > currentVP){
       block.querySelector(".footer output").value = "\u2937 VPが足りません";
       return [-1, 0];
     }
     currentVP -= cost;
+    block.querySelector(".spend input").value = currentVP;
     gain = Math.floor(gain * gainUp / 100);
     if(get("協奏")) gain = Math.floor(gain * 15 / 10);
     currentVP += Math.floor(gain * combo / 10);
@@ -726,7 +785,7 @@ class TimelineManager extends BaseManager{
     return Math.min(15, n + 9);
   }
   update(type, item){
-    const block = this.container.querySelectorAll(".itemblock");
+    const block = this.container.querySelectorAll(".panel");
     let vp = this.initialVP;
     let cc = 0;
     let n = 0;
