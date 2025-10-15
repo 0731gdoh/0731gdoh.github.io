@@ -55,7 +55,7 @@ input[type="number"].lv {
 input[type="button"] {
   padding: revert;
 }
-.plusbutton {
+.appendpanel input {
   height: 2.2rem;
   width: 2.2rem;
   border-radius: 1.1rem;
@@ -125,7 +125,8 @@ output {
   font-size: medium;
 }
 span:has(+ input:disabled),
-input:disabled + span {
+input:disabled + span,
+.deleted output {
   opacity: 0.5;
 }
 p {
@@ -158,6 +159,9 @@ datalist {
 .titlebar:has(input:checked) ~ :is(.header, .content, hr) {
   display: none;
 }
+.max {
+  color: var(--color-highlight);
+}
 </style>
 <script>
 "use strict";
@@ -178,33 +182,67 @@ const count = (s) => {
   return [...new Intl.Segmenter().segment(s)].length;
 };
 
-class Unit {
-  constructor(name){
-    this.name = name;
-    this.params = new Map([
-      ["View", 1500],
-      ["SK View", 350],
-      ["SKを使用", true],
-      ["ファン数", 1000],
-      ["ファン数を使用", false],
-      ["刻印", 0],
-      ["color", ""],
-      ["モクダイLv.", 100],
-      ["モクダイ装備", false],
-      ["コウキLv.", 100],
-      ["コウキ装備", false],
-      ["ナリヒトLv.", 100],
-      ["ボレアリスLv.", 100],
-      ["ボレアリス装備", false],
-      ["ダンゾーLv.", 100],
-      ["ダンゾー装備", false],
-      ["メリデLv.", 100],
-      ["メリデ装備", false],
-      ["ヨハックLv.", 100],
-      ["ヨハック装備", false],
-      ["ヤスヒコLv.", 100],
-    ]);
+class BaseItem {
+  setDefaultParams(){
+    this.params = new Map(this.constructor.defaultParams);
   }
+  get(key){
+    if(this.checkSkipFlag(key)) return 0;
+    return this.params.get(key);
+  }
+  getEquip(key){
+    if(this.get(key + "装備")){
+      const value = Math.floor(this.get(key + "Lv.") / 10);
+      return 5 > value ? 0 : value;
+    }
+    return 0;
+  }
+  checkSkipFlag(key){
+    const flagKey = this.constructor.skipFlagMap.get(key);
+    if(flagKey && !this.get(flagKey)) return true;
+    return false;
+  }
+  set(key, value){
+    return this.params.set(key, value);
+  }
+  checkDisabled(){
+    return false;
+  }
+}
+
+class Unit extends BaseItem {
+  constructor(name){
+    super();
+    this.name = name;
+    this.setDefaultParams();
+  }
+  static skipFlagMap = new Map([
+    ["SK View", "SKを使用"],
+    ["ファン数", "ファン数を使用"],
+  ]);
+  static defaultParams = new Map([
+    ["View", 1500],
+    ["SK View", 350],
+    ["SKを使用", true],
+    ["ファン数", 1000],
+    ["ファン数を使用", false],
+    ["刻印", 0],
+    ["color", ""],
+    ["モクダイLv.", 100],
+    ["モクダイ装備", false],
+    ["コウキLv.", 100],
+    ["コウキ装備", false],
+    ["ナリヒトLv.", 100],
+    ["ボレアリスLv.", 100],
+    ["ボレアリス装備", false],
+    ["ダンゾーLv.", 100],
+    ["ダンゾー装備", false],
+    ["メリデLv.", 100],
+    ["メリデ装備", false],
+    ["ヨハックLv.", 100],
+    ["ヨハック装備", false],
+    ["ヤスヒコLv.", 100],
+  ]);
   static maxValue = new Map([
     ["View", 9999],
     ["SK View", 500],
@@ -216,39 +254,82 @@ class Unit {
   ]);
 }
 
-class Action {
+const DISABLE = {
+  IF_NOT_UNIT: 1,
+  IF_UNIT: 2,
+  ALWAYS: 3,
+};
+
+class Action extends BaseItem {
   constructor(unit){
+    super();
     if(unit instanceof Action){
-      this.unit = unit.unit;
-      this.name = unit.name;
+      this.unit = unit.unit || undefined;
       this.params = new Map(unit.params);
     }else{
       this.unit = unit;
-      this.name = unit ? unit.name : "";
-      this.params = new Map([
-        ["View", unit ? -1 : 1500],
-        ["注目", false],
-        ["発破/発破+", 0],
-        ["ナリヒト装備", unit ? false : undefined],
-        ["ウェイト", unit ? false : undefined],
-        ["color", unit ? unit.params.get("color") : ""],
-        ["消費VP", 0],
-        ["刻印を適用", unit ? false : undefined],
-        ["消費減少", 0],
-        ["覚醒", false],
-        ["消費増加", 0],
-        ["過消費", false],
-        ["最終コスト", -1],
-        ["消費後VP", -1],
-        ["VP獲得", 0],
-        ["協奏", false],
-        ["ヤスヒコ装備", unit ? false : undefined],
-        ["COMBO", 0],
-        ["COMBO継続", true],
-        ["COMBO加算", 1],
-      ]);
+      this.setDefaultParams();
+      if(unit) this.params.set("color", unit.params.get("color"));
     }
   }
+  get name(){
+    return this.unit ? this.unit.name : "";
+  }
+  checkDisabled(key){
+    const flag = this.constructor.disabled.get(key) || 0;
+    switch(flag){
+      default:
+        return false;
+      case DISABLE.IF_NOT_UNIT:
+        return !this.unit;
+      case DISABLE.IF_UNIT:
+        return !!this.unit;
+      case DISABLE.ALWAYS:
+        return true;
+    }
+  }
+  get(key){
+    let value;
+    if(this.checkSkipFlag(key)) return 0;
+    if(this.unit) value = this.unit.get(key);
+    return value || this.params.get(key) || 0;
+  }
+  static skipFlagMap = new Map([
+    ["刻印", "刻印を適用"],
+  ]);
+  static disabled = new Map([
+    ["View", DISABLE.IF_UNIT],
+    ["補正後View", DISABLE.ALWAYS],
+    ["ナリヒト装備", DISABLE.IF_NOT_UNIT],
+    ["ウェイト", DISABLE.IF_NOT_UNIT],
+    ["刻印を適用", DISABLE.IF_NOT_UNIT],
+    ["最終コスト", DISABLE.ALWAYS],
+    ["消費後VP", DISABLE.ALWAYS],
+    ["ヤスヒコ装備", DISABLE.IF_NOT_UNIT],
+  ]);
+  static defaultParams = new Map([
+    ["View", 1500],
+    ["注目", false],
+    ["発破/発破+", 0],
+    ["ナリヒト装備", false],
+    ["補正後View", 0],
+    ["ウェイト", false],
+    ["color", ""],
+    ["消費VP", 0],
+    ["刻印を適用", false],
+    ["消費減少", 0],
+    ["覚醒", false],
+    ["消費増加", 0],
+    ["過消費", false],
+    ["最終コスト", 0],
+    ["消費後VP", 0],
+    ["VP獲得", 0],
+    ["協奏", false],
+    ["ヤスヒコ装備", false],
+    ["COMBO", 0],
+    ["COMBO継続", true],
+    ["COMBO加算", 1],
+  ]);
   static maxValue = new Map([
     ["View", 9999],
     ["発破/発破+", 1000],
@@ -266,35 +347,40 @@ class Action {
 }
 
 class BaseManager {
-  constructor(id, item){
+  constructor(id, itemClass){
     const fieldset = document.getElementById(id);
+    const div = document.createElement("div");
     const button = document.createElement("input");
+    this.counter = document.createElement("output");
     this.container = document.createElement("div");
-    this.Item = item;
+    this.Item = itemClass;
     this.data = [];
     button.type = "button";
     button.value = "＋";
-    button.className = "plusbutton";
     button.addEventListener("click", this.createAddButtonHandler());
+    div.className = "appendpanel";
+    div.append(button);
+    div.append(this.counter);
     fieldset.append(this.container);
-    fieldset.append(button);
+    fieldset.append(div);
+    this.updateCounter();
     fieldset.addEventListener("focusin", this.createFocusinHandler());
     fieldset.addEventListener("focusout", this.createFocusoutHandler());
     this.datalist = new Map();
-    if(item.suggests){
+    if(itemClass.suggests){
       let index = 0;
-      for(const [key, value] of item.suggests){
+      for(const [key, value] of itemClass.suggests){
         const id = `${this.constructor.name}-${index++}`;
         this.appendDatalist(fieldset, id, value);
         this.datalist.set(key, id);
       }
     }
-    this.insertAutoCollapse();
     this.autoCollapse = true;
+    this.insertAutoCollapse();
   }
   createAddButtonHandler(){
     return () => {
-      this.addItem();
+      this.safeAddItem();
     };
   }
   createFocusoutHandler(){
@@ -331,7 +417,7 @@ class BaseManager {
     const input = document.createElement("input");
     content.append(label);
     input.type = "checkbox";
-    input.checked = true;
+    input.checked = this.autoCollapse;
     input.addEventListener("change", this.createAutoCollapseHandler());
     label.append(input);
     label.append(document.createTextNode("追加時に他を折りたたむ"));
@@ -352,11 +438,25 @@ class BaseManager {
     }
     parent.append(datalist);
   }
+  static maxItem = 999;
+  updateCounter(){
+    this.counter.value = `${this.data.length}/${this.constructor.maxItem}`;
+    if(this.data.length >= this.constructor.maxItem){
+      this.counter.classList.add("max");
+    }else{
+      this.counter.classList.remove("max");
+    }
+  }
+  safeAddItem(...args){
+    if(this.constructor.maxItem > this.data.length) return this.addItem(...args);
+    alert(`これ以上追加できません (${this.data.length}/${this.constructor.maxItem})`);
+  }
   addItem(...args){
     const item = new this.Item(...args);
     this.data.push(item);
     if(this.autoCollapse) this.collapseAll();
     this.appendPanel(item);
+    this.updateCounter();
     this.update("add", item);
     return item;
   }
@@ -365,6 +465,7 @@ class BaseManager {
     if(index === -1) return;
     this.data.splice(index, 1);
     this.container.children[index].remove();
+    this.updateCounter();
     this.update("remove", item);
     return item;
   }
@@ -506,12 +607,10 @@ class BaseManager {
     const className = this.constructor.classNameTable.get(key);
     text.textContent = key;
     label.append(input);
+    input.disabled = item.checkDisabled(key);
     switch(typeof value){
       case "number":
-        if(0 > value){
-          value = 0;
-          input.disabled = true;
-        }
+        if(input.disabled) value = 0;
         label.prepend(text);
         label.classList.add("number");
         input.type = "number";
@@ -525,10 +624,8 @@ class BaseManager {
         }
         input.addEventListener("change", this.createNumberChangeHandler(item, key));
         break;
-      case "undefined":
-        value = false;
-        input.disabled = true;
       case "boolean":
+        if(input.disabled) value = false;
         label.append(text);
         label.classList.add("checkbox");
         input.type = "checkbox";
@@ -571,8 +668,8 @@ class UnitManager extends BaseManager{
     super(id, Unit);
     this.names = new Set();
     this.timeline = timeline;
-    this.insertConfigPanel();
     this.autoAdd = true;
+    this.insertConfigPanel();
   }
   insertConfigPanel(){
     const content = document.createElement("div");
@@ -580,7 +677,7 @@ class UnitManager extends BaseManager{
     const input = document.createElement("input");
     content.append(label);
     input.type = "checkbox";
-    input.checked = true;
+    input.checked = this.autoAdd;
     input.addEventListener("change", this.createConfigPanelHandler());
     label.append(input);
     label.append(document.createTextNode("タイムラインに自動追加"));
@@ -598,18 +695,19 @@ class UnitManager extends BaseManager{
       name = prompt("名前を入力してください（10文字以内）", name);
       length = count(name);
       if(this.names.has(name)){
-        alert(`ERROR: ${name}は既に存在しています`);
+        alert(`${name}は既に存在しています`);
         length = -1;
       }else if(length > 10){
-        alert(`ERROR: 文字数オーバーです（${length}）`);
+        alert(`文字数オーバーです（${length}）`);
         length = -1;
       }
     }
     this.names.add(name);
     return name;
   }
-  addItem(){
-    const name = this.askName();
+  static maxItem = 10;
+  addItem(name){
+    if(!name) name = this.askName();
     if(name){
       const item = super.addItem(name);
       if(this.autoAdd) this.timeline.addItem(item);
@@ -630,7 +728,7 @@ class UnitManager extends BaseManager{
   }
   createAddTimelineButtonHandler(item){
     return () => {
-      this.timeline.addItem(item);
+      this.timeline.safeAddItem(item);
     };
   }
   update(type, item){
@@ -696,72 +794,62 @@ class TimelineManager extends BaseManager{
   }
   createCloneButtonHandler(item){
     return () => {
-      this.addItem(item);
+      this.safeAddItem(item);
     };
   }
   static classNameTable = new Map([
+    ["View", "view"],
+    ["補正後View", "modview"],
     ["COMBO", "combo"],
     ["最終コスト", "cost"],
     ["消費後VP", "spend"],
   ]);
   calc(item, currentVP, comboCount, block){
-    const get = (key) => {
-      let value;
-      if(item.unit) value = item.unit.params.get(key);
-      return value || item.params.get(key) || 0;
-    };
-    const equip = (key) => {
-      let value
-      if(!get(key + "装備")) return 0;
-      value = Math.floor(get(key + "Lv.") / 10);
-      return 5 > value ? 0 : value;
-    };
-    let view = get("View");
-    let gain = get("VP獲得");
+    let view = item.get("View");
+    let gain = item.get("VP獲得");
     let combo = this.combo(comboCount);
-    let cost = get("消費VP");
-    const viewUp = 100 + equip("モクダイ") + equip("コウキ") + equip("ナリヒト") * 2;
-    const gainUp = 100 + equip("ボレアリス") + equip("ダンゾー");
-    const meride = equip("メリデ") * 25;
-    const yohack = equip("ヨハック") * 30;
-    const yasuhiko = equip("ヤスヒコ") * 40;
-    const color = get("color");
+    let cost = item.get("消費VP");
+    const seal = item.get("刻印");
+    const viewUp = 100 + item.getEquip("モクダイ") + item.getEquip("コウキ") + item.getEquip("ナリヒト") * 2;
+    const gainUp = 100 + item.getEquip("ボレアリス") + item.getEquip("ダンゾー");
+    const meride = item.getEquip("メリデ") * 25;
+    const yohack = item.getEquip("ヨハック") * 30;
+    const yasuhiko = item.getEquip("ヤスヒコ") * 40;
+    const color = item.get("color");
     const comboInput = block.querySelector(".combo input");
-    if(get("COMBO継続")){
+    if(item.get("COMBO継続")){
       comboInput.value = comboCount;
       item.params.set("COMBO", comboCount);
       comboInput.disabled = true;
     }else{
-      comboCount = get("COMBO");
+      comboCount = item.get("COMBO");
       comboInput.disabled = false;
     }
     block.style.backgroundColor = color + "40";
-    if(get("SKを使用")) view += get("SK View");
+    view += item.get("SK View");
     view = Math.floor(view * viewUp / 100);
-    if(get("注目")) view = Math.floor(view * 15 / 10);
-    if(get("ファン数を使用")) view += get("ファン数");
-    view += get("発破/発破+");
-    block.querySelector("input").value = view;
+    if(item.unit) block.querySelector(".view input").value = view;
+    if(item.get("注目")) view = Math.floor(view * 15 / 10);
+    view += item.get("ファン数");
+    view += item.get("発破/発破+");
+    block.querySelector(".modview input").value = view;
     if(0 > currentVP){
       block.querySelector(".header output").value = "\u2937 VPが足りません";
     }else{
       if(meride) currentVP += Math.floor(view * combo * meride / 10000);
       block.querySelector(".header output").value = `\u2937 ViewPower ${currentVP}`;
     }
-    if(get("ウェイト")){
+    if(item.get("ウェイト")){
       block.querySelectorAll(".grid")[1].classList.add("hide");
       block.querySelector(".footer output").value = `\u2937 ViewPower ${currentVP}`;
       return [currentVP, comboCount];
     }else{
       block.querySelectorAll(".grid")[1].classList.remove("hide");
     }
-    if(get("刻印を適用")){
-      const lv = get("刻印");
-      cost = Math.floor(cost * (1000 - lv * 2) / 1000);
-    }
-    if(get("過消費")) cost *= 2;
-    if(get("覚醒")) cost = Math.floor(cost / 2);
-    cost = Math.max(0, cost + get("消費増加") - get("消費減少"));
+    if(seal) cost = Math.floor(cost * (1000 - seal * 2) / 1000);
+    if(item.get("過消費")) cost *= 2;
+    if(item.get("覚醒")) cost = Math.floor(cost / 2);
+    cost = Math.max(0, cost + item.get("消費増加") - item.get("消費減少"));
     block.querySelector(".cost input").value = cost;
     if(cost > currentVP){
       block.querySelector(".footer output").value = "\u2937 VPが足りません";
@@ -770,10 +858,10 @@ class TimelineManager extends BaseManager{
     currentVP -= cost;
     block.querySelector(".spend input").value = currentVP;
     gain = Math.floor(gain * gainUp / 100);
-    if(get("協奏")) gain = Math.floor(gain * 15 / 10);
+    if(item.get("協奏")) gain = Math.floor(gain * 15 / 10);
     currentVP += Math.floor(gain * combo / 10);
     currentVP += Math.floor(view * combo / 10);
-    comboCount += get("COMBO加算");
+    comboCount += item.get("COMBO加算");
     combo = this.combo(comboCount);
     if(yohack) currentVP += Math.floor(Math.floor(view * yohack / 1000) * combo / 10);
     if(yasuhiko) currentVP += Math.floor(Math.floor(view * yasuhiko / 1000) * combo / 10);
@@ -791,11 +879,12 @@ class TimelineManager extends BaseManager{
     let n = 0;
     for(const data of this.data){
       if(type === "remove-unit" && data.unit === item){
-        data.unit = -1;
-        block[n].style.opacity = 0.4;
+        data.unit = 0;
+        block[n].classList.add("deleted");
         block[n].querySelector(".titlebar output").value = "削除済";
         block[n].querySelector(".header output").value = block[n].querySelector(".footer output").value = "\u2937 ViewPower -";
-      }else if(data.unit !== -1){
+        for(const input of block[n].querySelectorAll(".content input, .footer input")) input.disabled = true;
+      }else if(data.unit !== 0){
         [vp, cc] = this.calc(data, vp, cc, block[n]);
       }
       n++;
