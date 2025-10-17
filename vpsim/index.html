@@ -162,6 +162,30 @@ datalist {
 .max {
   color: var(--color-highlight);
 }
+dialog {
+  margin: revert;
+  color: var(--color);
+  background-color: var(--bgcolor);
+  border: 1px solid var(--color);
+  border-radius: 0.5rem;
+}
+dialog::backdrop {
+  background-color: #002a;
+}
+dialog form {
+  padding: 0.5rem 1.5rem;
+}
+.control {
+  text-align: right;
+  margin-top: 0.5rem;
+}
+.control input {
+  padding: revert;
+  margin-left: 0.5rem;
+}
+html:has(dialog[open]) {
+  overflow: hidden;
+}
 </style>
 <script>
 "use strict";
@@ -663,13 +687,110 @@ class BaseManager {
   }
 }
 
+class AddUnitDialog{
+  constructor(){
+    const dialog = document.createElement("dialog");
+    const form = document.createElement("form");
+    const title = document.createElement("div");
+    const tab = document.createElement("div");
+    const control = document.createElement("div");
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    const ok = document.createElement("input");
+    const cancel = document.createElement("input");
+    this.names = new Set();
+    form.method = "dialog";
+    title.textContent = "キャラを追加";
+    title.className = "titlebar";
+    input.type = "text";
+    input.autofocus = true;
+    label.append("名前：", input);
+    tab.className = "tab";
+    tab.append(label);
+    ok.type = "submit";
+    ok.value = "OK";
+    cancel.type = "button";
+    cancel.value = "Cancel";
+    control.className = "control";
+    control.append(cancel, ok);
+    form.append(tab, control);
+    dialog.append(title, form);
+    document.body.append(dialog);
+    cancel.addEventListener("click", this.createCancelHandler(dialog));
+    dialog.addEventListener("close", this.createCloseHandler(dialog));
+    dialog.addEventListener("click", this.createBackdropHandler(dialog));
+    input.addEventListener("change", this.createNameValidator(input));
+    this.form = form;
+    this.dialogElement = dialog;
+  }
+  createCancelHandler(dialog){
+    return () => {
+      dialog.close();
+    };
+  }
+  createCloseHandler(dialog){
+    return () => {
+      if(dialog.returnValue === "OK"){
+        const value = this.form.querySelector(".tab input").value;
+        this.addName(value);
+        this.resolve(value);
+      }else{
+        this.resolve(null);
+      }
+      delete this.promise;
+      delete this.resolve;
+    };
+  }
+  createBackdropHandler(dialog){
+    return (e) => {
+      if(!e.target.closest("form")) dialog.close();
+    };
+  }
+  createNameValidator(input){
+    const validator = (e) => {
+      const value = input.value;
+      let message = "";
+      if(!e || input.offsetHeight){
+        if(!value){
+          message = "名前を入力してください";
+        }else if(count(value) > 10){
+          message = "名前は10文字以内にしてください";
+        }else if(this.names.has(value)){
+          message = "既に存在する名前です";
+        }
+      }
+      input.setCustomValidity(message);
+    };
+    validator();
+    return validator;
+  }
+  showModal(){
+    if(this.promise){
+      return this.promise;
+    }else{
+      this.form.reset();
+      this.promise = new Promise(resolve => {
+        this.resolve = resolve;
+      });
+      this.dialogElement.showModal();
+      return this.promise;
+    }
+  }
+  addName(name){
+    this.names.add(name);
+  }
+  deleteName(name){
+    this.names.delete(name);
+  }
+}
+
 class UnitManager extends BaseManager{
   constructor(id, timeline){
     super(id, Unit);
-    this.names = new Set();
     this.timeline = timeline;
     this.autoAdd = true;
     this.insertConfigPanel();
+    this.dialog = new AddUnitDialog();
   }
   insertConfigPanel(){
     const content = document.createElement("div");
@@ -688,33 +809,16 @@ class UnitManager extends BaseManager{
       this.autoAdd = e.target.checked;
     };
   }
-  askName(){
-    let name = "";
-    let length = -1;
-    while(0 > length){
-      name = prompt("名前を入力してください（10文字以内）", name);
-      length = count(name);
-      if(this.names.has(name)){
-        alert(`${name}は既に存在しています`);
-        length = -1;
-      }else if(length > 10){
-        alert(`文字数オーバーです（${length}）`);
-        length = -1;
-      }
-    }
-    this.names.add(name);
-    return name;
-  }
   static maxItem = 10;
-  addItem(name){
-    if(!name) name = this.askName();
+  async addItem(){
+    const name = await this.dialog.showModal();
     if(name){
       const item = super.addItem(name);
       if(this.autoAdd) this.timeline.addItem(item);
     }
   }
   removeItem(item){
-    this.names.delete(item.name);
+    this.dialog.deleteName(item.name);
     super.removeItem(item);
   }
   createFooter(item){
