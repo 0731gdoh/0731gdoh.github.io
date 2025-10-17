@@ -725,7 +725,7 @@ class AddUnitDialog{
   }
   createCancelHandler(dialog){
     return () => {
-      dialog.close();
+      dialog.close("");
     };
   }
   createCloseHandler(dialog){
@@ -743,7 +743,7 @@ class AddUnitDialog{
   }
   createBackdropHandler(dialog){
     return (e) => {
-      if(!e.target.closest("form")) dialog.close();
+      if(!e.target.closest("form")) dialog.close("");
     };
   }
   createNameValidator(input){
