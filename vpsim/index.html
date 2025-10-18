@@ -109,11 +109,8 @@ hr {
   padding: 0.2rem;
 }
 .footer {
-  text-align: right;
   padding: 0.3rem;
   margin-bottom: 0.4rem;
-}
-#timeline .footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -172,12 +169,12 @@ dialog {
 dialog::backdrop {
   background-color: #002a;
 }
-dialog form {
+.tab,
+.control {
   padding: 0.5rem 1.5rem;
 }
 .control {
   text-align: right;
-  margin-top: 0.5rem;
 }
 .control input {
   padding: revert;
@@ -713,13 +710,14 @@ class AddUnitDialog{
     cancel.value = "Cancel";
     control.className = "control";
     control.append(cancel, ok);
-    form.append(tab, control);
-    dialog.append(title, form);
+    form.append(title, tab, control);
+    dialog.append(form);
     document.body.append(dialog);
     cancel.addEventListener("click", this.createCancelHandler(dialog));
     dialog.addEventListener("close", this.createCloseHandler(dialog));
     dialog.addEventListener("click", this.createBackdropHandler(dialog));
-    input.addEventListener("change", this.createNameValidator(input));
+    form.addEventListener("submit", this.createNameValidator(input));
+    form.noValidate = true;
     this.form = form;
     this.dialogElement = dialog;
   }
@@ -732,8 +730,12 @@ class AddUnitDialog{
     return () => {
       if(dialog.returnValue === "OK"){
         const value = this.form.querySelector(".tab input").value;
-        this.addName(value);
-        this.resolve(value);
+        if(this.getNameValidateMessage(value)){
+          this.resolve(null);
+        }else{
+          this.addName(value);
+          this.resolve(value);
+        }
       }else{
         this.resolve(null);
       }
@@ -746,23 +748,29 @@ class AddUnitDialog{
       if(!e.target.closest("form")) dialog.close("");
     };
   }
+  getNameValidateMessage(value){
+    if(!value){
+      return "名前を入力してください";
+    }else if(count(value) > 10){
+      return "名前は10文字以内にしてください";
+    }else if(this.names.has(value)){
+      return "既に存在する名前です";
+    }
+    return "";
+  }
   createNameValidator(input){
-    const validator = (e) => {
+    return (e) => {
       const value = input.value;
       let message = "";
-      if(!e || input.offsetHeight){
-        if(!value){
-          message = "名前を入力してください";
-        }else if(count(value) > 10){
-          message = "名前は10文字以内にしてください";
-        }else if(this.names.has(value)){
-          message = "既に存在する名前です";
-        }
+      if(input.offsetHeight){
+        message = this.getNameValidateMessage(value);
       }
       input.setCustomValidity(message);
+      if(message){
+        e.preventDefault();
+        input.reportValidity();
+      }
     };
-    validator();
-    return validator;
   }
   showModal(){
     if(this.promise){
@@ -824,6 +832,8 @@ class UnitManager extends BaseManager{
   createFooter(item){
     const footer = document.createElement("div");
     const button = document.createElement("input");
+    footer.append(document.createElement("div"));
+//    this.appendButton(footer, "💾");
     button.type = "button";
     button.value = "タイムラインに追加";
     button.addEventListener("click", this.createAddTimelineButtonHandler(item));
