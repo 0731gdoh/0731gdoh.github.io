@@ -55,6 +55,8 @@ const getStorageDescription = (key) => {
     default:
       if(/slot\d/.test(key)){
         return getSlotDescription(key);
+      }else if(/unit\d+/.test(key)){
+        return getUnitDescription(key);
       }else{
         return "";
       }
@@ -71,6 +73,16 @@ const getSlotDescription = (key) => {
     return "";
   }
 };
+
+const getUnitDescription = (key) => {
+  const data = localStorage.getItem(key).split("/");
+  if(data.length === 2 && data[0] && data[1]){
+    return `VPシミュレータのキャラデータ「${data[0]}」`;
+  }else{
+    return "";
+  }
+};
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const keys = [];
