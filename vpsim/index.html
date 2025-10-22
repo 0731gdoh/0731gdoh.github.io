@@ -1191,7 +1191,7 @@ class TimelineManager extends BaseManager{
     const meride = item.getEquip("メリデ") * 25;
     const yohack = item.getEquip("ヨハック") * 30;
     const yasuhiko = item.getEquip("ヤスヒコ") * 40;
-    const shouen = item.get("ショウエン常時") * 4;
+    const shouen = item.get("ショウエン常時");
     const max = item.get("追加最大");
     const after = item.get("行動後View");
     const color = item.get("color");
@@ -1231,14 +1231,14 @@ class TimelineManager extends BaseManager{
       div *= 10;
     }
     if(shouen){
-      cost *= 100 - shouen;
-      div *= 100;
+      cost *= 25 - shouen;
+      div *= 25;
     }
     if(item.get("過消費")) cost *= 2;
     if(item.get("覚醒")) div *= 2;
+    if(div > 1) cost /= div;
     while(vow--) cost = cost * 19 / 20;
-    if(div > 1) cost = Math.floor(cost / div);
-    cost = Math.max(0, cost + item.get("消費増加") - item.get("消費減少"));
+    cost = Math.max(0, Math.floor(cost) + item.get("消費増加") - item.get("消費減少"));
     block.querySelector(".cost input").value = cost;
     if(cost > currentVP){
       block.querySelector(".footer output").value = "\u2937 VPが足りません";
