@@ -7,6 +7,16 @@
 <link rel=stylesheet href="/theme/theme.css">
 <script src="/theme/theme.js"></script>
 <style>
+:root {
+  --transition: margin-top, margin-bottom, padding-top, paddind-bottom;
+  --duration: 0.1s;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root{
+    --transition: none;
+    --duration: 0;
+  }
+}
 * {
   margin: 0;
   padding: 0;
@@ -86,15 +96,20 @@ label {
   display: inline-block;
 }
 hr {
-  margin: 0.5rem 0.2rem;
+  margin: 0.3rem;
+  transition-property: var(--transition);
+  transition-duration: var(--duration);
 }
 .grid {
   display: grid;
   grid-template-columns: auto auto auto 1fr;
-  gap: 0.4rem;
+  gap: 0 0.4rem;
 }
 .grid label {
   align-items: center;
+  margin: 0.2rem 0;
+  transition-property: var(--transition);;
+  transition-duration: var(--duration);
 }
 .grid label.select,
 .grid label.number {
@@ -113,6 +128,8 @@ hr {
 .header {
   margin-top: 0.3rem;
   padding: 0.2rem;
+  transition-property: var(--transition);;
+  transition-duration: var(--duration);
 }
 .footer {
   padding: 0.3rem;
@@ -141,11 +158,17 @@ datalist {
 .hide label.select,
 .hide label.number,
 .hide label.checkbox {
-  display: none;
+  visibility: hidden;
+  overflow-y: hidden;
+  height: 0;
+  margin: 0;
 }
 .hide label.combo,
 .hide label.combo + label {
-  display: revert;
+  visibility: visible;
+  overflow-y: revert;
+  height: auto;
+  margin: 0.2rem 0;
 }
 .expand input {
   display: none;
@@ -161,7 +184,11 @@ datalist {
   font-weight: bold;
 }
 .titlebar:has(input:checked) ~ :is(.header, .content, hr) {
-  display: none;
+  visibility: hidden;
+  overflow-y: hidden;
+  height: 0;
+  margin: 0;
+  padding: 0;
 }
 .full {
   color: var(--color-highlight);
@@ -481,10 +508,8 @@ class BaseManager {
     button.value = "＋";
     button.addEventListener("click", this.createAddButtonHandler());
     div.className = "appendpanel";
-    div.append(button);
-    div.append(this.counter);
-    fieldset.append(this.container);
-    fieldset.append(div);
+    div.append(button, this.counter);
+    fieldset.append(this.container, div);
     this.updateCounter();
     fieldset.addEventListener("focusin", this.createFocusinHandler());
     fieldset.addEventListener("focusout", this.createFocusoutHandler());
@@ -541,8 +566,7 @@ class BaseManager {
     input.type = "checkbox";
     input.checked = this.autoCollapse;
     input.addEventListener("change", this.createAutoCollapseHandler());
-    label.append(input);
-    label.append(document.createTextNode("追加時に他を折りたたむ"));
+    label.append(input, "追加時に他を折りたたむ");
     this.insertPanel(content);
   }
   createAutoCollapseHandler(){
@@ -620,7 +644,6 @@ class BaseManager {
   appendPanel(item){
     const div = document.createElement("div");
     const bar = document.createElement("div");
-    
     const left = document.createElement("div");
     const right = document.createElement("div");
     const label = document.createElement("label");
@@ -658,13 +681,9 @@ class BaseManager {
     plus.className = "plus";
     minus.className = "minus";
     label.className = "expand";
-    label.append(checkbox);
-    label.append(plus);
-    label.append(minus);
-    left.append(label);
-    left.append(title);
-    bar.append(left);
-    bar.append(right);
+    label.append(checkbox, plus, minus);
+    left.append(label, title);
+    bar.append(left, right);
     div.append(bar);
     if(header){
       header.className = "header";
@@ -920,7 +939,7 @@ class UnitDialog{
   getNameValidateMessage(value){
     if(!value){
       return "名前を入力してください";
-    }else if(/[\\\/:*?"<>|]/.test(value)){
+    }else if(/[\\\/:*?""<>|]/.test(value)){
       return '名前には次の文字は使えません \\ / : * ? " < > |';
     }else if(count(value) > 10){
       return "名前は10文字以内にしてください";
@@ -1061,8 +1080,7 @@ class UnitManager extends BaseManager{
     input.type = "checkbox";
     input.checked = this.autoAdd;
     input.addEventListener("change", this.createConfigPanelHandler());
-    label.append(input);
-    label.append(document.createTextNode("タイムラインに自動追加"));
+    label.append(input, "タイムラインに自動追加");
     this.insertPanel(content);
   }
   createConfigPanelHandler(){
@@ -1159,8 +1177,7 @@ class TimelineManager extends BaseManager{
     button.addEventListener("click", this.createCloneButtonHandler(item));
     output.textContent = "ViewPower 0";
     div.append(button);
-    footer.append(div);
-    footer.append(output);
+    footer.append(div, output);
     return footer;
   }
   createCloneButtonHandler(item){
