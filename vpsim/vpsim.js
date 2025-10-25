@@ -1018,8 +1018,10 @@ class TimelineManager extends BaseManager{
     comboCount += item.get("COMBO加算");
     combo = this.combo(comboCount);
     if(after){
-      if(yohack) currentVP += Math.floor(Math.floor(view * yohack / 1000) * combo / 10);
-      if(yasuhiko) currentVP += Math.floor(Math.floor(view * yasuhiko / 1000) * combo / 10);
+      let afterVP = 0;
+      if(yohack) afterVP += Math.floor(view * yohack / 1000);
+      if(yasuhiko) afterVP += Math.floor(view * yasuhiko / 1000);
+      if(afterVP) currentVP += Math.floor(afterVP * combo / 10);
     }
     block.querySelector(".footer output").value = `\u2937 ViewPower ${currentVP}`;
     return [currentVP, comboCount];
