@@ -937,7 +937,7 @@ class TimelineManager extends BaseManager{
   calc(item, currentVP, comboCount, block){
     let view = item.get("View");
     let gain = item.get("VP獲得");
-    let combo = this.combo(comboCount);
+    let combo = 10;
     let cost = item.get("消費VP");
     let div = 1;
     let vow = item.get("誓約（付与数）");
@@ -961,11 +961,13 @@ class TimelineManager extends BaseManager{
       comboCount = item.get("COMBO");
       comboInput.disabled = false;
     }
+    combo = this.combo(comboCount);
     block.style.backgroundColor = color + "40";
     view += item.get("SK View");
-    view = Math.floor(view * viewUp / 100);
     if(item.unit) block.querySelector(".view input").value = view;
-    if(item.get("注目")) view = Math.floor(view * 15 / 10);
+    view *= viewUp;
+    if(item.get("注目")) view = view * 3 / 2;
+    view = Math.floor(view / 100);
     view += item.get("ファン数");
     view += item.get("発破/発破+");
     block.querySelector(".modview input").value = view;
@@ -1008,10 +1010,11 @@ class TimelineManager extends BaseManager{
       currentVP -= additional;
     }
     block.querySelector(".spend input").value = currentVP;
-    gain = Math.floor(gain * gainUp / 100);
-    if(item.get("協奏")) gain = Math.floor(gain * 15 / 10);
+    gain *= gainUp;
+    if(item.get("協奏")) gain = gain * 3 / 2;
+    gain = Math.floor(gain / 100);
+    if(after) gain += view;
     currentVP += Math.floor(gain * combo / 10);
-    if(after) currentVP += Math.floor(view * combo / 10);
     comboCount += item.get("COMBO加算");
     combo = this.combo(comboCount);
     if(after){
