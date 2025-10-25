@@ -77,6 +77,7 @@ class Unit extends BaseItem {
     ["ヨハックLv.", 100],
     ["ヨハック装備", false],
     ["ヤスヒコLv.", 100],
+//    ["ノーモンLv.", 100],
   ]);
   static maxValue = new Map([
     ["View", 9999],
@@ -176,6 +177,7 @@ class Action extends BaseItem {
     ["View", DISABLE.IF_UNIT],
     ["補正後View", DISABLE.ALWAYS],
     ["ナリヒト装備", DISABLE.IF_NOT_UNIT],
+//    ["ノーモン装備", DISABLE.IF_NOT_UNIT],
     ["ウェイト", DISABLE.IF_NOT_UNIT],
     ["刻印を適用", DISABLE.IF_NOT_UNIT],
     ["最終コスト", DISABLE.ALWAYS],
@@ -189,6 +191,7 @@ class Action extends BaseItem {
     ["発破/発破+", 0],
     ["ナリヒト装備", false],
     ["補正後View", 0],
+//    ["ノーモン装備", false],
     ["ウェイト", false],
     ["color", ""],
     ["消費VP", 0],
@@ -948,6 +951,8 @@ class TimelineManager extends BaseManager{
     const meride = item.getEquip("メリデ") * 25;
     const yohack = item.getEquip("ヨハック") * 30;
     const yasuhiko = item.getEquip("ヤスヒコ") * 40;
+    const gnomon = 0;
+//    const gnomon = item.getEquip("ノーモン") * 25;
     const shouen = item.get("ショウエン常時");
     const max = item.get("追加最大");
     const after = item.get("行動後View");
@@ -974,11 +979,12 @@ class TimelineManager extends BaseManager{
     if(0 > currentVP){
       block.querySelector(".header output").value = "\u2937 VPが足りません";
     }else{
-      if(meride) currentVP += Math.floor(view * combo * meride / 10000);
+      if(meride && !gnomon) currentVP += Math.floor(Math.floor(view * meride / 1000) * combo / 10);
       block.querySelector(".header output").value = `\u2937 ViewPower ${currentVP}`;
     }
-    if(item.get("ウェイト")){
+    if(item.get("ウェイト") || gnomon){
       block.querySelectorAll(".grid")[1].classList.add("hide");
+      if(gnomon) currentVP += Math.floor(Math.floor(view * gnomon / 1000) * combo / 10);
       block.querySelector(".footer output").value = `\u2937 ViewPower ${currentVP}`;
       return [currentVP, comboCount];
     }else{
