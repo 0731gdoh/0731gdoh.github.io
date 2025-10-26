@@ -77,7 +77,7 @@ class Unit extends BaseItem {
     ["ヨハックLv.", 100],
     ["ヨハック装備", false],
     ["ヤスヒコLv.", 100],
-//    ["ノーモンLv.", 100],
+    ["ノーモンLv.", 100],
   ]);
   static maxValue = new Map([
     ["View", 9999],
@@ -177,7 +177,7 @@ class Action extends BaseItem {
     ["View", DISABLE.IF_UNIT],
     ["補正後View", DISABLE.ALWAYS],
     ["ナリヒト装備", DISABLE.IF_NOT_UNIT],
-//    ["ノーモン装備", DISABLE.IF_NOT_UNIT],
+    ["ノーモン装備", DISABLE.IF_NOT_UNIT],
     ["ウェイト", DISABLE.IF_NOT_UNIT],
     ["刻印を適用", DISABLE.IF_NOT_UNIT],
     ["最終コスト", DISABLE.ALWAYS],
@@ -191,7 +191,7 @@ class Action extends BaseItem {
     ["発破/発破+", 0],
     ["ナリヒト装備", false],
     ["補正後View", 0],
-//    ["ノーモン装備", false],
+    ["ノーモン装備", false],
     ["ウェイト", false],
     ["color", ""],
     ["消費VP", 0],
@@ -948,12 +948,11 @@ class TimelineManager extends BaseManager{
     const seal = item.get("刻印");
     const viewUp = 100 + item.getEquip("モクダイ") + item.getEquip("コウキ") + item.getEquip("ナリヒト") * 2;
     const gainUp = 100 + item.getEquip("ボレアリス") + item.getEquip("ダンゾー");
-    const meride = item.getEquip("メリデ") * 25;
+    const melide = item.getEquip("メリデ") * 25;
     const yohack = item.getEquip("ヨハック") * 30;
     const yasuhiko = item.getEquip("ヤスヒコ") * 40;
-    const gnomon = 0;
-//    const gnomon = item.getEquip("ノーモン") * 25;
-    const shouen = item.get("ショウエン常時");
+    const gnomon = item.getEquip("ノーモン") * 25;
+    const shoen = item.get("ショウエン常時");
     const max = item.get("追加最大");
     const after = item.get("行動後View");
     const color = item.get("color");
@@ -979,7 +978,7 @@ class TimelineManager extends BaseManager{
     if(0 > currentVP){
       block.querySelector(".header output").value = "\u2937 VPが足りません";
     }else{
-      if(meride && !gnomon) currentVP += Math.floor(Math.floor(view * meride / 1000) * combo / 10);
+      if(melide && !gnomon) currentVP += Math.floor(Math.floor(view * melide / 1000) * combo / 10);
       block.querySelector(".header output").value = `\u2937 ViewPower ${currentVP}`;
     }
     if(item.get("ウェイト") || gnomon){
@@ -995,8 +994,8 @@ class TimelineManager extends BaseManager{
       cost *= 9;
       div *= 10;
     }
-    if(shouen){
-      cost *= 25 - shouen;
+    if(shoen){
+      cost *= 25 - shoen;
       div *= 25;
     }
     if(item.get("過消費")) cost *= 2;
