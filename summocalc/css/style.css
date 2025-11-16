@@ -16,6 +16,8 @@
   --color-check-unmatched: #777;
   --color-dirty: #c84;
   --bgcolor-header: #bbb;
+  --color-cond: #070;
+  --color-zero: #850;
   --color-salv: #00f;
   --color-tooltip: #fff;
   --border-tooltip: #ccc;
@@ -49,6 +51,8 @@
   --color-check-unmatched: #333;
   --color-dirty: #842;
   --bgcolor-header: #222;
+  --color-cond: #373;
+  --color-zero: #862;
   --color-salv: #78d;
   --color-tooltip: #000;
   --border-tooltip: #bbb;
@@ -447,6 +451,20 @@ td .dirty {
 }
 .skilldata td div {
   margin: 0.5rem 0;
+}
+.condition {
+  font-size: smaller;
+  font-weight: bold;
+  color: var(--color-cond);
+}
+.zero {
+  font-size: smaller;
+  font-weight: bold;
+  color: var(--color-zero);
+}
+.zero ~ span {
+  text-decoration-line: underline;
+  text-decoration-color: var(--color-zero);
 }
 .salv {
   font-style: italic;
