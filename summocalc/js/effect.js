@@ -823,6 +823,9 @@ var EFFECT = Effect.createList(
   ,[456, "<*火傷>大特攻[ユーマ]/Big Advantage vs Burn[Yuma]", "やけとた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,[457, "閃き時強化[ユーマ：自身]/Glint Strengthening[Yuma: self]", "ひらめきし", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[458, "閃き時強化[ユーマ：味方全体]/Glint Strengthening[Yuma: all allies]", "ひらめきし", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[459, "覚醒", "かく", 0, 1.2, , EFFECT_FLAG.IRREMOVABLE]
+  ,[460, "覚醒", "かく", 1, 0.9, , EFFECT_FLAG.IRREMOVABLE]
+  ,[461, "<*覚醒>に貫通/Ignore 覚醒", "かくせいに", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
   
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
