@@ -12,6 +12,9 @@ function SkillData(k, v){
       k = "c" + k;
     }
   }
+  if(v[7]){
+    k += v[7];
+  }
   this.name = v[0];
   this.index = v[1];
   this.timing = v[2];
@@ -19,8 +22,29 @@ function SkillData(k, v){
   this.targetName = v[4];
   this.targetType = v[5];
   this.skipBonusTag = v[6];
+  this.condition = v[7];
   this.key = k;
 }
+
+function TagData(v){
+  this.value = v[0];
+  this.timing = v[1];
+  this.bonus = v[2];
+  this.condition = v[3];
+  if(v[4]) this.skip = true;
+}
+TagData.prototype = {
+  update: function(timing, bv){
+    this.timing |= timing;
+    if(bv){
+      if(!this.bonus){
+        this.bonus = [bv];
+      }else if(this.bonus.indexOf(bv) === -1){
+        this.bonus = this.bonus.concat(bv);
+      }
+    }
+  }
+};
 
 function splitCharaNames(s){
   if(!s) return [];
@@ -49,17 +73,6 @@ function generateTagData(s, flagNum, ar){
     var f = (t.type === TAG_TYPE.STATIC) ? TAG_FLAG_NUM.STATIC : flagNum;
     if(ar) f += TAG_FLAG_NUM.AR;
     t.setFlag(f, b);
-  };
-  var update = function(key, timing, bv){
-    var data = table.get(key);
-    data[1] |= timing;
-    if(bv){
-      if(!data[2]){
-        data[2] = [bv];
-      }else if(data[2].indexOf(bv) === -1){
-        data[2] = data[2].concat(bv);
-      }
-    }
   };
   s.forEach(function(sd){
     var v = sd.index;
@@ -119,12 +132,12 @@ function generateTagData(s, flagNum, ar){
             break;
         }
         if(tag.type !== TAG_TYPE.SKIP){
-          if(table.has(v + g)){
-            update(v + g, timing, bv);
+          if(table.has(v + g) && !sd.condition){
+            table.get(v + g).update(timing, bv);
           }else{
-            var data = [v + g, timing, bonus];
+            var data = new TagData([v + g, timing, bonus, sd.condition]);
             z.push(data);
-            if(!compound) table.set(v + g, data);
+            if(!compound && !sd.condition) table.set(v + g, data);
           }
           if(!skipFlag) setFlag(tag, timing);
         }
@@ -139,13 +152,12 @@ function generateTagData(s, flagNum, ar){
             subtiming &= ~TIMING_FLAG.NOT_CS;
             subtiming |= TIMING_FLAG.STATIC;
           }
-          if(table.has(c + g + subkeyadd)){
-            update(c + g + subkeyadd, subtiming, bv);
+          if(table.has(c + g + subkeyadd) && !sd.condition){
+            table.get(c + g + subkeyadd).update(subtiming, bv);
           }else{
-            var subdata = [c + g, subtiming, bonus];
-            if(flagNum < 3) subdata.push(true);
+            var subdata = new TagData([c + g, subtiming, bonus, sd.condition, flagNum < 3]);
             z.push(subdata);
-            if(!compound) table.set(c + g + subkeyadd, subdata);
+            if(!compound && !sd.condition) table.set(c + g + subkeyadd, subdata);
           }
           if(!skipSubFlag && !skipFlag) setFlag(TAG[c], subtiming);
         });
@@ -156,7 +168,7 @@ function generateTagData(s, flagNum, ar){
 }
 
 function splitSkills(s){
-  var re = /^([a-z&+]*)(.+)$/;
+  var re = /^([a-z&+]*)([^@]+)(@.+)?$/;
   var bo = /^(.*[^に])に?((?:(特攻|デメリット)|(特防|武器種弱点))\[(\d+\.\d+)\]|に(貫通)|(x))$/;
   var result = new Map();
   var set = function(k, v){
@@ -172,6 +184,7 @@ function splitSkills(s){
     var ignore = false;
     var skip = false;
     var ttype = 0;
+    var condition = match[3];
     if(match[1]){
       var compound = match[1].indexOf("+") !== -1;
       var sep = compound ? "+" : "&";
@@ -219,12 +232,12 @@ function splitSkills(s){
     switch(tag.type){
       case TAG_TYPE.SKIP:
       case TAG_TYPE.STATUS_GROUP:
-        set(key, ["", 0, timing, target, tname, ttype, skip]);
+        set(key, ["", 0, timing, target, tname, ttype, skip, condition]);
         subset = tag.subset;
         break;
       default:
-        name = t(TAG[i].name, 2) || name;
-        set(key, [name, i, timing, target, tname, ttype, skip]);
+        if(i) name = t(TAG[i].name, 2) || name;
+        set(key, [name, i, timing, target, tname, ttype, skip, condition]);
         subset = tag.variant;
         break;
     }
@@ -237,10 +250,10 @@ function splitSkills(s){
           if(subtag.subset.length) evo = subtag.subset;
           if(ignore){
             subname += "に貫通";
-            set(subname, [subname, TAG.table.get(subname), timing, sub, subname, ttype, true]);
+            set(subname, [subname, TAG.table.get(subname), timing, sub, subname, ttype, true, condition]);
           }else{
             var subkey = subname + "に" + name;
-            set(subkey, [name, i, timing, sub, subname, ttype, true]);
+            set(subkey, [name, i, timing, sub, subname, ttype, true, condition]);
           }
         }
       });

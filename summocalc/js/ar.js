@@ -107,9 +107,9 @@ Record.prototype = {
     this.tag.forEach(function(x, i){
       var ex = [];
       var c = [];
-      var tags = x.map(function(d){
-        var tag = TAG[d[0] % TAG_MAX];
-        if(!d[1]) return 0;
+      var tags = x.map(function(td){
+        var tag = TAG[td.value % TAG_MAX];
+        if(!td.timing) return 0;
         if(i > 2){
           if(tag.subset.length) ex = ex.concat(tag.subset);
           if(tag.variant.length) ex = ex.concat(tag.variant);
@@ -138,7 +138,7 @@ Record.prototype = {
           return 0;
         }
         if(hideTiming) return tag;
-        return timing2str(d[1]) + t(s[i][0]) + tag + t(s[i][1]);
+        return timing2str(td.timing) + t(s[i][0]) + tag + t(s[i][1]);
       }).filter(function(x){return x});
       if(c.length) r.push(c.join("/"));
       if(tags.length){
@@ -188,10 +188,10 @@ Record.csv = function(list, x){
         v.effects.map(function(n){return t(EFFECT[n].name, x)}).join("/")
       ];
       v.tag.forEach(function(z){
-        r.push(z.map(function(a){
-          var tag = TAG[a[0] % TAG_MAX];
+        r.push(z.map(function(td){
+          var tag = TAG[td.value % TAG_MAX];
           if(tag.type === TAG_TYPE.CATEGORY) return 0;
-          return timing2str(a[1], x) + t(tag.name, x);
+          return timing2str(td.timing, x) + t(tag.name, x);
         }).filter(function(n){return n}).join("/"));
       });
       r.push(["", "(+1)", "(+2)"][v.csBoost], t(WEAPON[v.csWeapon].name, x), e.join("|"), v.getThumbnail(x).join("|"));
@@ -568,4 +568,8 @@ var AR = Record.createList(
   ,[1209, "ブルーランドボーイズ/ブルーランドボーイズ/ぶるーらんどぼーいず", false, ["p弱体解除(単)/j弱体反射", "", ""], 4, 200, 0, 0, EQUIP.THRUST|EQUIP.SHOT|EQUIP.MAGIC, "コロポックル/@ベイブ・バニヤン", 0, ""]
   ,[1210, "必撮！コスプレ人/必撮！コスプレ人/ひっさつ！こすぷれにん", false, ["pd&j注目", "", ""], 4, 150, 0, EQUIP.WATER|EQUIP.WOOD|EQUIP.VALIANT, 0, "アキハゴンゲン/@カトブレパス", 0, ""]
   ,[1211, "いけない！？デッドライン/いけない！？デッドライン/いけない！？でっどらいん", false, ["j全域特防[AR]", "j全域特防[AR]", "p妨害"], 4, 0, 0, 0, EQUIP.SLASH|EQUIP.BLOW|EQUIP.SHOT, "エニグマ/@ヴァプラ", 0, ""]
+  ,[1212, "たった2人の夜学戦線/たった2人の夜学戦線/たったふたりのやがくせんせん", false, ["aHP回復/j全方向移動力増加[解除不可]", "", "aHP吸収"], 5, 100, 0, 0, EQUIP.SLASH|EQUIP.MAGIC, "クルースニク/@エリイ", 0, ""]
+  ,[1213, "トリリオン・オーダー！/トリリオン・オーダー！/とりりおん・おーだー！", false, ["pd弱体解除(単)", "j浄化/t弱体解除(単)", ""], 5, 250, 0, EQUIP.WATER|EQUIP.NETHER, 0, "@サンダユウ/スモーキーゴッド", 0, ""]
+  ,[1214, "今宵はムーンストラック/今宵はムーンストラック/こよいはむーんすとらっく", false, ["暗闇x", "", "pa脱力"], 4, 200, 0, 0, EQUIP.SHOT|EQUIP.MAGIC, "@クルースニク/@ツクヨミ", 0, ""]
+  ,[1215, "謎々迷Q/謎々迷Q/なぞなぞめいQ/なぞなぞめいきゅう/なぞなぞめいきゅー", false, ["集中に特攻[1.2]/tCP増加", "", ""], 3, 150, 0, EQUIP.WOOD|EQUIP.NETHER|EQUIP.NULL, 0, "@スフィンクス/@オセ", 0, ""]
 ]);

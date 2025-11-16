@@ -72,8 +72,8 @@ EffectFilter.prototype = {
     this.markDirty(true);
     return function(x){
       return rb.every(function(range){
-        return x.tag[range].every(function(ie){
-          return (effect !== ie[0] % d) || checkTiming(ie[1], timing);
+        return x.tag[range].every(function(td){
+          return (effect !== td.value % d) || checkTiming(td.timing, timing);
         });
       });
     };
@@ -137,8 +137,8 @@ StaticEffectFilter.prototype = {
     var a = [this.bonus_a, this.bonus_d, this.nullify, this.stef];
     return function(x){
       return a.some(function(te, i){
-        return te && x.tag[(i + 3) % 6].every(function(ie){
-          return te !== ie[0] % d || checkTiming(ie[1], flags[i], 1);
+        return te && x.tag[(i + 3) % 6].every(function(td){
+          return te !== td.value % d || checkTiming(td.timing, flags[i], 1);
         });
       });
     };

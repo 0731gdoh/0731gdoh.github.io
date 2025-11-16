@@ -86,6 +86,7 @@ var SCHOOL = Affiliation.createList(
   ,"<窯多>工業高等専門学校/Kamata Technical Academy"
   ,"<鬼王>警察学校/Kiou Police Academy"
   ,"<究段>武道学園/Kudan Martial Arts Academy"
+  ,"<サテライト>スクール"
   ,"<神宿>学園/Shinjuku Academy"
   ,"<水道帳>商業学校/Suidocho Business Academy"
   ,"<世耕>農業・林業学園/Setagaya Agriculture and Forestry Academy"
