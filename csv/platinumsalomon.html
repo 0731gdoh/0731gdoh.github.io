@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset=UTF-8>
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="放サモ 恒常☆4チェッカー">
+<meta name="twitter:title" content="放サモ 恒常☆4チェックリスト">
 <meta name=viewport content="width=device-width,maximum-scale=1">
 <meta name=theme-color content="#004">
 <link rel=stylesheet href="/theme/theme.css">
@@ -9,6 +9,12 @@
 <link rel=stylesheet href="css/csvviewer.css">
 <script>
 "use strict";
+
+history.replaceState = (a, b, c) => {
+  let h = c.split("#")[1];
+  h = prompt(h, h);
+  if(h) setTimeout(() => _load(h), 500);
+}
 
 window.addEventListener("load", () => {
   const ac = (a, b) => ATTR.indexOf(a) - ATTR.indexOf(b);
@@ -20,7 +26,7 @@ window.addEventListener("load", () => {
 <script src="js/csvviewer.js"></script>
 <script src="js/checker.js"></script>
 <script src="js/platinumsalomon.js"></script>
-<title>放サモ 恒常☆4チェッカー</title>
+<title>放サモ 恒常☆4チェックリスト</title>
 <p id=loading>Now loading...</p>
 <p>
   <input type=button value="結果を共有" id=share>
