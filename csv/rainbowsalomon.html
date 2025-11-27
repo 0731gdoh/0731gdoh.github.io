@@ -10,12 +10,6 @@
 <script>
 "use strict";
 
-history.replaceState = (a, b, c) => {
-  let h = c.split("#")[1];
-  h = prompt(h, h);
-  if(h) setTimeout(() => _load(h), 500);
-}
-
 window.addEventListener("load", () => {
   const ac = (a, b) => ATTR.indexOf(a) - ATTR.indexOf(b);
   const wc = (a, b) => WEAPON.indexOf(a) - WEAPON.indexOf(b);
