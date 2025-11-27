@@ -1192,7 +1192,7 @@ var TAG = Tag.createList(
   ,[927, "覚醒", "かくせ", "与ダメx1.2~2.4\n被ダメx0.9~0.45\n発動率+200%/Deal x1.2~2.4\nTake x0.9~0.45\nSkill Rate +200%", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系/防御増加系/発動率増加系"]
   ,[928, "覚醒に貫通/Ignore 覚醒", "かんかく", "2.22", TAG_TYPE.A_BONUS, "特攻/貫通"]
   ,[929, "強化後HP回復", "きようかこHPか", "自身に$\n(400)/$ on self\n(400)/HP回復", TAG_TYPE.IRREMOVABLE_BUFF, "[強化後]"]
-  ,[930, "CS封印耐性/CS Lock Resistance", "CSふたい", "", TAG_TYPE.IRREMOVABLE_BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "CS封印"]]
+  ,[930, "CS封印耐性/CS Lock Resistance", "CSふたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "CS封印"]]
   ,[931, "不動耐性/Immobility Resistance", "ふとたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "不動"]]
   ,[932, "告死耐性/Countdown Resistance", "こくたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "告死"]]
 ]);
