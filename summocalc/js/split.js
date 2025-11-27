@@ -4,7 +4,7 @@ function SkillData(k, v){
   if(v[2] & TIMING_FLAG.COMPOUND){
     k = v[2] + k;
   }
-  if(v[2] & TIMING_FLAG.SALV){
+  if(v[2] & TIMING_FLAG.CS){
     if(v[3]) v[3] += TAG_MAX;
     if(v[2] & TIMING_FLAG.NOT_CS){
       k = "&c" + k;
@@ -30,7 +30,7 @@ function TagData(v){
   this.value = v[0];
   this.timing = v[1];
   this.bonus = v[2];
-  this.condition = v[3];
+  if(v[3]) this.condition = v[3].slice(1);
   if(v[4]) this.skip = true;
 }
 TagData.prototype = {

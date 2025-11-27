@@ -17,6 +17,7 @@
   --color-dirty: #c84;
   --bgcolor-header: #bbb;
   --color-cond: #070;
+  --color-copy: #836;
   --color-zero: #850;
   --color-salv: #00f;
   --color-tooltip: #fff;
@@ -52,6 +53,7 @@
   --color-dirty: #842;
   --bgcolor-header: #222;
   --color-cond: #373;
+  --color-copy: #846;
   --color-zero: #862;
   --color-salv: #78d;
   --color-tooltip: #000;
@@ -452,14 +454,17 @@ td .dirty {
 .skilldata td div {
   margin: 0.5rem 0;
 }
-.condition {
+.cond {
   font-size: smaller;
   font-weight: bold;
+}
+.fomula {
   color: var(--color-cond);
 }
+.copy {
+  color: var(--color-copy);
+}
 .zero {
-  font-size: smaller;
-  font-weight: bold;
   color: var(--color-zero);
 }
 .zero ~ span {
