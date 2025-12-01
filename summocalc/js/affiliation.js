@@ -99,7 +99,7 @@ var SCHOOL = Affiliation.createList(
   ,"<日暮離>通信学園/Nippori Online Academy"
   ,"<武玄>学園/Bukuro Academy"
   ,"<不死見>学園/Fujimi Academy"
-  ,"<依々祇>学園/Yoyogi Academy"
+  ,"<依々祇󠄀>学園/Yoyogi Academy"
   ,"<六本城>学園/Roppongi Academy"
   ,"<？>？？"
 ]);

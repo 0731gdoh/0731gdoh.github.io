@@ -890,7 +890,7 @@ var TAG = Tag.createList(
   ,[625, "強化転写(単)/Transfer buff (single)", "きようかて1", "", TAG_TYPE.ONE_SHOT, "強化転写/複製・貼付系"]
   ,[626, "火傷特攻/Advantage vs Burn", "やけと", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系"]
   ,[627, "火傷特攻[ファヴニル]", "", "", TAG_TYPE.IRREMOVABLE_BUFF, "火傷特攻/特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "火傷", "特攻[1.5]"]]
-  ,[628, "ギルド新加入認印獲得率アップ/Increase drop rate of Guild Membership Seal", "きる", "", TAG_TYPE.REWARD]
+  ,[628, "ギルド新加入認印獲得率アップ/Increase drop rate of Guild Membership Seal", "きるしん", "", TAG_TYPE.REWARD]
   ,[629, "守護時強化/Protection Strengthening", "しゆこしき", "", TAG_TYPE.IRREMOVABLE_BUFF]
   ,[630, "聖油時強化/Unction Strengthening", "せいしき", "", TAG_TYPE.IRREMOVABLE_BUFF]
   ,[631, "頑強時強化[ティンダロス]/Tenacity Strengthening[Tindalos]", "かんしき てい", "与ダメx2.0\n[@$]/Deal 2.0x\n[@$]/頑強", TAG_TYPE.IRREMOVABLE_BUFF, "頑強時強化/攻撃増加系"]
@@ -1195,4 +1195,6 @@ var TAG = Tag.createList(
   ,[930, "CS封印耐性/CS Lock Resistance", "CSふたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "CS封印"]]
   ,[931, "不動耐性/Immobility Resistance", "ふとたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "不動"]]
   ,[932, "告死耐性/Countdown Resistance", "こくたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "告死"]]
+  ,[933, "対ダメージスキル封印付与", "たいためすき", "敵に$/$ on enemy/スキル封印", TAG_TYPE.IRREMOVABLE_BUFF, "[対ダメージ]"]
+  ,[934, "ギルド同盟証獲得率アップ/Increase drop rate of Guild Alliance Certificate", "きるとう", "", TAG_TYPE.REWARD]
 ]);
