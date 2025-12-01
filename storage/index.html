@@ -83,16 +83,13 @@ const getUnitDescription = (key) => {
   }
 };
 
-
 document.addEventListener("DOMContentLoaded", () => {
   const keys = [];
   const length = localStorage.length;
   const localDiv = document.createElement("div");
   const cacheDiv = document.createElement("div");
   const workerDiv = document.createElement("div");
-  document.forms[0].appendChild(localDiv);
-  document.forms[0].appendChild(cacheDiv);
-  document.forms[0].appendChild(workerDiv);
+  document.forms[0].append(localDiv, cacheDiv, workerDiv);
   for(let i = 0; i < length; i++) keys.push(localStorage.key(i));
   keys.sort();
   appendFieldset(localDiv, "localStorage", "削除", keys, (key) => localStorage.removeItem(key));
@@ -111,7 +108,7 @@ const appendFieldset = (parent, title, action, list, callback) => {
   const legend = document.createElement("legend");
   const button = document.createElement("input");
   legend.textContent = title;
-  fieldset.appendChild(legend);
+  fieldset.append(legend);
   for(const [i, key] of list.entries()){
     const div = document.createElement("div");
     const check = document.createElement("input");
@@ -120,14 +117,13 @@ const appendFieldset = (parent, title, action, list, callback) => {
     label.textContent = getDescription(title, key);
     label.htmlFor = check.id = `check_${title}_${i}`;
     check.dataset.key = key;
-    div.appendChild(check);
-    div.appendChild(label);
-    fieldset.appendChild(div);
+    div.append(check, label);
+    fieldset.append(div);
   }
   button.type = "button";
   button.value = action;
   button.disabled = true;
-  fieldset.appendChild(button);
+  fieldset.append(button);
   fieldset.addEventListener("change", () => {
     button.disabled = !fieldset.querySelector(":checked");
   });
@@ -142,10 +138,11 @@ const appendFieldset = (parent, title, action, list, callback) => {
       button.disabled = true;
     }
   });
-  parent.appendChild(fieldset);
+  parent.append(fieldset);
 };
 
 </script>
 <title>ストレージ管理</title>
+<p>ブラウザに保存されているデータを管理できます。</p>
 <form></form>
 <a href="/">戻る</a>
