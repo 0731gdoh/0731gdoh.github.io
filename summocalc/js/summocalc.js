@@ -97,13 +97,14 @@ function setOptions(id, list, params){
   var zeroCount = 0;
   var containers = [document.createDocumentFragment()];
   var ci = 0;
-  var filter, order, ogl, d, text;
+  var filter, order, ogl, d, text, output;
   if(params){
     filter = params.filter;
     order = params.order;
     ogl = params.labels;
     d = params.divisor;
     text = params.text;
+    output = params.output;
   }
   if(!order) order = list.LOCALE_ORDER ? list.LOCALE_ORDER[language] : list.ORDER || list.map(function(v, i){return i});
   if(ogl){
@@ -155,6 +156,7 @@ function setOptions(id, list, params){
   elem.selectedIndex = 0;
   setValue(id, value, true, zeroCount);
   if(elem.onchange && v(id) !== value) elem.onchange();
+  if(output) _(output).textContent = "(" + (elem.length - 1) + "/" + (list.length - 1) + ")";
 }
 function setTextAll(a){
   a.forEach(function(x){
@@ -167,6 +169,30 @@ function setText(id, str){
     o.value = t(str);
   }else{
     o.textContent = t(str);
+  }
+}
+function selectPrev(id){
+  var o = _(id);
+  var length = o.length - 1;
+  if(length){
+    if(o.selectedIndex > 1){
+      o.selectedIndex -= 1;
+    }else{
+      o.selectedIndex = length;
+    }
+    if(o.onchange) o.onchange();
+  }
+}
+function selectNext(id){
+  var o = _(id);
+  var length = o.length - 1;
+  if(length){
+    if(o.selectedIndex < length){
+      o.selectedIndex += 1;
+    }else{
+      o.selectedIndex = 1;
+    }
+    if(o.onchange) o.onchange();
   }
 }
 function selectRandomly(id){
@@ -344,7 +370,7 @@ function share(data){
   }catch(e){}
 }
 function pad(n, length){
-  return ("00" + n).slice(-length);
+  return ("000" + n).slice(-length);
 }
 function download(data, mime, name){
   var blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), data], {type: mime});
