@@ -43,7 +43,7 @@ SkillTable.prototype = {
         var ei = td.value > TAG_MAX ? 1 : 0;
         var tooltip = t(tag.description);
         var border = tag.bdi & 3;
-        var condition = parseCondition(td.condition);
+        var condition = td.condition;
         if(tag.timing) tooltip = t(TAG[tag.timing].name) + "\n" + (tooltip || t("追加スキル/Additional Skill"));
         if(tag.link){
           var nth = 0;
@@ -80,7 +80,7 @@ SkillTable.prototype = {
             }
             if(!tooltip) tooltip = name;
             name += bonus;
-            if(td.value > TAG_MAX && (td.timing & TIMING_FLAG.NOT_TEMPORARY)) i = 0;
+//            if(td.value > TAG_MAX && (td.timing & TIMING_FLAG.NOT_TEMPORARY)) i = 0;
             break;
           case 5:
             name = nullify(name);
@@ -150,12 +150,18 @@ SkillTable.prototype = {
             var div = document.createElement("div");
             var span = document.createElement("span");
             if(x[2]){
-              var cond = document.createElement("span");
-              cond.textContent = x[2][0];
-              cond.classList.add("cond");
-              cond.classList.add(x[2][1]);
-              div.appendChild(cond);
-              div.appendChild(document.createElement("br"));
+              var cds = document.createElement("div");
+              cds.className = "cond";
+              x[2].split("@").forEach(function(s){
+                var cond = document.createElement("span");
+                var pc = parseCondition(s);
+                cond.textContent = pc[0];
+                cond.className = pc[1];
+                if(pc[1] === "zero") span.className = "zeroline";
+                cds.appendChild(cond);
+                cds.appendChild(document.createElement("br"));
+              });
+              div.appendChild(cds);
             }
             span.textContent = x[0];
             if(x[1] & TIMING_FLAG.SALV) span.classList.add("salv");
@@ -179,48 +185,52 @@ SkillTable.prototype = {
 };
 
 function parseCondition(s){
-  if(s){
-    var value = s.slice(2);
-    var type = "";
-    var op = "";
-    var suffix = "";
-    switch(s[0]){
-      case "h":
-        type = "HP ";
-        suffix = "%";
-        break;
-      case "c":
-        type = "CP ";
-        break;
-      case "w":
-        type = "Phase ";
-        break;
-      case "p":
-        type = "Ph.Turn ";
-        break;
-      case "t":
-        type = "Turn ";
-        break;
-      case "v":
-        return ["Copy", "copy"];
-      case "z":
-        return ["0%", "zero"];
-    }
-    switch(s[1]){
-      case "g":
-        op = "≥ ";
-        break;
-      case "l":
-        op = "≤ ";
-        break;
-      case "e":
-        op = "= ";
-        break;
-      case "b":
-        value = value.split(",");
-        return [[value[0], suffix, " ≤ ", type, "≤ ", value[1], suffix].join(""), "fomula"];
-    }
-    return [[type, op, value, suffix].join(""), "fomula"];
+  var value = s.slice(2);
+  var type = "";
+  var op = "";
+  var suffix = "";
+  switch(s[0]){
+    case "h":
+      type = "HP";
+      suffix = "%";
+      break;
+    case "c":
+      type = "CP";
+      break;
+    case "w":
+      type = "Phase";
+      break;
+    case "p":
+      type = "Ph.Turn";
+      break;
+    case "t":
+      type = "Turn";
+      break;
+    case "o":
+      suffix = "+1";
+    case "e":
+      return ["Turn = 2n" + suffix, "fomula"];
+    case "v":
+      return ["Copy", "copy"];
+    case "z":
+      return ["0%", "zero"];
   }
-  return "";
+  switch(s[1]){
+    case "g":
+      op = " ≥ ";
+      break;
+    case "l":
+      op = " ≤ ";
+      break;
+    case "e":
+      op = " = ";
+      break;
+    case "n":
+      op = " ≠ ";
+      break;
+    case "b":
+      value = value.split("-");
+      return [[value[0], suffix, " ≤ ", type, " ≤ ", value[1], suffix].join(""), "fomula"];
+  }
+  return [[type, op, value, suffix].join(""), "fomula"];
 }

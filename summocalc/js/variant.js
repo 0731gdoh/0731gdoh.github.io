@@ -107,6 +107,7 @@ var VARIANT = Variant.createList(
   ,["放課後トレジャー・オデッセイ！", "碧海25/Odyssey25"]
   ,["トロピカル・バーンホリデー", "消防25/Tropical25"]
   ,["9th HOUSAMO ANNIVERSARY", "周年25/Anniversary25"]
+  ,["クリスマス・ストリートファイト", "聖夜25/Xmas25"]
   ,"スロット/Slot"
   ,["[1枚目]/[1st Variant]", , 1]
   ,["[2枚目]/[2nd Variant]", , 2]

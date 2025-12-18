@@ -105,7 +105,9 @@ var SCHOOL = Affiliation.createList(
 ]);
 
 var TEAM = Affiliation.createList(
-  ["神宿<ワン>ダーフォー<ゲル>部/Shinjuku Academy Mountaineers"
+  ["<MMA>ファイトクラブ（<表>）"
+  ,"<MMA>ファイトクラブ（<裏>）"
+  ,"神宿<ワン>ダーフォー<ゲル>部/Shinjuku Academy Mountaineers"
   ,"世耕<山岳部>/Setagaya Mountaineering Club"
   ,"<バズ>ル<ドリ>ーマーズ/Viral Influence"
   ,"八犬士/Eight Dog Warriors"

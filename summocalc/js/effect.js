@@ -826,7 +826,8 @@ var EFFECT = Effect.createList(
   ,[459, "覚醒", "かく", 0, 1.2, , EFFECT_FLAG.IRREMOVABLE]
   ,[460, "覚醒", "かく", 1, 0.9, , EFFECT_FLAG.IRREMOVABLE]
   ,[461, "<*覚醒>に貫通/Ignore 覚醒", "かくせいに", 0, 2.22, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
-  
+  ,[462, "虚飾大特攻/Big Advantage vs Flamboyance", "きよしよくた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
+  ,[463, "移動不能大特攻", "いと", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]

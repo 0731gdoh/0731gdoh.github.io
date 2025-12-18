@@ -97,6 +97,7 @@ var calc = {
       c.arfilter.update(c.card);
       setText("sax", "+" + r2n(CARD[c.card].rarity, c.cs));
       if(c.card) c.skillTable.setValue(CARD[c.card]);
+      c.cardfilter.updateNavigate();
       c.skillTable.write();
     });
     _("pl").max = 70 + MAX_LEVEL_SEED;
@@ -172,6 +173,12 @@ var calc = {
     };
     _("rcb").onclick = function(){
       selectRandomly("pc");
+    };
+    _("pvb").onclick = function(){
+      selectPrev("pc");
+    };
+    _("nxb").onclick = function(){
+      selectNext("pc");
     };
     _("fv").onclick = function(){
       c.cardfilter.toggle();
@@ -1247,8 +1254,12 @@ var calc = {
           return f && f(x);
         })) return false;
         return true;
-      }});
-      _("cx").innerHTML = "(" + (_("pc").length - 1) + "/" + (CARD.length - 1) + ")";
+      }, output: "cx"});
+      this.updateNavigate();
+    },
+    updateNavigate: function(){
+      var pc = _("pc");
+      _("ccn").textContent = pad(pc.selectedIndex || "----", 4) + "/" + pad(pc.length - 1, 4);
     }
   },
   arfilter: {
@@ -1400,8 +1411,7 @@ var calc = {
           return f && f(x);
         })) return false;
         return true;
-      }, labels: AR.LABELS});
-      _("rcx").innerHTML = "(" + (_("rc").length - 1) + "/" + (AR.length - 1) + ")";
+      }, labels: AR.LABELS, output: "rcx"});
     }
   }
 };
