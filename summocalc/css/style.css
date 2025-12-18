@@ -120,6 +120,9 @@ input[type="button"]:enabled {
 * + input[type="button"] {
   margin-left: 0.5rem;
 }
+input[type="button"] + label {
+  margin-left: 0.5rem;
+}
 input[type="button"] + input[type="button"] {
   margin-left: 0.3rem;
 }
@@ -451,12 +454,11 @@ td .dirty {
   overflow-wrap: break-word;
   line-height: 1.1;
 }
-.skilldata td div {
-  margin: 0.5rem 0;
-}
 .cond {
   font-size: smaller;
   font-weight: bold;
+  line-height: 1;
+  margin-bottom: 0.2rem;
 }
 .fomula {
   color: var(--color-cond);
@@ -467,7 +469,7 @@ td .dirty {
 .zero {
   color: var(--color-zero);
 }
-.zero ~ span {
+.zeroline {
   text-decoration-line: underline;
   text-decoration-color: var(--color-zero);
 }
@@ -502,8 +504,14 @@ caption {
   margin-top: 0;
   padding: 0.2rem;
 }
+.navigate {
+  width: 4rem;
+  height: 1.6rem;
+  margin-bottom: 0.5rem;
+}
 .tooltip {
   position: relative;
+  margin: 0.5rem 0;
 }
 .tooltip:hover::after {
   position: absolute;
