@@ -30,7 +30,10 @@ function TagData(v){
   this.value = v[0];
   this.timing = v[1];
   this.bonus = v[2];
-  if(v[3]) this.condition = v[3].slice(1);
+  if(v[3]){
+    this.condition = v[3].slice(1);
+    this.del = v[3].indexOf("d") !== -1;
+  }
   if(v[4]) this.skip = true;
 }
 TagData.prototype = {
@@ -264,6 +267,9 @@ function splitSkills(s){
 
 function generateEffectData(s, group){
   var result = [];
+  var push = function(x){
+    if(result.indexOf(x) === -1) result.push(x);
+  };
   s.forEach(function(sd){
     var i = EFFECT.table.get(group ? "*" + sd.name : sd.name);
     if(i){
@@ -276,9 +282,9 @@ function generateEffectData(s, group){
             n = e.subset.get(sd.target);
             if(!n) n = registerBonusEffect(i, sd);
           }
-          result.push(n + g);
+          push(n + g);
         }else if(e.type !== TYPE.BONUS){
-          result.push(i + g);
+          push(i + g);
         }
       }
     }

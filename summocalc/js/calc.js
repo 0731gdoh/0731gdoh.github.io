@@ -77,10 +77,11 @@ var calc = {
       _("su").style.display = "none";
     }
     if(navigator.standalone !== false) _("ms").style.display = "none";
-    this.skillTable = new SkillTable(CARD[0]);
+    this.skillTable = new SkillTable("sd", CARD[0], "hc");
     this.loadLanguage();
     this.cardfilter.init();
     this.arfilter.init();
+    this.skillTable.init("details");
     linkInput(c, "atk", "a");
     linkInput(c, "weapon", "w");
     linkInput(c, "cs", "cs", function(){
@@ -98,7 +99,7 @@ var calc = {
       setText("sax", "+" + r2n(CARD[c.card].rarity, c.cs));
       if(c.card) c.skillTable.setValue(CARD[c.card]);
       c.cardfilter.updateNavigate();
-      c.skillTable.write();
+      c.skillTable.update();
     });
     _("pl").max = 70 + MAX_LEVEL_SEED;
     linkInput(c, "lv", "pl");
@@ -108,7 +109,7 @@ var calc = {
       setText("rx", "+" + r2n(AR[c.ar].arRarity));
     });
     linkInput(c, "arLv", "rl");
-    this.separator = getStorageItem("separator") === "1";
+    this.separator = getStorageItem("separator") !== "0";
     linkInput(c, "separator", "ts", function(){
       setStorageItem("separator", c.separator ? "1" : "0");
     });
@@ -686,7 +687,8 @@ var calc = {
       ["ldd", "読込/Load"],
       ["dld", "削除/Delete"]
     ]);
-    this.skillTable.write();
+    this.skillTable.updateSettingTexts();
+    this.skillTable.update();
     this.cardfilter.updateTexts(this.ar);
     this.arfilter.updateTexts();
     this.active = 1;
@@ -1093,6 +1095,7 @@ var calc = {
     ],
     ar: 0,
     external: 0,
+    evolved: 1,
     exclude: 0,
     defaultValues: new Map(),
     active: 0,
@@ -1110,6 +1113,7 @@ var calc = {
         ["guildMode", "gf_mode"],
         ["schoolMode", "sf_mode"],
         ["external", "egf"],
+        ["evolved", "evf"],
         ["exclude", "ccf"]
       ]);
       linkAll(c, [
@@ -1180,6 +1184,7 @@ var calc = {
         ["lof", "その他/Other"],
         ["lqf", "装備可能/Equipable"],
         ["legf", "ギルド制限を無視/Ignore Guild Limitations"],
+        ["levf", "進化前の効果を除外する/Exclude Pre-Evolution Effects"],
         ["lccf", "CSの効果を除外する/Exclude CS Effects"],
         ["rd", "ランダムカード/Random Card"],
         ["fr", "リセット/Reset"]
@@ -1226,7 +1231,7 @@ var calc = {
       var vid = VARIANT[p.variant].value;
       var vv = VARIANT[p.variant].keyword;
       var fs = this.ef.map(function(ef){
-        return ef.getFilter(p.exclude);
+        return ef.getFilter(p.exclude, p.evolved);
       });
       setOptions("pc", CARD, {filter: function(x){
         if(!p.active) return true;

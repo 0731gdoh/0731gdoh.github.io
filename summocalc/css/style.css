@@ -19,6 +19,7 @@
   --color-cond: #070;
   --color-copy: #836;
   --color-zero: #850;
+  --color-plus: #c30;
   --color-salv: #00f;
   --color-tooltip: #fff;
   --border-tooltip: #ccc;
@@ -55,6 +56,7 @@
   --color-cond: #373;
   --color-copy: #846;
   --color-zero: #862;
+  --color-plus: #a41;
   --color-salv: #78d;
   --color-tooltip: #000;
   --border-tooltip: #bbb;
@@ -440,6 +442,7 @@ td .dirty {
   table-layout: fixed;
   width: 100%;
   margin: 0;
+  margin-bottom: 1rem;
 }
 .skilldata th:first-child {
   width: 15%;
@@ -455,10 +458,10 @@ td .dirty {
   line-height: 1.1;
 }
 .cond {
-  font-size: smaller;
+  font-size: x-small;
   font-weight: bold;
   line-height: 1;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.1rem;
 }
 .fomula {
   color: var(--color-cond);
@@ -473,6 +476,14 @@ td .dirty {
   text-decoration-line: underline;
   text-decoration-color: var(--color-zero);
 }
+.plus {
+  color: var(--color-plus);
+}
+.del {
+  text-decoration-line: line-through;
+  text-decoration-color: var(--color-plus);
+  text-decoration-style: double;
+}
 .salv {
   font-style: italic;
   color: var(--color-salv);
@@ -481,7 +492,7 @@ td .dirty {
   font-weight: bold;
 }
 .skilldata .odd {
-  background-color: #8882;
+  background-color: #6662;
 }
 .skilldata th {
   background-color: var(--bgcolor-header);
