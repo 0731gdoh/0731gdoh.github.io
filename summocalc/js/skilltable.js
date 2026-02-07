@@ -68,9 +68,6 @@ SkillTable.prototype = {
     setCheckGroup(this.setting, TABLE_LABEL);
   },
   update: function(){
-  try{this._update()}catch(e){alert(e)}
-  },
-  _update: function(){
     var card = this.value;
     var table = this.table;
     var details = this.details;
