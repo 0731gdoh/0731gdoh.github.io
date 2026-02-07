@@ -1,20 +1,84 @@
 "use strict";
 
-function SkillTable(value){
+function TableLabel(index, x){
+  var list = x[1].filter(function(x){
+    return x;
+  });
+  this.index = index;
+  this.name = x[0];
+  this.data = x[1];
+  if(x[1][0]) list.push("cond");
+  this.className = list.join(" ");
+}
+TableLabel.prototype = {
+  toString: function(){
+    return t(this.name) || "－";
+  },
+  getValue: function(){
+    return 0;
+  }
+};
+TableLabel.createList = function(a){
+  return a.map(function(v, i){
+    return new TableLabel(i, v);
+  });
+};
+
+var TABLE_LABEL = TableLabel.createList(
+  [["発動条件/Condition", ["fomula", ""]]
+  ,["0%", ["zero", "zeroline"]]
+  ,["Copy", ["copy", ""]]
+  ,["Skill+%%CS+", ["plus", ""]]
+  ,["進化前/Pre-Evolution", ["", "del"]]
+]);
+TABLE_LABEL.BR = [4];
+
+var LABEL_TYPE = {
+  FOMULA: 0,
+  ZERO: 1,
+  COPY: 2,
+  PLUS: 3,
+  DEL: 4
+};
+var LABEL_FLAG = {
+  SPLIT: (1 << LABEL_TYPE.PLUS) | (1 << LABEL_TYPE.DEL),
+  DEFAULT: (1 << TABLE_LABEL.length) - (1 << LABEL_TYPE.PLUS) - 1
+};
+
+
+function SkillTable(id, value, setting){
+  this.table = _(id);
   this.value = value;
+  this.details = 1;
+  this.active = 1;
+  this.table.className = "skilldata";
+  this.setting = setting;
 }
 SkillTable.prototype = {
+  init: function(key){
+    this.details = (getStorageItem(key) || LABEL_FLAG.DEFAULT) - 0;
+    linkInput(this, "details", this.setting, function(v){
+      setStorageItem(key, v);
+    });
+  },
   setValue: function(value){
     this.value = value;
   },
-  write: function(){
+  updateSettingTexts: function(){
+    setCheckGroup(this.setting, TABLE_LABEL);
+  },
+  update: function(){
+  try{this._update()}catch(e){alert(e)}
+  },
+  _update: function(){
     var card = this.value;
-    var table = _("sd");
+    var table = this.table;
+    var details = this.details;
     var count = 0;
     var header = [""];
     var order = [27, 0, 1, 2, 19, 3, 4, 5, 6, 23, 26, 7, 8, 9, 10, 24, 11, 12, 13, 20, 14, 15, 25, 16, 17, 18, 21, 22];
     var data = TIMING.map(function(x){
-      return [t(x.name), [], [], []];
+      return [t(x.name), new Map(), new Map(), new Map()];
     });
     var st = [
       "移動時/When Moving",
@@ -26,10 +90,26 @@ SkillTable.prototype = {
       "状態異常時/When Under Status Effect",
       "状態特攻/Status Advantage"
     ].map(function(x){
-      return [t(x), [], [], []];
+      return [t(x), new Map(), new Map(), new Map()];
     });
     var nullify = function(name){
       return t(name + "無効/Nullify " + name);
+    };
+    var push = function(map, name, td, tooltip, tag, bonus){
+      var cls = [];
+      var split = details & LABEL_FLAG.SPLIT;
+      var key = 0;
+      if(td.timing & TIMING_FLAG.SALV){
+        cls.push("salv");
+        key |= 1;
+      }
+      if((td.timing & TIMING_FLAG.STATIC) && !(td.timing & TIMING_FLAG.NOT_TEMPORARY)){
+        cls.push("temporary");
+        key |= 2;
+      }
+      key = split ? map.size : tag.index + TAG_MAX * key;
+      if(bonus && !split && map.has(key)) bonus = map.get(key)[5].concat(bonus);
+      map.set(key, [name, cls, td.condition, tooltip, tag.bdi & 3, bonus]);
     };
     RANGE.forEach(function(x){
       header.push(t(x.name));
@@ -42,8 +122,7 @@ SkillTable.prototype = {
         var name = t(tag.name);
         var ei = td.value > TAG_MAX ? 1 : 0;
         var tooltip = t(tag.description);
-        var border = tag.bdi & 3;
-        var condition = td.condition;
+        var bonus = "";
         if(tag.timing) tooltip = t(TAG[tag.timing].name) + "\n" + (tooltip || t("追加スキル/Additional Skill"));
         if(tag.link){
           var nth = 0;
@@ -59,18 +138,17 @@ SkillTable.prototype = {
         }else{
           if(ex[ei].indexOf(tag.index) !== -1 && td.skip) return;
           if(tag.category.length){
-            ex[ei] = ex[ei].concat(tag.category.slice(1));
+            ex[ei] = ex[ei].concat(tag.category);
             if(!tag.reading || tag.reading.indexOf(" ") !== -1) name = t(TAG[tag.category[0]].name);
-            ex[ei].push(tag.category[0]);
           }
         }
         switch(i){
           case 3:
           case 4:
             if(!td.bonus.length) return;
-            var bonus = "[" + td.bonus.map(function(b){
+            bonus = td.bonus.map(function(b){
               return TAG[b].description;
-            }).join("/") + "]";
+            });
             if(tag.type === TAG_TYPE.SKILL && tag.subset.length){
               var skills = tag.subset.map(function(sub){
                 return t(TAG[sub].name);
@@ -79,7 +157,6 @@ SkillTable.prototype = {
               tooltip = skills.join("\n");
             }
             if(!tooltip) tooltip = name;
-            name += bonus;
 //            if(td.value > TAG_MAX && (td.timing & TIMING_FLAG.NOT_TEMPORARY)) i = 0;
             break;
           case 5:
@@ -94,7 +171,7 @@ SkillTable.prototype = {
               tm = n;
               return true;
             });
-            if(!tag.name.match(/^(?:特[攻防]|デメリット|武器種弱点|.+に貫通)/)) st[tm][1].push([name, td.timing, condition, tooltip, border]);
+            if(!tag.name.match(/^(?:特[攻防]|デメリット|武器種弱点|.+に貫通)/)) push(st[tm][1], name, td, tooltip, tag, bonus);
             return;
           }else if(tag.target && !tooltip){
             if(tag.bonus){
@@ -115,11 +192,11 @@ SkillTable.prototype = {
           }
           bits(td.timing & TIMING_FLAG.ANY).forEach(function(n){
           
-            data[n][i + 1].push([name, td.timing, condition, tooltip, border]);
+            push(data[n][i + 1], name, td, tooltip, tag, bonus);
           });
         }else if(td.timing || i !== 5){
           if(i === 3 && tag.type !== TAG_TYPE.SKILL) i += 3;
-          st[i + 1][1].push([name, td.timing, condition, tooltip, border]);
+          push(st[i + 1][1], name, td, tooltip, tag, bonus);
         }
       });
     });
@@ -136,7 +213,6 @@ SkillTable.prototype = {
         });
         table.appendChild(tr);
       });
-      table.className = "skilldata";
     }
     order.forEach(function(index, ri){
       var row = data[index];
@@ -149,30 +225,40 @@ SkillTable.prototype = {
           d.forEach(function(x){
             var div = document.createElement("div");
             var span = document.createElement("span");
-            if(x[2]){
+            if(x[2] && details){
               var cds = document.createElement("div");
               cds.className = "cond";
               x[2].split("@").forEach(function(s){
-                var cond = document.createElement("span");
                 var pc = parseCondition(s);
-                cond.textContent = pc[0];
-                cond.className = pc[1];
-                if(pc[1] === "zero") span.className = "zeroline";
-                cds.appendChild(cond);
-                cds.appendChild(document.createElement("br"));
+                if((1 << pc[0]) & details){
+                  var tl = TABLE_LABEL[pc[0]];
+                  if(pc[1]){
+                    var cond = document.createElement("span");
+                
+                    cond.textContent = pc[1];
+                    cond.className = tl.data[0];
+                    cds.appendChild(cond);
+                    cds.appendChild(document.createElement("br"));
+                  }else if(tl.data[1]){
+                    cds.classList.add(tl.data[1]);
+                  }
+                  if(tl.data[1]) span.className = tl.data[1];
+                }
               });
-              div.appendChild(cds);
+              if(cds.firstChild) div.appendChild(cds);
             }
+            if(x[5]) x[0] += "[" + x[5].join("/") + "]";
             span.textContent = x[0];
-            if(x[1] & TIMING_FLAG.SALV) span.classList.add("salv");
-            if((x[1] & TIMING_FLAG.STATIC) && !(x[1] & TIMING_FLAG.NOT_TEMPORARY)) span.classList.add("temporary");
+            x[1].forEach(function(cls){
+              span.classList.add(cls);
+            });
             div.className = "tooltip";
             div.dataset.tooltip = x[3] || x[0];
             if(x[4]) div.classList.add(["", "buff", "debuff"][x[4]]);
             div.appendChild(span);
             cell.appendChild(div);
           });
-          if(d.length) hide = false;
+          if(d.size) hide = false;
         }else{
           cell.textContent = d;
         }
@@ -209,11 +295,17 @@ function parseCondition(s){
     case "o":
       suffix = "+1";
     case "e":
-      return ["Turn = 2n" + suffix, "fomula"];
+      return [LABEL_TYPE.FOMULA, "Turn = 2n" + suffix];
+    case "s":
+      return [LABEL_TYPE.PLUS, "Skill+"];
+    case "x":
+      return [LABEL_TYPE.PLUS, "CS+"];
+    case "d":
+      return [LABEL_TYPE.DEL, ""];
     case "v":
-      return ["Copy", "copy"];
+      return [LABEL_TYPE.COPY, "Copy"];
     case "z":
-      return ["0%", "zero"];
+      return [LABEL_TYPE.ZERO, "0%"];
   }
   switch(s[1]){
     case "g":
@@ -222,6 +314,8 @@ function parseCondition(s){
     case "l":
       op = " ≤ ";
       break;
+    case "m":
+      value = "100";
     case "e":
       op = " = ";
       break;
@@ -230,7 +324,7 @@ function parseCondition(s){
       break;
     case "b":
       value = value.split("-");
-      return [[value[0], suffix, " ≤ ", type, " ≤ ", value[1], suffix].join(""), "fomula"];
+      return [LABEL_TYPE.FOMULA, value[0] + suffix + " ≤ ", type + " ≤ " + value[1] + suffix];
   }
-  return [[type, op, value, suffix].join(""), "fomula"];
+  return [LABEL_TYPE.FOMULA, type + op + value + suffix];
 }

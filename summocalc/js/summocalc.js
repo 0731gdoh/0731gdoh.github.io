@@ -6,7 +6,7 @@ function _(id){
   return document.getElementById(id);
 }
 function t(str, x){
-  return str.indexOf("/") === -1 ? str : (str.split("/")[x === undefined ? language : x] || "").replace(/%%/g, "/");
+  return (str.indexOf("/") === -1 ? str : str.split("/")[x === undefined ? language : x] || "").replace(/%%/g, "/");
 }
 function separate(n){
   return ("" + n).replace(/^-?\d+/, function(match){
@@ -291,6 +291,7 @@ function setCheckGroup(id, list, params){
         var c = _(r[i].htmlFor);
         if(c.checked) value |= c.value;
         r[i].textContent = x;
+        if(x.className) r[i].className = x.className;
         c.value = 1 << v;
         i++;
       }
@@ -339,6 +340,7 @@ function appendCheck(container, id, value, text){
   checkbox.value = value;
   label.htmlFor = id;
   label.textContent = text;
+  if(text.className) label.className = text.className;
   container.appendChild(checkbox);
   container.appendChild(label);
 }

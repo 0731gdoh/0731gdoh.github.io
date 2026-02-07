@@ -59,7 +59,7 @@ EffectFilter.prototype = {
     this.updateOptions();
     setText("l" + this.ids[3], this.label);
   },
-  getFilter: function(exclude){
+  getFilter: function(exclude, evolved){
     var effect = this.effect || this.category;
     var timing = this.timing;
     var rb = bits(this.range);
@@ -73,6 +73,7 @@ EffectFilter.prototype = {
     return function(x){
       return rb.every(function(range){
         return x.tag[range].every(function(td){
+          if(evolved && td.del) return true;
           return (effect !== td.value % d) || checkTiming(td.timing, timing);
         });
       });
@@ -128,7 +129,7 @@ StaticEffectFilter.prototype = {
       setText(tl + (i + 1), "状態変化を含む/Include Status Effects");
     });
   },
-  getFilter: function(exclude){
+  getFilter: function(exclude, evolved){
     var d = exclude ? TAG_MAX * 10 : TAG_MAX;
     var flags = this.tmp.map(function(tmp){
       if(tmp) return TIMING_FLAG.STATIC;
@@ -138,6 +139,7 @@ StaticEffectFilter.prototype = {
     return function(x){
       return a.some(function(te, i){
         return te && x.tag[(i + 3) % 6].every(function(td){
+          if(evolved && td.del) return true;
           return te !== td.value % d || checkTiming(td.timing, flags[i], 1);
         });
       });
