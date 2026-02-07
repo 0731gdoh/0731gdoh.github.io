@@ -52,6 +52,8 @@ const getStorageDescription = (key) => {
       return "ダメージ計算機のオフライン対応モード";
     case "separator":
       return "ダメージ計算機の桁区切り設定";
+    case "details":
+      return "ダメージ計算機のスキルテーブル詳細表示設定";
     default:
       if(/slot\d/.test(key)){
         return getSlotDescription(key);
