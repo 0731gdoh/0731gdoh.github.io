@@ -964,7 +964,7 @@ var TAG = Tag.createList(
   ,[699, "火傷特攻[クマノゴンゲン]", "", "", TAG_TYPE.IRREMOVABLE_BUFF, "火傷特攻/特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "火傷", "特攻[1.5]"]]
   ,[700, "対ダメージ烙印/Stigma when attacked", "たいためらく", "", TAG_TYPE.IRREMOVABLE_BUFF, "[対ダメージ]"]
   ,[701, "防御力微増/Minor DEF Increase", "ほうきよりひ", "被ダメx0.8\n[重複可x3]/Take 0.8x\n[Stackable 3x]", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
-  ,[702, "シンギュラリティ/Singularity", "しん", "(CPが100の時)\n自身に$&$/(when CP is 100)\n$ and $ of self/HP減少,CS変更：無", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ターン開始時]"]
+  ,[702, "シンギュラリティ/Singularity", "しん", "(CPが100の時)\n自身に$&$/(when CP is 100)\n$ and $ on self/HP減少,CS変更：無", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ターン開始時]"]
   ,[703, "加速時強化[カレン]/Acceleration Strengthening[Curren]", "かそしき かれ", "被ダメx0.6\n[@$]/Take 0.6x\n[@$]/加速", TAG_TYPE.IRREMOVABLE_BUFF, "加速時強化/防御増加系"]
   ,[704, "CS変更：無/Change CS: None", "CSへ9", "", TAG_TYPE.BUFF, "CS変更/攻撃不可系"]
   ,[705, "強制移動系(縦)/Forced Move (vertical)", "きようせ2", "", TAG_TYPE.CATEGORY]
