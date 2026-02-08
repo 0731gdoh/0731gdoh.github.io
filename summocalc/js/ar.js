@@ -9,7 +9,7 @@ function Record(index, id, x){
   this.index = index;
   this.id = id;
   this.name = x[0];
-  this.effects = generateEffectData(skills[0], 0).concat(generateEffectData(skills[2], 1));
+  this.effects = generateEffectData(skills[0], 0)[0].concat(generateEffectData(skills[2], 1)[0]);
   this.tag = skills.map(function(s, i){
     return generateTagData(s, i, true);
   });

@@ -155,7 +155,8 @@ Card.csv = function(list, x){
         v.getValue(v.maxLv),
         v.getValue(v.maxLv + MAX_LEVEL_SEED)
       ];
-      v.effects.forEach(function(z){
+      v.effects.forEach(function(zz){
+        var z = zz[0].concat(zz[1]);
         r.push(z.map(function(n){
           return (n > EFFECT_MAX ? "{CS}" : "") + t(EFFECT[n % EFFECT_MAX].name, x)
         }).join("/"));
