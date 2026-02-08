@@ -750,7 +750,7 @@ var calc = {
     var card = CARD[this.card];
     var ar = AR[this.ar];
     var order = [0];
-    var labels = ["追加済み/Added", "ピックアップ/PICK UP"];
+    var labels = ["追加済み/Added", "ピックアップ/PICK UP", "進化前/Pre-Evolution"];
     EFFECT.LOCALE_ORDER[language].forEach(function(x){
       var ep = es[x];
       if(ep.loop) order.push(x);
@@ -765,7 +765,9 @@ var calc = {
       }
     });
     order.push(0);
-    order = order.concat(card.effects[0], card.effects[2]);
+    order = order.concat(card.effects[0][0], card.effects[2][0]);
+    order.push(0);
+    order = order.concat(card.effects[0][1], card.effects[2][1]);
     if(card.canEquip(ar, true)) ar.effects.forEach(function(x){
       order.push(EFFECT_MAX * 2 + x);
     });

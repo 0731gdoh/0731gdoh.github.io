@@ -24,6 +24,7 @@ function SkillData(k, v){
   this.skipBonusTag = v[6];
   this.condition = v[7];
   this.key = k;
+  this.del = v[7] && v[7].indexOf("d") !== -1;
 }
 
 function TagData(v){
@@ -266,9 +267,10 @@ function splitSkills(s){
 }
 
 function generateEffectData(s, group){
-  var result = [];
-  var push = function(x){
-    if(result.indexOf(x) === -1) result.push(x);
+  var result = [[], []];
+  var map = new Map();
+  var push = function(x, del){
+    map.set(x, del);
   };
   s.forEach(function(sd){
     var i = EFFECT.table.get(group ? "*" + sd.name : sd.name);
@@ -282,12 +284,15 @@ function generateEffectData(s, group){
             n = e.subset.get(sd.target);
             if(!n) n = registerBonusEffect(i, sd);
           }
-          push(n + g);
+          push(n + g, sd.del);
         }else if(e.type !== TYPE.BONUS){
-          push(i + g);
+          push(i + g, sd.del);
         }
       }
     }
+  });
+  map.forEach(function(value, key){
+    result[value ? 1 : 0].push(key);
   });
   return result;
 }
