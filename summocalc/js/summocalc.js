@@ -5,6 +5,9 @@ var language = 0;
 function _(id){
   return document.getElementById(id);
 }
+function tsplit(str){
+  return str.indexOf("/") === -1 ? [str, str] : str.split("/");
+}
 function t(str, x){
   return (str.indexOf("/") === -1 ? str : str.split("/")[x === undefined ? language : x] || "").replace(/%%/g, "/");
 }
