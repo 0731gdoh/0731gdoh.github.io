@@ -284,10 +284,10 @@ var calc = {
     _("sci").onchange = function(){
       _("dw").style.display = _("sci").checked ? "block" : "none";
     };
-    this.save();
+    this.defaultHash = this.toHash();
     this.load(location.hash.slice(1), true);
   },
-  save: function(){
+  toHash: function(){
     var s = new Encoder();
     var n = 0;
     var tmp = [];
@@ -368,29 +368,56 @@ var calc = {
     bonus.forEach(function(v){
       s.write(v);
     });
-    s = s.toString();
-    if(!this.defaultHash){
-      this.defaultHash = s;
-    }else if(s === this.defaultHash){
+    return s.toString();
+  },
+  save: function(){
+    var s = this.toHash();
+    if(s === this.defaultHash){
       history.replaceState(null, "", location.pathname);
     }else{
       history.replaceState(null, "", location.pathname + "#" + s);
     }
   },
   load: function(x, skipSave){
-    var s = new Decoder(x);
-    if(s.data){
+    var overwrite = 0;
+    if(x[0] === "."){
+      var match = x.match(/^\.(\.)?(.+?)(?:_(\d+))?$/);
+      var chara = CARD.table.get(match[2]);
+      if(chara){
+        if(!match[3]){
+          overwrite = chara[0];
+        }else if(CARD[chara[0]].rarity > 2){
+          overwrite = chara[match[3] - 1] || 0;
+        }else{
+          chara.some(function(i){
+            if(match[3] - CARD[i].attribute) return false;
+            overwrite = i;
+            return true;
+          });
+        }
+      }
+      if(overwrite){
+        x = this.defaultHash;
+        setValue("sci", match[1] ? 0 : 1);
+      }else{
+        x = "";
+      }
+    }
+    if(x){
       var complete;
+      var s = new Decoder(x);
       var tmp = [];
       var n = s.read();
-      var index = 1;
-      CARD.some(function(v, i){
-        if(v.id === n){
-          index = i;
-          return true;
-        }
-        return false;
-      });
+      var index = overwrite || 1;
+      if(!overwrite){
+        CARD.some(function(v, i){
+          if(v.id === n){
+            index = i;
+            return true;
+          }
+          return false;
+        });
+      }
       this.active = 0;
       if(this.cardfilter.active) this.cardfilter.toggle();
       if(this.arfilter.active) this.arfilter.toggle();
@@ -412,10 +439,10 @@ var calc = {
       setValue("cl", s.read());
       setValue("rl", s.read());
       setValue("sv", s.read());
-      if(this.card){
+      if(this.card && !overwrite){
         setValue("pl", s.read());
       }else{
-        setValue("pl", 1);
+        setValue("pl", CARD[overwrite].maxLv);
         setValue("a", s.read());
         setValue("w", s.read());
         setValue("cs", s.read());

@@ -506,7 +506,7 @@ var AR = Record.createList(
   ,[1143, "放課後チョコレートマジック/Afterschool Chocolate Magic/ほうかごちょこれーとまじっく", false, ["em聖油", "tHP回復", ""], 4, 100, 0, EQUIP.AETHER|EQUIP.NETHER|EQUIP.ALLROUND, 0, "@ブギーマン/シュクユウ", 0, ""]
   ,[1144, "限り無き大決戦！/The Infinite Final Battle/かぎりなきだいけっせん！", false, ["", "", "a烙印"], 5, 400, 0, EQUIP.INFERNAL|EQUIP.VALIANT|EQUIP.WORLD, 0, "マクロイヒ/@シパクトリ", 0, "", 2]
   ,[1145, "上級生のおもてなし/Upperclassman Hospitality/じょうきゅうせいのおもてなし", false, ["魅了に特攻[2.0]/t回避", "", ""], 5, 250, 0, EQUIP.VALIANT|EQUIP.INFERNAL|EQUIP.AETHER, 0, "@アルジャーノン/ツクヨミ", 0, ""]
-  ,[1146, "真夏の浜辺の大闘争！/Battle on the Big Beach/まなつのはまべのだいとうそう！", false, ["j奮起時強化", "j奮起時強化/em奮起", ""], 5, 400, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.WATER, 0, "@テスカトリポカ/オンブレティグレ", 0, ""]
+  ,[1146, "真夏の浜辺の大闘争！/Battle on the Big Beach/まなつのはまべのだいとうそう！", false, ["j奮起時強化[AR]", "j奮起時強化[AR]/em奮起", ""], 5, 400, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.WATER, 0, "@テスカトリポカ/オンブレティグレ", 0, ""]
   ,[1147, "君と喜びの舞を/Our Dance of Joy/きみとよろこびのまいを", false, ["回避に貫通", "tHP回復", ""], 4, 200, 0, 0, EQUIP.MAGIC|EQUIP.SNIPE|EQUIP.BLOW|EQUIP.SHOT, "@オトヒメ/ヤマサチヒコ", 0, ""]
   ,[1148, "家族の事が知りたくて/Family Talks/かぞくのことがしりたくて", false, ["マヒx/j閃き時強化[AR]", "", ""], 4, 250, 0, 0, EQUIP.THRUST|EQUIP.MAGIC, "クロガネ/@ヘパイストス", 0, ""]
   ,[1149, "グリーンマジック/Green Magic/ぐりーんまじっく", false, ["魔法に特防[0.7]/bCP増加", "", ""], 4, 100, 0, 0, EQUIP.THRUST|EQUIP.SHOT|EQUIP.LONGSLASH, "シンノウ/@ヴォーロス", 0, ""]
