@@ -381,7 +381,7 @@ var calc = {
   load: function(x, skipSave){
     var overwrite = 0;
     if(x[0] === "."){
-      var match = x.match(/^\.(\.)?(.+?)(?:_(\d+))?$/);
+      var match = decodeURIComponent(x).match(/^\.(\.)?(.+?)(?:_(\d+))?$/);
       var chara = CARD.table.get(match[2]);
       if(chara){
         if(!match[3]){
