@@ -1232,4 +1232,7 @@ var TAG = Tag.createList(
   ,[958, "*タローマティ/Taromaiti", "た", "被ダメx2.0\n[@$]/Take 2.0x\n[@$]/奮起", TAG_TYPE.IRREMOVABLE_DEBUFF, "奮起時弱化/防御減少系"]
   ,[959, "ダメージ時奮起付与", "ためしふん", "自身に$/$ on self/奮起", TAG_TYPE.IRREMOVABLE_BUFF, "[ダメージ時]"]
   ,[960, "暴走耐性/Berserk Resistance", "ほうそたい", "", TAG_TYPE.IRREMOVABLE_BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "暴走"]]
+  ,[961, "竜系スキル", "", "", TAG_TYPE.SKIP, "", "竜を継ぐ者/造られし竜蛇/最新の人工竜蛇"]
+  ,[962, "造られし竜蛇", "つく", "", TAG_TYPE.SKILL]
+  ,[963, "最新の人工竜蛇", "さい", "", TAG_TYPE.SKILL]
 ]);

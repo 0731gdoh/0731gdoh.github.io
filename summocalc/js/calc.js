@@ -408,16 +408,16 @@ var calc = {
       var s = new Decoder(x);
       var tmp = [];
       var n = s.read();
-      var index = overwrite || 1;
-      if(!overwrite){
-        CARD.some(function(v, i){
-          if(v.id === n){
-            index = i;
-            return true;
-          }
-          return false;
-        });
-      }
+      var card = 1;
+      var index;
+      CARD.some(function(v, i){
+        if(v.id === n){
+          card = i;
+          return true;
+        }
+        return false;
+      });
+      index = overwrite || card;
       this.active = 0;
       if(this.cardfilter.active) this.cardfilter.toggle();
       if(this.arfilter.active) this.arfilter.toggle();
@@ -439,7 +439,7 @@ var calc = {
       setValue("cl", s.read());
       setValue("rl", s.read());
       setValue("sv", s.read());
-      if(this.card && !overwrite){
+      if(card){
         setValue("pl", s.read());
       }else{
         setValue("pl", CARD[overwrite].maxLv);
