@@ -500,7 +500,7 @@ var EFFECT = Effect.createList(
   ,[133, "非<*加速>時強化/Non-Acceleration Strengthening", "ひか", 1, [1, 0.6], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.NON_STATUS]
   ,[134, "<*火傷>時弱化[ジェド]/Burn Weakening[Ded]", "やけとしし", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[135, "祝福時強化[チョウジ]/Blessing Strengthening[Choji]", "しゆくふくしき", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
-  ,[136, "金剛時強化/Adamantine Strengthening", "こんこ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[136, "金剛時強化[ヤスヨリ]/Adamantine Strengthening[Yasuyori]", "こんこ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[137, "悪い子弱体/Naughty Kid Weakening", "わる", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,[138, "<クリティカル>強化/Critical Strengthening", "くり", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[139, "被ダメージ増加[2.0]/Increased Incoming Damage[2.0]", "ひた", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
@@ -559,7 +559,7 @@ var EFFECT = Effect.createList(
   ,[192, "汚れ", "よこ", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.DEBUFF|EFFECT_FLAG.GIMMICK]
   ,[193, "<滋養>時強化[サルタヒコ]/Nourishment Strengthening[Sarutahiko]", "しようしき", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[194, "特殊耐性[0.01+4000]/Special Resistance[0.01+4000]", "とくし", 1, 0.01, 4000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,[195, "全弱体特攻/Advantage vs all debuffs", "せん", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
+  ,[195, "全弱体特攻[アリス]/Advantage vs all debuffs[Alice]", "せん", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[196, "<呪い>時強化[トウジ]/Curse Strengthening[Toji]", "のろ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[197, "注目時強化[限定アールプ]/Taunt Strengthening[Limited Alp]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,[198, "武器種変更：横一文字[弱体]/Weapon Change: Long Slash[Debuff]", "ふき", 0, 0, 7, EFFECT_FLAG.FIXED, TYPE.WEAPON]
@@ -836,6 +836,10 @@ var EFFECT = Effect.createList(
   ,[469, "奮起時強化[マルドゥック=AR]/Arousal Strengthening[Marduk]", "ふん", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[470, "奮起時強化[タローマティ]/Arousal Strengthening[Taromaiti]", "ふん", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[471, "奮起時弱化[タローマティ]/Arousal Weakening[Taromaiti]", "ふん", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[472, "<*暴走>時強化[ガンダルヴァ#2]/Berserk Strengthening[Gandharva]", "ほうそしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[473, "<*暴走+>時強化[ガンダルヴァ#2]/Berserk+ Strengthening[Gandharva]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[474, "愛時強化[シノ]/Love Strengthening[Shino]", "あい", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[475, "全弱体特攻[メリュジーヌ]/Advantage vs all debuffs[Melusine]", "せん", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
