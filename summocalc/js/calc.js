@@ -10,6 +10,21 @@ var FILTER = {
   NOT_CS: function(x){return x.getValue() & TIMING_FLAG.NOT_CS}
 };
 
+var ATTRIBUTE_CHART = [
+  [3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 4, 1],
+  [3, 3, 4, 1, 3, 3, 2, 3, 4, 3, 3, 4],
+  [3, 1, 3, 4, 3, 3, 2, 3, 4, 3, 3, 4],
+  [3, 4, 1, 3, 3, 3, 2, 3, 4, 3, 3, 4],
+  [3, 3, 3, 3, 3, 1, 2, 4, 3, 3, 3, 4],
+  [3, 3, 3, 3, 1, 3, 2, 4, 3, 3, 3, 4],
+  [3, 2, 2, 2, 2, 2, 2, 4, 1, 3, 3, 4],
+  [3, 4, 4, 4, 3, 3, 1, 2, 4, 3, 3, 4],
+  [3, 3, 3, 3, 4, 4, 4, 1, 2, 3, 3, 4],
+  [4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
+  [1, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 1],
+  [4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 3]
+];
+
 function r2n(r, cs){
   switch(r){
     case 5:
@@ -67,6 +82,7 @@ var calc = {
   separator: 0,
   active: 1,
   defaultHash: "",
+  lastHash: "",
   savedata: [],
   init: function(){
     var c = this;
@@ -120,6 +136,17 @@ var calc = {
     window.addEventListener("pageshow", function(e){
       if(e.persisted) c.updateSaveMenu();
     });
+    if(getStorageItem("offline") === "1"){
+      document.addEventListener("visibilitychange", function(){
+         if(document.visibilityState === "hidden") setStorageItem("last", c.lastHash);
+      });
+      window.addEventListener("pageshow", function(e){
+        if(!e.persisted){
+          var hash = getStorageItem("last");
+          if(hash) c.load(hash);
+        }
+      });
+    }
     _("svd").onclick = function(){
       c.saveToStorage();
     };
@@ -285,7 +312,8 @@ var calc = {
       _("dw").style.display = _("sci").checked ? "block" : "none";
     };
     this.defaultHash = this.toHash();
-    this.load(location.hash.slice(1), true);
+    this.lastHash = location.hash.slice(1);
+    this.load(this.lastHash, true);
   },
   toHash: function(){
     var s = new Encoder();
@@ -374,8 +402,10 @@ var calc = {
     var s = this.toHash();
     if(s === this.defaultHash){
       history.replaceState(null, "", location.pathname);
+      this.lastHash = "";
     }else{
       history.replaceState(null, "", location.pathname + "#" + s);
+      this.lastHash = s;
     }
   },
   load: function(x, skipSave){
@@ -553,9 +583,11 @@ var calc = {
     this.update(skipSave);
   },
   addStatus: function(index, lv, group, mode){
+    var linkInitial = lv;
     if(index > EFFECT_MAX){
       mode = Math.floor(index / EFFECT_MAX);
       index %= EFFECT_MAX;
+      if(mode === 2) lv = this.arLv;
     }
     if(index > 0){
       var ep = this.es[index];
@@ -565,30 +597,18 @@ var calc = {
           lv = e.promptData.prompt(ep);
           if(lv === null) return;
         }else if(e.isAffiliation()){
-          lv = 0;
-          while(lv < 1 || lv > 10){
-            lv = prompt(t("効果Lv (※1〜10)/Effect Lv\n(1-10)"), ep.lv || "");
-            if(!lv) return;
-            lv = parseInt(lv, 10) || 0;
-          }
+          lv = loopPrompt(t("効果Lv (※1〜10)/Effect Lv\n(1-10)"), ep.lv || "", 1, 10);
+          if(!lv) return;
           if(e.type === TYPE.ATK){
-            var u = 0;
-            while(u < 1 || u > 5){
-              u = prompt(t("所属メンバー (※1〜5)/Guildmates\n(1-5)"), ep.unit || "");
-              if(!u) return;
-              u = parseInt(u, 10) || 0;
-            }
+            var u = loopPrompt(t("所属メンバー (※1〜5)/Guildmates\n(1-5)"), ep.unit || "", 1, 5);
+            if(!u) return;
             ep.setUnitNum(u);
           }
         }else if(mode == 1){
           lv = 0;
         }else if(mode == 2 && !e.isFixed()){
-          lv = 0;
-          while(lv < 1 || lv > 100){
-            lv = prompt(t("効果Lv (※1〜100)/Effect Lv\n(1-100)"), "");
-            if(!lv) return;
-            lv = parseInt(lv, 10) || 0;
-          }
+          lv = loopPrompt(t("効果Lv (※1〜100)/Effect Lv\n(1-100)"), lv, 1, 100);
+          if(!lv) return;
         }
 
         if(e.type === TYPE.CUSTOM && !ep.loop){
@@ -600,11 +620,8 @@ var calc = {
         }else if(e.type === TYPE.SEED){
           lv = e.baseValue[1];
           if(!lv){
-            while(lv < 1 || lv > 2000){
-              lv = prompt(t("ATK+ (※1〜2000)/ATK+\n(1-2000)"), ep.exclusive[0].lv || "");
-              if(!lv) return;
-              lv = parseInt(lv, 10) || 0;
-            }
+            lv = loopPrompt(t("ATK+ (※1〜2000)/ATK+\n(1-2000)"), ep.exclusive[0].lv || "", 1, 2000);
+            if(!lv) return;
           }
         }else if(e.isFixed() || e.isLv1()){
           lv = 1;
@@ -614,12 +631,7 @@ var calc = {
           var tE = EFFECT[e.link];
           var tLv = 0;
           if(e.type === TYPE.DEBUFF_OVERWRITE){
-            tLv = -1;
-            while(tLv < 0 || tLv > 15 || isNaN(tLv)){
-              tLv = prompt(t("/Number of ") + tE + t("の数 (※0〜15)/\n(0-15)"), "");
-              if(!tLv) break;
-              tLv = parseInt(tLv, 10);
-            }
+            tLv = loopPrompt(t("/Number of ") + tE + t("の数 (※0〜15)/\n(0-15)"), "", 0, 15);
             if(tLv){
               tEp.setLevel(1, tLv);
             }else if(tLv === 0){
@@ -634,11 +646,7 @@ var calc = {
             if(tE.isFixed() || tE.isLv1()){
               if(confirm(t("/Add ") + tE + t("を追加/"))) tLv = 1;
             }else{
-              while(tLv < 1 || tLv > 100){
-                tLv = prompt(t("/Add ") + tE + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), "");
-                if(!tLv) break;
-                tLv = parseInt(tLv, 10) || 0;
-              }
+              tLv = loopPrompt(t("/Add ") + tE + t("を追加 (※Lv.1〜100)/\n(Lv.1-100)"), linkInitial || "", 1, 100);
             }
             if(tLv) this.addStatus(e.link, tLv);
           }
@@ -803,7 +811,11 @@ var calc = {
     setOptions("ds", es, {filter: FILTER.DEFENSE, order: order, labels: labels.concat(EFFECT.LABELS[1]), divisor: EFFECT_MAX, prefixes: p});
   },
   updateMultiplierOptions: function(){
-    setOptions("am", MULTIPLIER, {labels: MULTIPLIER.LABELS, divisor: 100, prefixes: ["", this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？"]});
+    var attr = CARD[this.card].attribute;
+    var possible = new Set(attr ? ATTRIBUTE_CHART[attr - 1] : [1, 2, 3, 4]);
+    setOptions("am", MULTIPLIER, {filter: function(x){
+      return x.index > 4 || !x.index || possible.has(x.index);
+    }, labels: MULTIPLIER.LABELS, divisor: 100, prefixes: ["", this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？"]});
   },
   checkCardSelected: function(){
     if(this.card){
@@ -832,6 +844,9 @@ var calc = {
     var card = CARD[this.card];
     var ar = AR[this.ar];
     var multiplier = this.multiplier;
+    var attr = card.attribute;
+    var tAttr = multiplier < 100 ? 0 : MULTIPLIER[multiplier % 100].getValue();
+    var possible = new Set(attr ? ATTRIBUTE_CHART[attr - 1] : [1, 2, 3, 4]);
     var separator = this.separator ? separate : function(x){return x};
     var desc = [];
     var params = [];
@@ -868,7 +883,7 @@ var calc = {
       if(stef.length) result[2] += " (" + stef.join(", ") + ")";
     }
     if(this.usecs){
-      csrate = CS[cs].getValue() * (1 + Math.LOG10E * Math.log(this.cLv) / 2);
+      csrate = CS[cs].getValue() * (1 + Math.log10(this.cLv) / 2);
       result.push(
         t("【チャージスキル】/【Charge Skill】"),
         "　{Lv." + pad(this.cLv, 3) + "}　" + CS[cs] + t(" (x/ (") + csrate + t(")/x)"),
@@ -960,6 +975,10 @@ var calc = {
           if(e.type === TYPE.CUSTOM) x = ep.getCustomMul();
           //武器種弱点
           if(e.type === TYPE.WEAPON_WEAKNESS && !((1 << weapon) & eV[1])) x = new Fraction(1);
+          //属性特攻
+          if(e.type === TYPE.ATTRIBUTE_BONUS && !((1 << tAttr) & eV[1])) x = new Fraction(1);
+          //属性弱点
+          if(e.type === TYPE.ATTRIBUTE_WEAKNESS && !((1 << attr) & eV[1])) x = new Fraction(1);
           //支援効果
           if(e.type === TYPE.ATK && e.isAffiliation()){
             x = x.add((ep.unit - 1) * 3, 10);
@@ -1038,6 +1057,8 @@ var calc = {
               
             case TYPE.WEAPON_WEAKNESS:
             case TYPE.DEBUFF_OVERWRITE:
+            case TYPE.ATTRIBUTE_BONUS:
+            case TYPE.ATTRIBUTE_WEAKNESS:
               break;
           }}
           if(!loop){
@@ -1065,29 +1086,13 @@ var calc = {
     result.push(t("【ダメージ】/【Damage】"));
     dmg = dmg.mul(WEAPON[weapon].getValue());
     result[6] += t(" (x/ (") + WEAPON[weapon].getValue() + t(")/x)");
-    if(multiplier > 4){
-      multiplier = [
-        [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 4, 1],
-        [3, 3, 4, 1, 3, 3, 2, 3, 4, 3, 3, 4],
-        [3, 1, 3, 4, 3, 3, 2, 3, 4, 3, 3, 4],
-        [3, 4, 1, 3, 3, 3, 2, 3, 4, 3, 3, 4],
-        [3, 3, 3, 3, 3, 1, 2, 4, 3, 3, 3, 4],
-        [3, 3, 3, 3, 1, 3, 2, 4, 3, 3, 3, 4],
-        [3, 2, 2, 2, 2, 2, 2, 4, 1, 3, 3, 4],
-        [3, 4, 4, 4, 3, 3, 1, 2, 4, 3, 3, 4],
-        [3, 3, 3, 3, 4, 4, 4, 1, 2, 3, 3, 4],
-        [4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1],
-        [1, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 1],
-        [4, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 3]
-      ][card.attribute][MULTIPLIER[multiplier % 100].getValue() - 1];
-    }
+    if(tAttr) multiplier = attr ? ATTRIBUTE_CHART[attr - 1][tAttr - 1] : 0;
     for(i = 1; i < 5; i++){
-      var attr = MULTIPLIER[i];
-      if(!multiplier || i === multiplier){
-        x = Math.ceil(Math.max(dmg.mul(atk).mul(attr.getValue()).muln(csrate) + exdmg, 0));
+      var attrRate = MULTIPLIER[i];
+      if((!multiplier || i === multiplier) && possible.has(i)){
+        x = Math.ceil(Math.max(dmg.mul(atk).mul(attrRate.getValue()).muln(csrate) + exdmg, 0));
         if(i === 3 || multiplier) this.setTitle(x);
-        result.push("　[" + attr + "]: " + separator(x));
+        result.push("　[" + attrRate + "]: " + separator(x));
       }
     }
     result.push(LINE);
@@ -1240,6 +1245,7 @@ var calc = {
       });
       this.active = active;
       this.update();
+      setValue("pc", 0);
     },
     checkWeapon: function(mode, x){
       var bit = [this.weapon, this.cs][mode];
@@ -1403,6 +1409,7 @@ var calc = {
       });
       this.active = active;
       this.update();
+      setValue("rc", 0);
     },
     updateThumbnail: function(){
       var s = toLowerKatakana(this.thumbnailText);

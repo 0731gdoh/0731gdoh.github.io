@@ -54,9 +54,10 @@ var TIMING_FLAG = {
   COMPOUND: 1 << TIMING.length,
   SALV: 2 << TIMING.length,
   STATIC: 4 << TIMING.length,
-  NOT_TEMPORARY: 8 << TIMING.length,
+  TEMPORARY: 8 << TIMING.length,
 }
 TIMING_FLAG.NOT_CS = TIMING_FLAG.ANY - TIMING_FLAG.CS;
+TIMING_FLAG.TEMPORARY_STATIC = TIMING_FLAG.STATIC | TIMING_FLAG.TEMPORARY;
 
 function timing2str(timing, lang){
   var brace = (timing & TIMING_FLAG.SALV) ? "}{" : "][";

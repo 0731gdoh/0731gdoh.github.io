@@ -73,19 +73,27 @@ SkillTable.prototype = {
     var details = this.details;
     var count = 0;
     var header = [""];
-    var order = [27, 0, 1, 2, 19, 3, 4, 5, 6, 23, 26, 7, 8, 9, 10, 24, 11, 12, 13, 20, 14, 15, 25, 16, 17, 18, 21, 22];
+    var order = [-1, 0, 1, 2, 19, 3, 4, 5, 6, 23, 26, 7, 8, 9, 10, 24, 11, 12, 13, 20, 14, 15, 25, 16, 17, 18, 21, 22];
     var data = TIMING.map(function(x){
       return [t(x.name), new Map(), new Map(), new Map()];
     });
     var st = [
+      //19
       "移動時/When Moving",
+      //20
       "強制移動時/During Forced Move",
+      //21
       "アイテム入手時/When Obtaining Items",
+      //22
       "勝利時/Upon Victory",
+      //23
       "特攻/Attack Advantage",
+      //24
       "特防/Defense Advantage",
+      //25
       "状態異常時/When Under Status Effect",
-      "状態特攻/Status Advantage"
+      //26
+      "状態特攻/Status Advantage",
     ].map(function(x){
       return [t(x), new Map(), new Map(), new Map()];
     });
@@ -100,7 +108,7 @@ SkillTable.prototype = {
         cls.push("salv");
         key |= 1;
       }
-      if((td.timing & TIMING_FLAG.STATIC) && !(td.timing & TIMING_FLAG.NOT_TEMPORARY)){
+      if(td.timing & TIMING_FLAG.TEMPORARY){
         cls.push("temporary");
         key |= 2;
       }
@@ -146,15 +154,14 @@ SkillTable.prototype = {
             bonus = td.bonus.map(function(b){
               return TAG[b].description;
             });
-            if(tag.type === TAG_TYPE.SKILL && tag.subset.length){
-              var skills = tag.subset.map(function(sub){
+            if((tag.type === TAG_TYPE.SKILL || tag.type === TAG_TYPE.ATTRIBUTE) && tag.subset.length){
+              var subNames = tag.subset.map(function(sub){
                 return t(TAG[sub].name);
               });
-              if(tag.name.indexOf("スキル") === -1) skills.unshift(name);
-              tooltip = skills.join("\n");
+              if(tag.name.indexOf("スキル") === -1 && tag.name.indexOf("属性") === -1) subNames.unshift(name);
+              tooltip = subNames.join("\n");
             }
             if(!tooltip) tooltip = name;
-//            if(td.value > TAG_MAX && (td.timing & TIMING_FLAG.NOT_TEMPORARY)) i = 0;
             break;
           case 5:
             name = nullify(name);
@@ -168,7 +175,7 @@ SkillTable.prototype = {
               tm = n;
               return true;
             });
-            if(!tag.name.match(/^(?:特[攻防]|デメリット|武器種弱点|.+に貫通)/)) push(st[tm][1], name, td, tooltip, tag, bonus);
+            if(!tag.name.match(/^(?:特[攻防]|デメリット|(?:武器種|属性)弱点|.+に貫通)/)) push(st[tm][1], name, td, tooltip, tag, bonus);
             return;
           }else if(tag.target && !tooltip){
             if(tag.bonus){
@@ -192,13 +199,13 @@ SkillTable.prototype = {
             push(data[n][i + 1], name, td, tooltip, tag, bonus);
           });
         }else if(td.timing || i !== 5){
-          if(i === 3 && tag.type !== TAG_TYPE.SKILL) i += 3;
+          if(i === 3 && tag.type !== TAG_TYPE.SKILL && tag.type !== TAG_TYPE.ATTRIBUTE) i = 6;
           push(st[i + 1][1], name, td, tooltip, tag, bonus);
         }
       });
     });
     data = data.concat(st);
-    data.push(header);
+    data.unshift(header);
     if(!table.firstChild){
       var caption = document.createElement("caption");
       table.appendChild(caption);
@@ -212,7 +219,7 @@ SkillTable.prototype = {
       });
     }
     order.forEach(function(index, ri){
-      var row = data[index];
+      var row = data[index + 1];
       var hide = true;
       var tr = table.rows[ri];
       row.forEach(function(d, ci){
