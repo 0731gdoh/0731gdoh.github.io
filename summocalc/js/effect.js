@@ -16,7 +16,9 @@ var TYPE = {
   NOT_DEBUFFED: 16,
   WEAPON_WEAKNESS: 17,
   DEBUFF_OVERWRITE: 18,
-  REVERSAL: 19
+  REVERSAL: 19,
+  ATTRIBUTE_BONUS: 20,
+  ATTRIBUTE_WEAKNESS: 21
 };
 
 var EFFECT_FLAG = {
@@ -33,11 +35,17 @@ var EFFECT_FLAG = {
   BONUS_TO_DEBUFF: 1 << 10,
   NON_STATUS: 1 << 11,
   ALT: 1 << 12,
-  
   AFFILIATION: 1 << 14
 };
 
-var WEAPON_FLAG = {
+var TARGET_FLAG = {
+  ANY: (1 << 6) - 1,
+  RARE1: 1 << 1,
+  RARE2: 1 << 2,
+  RARE3: 1 << 3,
+  RARE4: 1 << 4,
+  RARE5: 1 << 5,
+  ANY_WEAPON: (1 << 10) - 1,
   SLASH: 1 << 1,
   THRUST: 1 << 2,
   BLOW: 1 << 3,
@@ -46,7 +54,20 @@ var WEAPON_FLAG = {
   SNIPE: 1 << 6,
   LONGSLASH: 1 << 7,
   ALL: 1 << 8,
-  NONE: 1 << 9
+  NONE: 1 << 9,
+  ANY_ATTRIBUTE: (1 << 13) - 1,
+  ALLROUND: 1 << 1,
+  FIRE: 1 << 2,
+  WATER: 1 << 3,
+  WOOD: 1 << 4,
+  AETHER: 1 << 5,
+  NETHER: 1 << 6,
+  INFERNAL: 1 << 7,
+  VALIANT: 1 << 8,
+  WORLD: 1 << 9,
+  INFINITY: 1 << 10,
+  NULL: 1 << 11,
+  DIVINE: 1 << 12
 };
 
 var PROMPT_TYPE = {
@@ -394,7 +415,7 @@ var EFFECT = Effect.createList(
   ,[27, "滋養/Nourishment", "しよ", 0, 1.1, , , , 0.4]
   ,[28, "聖油/Unction", "せい", 1, 0.85]
   ,[29, "<*聖油>に貫通/Ignore Unction", "せい", 0, 2.35, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.IGNORE]
-  ,[30, "束縛/Bind", "そく", 0, 0.9]
+  ,[30, "束縛/Bind", "そくは", 0, 0.9]
   ,[31, "×<*凍結>", "とう", 2]
   ,[32, "闘志/Vigor", "とう", 0, 1.2]
   ,[33, "毒反転/Poison Reversal", "とく", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.DEBUFF]
@@ -553,7 +574,7 @@ var EFFECT = Effect.createList(
   ,[186, "非強化時強化/Non-Buff Strengthening", "ひきようかしき", 1, [1, 0.3], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_BUFFED]
   ,[187, "<呪い>時強化[ジュウゴ]/Curse Strengthening[Jugo]", "のろ", 0, 6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[188, "<*烙印>時強化/Stigma Strengthening", "らくいんしき", 1, 0.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,[189, "射撃弱点[ソール]/Shot Weakness[Sol]", "しやけきし", 1, 2.5, WEAPON_FLAG.SHOT, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[189, "射撃弱点[ソール]/Shot Weakness[Sol]", "しやけきし", 1, 2.5, TARGET_FLAG.SHOT, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[190, "<火傷>時強化[テュポーン]/Burn Strengthening[Typhon]", "やけとし", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[191, "CS変更：射撃/Change CS: Shot", "CS", 0, 0, 4, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,[192, "汚れ", "よこ", 0, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.DEBUFF|EFFECT_FLAG.GIMMICK]
@@ -601,13 +622,13 @@ var EFFECT = Effect.createList(
   ,[234, "防御力増加[バレ]/Defense Increase[Valentine]", "ほう", 1, 0.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.GIMMICK]
   ,[235, "食べちゃうぞ", "たへ", 1, 0.01, 10000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,[236, "魅了時弱化[ペルーン=AR]/Charm Weakening[Perun]", "みりようしし", 1, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
-  ,[237, "斬撃・横一文字弱点/Slash%%Long-Slash Weakness", "さんけきよ", 1, 1.2, WEAPON_FLAG.SLASH|WEAPON_FLAG.LONGSLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[237, "斬撃・横一文字弱点/Slash%%Long-Slash Weakness", "さんけきよ", 1, 1.2, TARGET_FLAG.SLASH|TARGET_FLAG.LONGSLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[238, "武器種弱点[1.2]/Weapon Weakness[1.2]", "ふき", 1, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
-  ,[239, "打撃と斬撃と横一文字への大特防/Reduce Blow%%Slash%%Long-Slash damage", "たけきとさ", 1, 0.1, WEAPON_FLAG.BLOW|WEAPON_FLAG.SLASH|WEAPON_FLAG.LONGSLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
-  ,[240, "射撃と狙撃への大特防/Reduce Shot%%Snipe damage", "しやけきと", 1, 0.1, WEAPON_FLAG.SHOT|WEAPON_FLAG.SNIPE, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[239, "打撃と斬撃と横一文字への大特防/Reduce Blow%%Slash%%Long-Slash damage", "たけきとさ", 1, 0.1, TARGET_FLAG.BLOW|TARGET_FLAG.SLASH|TARGET_FLAG.LONGSLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[240, "射撃と狙撃への大特防/Reduce Shot%%Snipe damage", "しやけきと", 1, 0.1, TARGET_FLAG.SHOT|TARGET_FLAG.SNIPE, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[241, "弱体無効時強化[ウランバートル☆3]/Nullify Debuff Strengthening[Ulaanbaatar ☆3]", "しやくたいむ", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[242, "弱体無効時強化[ウランバートル☆5]/Nullify Debuff Strengthening[Ulaanbaatar ☆5]", "しやくたいむ", 0, 5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
-  ,[243, "全域特防[タイシャクテン]/Reduce All damage[Taishakuten]", "せんいきと", 1, 0.1, WEAPON_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[243, "全域特防[タイシャクテン]/Reduce All damage[Taishakuten]", "せんいきと", 1, 0.1, TARGET_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[244, "特殊耐性[0.01+10000]/Special Resistance[0.01+10000]", "とくし", 1, 0.01, 10000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,[245, "特殊耐性[0.08+8000]/Special Resistance[0.08+8000]", "とくし", 1, 0.08, 8000, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,[246, "攻撃力増加[リフレイン]/ATK Increase[Refrain]", "こうけそ", 0, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
@@ -630,7 +651,7 @@ var EFFECT = Effect.createList(
   ,[263, "[ATKの種+2000]/[ATK Seed +2000]", "", 0, , 2000, EFFECT_FLAG.FIXED, TYPE.SEED]
   ,[264, "<連撃>時強化/Combo Strengthening", "れん", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[265, "<*崩し>特攻/Advantage vs Break", "くすしと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,[266, "全域特防[ビッグフット]/Reduce All damage[Bigfoot]", "せんいきと", 1, 0.8, WEAPON_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[266, "全域特防[ビッグフット]/Reduce All damage[Bigfoot]", "せんいきと", 1, 0.8, TARGET_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[267, "<*凍結>時弱化[バートロ]/Freeze Weakening[Bertro]", "とうけつしし", 1, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[268, "祝福時強化[バートロ]/Blessing Strengthening[Bertro]", "しゆくふくしき", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[269, "祝福時強化[バートロ]/Blessing Strengthening[Bertro]", "しゆく", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
@@ -648,14 +669,14 @@ var EFFECT = Effect.createList(
   ,[281, "威圧特攻[ギリメカラ]/Advantage vs Oppression[Girimekra]", "いあつと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[282, "攻撃力微増[ジェイコフ]/Minor ATK Increase[Jacob]", "こうけひ", 0, 1.2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,[283, "特防[0.65]/Advantage[0.65]", "とくほ", 1, 0.65, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
-  ,[284, "魔法弱点/Magic Weakness", "まほ", 1, 2.5, WEAPON_FLAG.MAGIC, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[284, "魔法弱点/Magic Weakness", "まほ", 1, 2.5, TARGET_FLAG.MAGIC, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[285, "魅了時強化/Charm Strengthening", "みりようしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[286, "非<連撃>時強化/Non-Combo Strengthening", "ひれ", 0, [1.5, 3], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.NON_STATUS]
   ,[287, "<束縛>時弱化/Bind Weakening", "そくはくしし", 0, 0, -999999, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[288, "祝福時強化[ノブミチ=シュクユウ]/Blessing Strengthening[Nobumichi]", "しゆく", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[289, "魅了時弱化[アムブスキアス]/Charm Weakening[Amduscias]", "みりようしし", 1, 1.4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[290, "注目時強化[アムブスキアス]/Taunt Strengthening[Amduscias]", "ちゆ", 0, 4, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
-  ,[291, "全域弱点/All Weakness", "せんいきし", 1, 2, WEAPON_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[291, "全域弱点/All Weakness", "せんいきし", 1, 2, TARGET_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[292, "不動時強化[グランガチ]/Immobility Strengthening[Gurangatch]", "ふと", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[293, "憑依時強化[ユーマ]/Possession Strengthening[Yuma]", "ひよ", 1, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[294, "頑強時強化[ユーマ]/Tenacity Strengthening[Yuma]", "かん", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
@@ -674,11 +695,11 @@ var EFFECT = Effect.createList(
   ,[307, "支援効果[攻撃・防御]/Affiliation Effects[ATK%%DEF]", "", 0, 1.5, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.AFFILIATION]
   ,[308, "支援効果[攻撃・防御]/Affiliation Effects[ATK%%DEF]", "", 1, 0.95, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.AFFILIATION, ,-0.5]
   ,[309, "支援効果[ステータス]/Affiliation Effects[Basic Stats]", "", 0, 0.05, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.AFFILIATION, TYPE.ATK, 1.5]
-  ,[310, "全域特防[零の例外処理]/Reduce All damage[Null Exception]", "せんいきと", 1, 0.1, WEAPON_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.WEAPON_WEAKNESS]
+  ,[310, "全域特防[零の例外処理]/Reduce All damage[Null Exception]", "せんいきと", 1, 0.1, TARGET_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.WEAPON_WEAKNESS]
   ,[311, "魅了大特攻[ジブリール]/Big Advantage vs Charm[Gabriel]", "みりようた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[312, "CS変更：突撃/Change CS: Thrust", "CS", 0, 0, 2, EFFECT_FLAG.FIXED, TYPE.CSWEAPON]
   ,[313, "<祈り>時強化[ジェイコフ]/Prayer Strengthening[Jacob]", "いの", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
-  ,[314, "打撃特防/Reduce Blow damage", "たけきとく", 1, 0.5, WEAPON_FLAG.BLOW, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[314, "打撃特防/Reduce Blow damage", "たけきとく", 1, 0.5, TARGET_FLAG.BLOW, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[315, "混乱時弱化/Confusion Weakening", "こんら", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[316, "注目時強化[アールプ☆4]/Taunt Strengthening[Alp ☆4]", "ちゆうもくしき", 1, 0.75, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[317, "<熱情>時強化[AR]/Ardor Strengthening[AR]", "ねつ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
@@ -692,7 +713,7 @@ var EFFECT = Effect.createList(
   ,[325, "注目時強化[シパクトリ]/Taunt Strengthening[Cipactli]", "ちゆうもくしき", 1, 0.75, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[326, "祝福時強化[AR]/Blessing Strengthening[AR]", "しゆくふくしき", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[327, "攻撃力激減[ジュラ]/ATK Vastly Down[Jurassic]", "こうけけき", 0, 0.1, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,[328, "全域特防[ジュラ]/Reduce All damage[Jurassic]", "せんいきと", 1, 0.1, WEAPON_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.WEAPON_WEAKNESS]
+  ,[328, "全域特防[ジュラ]/Reduce All damage[Jurassic]", "せんいきと", 1, 0.1, TARGET_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK, TYPE.WEAPON_WEAKNESS]
   ,[329, "奮起時強化[AR]/Arousal Strengthening[AR]", "ふん", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[330, "非弱体時強化[アルジャーノン]/Non-Debuff Strengthening[Algernon]", "ひしやくたいしき", 0, [1, 1.5], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
   ,[331, "攻撃力増加[オンブレティグレ]/ATK Increase[Hombre Tigre]", "こうけそ", 0, 3, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.ALT]
@@ -739,9 +760,9 @@ var EFFECT = Effect.createList(
   ,[372, "注目時強化[タイシャクテン]/Taunt Strengthening[Taishakuten]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[373, "注目時弱化[クランプス]/Taunt Weakening[Krampus]", "ちゆうもくしし", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[374, "閃き時強化[マサノリ]/Glint Strengthening[Masanori]", "ひらめきしき", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
-  ,[375, "射撃弱点[エイタ=ソール]/Shot Weakness[Eita]", "しやけきし", 1, 2.5, WEAPON_FLAG.SHOT, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
-  ,[376, "射撃弱点[マサノリ]/Shot Weakness[Masanori]", "しやけきし", 1, 2, WEAPON_FLAG.SHOT, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
-  ,[377, "狙撃弱点/Snipe Weakness", "そけ", 1, 2, WEAPON_FLAG.SNIPE, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[375, "射撃弱点[エイタ=ソール]/Shot Weakness[Eita]", "しやけきし", 1, 2.5, TARGET_FLAG.SHOT, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[376, "射撃弱点[マサノリ]/Shot Weakness[Masanori]", "しやけきし", 1, 2, TARGET_FLAG.SHOT, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[377, "狙撃弱点/Snipe Weakness", "そけ", 1, 2, TARGET_FLAG.SNIPE, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[378, "陣形：隊列歩行[L][サマー]/Formation: Single-File[L][Summer]", "", 0, 1, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED, TYPE.ATK]
   ,[379, "陣形：隊列歩行[M][サマー]/Formation: Single-File[M][Summer]", "", 1, 0.5, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED]
   ,[380, "陣形：トラバース[サマー]/Formation: Criss-Cross[Summer]", "", 0, 0.5, , EFFECT_FLAG.EVENT|EFFECT_FLAG.FIXED, TYPE.ATK]
@@ -756,7 +777,7 @@ var EFFECT = Effect.createList(
   ,[389, "防御力微増/Minor DEF Increase", "ほうきより", 1, 0.8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,[390, "<*加速>時強化[カレン]/Acceleration Strengthening[Curren]", "かそ", 1, 0.6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[391, "守護時強化[ハスター]/Protection Strengthening[Hastur]", "しゆこ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
-  ,[392, "斬撃弱点/Slash Weakness", "さんけきし", 1, 2.5, WEAPON_FLAG.SLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[392, "斬撃弱点/Slash Weakness", "さんけきし", 1, 2.5, TARGET_FLAG.SLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[393, "脱力時弱化/Drain Weakening", "たつ", 1, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[394, "注目時強化[ダオジュン]/Taunt Strengthening[Tianzun]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[395, "毒時強化[イグ]/Poison Strengthening[Yig]", "とくし", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
@@ -782,7 +803,7 @@ var EFFECT = Effect.createList(
   ,[415, "<*暴走+>時強化[アメノウズメ]/Berserk+ Strengthening[Ame-no-Uzume]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[416, "攻撃力増加[チョウジ]/ATK Increase[Choji]", "こうけそ", 0, 2, , EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.ALT]
   ,[417, "加速時強化[ウィリー]/Acceleration Strengthening[Willie]", "かそ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
-  ,[418, "斬撃特防/Reduce Slash damage", "さんけきと", 1, 0.7, WEAPON_FLAG.SLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[418, "斬撃特防/Reduce Slash damage", "さんけきと", 1, 0.7, TARGET_FLAG.SLASH, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[419, "<*凍結>特攻/Advantage vs Freeze", "とう", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,[420, "加速時強化[グンゾウ]/Acceleration Strengthening[Gunzo]", "かそ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[421, "魅了時弱化[ツァトグァ=バティム]/Charm Weakening[Tsathoggua]", "みりようしし", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
@@ -818,7 +839,7 @@ var EFFECT = Effect.createList(
   ,[451, "混乱特攻/Advantage vs Confusion", "こんら", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[452, "<暴走+>時強化[ヴァプラ]/Berserk+ Strengthening[Vapula]", "ほうそ+", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[453, "束縛大特攻/Big Advantage vs Bind", "そくはくた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
-  ,[454, "全域特防[AR]/Reduce All damage[AR]", "せんいきと", 1, 0.7, WEAPON_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
+  ,[454, "全域特防[AR]/Reduce All damage[AR]", "せんいきと", 1, 0.7, TARGET_FLAG.ALL, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.WEAPON_WEAKNESS]
   ,[455, "劫火時強化[オスカー]/Conflagration Strengthening[Oscar]", "こうかし", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.DEBUFF]
   ,[456, "<*火傷>大特攻[ユーマ]/Big Advantage vs Burn[Yuma]", "やけとた", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE]
   ,[457, "閃き時強化[ユーマ：自身]/Glint Strengthening[Yuma: self]", "ひらめきしき", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
@@ -840,6 +861,14 @@ var EFFECT = Effect.createList(
   ,[473, "<*暴走+>時強化[ガンダルヴァ#2]/Berserk+ Strengthening[Gandharva]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[474, "愛時強化[シノ]/Love Strengthening[Shino]", "あい", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[475, "全弱体特攻[メリュジーヌ]/Advantage vs all debuffs[Melusine]", "せん", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
+  ,[476, "属性弱点[2.0]/Attribute Weakness[2.0]", "そくせ", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
+  ,[477, "注目時弱化[レッドフード]/Taunt Weakening[Red Hood]", "ちゆうもくしし", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[478, "属性特攻", "そくせ", 0, 1.5, TARGET_FLAG.ANY_ATTRIBUTE & ~TARGET_FLAG.DIVINE, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.ATTRIBUTE_BONUS]
+  ,[479, "不動時強化[シーサァ]/Immobility Strengthening[Shisa]", "ふと", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[480, "天属性超特攻", "てん", 0, 3, TARGET_FLAG.AETHER, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.ATTRIBUTE_BONUS]
+  ,[481, "天属性弱点", "てん", 1, 2, TARGET_FLAG.AETHER, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.ATTRIBUTE_WEAKNESS]
+  ,[482, "<*暴走>時強化[マイノグーラ]/Berserk Strengthening[Mynoghra]", "ほうそしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[483, "<*暴走+>時強化[マイノグーラ]/Berserk+ Strengthening[Mynoghra]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]

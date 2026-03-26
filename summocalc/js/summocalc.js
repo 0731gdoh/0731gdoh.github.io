@@ -39,6 +39,16 @@ function check(a, b, mode){
       return false;
   }
 }
+function loopPrompt(text, initial, min, max){
+  var value = min - 1;
+  while(value < min || value > max){
+    value = prompt(text, initial);
+    if(!value) return;
+    value = parseInt(value, 10)
+    if(value !== value) value = min - 1;
+  }
+  return value;
+}
 function toLowerKatakana(str){
   return str.toLowerCase().replace(/\x2f/g, "%%").replace(/[\u3041-\u3094]/g, function(match){
     return String.fromCharCode(match.charCodeAt(0) + 0x60);

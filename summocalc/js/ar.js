@@ -200,35 +200,7 @@ Record.csv = function(list, x){
   }).join("\n");
 };
 
-var EQUIP = {
-  ANY: 0x1FF,
-  RARE1: 1 << 1,
-  RARE2: 1 << 2,
-  RARE3: 1 << 3,
-  RARE4: 1 << 4,
-  RARE5: 1 << 5,
-  SLASH: 1 << 1,
-  THRUST: 1 << 2,
-  BLOW: 1 << 3,
-  SHOT: 1 << 4,
-  MAGIC: 1 << 5,
-  SNIPE: 1 << 6,
-  LONGSLASH: 1 << 7,
-  ALL: 1 << 8,
-  NONE: 1 << 9,
-  ALLROUND: 1 << 1,
-  FIRE: 1 << 2,
-  WATER: 1 << 3,
-  WOOD: 1 << 4,
-  AETHER: 1 << 5,
-  NETHER: 1 << 6,
-  INFERNAL: 1 << 7,
-  VALIANT: 1 << 8,
-  WORLD: 1 << 9,
-  INFINITY: 1 << 10,
-  NULL: 1 << 11,
-  DIVINE: 1 << 12
-};
+var EQUIP = TARGET_FLAG;
 
 function Thumbnail(index, name){
   this.index = index;

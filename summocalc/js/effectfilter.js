@@ -114,16 +114,22 @@ StaticEffectFilter.prototype = {
     var keys = ["bonus_a", "bonus_d", "nullify", "stef"]
     this.ids.forEach(function(id, i){
       linkInput([parent, c], keys[i], id, tab);
-      linkInput([parent, c], "tmp", c.tid + (i + 1), tab, true, i);
+      linkInput([parent, c], "tmp", c.tid + (i + 1), function(){
+        c.updateTexts();
+      }, true, i);
     });
   },
   updateTexts: function(){
     var tl = "l" + this.tid;
     var labels = ["特攻対象/A.Adv.", "特防対象/D.Adv.", "状態無効/Nullify", "常時/Static"];
     var n = this.ar ? TAG_FLAG_NUM.AR + 3 : 3;
+    var flags = this.tmp.map(function(tmp){
+      if(tmp) return TIMING_FLAG.STATIC;
+      return TIMING_FLAG.TEMPORARY_STATIC;
+    });
     this.ids.forEach(function(key, i){
       setOptions(key, TAG, {filter: function(x){
-        return !x.index || x.checkFlag(i + n, TIMING_FLAG.STATIC);
+        return !x.index || x.checkFlag(i + n, flags[i]) === flags[i];
       }, labels: TAG.LABELS[i + 3]});
       setText("l" + key, labels[i]);
       setText(tl + (i + 1), "状態変化を含む/Include Status Effects");
@@ -133,14 +139,14 @@ StaticEffectFilter.prototype = {
     var d = exclude ? TAG_MAX * 10 : TAG_MAX;
     var flags = this.tmp.map(function(tmp){
       if(tmp) return TIMING_FLAG.STATIC;
-      return TIMING_FLAG.STATIC | TIMING_FLAG.NOT_TEMPORARY;
+      return TIMING_FLAG.TEMPORARY_STATIC;
     });
     var a = [this.bonus_a, this.bonus_d, this.nullify, this.stef];
     return function(x){
       return a.some(function(te, i){
         return te && x.tag[(i + 3) % 6].every(function(td){
           if(evolved && td.del) return true;
-          return te !== td.value % d || checkTiming(td.timing, flags[i], 1);
+          return te !== td.value % d || (td.timing & flags[i]) !== TIMING_FLAG.STATIC;
         });
       });
     };
