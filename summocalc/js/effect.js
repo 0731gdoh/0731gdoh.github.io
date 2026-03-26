@@ -39,13 +39,13 @@ var EFFECT_FLAG = {
 };
 
 var TARGET_FLAG = {
-  ANY: 0x3F,
+  ANY: (1 << 6) - 1,
   RARE1: 1 << 1,
   RARE2: 1 << 2,
   RARE3: 1 << 3,
   RARE4: 1 << 4,
   RARE5: 1 << 5,
-  ANY_WEAPON: 0x3FF,
+  ANY_WEAPON: (1 << 10) - 1,
   SLASH: 1 << 1,
   THRUST: 1 << 2,
   BLOW: 1 << 3,
@@ -55,7 +55,7 @@ var TARGET_FLAG = {
   LONGSLASH: 1 << 7,
   ALL: 1 << 8,
   NONE: 1 << 9,
-  ANY_ATTRIBUTE: 0x1FFF,
+  ANY_ATTRIBUTE: (1 << 13) - 1,
   ALLROUND: 1 << 1,
   FIRE: 1 << 2,
   WATER: 1 << 3,

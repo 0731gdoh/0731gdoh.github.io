@@ -154,8 +154,7 @@ function generateTagData(s, flagNum, ar){
         }
         ex.forEach(function(c){
           var subtiming = timing;
-          var subkeyadd = (flagNum < 3) ? TAG_MAX * 10 : 0;
-          var subkey = (c + g + subkeyadd) + sd.condition;
+          var subkey = (c + g + (flagNum < 3 ? TAG_MAX * 10 : 0)) + sd.condition;
           if(TAG[c].type === TAG_TYPE.STATIC){
             subtiming &= ~TIMING_FLAG.NOT_CS;
             if(!(subtiming & TIMING_FLAG.STATIC)) subtiming |= TIMING_FLAG.TEMPORARY_STATIC;

@@ -583,11 +583,12 @@ var calc = {
     this.update(skipSave);
   },
   addStatus: function(index, lv, group, mode){
+    var promptInitial = "";
     var linkInitial = lv;
     if(index > EFFECT_MAX){
       mode = Math.floor(index / EFFECT_MAX);
       index %= EFFECT_MAX;
-      if(mode === 2) lv = this.arLv;
+      if(mode === 2) promptInitial = this.arLv;
     }
     if(index > 0){
       var ep = this.es[index];
@@ -607,7 +608,7 @@ var calc = {
         }else if(mode == 1){
           lv = 0;
         }else if(mode == 2 && !e.isFixed()){
-          lv = loopPrompt(t("効果Lv (※1〜100)/Effect Lv\n(1-100)"), lv, 1, 100);
+          lv = loopPrompt(t("効果Lv (※1〜100)/Effect Lv\n(1-100)"), promptInitial, 1, 100);
           if(!lv) return;
         }
 
@@ -846,7 +847,9 @@ var calc = {
     var multiplier = this.multiplier;
     var attr = card.attribute;
     var tAttr = multiplier < 100 ? 0 : MULTIPLIER[multiplier % 100].getValue();
-    var possible = new Set(attr ? ATTRIBUTE_CHART[attr - 1] : [1, 2, 3, 4]);
+    var possible = new Set(attr ? ATTRIBUTE_CHART[attr - 1] : (tAttr ? ATTRIBUTE_CHART.map(function(x){
+      return x[tAttr - 1];
+    }) : [1, 2, 3, 4]));
     var separator = this.separator ? separate : function(x){return x};
     var desc = [];
     var params = [];
