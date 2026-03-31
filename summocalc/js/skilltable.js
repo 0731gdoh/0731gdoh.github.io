@@ -46,9 +46,9 @@ var LABEL_FLAG = {
 };
 
 
-function SkillTable(id, value, setting){
+function SkillTable(id, setting){
   this.table = _(id);
-  this.value = value;
+  this.value = CARD[0];
   this.details = 1;
   this.active = 1;
   this.table.className = "skilldata";
@@ -61,8 +61,8 @@ SkillTable.prototype = {
       setStorageItem(key, v);
     });
   },
-  setValue: function(value){
-    this.value = value;
+  setCard: function(card){
+    this.value = CARD[card];
   },
   updateSettingTexts: function(){
     setCheckGroup(this.setting, TABLE_LABEL);

@@ -93,7 +93,7 @@ var calc = {
       _("su").style.display = "none";
     }
     if(navigator.standalone !== false) _("ms").style.display = "none";
-    this.skillTable = new SkillTable("sd", CARD[0], "hc");
+    this.skillTable = new SkillTable("sd", "hc");
     this.loadLanguage();
     this.cardfilter.init();
     this.arfilter.init();
@@ -113,7 +113,7 @@ var calc = {
       c.checkCardSelected();
       c.arfilter.update(c.card);
       setText("sax", "+" + r2n(CARD[c.card].rarity, c.cs));
-      if(c.card) c.skillTable.setValue(CARD[c.card]);
+      if(c.card) c.skillTable.setCard(c.card);
       c.cardfilter.updateNavigate();
       c.skillTable.update();
     });
@@ -136,7 +136,7 @@ var calc = {
     window.addEventListener("pageshow", function(e){
       if(e.persisted) c.updateSaveMenu();
     });
-    if(getStorageItem("offline") === "1"){
+    if(window.matchMedia("(display-mode: standalone)").matches && getStorageItem("offline") === "1"){
       document.addEventListener("visibilitychange", function(){
          if(document.visibilityState === "hidden") setStorageItem("last", c.lastHash);
       });
@@ -451,9 +451,9 @@ var calc = {
       this.active = 0;
       if(this.cardfilter.active) this.cardfilter.toggle();
       if(this.arfilter.active) this.arfilter.toggle();
+      if(!index) this.skillTable.setCard(0);
       this.cardfilter.reset();
       this.arfilter.reset();
-      if(!index) this.skillTable.setValue(CARD[0]);
       setValue("pc", index);
       n = s.read();
       index = 0;
