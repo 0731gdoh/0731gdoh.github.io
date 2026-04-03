@@ -177,6 +177,13 @@ const createLabel = (...items) => {
   return label;
 };
 
+const createCheck = (checked) => {
+  const check = create("input");
+  check.type = "checkbox";
+  check.checked = checked;
+  return check;
+};
+
 class BoardUI{
   constructor(){
     this.board = new Board();
@@ -186,10 +193,8 @@ class BoardUI{
     this.output = createDiv("output");
     const board = createDiv("board");
     const form = create("form");
-    this.checkWide = create("input");
-    this.checkLong = create("input");
-    this.checkWide.type = this.checkLong.type = "checkbox";
-    this.checkWide.checked = this.checkLong.checked = true;
+    this.checkWide = createCheck(true);
+    this.checkLong = createCheck(true);
     this.path = new SVGPath();
     for(let y = 0; y < 6; ++y){
       this.cells.push([]);
@@ -228,11 +233,17 @@ class BoardUI{
     }else{
       cell.dataset.type = data.type;
     }
-    cell.classList.toggle("unit", data.unit);
+    cell.classList.toggle("unit", !!data.unit);
     cell.firstChild.textContent = data.unit;
   }
   handleEvent(e){
-  try{
+    try{
+      this._handleEvent(e);
+    }catch(err){
+      alert(err);
+    }
+  }
+  _handleEvent(e){
     switch(e.type){
       case "pointerdown":
         this.pointerDown(e);
@@ -248,7 +259,6 @@ class BoardUI{
         this.onChange(e);
       break;
     }
-  }catch(err){alert(err)}
   }
   onChange(e){
     this.board.setBoardSize(this.checkWide.checked, this.checkLong.checked);
