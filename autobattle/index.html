@@ -1,1 +1,98 @@
-
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="建設予定地">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#004">
+<link rel=stylesheet href="/theme/theme.css">
+<script src="/theme/theme.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+body {
+  -webkit-text-size-adjust: 100%;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  touch-action: none;
+  user-select: none;
+  max-width: 400px;
+  aspect-ratio: 5 / 6;
+  border: 1px solid #000000;
+  margin: 0.5em;
+  & > .cell {
+    position: relative;
+    & > .panel {
+      position: absolute;
+      border-radius: 5px;
+      border: 5px solid #ffffff44;
+      inset: 1px;
+      padding: 0.2em;
+    }
+    &.dragging {
+      z-index: 10;
+      transform: scale(1.2);
+    }
+  }
+  & > [data-type=enemy],
+  & > [data-type=neutral] {
+    background-color: #ff5555cc;
+  }
+  & > [data-type=player],
+  &:has(.dragging) > [data-type=neutral] {
+    background-color: #5555ffcc;
+  }
+  & > [data-type=oob] {
+    background-color: #88888822;
+  }
+  & > .unit {
+    & > .panel {
+      border-color: #aa0000;
+    }
+    &[data-type=player] > .panel {
+      border-color: #0000aa;
+    }
+  }
+  & > svg {
+    pointer-events: none;
+    grid-area: 1 / 1 / 7 / 6;
+    z-index: 10;
+    opacity: 0.5;
+    & marker {
+      fill: #ff00ff;
+    }
+    & > polyline {
+      fill: none;
+      stroke: #ff00ff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      marker-end: url(#arrow);
+      & ~ polyline {
+        stroke: #ffffff88;
+        stroke-width: 1;
+        stroke-dasharray: 3 12;
+        stroke-dashoffset: 60;
+        animation: dash 1s linear infinite;
+      }
+    }
+  }
+}
+label {
+  margin: 1em;
+  & > input[type=checkbox] {
+    margin-right: 1em;
+  }
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+</style>
+<script src="autobattle.js"></script>
+<title>建設予定地</title>
+<a href="/">戻る</a>
