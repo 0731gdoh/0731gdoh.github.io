@@ -208,7 +208,7 @@ class BoardUI{
     );
     document.body.prepend(form, board, this.output);
     board.addEventListener("pointerdown", this);
-    board.addEventListener("pointermove", this);
+    board.addEventListener("pointermove", this, {passive: true});
     board.addEventListener("pointercancel", this);
     board.addEventListener("pointerup", this);
     form.addEventListener("change", this);
@@ -232,6 +232,7 @@ class BoardUI{
     cell.firstChild.textContent = data.unit;
   }
   handleEvent(e){
+  try{
     switch(e.type){
       case "pointerdown":
         this.pointerDown(e);
@@ -247,6 +248,7 @@ class BoardUI{
         this.onChange(e);
       break;
     }
+  }catch(err){alert(err)}
   }
   onChange(e){
     this.board.setBoardSize(this.checkWide.checked, this.checkLong.checked);
@@ -271,7 +273,6 @@ class BoardUI{
   }
   dragStart(e, data, cell){
     if(this.draggingPos || e.button !== 0 || !data.unit) return;
-    e.preventDefault();
     this.offsetX = e.clientX;
     this.offsetY = e.clientY;
     this.draggingPos = this.posFromPoint(e.clientX, e.clientY);
@@ -285,7 +286,6 @@ class BoardUI{
   }
   dragMove(e){
     if(!this.draggingPos || this.pointerId !== e.pointerId) return;
-    e.preventDefault();
     const x = e.clientX - this.offsetX;
     const y = e.clientY - this.offsetY;
     const targetPos = this.posFromPoint(e.clientX, e.clientY, this.board.movableRange);
@@ -334,5 +334,9 @@ const calcDistance = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
 const boardUI = new BoardUI();
 
 document.addEventListener("DOMContentLoaded", () => {
-  boardUI.init();
+  try{
+    boardUI.init();
+  }catch(e){
+    alert(e);
+  }
 });
