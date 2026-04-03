@@ -232,7 +232,6 @@ class BoardUI{
     cell.firstChild.textContent = data.unit;
   }
   handleEvent(e){
-  try{
     switch(e.type){
       case "pointerdown":
         this.pointerDown(e);
@@ -248,7 +247,6 @@ class BoardUI{
         this.onChange(e);
       break;
     }
-  }catch(err){alert(err)}
   }
   onChange(e){
     this.board.setBoardSize(this.checkWide.checked, this.checkLong.checked);
@@ -336,9 +334,5 @@ const calcDistance = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
 const boardUI = new BoardUI();
 
 document.addEventListener("DOMContentLoaded", () => {
-  try{
-    boardUI.init();
-  }catch(e){
-    alert(e);
-  }
+  boardUI.init();
 });
