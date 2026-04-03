@@ -17,7 +17,7 @@ body {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(6, 1fr);
-  touch-action: pinch-zoom;
+  touch-action: none;
   user-select: none;
   max-width: 400px;
   aspect-ratio: 5 / 6;
@@ -82,9 +82,9 @@ body {
   }
 }
 label {
-  margin: 1em;
+  margin-right: 1em;
   & > input[type=checkbox] {
-    margin-right: 1em;
+    margin-right: 0.5em;
   }
 }
 @keyframes dash {
