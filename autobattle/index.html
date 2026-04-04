@@ -12,6 +12,8 @@
 }
 body {
   -webkit-text-size-adjust: 100%;
+  font-family: "Courier", monospace;
+  font-size: small;
 }
 .board {
   display: grid;
@@ -23,14 +25,30 @@ body {
   aspect-ratio: 5 / 6;
   border: 1px solid #000000;
   margin: 0.5em;
+  --panel-border-color: #ffffff44;
   & > .cell {
     position: relative;
-    & > .panel {
+    &::before {
+      content: attr(data-unit);
       position: absolute;
+      display: block;
       border-radius: 5px;
-      border: 5px solid #ffffff44;
+      border: 5px solid var(--panel-border-color);
       inset: 1px;
       padding: 0.2em;
+    }
+    &[data-weapon]::after {
+      content: attr(data-weapon);
+      position: absolute;
+      display: block;
+      border-radius: 5px;
+      border: 5px solid var(--panel-border-color);
+      right: 1px;
+      bottom: 1px;
+      width: 2em;
+      height: 2em;
+      text-align: center;
+      align-content: center;
     }
     &.dragging {
       z-index: 10;
@@ -40,21 +58,19 @@ body {
   & > [data-type=enemy],
   & > [data-type=neutral] {
     background-color: #ff5555cc;
+    &[data-unit] {
+      --panel-border-color: #aa0000;
+    }
   }
   & > [data-type=player],
   &:has(.dragging) > [data-type=neutral] {
     background-color: #5555ffcc;
+    &[data-unit] {
+      --panel-border-color: #0000aa;
+    }
   }
   & > [data-type=oob] {
     background-color: #88888822;
-  }
-  & > .unit {
-    & > .panel {
-      border-color: #aa0000;
-    }
-    &[data-type=player] > .panel {
-      border-color: #0000aa;
-    }
   }
   & > svg {
     pointer-events: none;

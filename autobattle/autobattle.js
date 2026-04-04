@@ -99,6 +99,10 @@ class Cell{
     if(this.oob && type) return;
     this.type = type;
   }
+  setWeapon(weapon){
+    if(!this.unit) return;
+    this.weapon = weapon;
+  }
 }
 
 class Board{
@@ -127,6 +131,7 @@ class Board{
       h ? 5 : 4,
     ];
     this.setPlayerUnits();
+    for(const cell of this.playerUnits) cell.setWeapon(WEAPONS[Math.floor(Math.random() * WEAPONS.length)]);
     for(const [y, row] of this.cells.entries()){
       if(!h && y % 5 === 0){
         for(const cell of row) this.setOoB(cell, true);
@@ -289,8 +294,6 @@ class BoardUI{
       this.cells.push([]);
       for(let x = 0; x < 5; ++x){
         const cellElement = createDiv("cell");
-        const panel = createDiv("panel");
-        cellElement.append(panel);
         board.append(cellElement);
         this.moveCell(cellElement, [x, y]);
       }
@@ -322,8 +325,16 @@ class BoardUI{
     }else{
       cell.dataset.type = data.type;
     }
-    cell.classList.toggle("unit", !!data.unit);
-    cell.firstChild.textContent = data.unit;
+    if(data.unit){
+      cell.dataset.unit = data.unit;
+    }else{
+      delete cell.dataset.unit;
+    }
+    if(data.weapon){
+      cell.dataset.weapon = data.weapon.name;
+    }else{
+      delete cell.dataset.weapon;
+    }
   }
   handleEvent(e){
     try{
