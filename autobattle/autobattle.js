@@ -1,5 +1,86 @@
 "use strict";
 
+const WEAPONS = [
+  {
+    name: "斬",
+    type: "relative",
+    offsets: [
+      [-1, -1],
+      [0, -1],
+      [1, -1],
+    ],
+  },
+  {
+    name: "突",
+    type: "relative",
+    offsets: [
+      [0, -1],
+      [0, -2],
+    ],
+  },
+  {
+    name: "打",
+    type: "relative",
+    offsets: [
+      [0, -1],
+    ],
+  },
+  {
+    name: "射",
+    type: "relative",
+    offsets: [
+      [0, -1],
+      [0, -2],
+      [0, -3],
+    ],
+  },
+  {
+    name: "魔",
+    type: "relative",
+    offsets: [
+      [0, -1],
+      [-1, -2],
+      [0, -2],
+      [1, -2],
+      [0, -3],
+    ],
+  },
+  {
+    name: "横",
+    type: "relative",
+    offsets: [
+      [-2, -1],
+      [-1, -1],
+      [0, -1],
+      [1, -1],
+      [2, -1],
+    ],
+  },
+  {
+    name: "狙",
+    type: "relative",
+    offsets: [
+      [0, -1],
+      [0, -2],
+      [0, -3],
+      [0, -4],
+      [0, -5],
+    ],
+  },
+  {
+    name: "無",
+    type: "none",
+    offsets: [
+    ],
+  },
+  {
+    name: "全",
+    type: "all",
+    offsets: [
+    ],
+  },
+];
+
 class Cell{
   constructor(){
     this.type = "";
@@ -129,36 +210,44 @@ class SVGPath{
     const marker = createSVG("marker");
     const arrow = createSVG("path");
     marker.id = "arrow";
-    marker.setAttribute("viewBox", "0 0 10 10");
-    marker.setAttribute("refX", 5);
-    marker.setAttribute("refY", 5);
-    marker.setAttribute("markerUnits", "userSpaceOnUse");
-    marker.setAttribute("markerWidth", 5);
-    marker.setAttribute("markerHeight", 5);
-    marker.setAttribute("orient", "auto");
-    arrow.setAttribute("d", "M 0 0 L 10 5 L 0 10 L 1 5 z");
+    marker.setAttributeNS(null, "viewBox", "0 0 10 10");
+    marker.setAttributeNS(null, "refX", 5);
+    marker.setAttributeNS(null, "refY", 5);
+    marker.setAttributeNS(null, "markerUnits", "userSpaceOnUse");
+    marker.setAttributeNS(null, "markerWidth", 5);
+    marker.setAttributeNS(null, "markerHeight", 5);
+    marker.setAttributeNS(null, "orient", "auto");
+    arrow.setAttributeNS(null, "d", "M 0 0 L 10 5 L 0 10 L 1 5 z");
     this.lines = [
       createSVG("polyline"),
       createSVG("polyline"),
-    ]
-    this.svg.setAttribute("viewBox", "0 0 50 60");
+    ];
+//    for(const line of this.lines) line.setAttributeNS(null, "pathLength", 100);
+    this.svg.setAttributeNS(null, "viewBox", "0 0 50 60");
     marker.append(arrow);
     defs.append(marker);
     this.svg.append(defs, ...this.lines);
     this.points = [];
   }
-  getArrow(){
-    const result = this.points.map(([x, y]) => `${x * 10 + 5},${y * 10 + 5}`);
-    return result.join(" ");
+  get route(){
+    if(this.points.length > 1) return this.points.slice(-9).map(([x, y]) => `${x * 10 + 5},${y * 10 + 5}`).join(" ");
+    return "";
   }
   draw(){
-    for(const line of this.lines) line.setAttribute("points", this.getArrow());
+    for(const line of this.lines) line.setAttributeNS(null, "points", this.route);
   }
   push(...points){
-    this.points.push(...points);
+    for(const point of points){
+      const prev = this.points.at(-2);
+      if(prev && prev[0] === point[0] && prev[1] === point[1]){
+        this.points.pop();
+      }else{
+        this.points.push(point);
+      }
+    }
   }
   clear(){
-    for(const line of this.lines) line.setAttribute("points", "");
+    for(const line of this.lines) line.setAttributeNS(null, "points", "");
     this.points.length = 0;
   }
 }
@@ -289,7 +378,7 @@ class BoardUI{
     this.pointerId = e.pointerId;
     cell.classList.add("dragging");
     cell.setPointerCapture(e.pointerId);
-    this.board.updateArea(true);
+    this.board.updateArea();
     this.update();
     this.path.clear();
     this.path.push(this.draggingPos);
@@ -311,7 +400,7 @@ class BoardUI{
     const cell = this.getCell(this.draggingPos);
     cell.classList.remove("dragging");
     this.draggingPos = null;
-    this.board.updateArea(false);
+    this.board.updateArea();
     this.update();
     this.path.clear();
   }
