@@ -1,0 +1,135 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  -webkit-text-size-adjust: 100%;
+  font-family: "Courier", monospace;
+  font-size: small;
+  touch-action: manipulation;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  max-width: 400px;
+  aspect-ratio: 5 / 6;
+  border: 1px solid #000000;
+  margin: 0.5em;
+  --panel-border-color: #ffffff44;
+  & > .cell {
+    position: relative;
+    &::before {
+      content: attr(data-unit);
+      position: absolute;
+      display: block;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border: 5px solid var(--panel-border-color);
+      inset: 1px;
+      padding: 5%;
+    }
+    &[data-weapon]::after {
+      content: attr(data-weapon);
+      position: absolute;
+      display: block;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border: 5px solid var(--panel-border-color);
+      right: 1px;
+      bottom: 1px;
+      width: calc(50% + 3px);
+      height: calc(50% + 3px);
+      text-align: center;
+      align-content: center;
+      padding: 0;
+    }
+    &.dragging {
+      z-index: 10;
+      transform: scale(1.2);
+      border-radius: 5px;
+    }
+  }
+  & > [data-type=enemy],
+  & > [data-type=neutral] {
+    background-color: #ff5555cc;
+    &[data-unit] {
+      --panel-border-color: #aa0000;
+    }
+  }
+  & > [data-type=player],
+  &:has(.dragging) > [data-type=neutral] {
+    background-color: #5555ffcc;
+    &[data-unit] {
+      --panel-border-color: #0000aa;
+    }
+  }
+  & > [data-type=oob] {
+    background-color: #88888822;
+  }
+  & > svg {
+    pointer-events: none;
+    grid-area: 1 / 1 / 7 / 6;
+    z-index: 50;
+    opacity: 0.5;
+    --arrow-color: #ff00ff;
+    & marker {
+      fill: var(--arrow-color);
+    }
+    & > polyline {
+      fill: none;
+      stroke: var(--arrow-color);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      marker-end: url(#arrow);
+      & ~ polyline {
+        stroke: #ffffff88;
+        stroke-width: 1;
+        stroke-dasharray: 3 12;
+        stroke-dashoffset: 60;
+        animation: dash 1s linear infinite;
+      }
+    }
+  }
+}
+label {
+  margin-right: 1em;
+  & > input[type=checkbox] {
+    margin-right: 0.5em;
+  }
+}
+dialog {
+  border-radius: 5px;
+  border: solid 1px var(--color);
+  & > .dialog-container {
+    display: grid;
+    gap: 0.5em;
+    grid-template-columns: auto auto auto auto auto;
+    & > * {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 5;
+      & > span {
+        text-align: center;
+        align-content: center;
+      }
+      &:has(button) {
+        display: block;
+        grid-template-columns: none;
+        text-align: right;
+      }
+    }
+  }
+  &::backdrop {
+    backdrop-filter: blur(3px);
+    background-color: #00002288;
+  }
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

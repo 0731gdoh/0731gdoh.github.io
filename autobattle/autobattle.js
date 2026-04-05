@@ -310,6 +310,12 @@ const createSelect = (list, className) => {
   return select;
 };
 
+const createSpan = (...contents) => {
+  const span = create("span");
+  span.append(...contents);
+  return span;
+};
+
 class BoardUI{
   constructor(){
     this.board = new Board();
@@ -319,6 +325,9 @@ class BoardUI{
   init(){
     const board = createDiv("board");
     const form = create("form");
+    const button = create("button");
+    button.textContent = "⚙️ ユニット設定";
+    button.type = "button";
     this.checkWide = createCheck(true);
     this.checkLong = createCheck(true);
     this.path = new SVGPath();
@@ -334,18 +343,33 @@ class BoardUI{
     form.append(
       createLabel(this.checkWide, "横長"),
       createLabel(this.checkLong, "縦長"),
+      button,
     );
-    document.body.prepend(form, board, this.createUnitConfig());
+    this.dialog = this.createUnitConfig();
+    document.body.prepend(form, board, this.dialog);
     board.addEventListener("pointerdown", this);
     board.addEventListener("pointermove", this, {passive: true});
     board.addEventListener("pointercancel", this);
     board.addEventListener("pointerup", this);
     form.addEventListener("change", this);
+    button.addEventListener("click", this);
     this.boardElement = board;
     this.update();
   }
   createUnitConfig(){
-    const unitConfig = createDiv("unit-config");
+    const unitConfig = create("dialog");
+    const container = createDiv("dialog-container");
+    const head = createDiv("head");
+    const dialogForm = create("form");
+    const close = create("button");
+    head.append(
+      createSpan("#"),
+      createSpan("武器"),
+      createSpan("横移動"),
+      createSpan("縦移動"),
+      createSpan("移動可")
+    );
+    container.append(head);
     for(const data of this.board.playerUnits){
       const form = create("form");
       const weapon = createSelect(WEAPONS.map(x => x.name), "weapon");
@@ -355,15 +379,23 @@ class BoardUI{
       weapon.selectedIndex = WEAPONS.indexOf(data.weapon);
       horizontal.selectedIndex = vertical.selectedIndex = 1;
       form.append(
-        createLabel(data.unit, weapon),
-        createLabel("横", horizontal),
-        createLabel("縦", vertical),
-        createLabel("移動可", movable),
+        createSpan(data.unit),
+        createSpan(weapon),
+        createSpan(horizontal),
+        createSpan(vertical),
+        createSpan(movable),
       );
       form.addEventListener("change", this);
       this.unitMap.set(form, data);
-      unitConfig.append(form);
+      container.append(form);
     }
+    close.textContent = "❌ 閉じる";
+    close.autofocus = true;
+    dialogForm.method = "dialog",
+    dialogForm.append(close);
+    container.append(create("hr"), dialogForm);
+    unitConfig.append(container);
+    unitConfig.addEventListener("click", this);
     return unitConfig;
   }
   update(){
@@ -412,6 +444,16 @@ class BoardUI{
       case "change":
         this.onChange(e);
       break;
+      case "click":
+        this.onClick(e);
+      break;
+    }
+  }
+  onClick(e){
+    if(this.dialog.open){
+      if(!e.target.closest(".dialog-container")) this.dialog.close();
+    }else{
+      this.dialog.showModal();
     }
   }
   onChange(e){
