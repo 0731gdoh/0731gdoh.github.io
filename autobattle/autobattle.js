@@ -171,7 +171,7 @@ class Board{
     if(this.enemyUnits.has(cell)){
       this.enemyUnits.delete(cell);
       cell.setUnit("");
-    }else{
+    }else if(!cell.oob && cell.type !== "player"){
       this.enemyUnits.add(cell);
       cell.setUnit("敵");
     }
@@ -316,20 +316,14 @@ const createSpan = (...contents) => {
   return span;
 };
 
-class BoardUI{
-  constructor(){
-    this.board = new Board();
-    this.cells = [];
-    this.unitMap = new Map();
+class BoardDOM{
+  constructor(board){
+    this.board = board;
   }
   init(){
+    if(this.boardElement) return this.boardElement;
     const board = createDiv("board");
-    const form = create("form");
-    const button = create("button");
-    button.textContent = "⚙️ ユニット設定";
-    button.type = "button";
-    this.checkWide = createCheck(true);
-    this.checkLong = createCheck(true);
+    this.cells = [];
     this.path = new SVGPath();
     for(const y of range(6)){
       this.cells.push([]);
@@ -340,23 +334,86 @@ class BoardUI{
       }
     }
     board.append(this.path.svg);
+    document.body.prepend(board);
+    this.boardElement = board;
+    this.update();
+  }
+  update(){
+    for(const [y, row] of this.cells.entries()){
+      for(const x of row.keys()) this.updateCell([x, y]);
+    }
+  }
+  updateCell(pos){
+    const cell = this.getCell(pos);
+    const data = this.board.getCell(pos);
+    if(data.oob){
+      cell.dataset.type = "oob";
+    }else{
+      cell.dataset.type = data.type;
+    }
+    if(data.unit){
+      cell.dataset.unit = data.unit;
+    }else{
+      delete cell.dataset.unit;
+    }
+    if(data.weapon){
+      cell.dataset.weapon = data.weapon.name;
+    }else{
+      delete cell.dataset.weapon;
+    }
+  }
+  getCell(pos){
+    return this.cells[pos[1]][pos[0]];
+  }
+  swapCells(posA, posB){
+    const cellA = this.getCell(posA);
+    const cellB = this.getCell(posB);
+    this.moveCell(cellA, posB);
+    this.moveCell(cellB, posA);
+    this.board.swapCells(posA, posB);
+  }
+  moveCell(cell, pos){
+    this.cells[pos[1]][pos[0]] = cell;
+    cell.style.gridColumn = pos[0] + 1;
+    cell.style.gridRow = pos[1] + 1;
+  }
+}
+
+class BoardThumbnail extends BoardDOM{
+  constructor(board){
+    super(board);
+    this.init();
+  }
+}
+
+class BoardUI extends BoardDOM{
+  constructor(){
+    super(new Board());
+  }
+  init(){
+    super.init();
+    const board = this.boardElement;
+    const form = create("form");
+    const button = create("button");
+    button.textContent = "⚙️ ユニット設定";
+    button.type = "button";
     form.append(
-      createLabel(this.checkWide, "横長"),
-      createLabel(this.checkLong, "縦長"),
+      createLabel(createCheck(true), "横長"),
+      createLabel(createCheck(true), "縦長"),
       button,
     );
-    this.dialog = this.createUnitConfig();
-    document.body.prepend(form, board, this.dialog);
+    board.before(form);
+    this.createUnitConfigDialog();
     board.addEventListener("pointerdown", this);
     board.addEventListener("pointermove", this, {passive: true});
     board.addEventListener("pointercancel", this);
     board.addEventListener("pointerup", this);
     form.addEventListener("change", this);
     button.addEventListener("click", this);
-    this.boardElement = board;
-    this.update();
   }
-  createUnitConfig(){
+  createUnitConfigDialog(){
+    if(this.dialog) return this.dialog;
+    this.unitConfigMap = new Map();
     const unitConfig = create("dialog");
     const container = createDiv("dialog-container");
     const head = createDiv("head");
@@ -386,7 +443,7 @@ class BoardUI{
         createSpan(movable),
       );
       form.addEventListener("change", this);
-      this.unitMap.set(form, data);
+      this.unitConfigMap.set(form, data);
       container.append(form);
     }
     close.textContent = "❌ 閉じる";
@@ -396,31 +453,8 @@ class BoardUI{
     container.append(create("hr"), dialogForm);
     unitConfig.append(container);
     unitConfig.addEventListener("click", this);
-    return unitConfig;
-  }
-  update(){
-    for(const [y, row] of this.cells.entries()){
-      for(const x of row.keys()) this.updateCell([x, y]);
-    }
-  }
-  updateCell(pos){
-    const cell = this.getCell(pos);
-    const data = this.board.getCell(pos);
-    if(data.oob){
-      cell.dataset.type = "oob";
-    }else{
-      cell.dataset.type = data.type;
-    }
-    if(data.unit){
-      cell.dataset.unit = data.unit;
-    }else{
-      delete cell.dataset.unit;
-    }
-    if(data.weapon){
-      cell.dataset.weapon = data.weapon.name;
-    }else{
-      delete cell.dataset.weapon;
-    }
+    this.boardElement.after(unitConfig);
+    this.dialog = unitConfig;
   }
   handleEvent(e){
     try{
@@ -457,7 +491,8 @@ class BoardUI{
     }
   }
   onChange(e){
-    const data = this.unitMap.get(e.currentTarget);
+    const data = this.unitConfigMap.get(e.currentTarget);
+    const elems = e.currentTarget.elements;
     if(data){
       switch(e.target.className){
         case "weapon":
@@ -470,7 +505,6 @@ class BoardUI{
           data.setVertical(e.target.selectedIndex);
         break;
         case "movable":
-          const elems = e.currentTarget.elements;
           data.setMovable(e.target.checked);
           if(e.target.checked){
             elems[1].selectedIndex = data.horizontal;
@@ -484,7 +518,7 @@ class BoardUI{
         break;
       }
     }else{
-      this.board.setBoardSize(this.checkWide.checked, this.checkLong.checked);
+      this.board.setBoardSize(elems[0].checked, elems[1].checked);
       this.path.clear();
     }
     this.update();
@@ -523,7 +557,7 @@ class BoardUI{
     const x = e.clientX - this.offsetX;
     const y = e.clientY - this.offsetY;
     const targetPos = this.posFromPoint(e.clientX, e.clientY, this.board.movableArea);
-    if(calcDistance(targetPos, this.draggingPos)){
+    if(targetPos[0] !== this.draggingPos[0] || targetPos[1] !== this.draggingPos[1]){
       this.swapCells(targetPos, this.draggingPos);
       this.draggingPos = targetPos;
       this.path.push(targetPos);
@@ -546,24 +580,7 @@ class BoardUI{
     const row = Math.max(Math.min(Math.floor((y - rect.top) * 6 / rect.height), maxRow), minRow);
     return [col, row];
   }
-  getCell(pos){
-    return this.cells[pos[1]][pos[0]];
-  }
-  swapCells(posA, posB){
-    const cellA = this.getCell(posA);
-    const cellB = this.getCell(posB);
-    this.moveCell(cellA, posB);
-    this.moveCell(cellB, posA);
-    this.board.swapCells(posA, posB);
-  }
-  moveCell(cell, pos){
-    this.cells[pos[1]][pos[0]] = cell;
-    cell.style.gridColumn = pos[0] + 1;
-    cell.style.gridRow = pos[1] + 1;
-  }
 }
-
-const calcDistance = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
 
 const boardUI = new BoardUI();
 

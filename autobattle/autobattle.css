@@ -1,4 +1,6 @@
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 body {
@@ -25,7 +27,6 @@ body {
       content: attr(data-unit);
       position: absolute;
       display: block;
-      box-sizing: border-box;
       border-radius: 5px;
       border: 5px solid var(--panel-border-color);
       inset: 1px;
@@ -35,7 +36,6 @@ body {
       content: attr(data-weapon);
       position: absolute;
       display: block;
-      box-sizing: border-box;
       border-radius: 5px;
       border: 5px solid var(--panel-border-color);
       right: 1px;
@@ -54,14 +54,14 @@ body {
   }
   & > [data-type=enemy],
   & > [data-type=neutral] {
-    background-color: #ff5555cc;
+    background-color: #ff5555aa;
     &[data-unit] {
       --panel-border-color: #aa0000;
     }
   }
   & > [data-type=player],
   &:has(.dragging) > [data-type=neutral] {
-    background-color: #5555ffcc;
+    background-color: #5555ffaa;
     &[data-unit] {
       --panel-border-color: #0000aa;
     }
