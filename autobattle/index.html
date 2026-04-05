@@ -14,12 +14,14 @@ body {
   -webkit-text-size-adjust: 100%;
   font-family: "Courier", monospace;
   font-size: small;
+  touch-action: manipulation;
 }
 .board {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(6, 1fr);
   touch-action: none;
+  -webkit-user-select: none;
   user-select: none;
   max-width: 400px;
   aspect-ratio: 5 / 6;
@@ -32,27 +34,31 @@ body {
       content: attr(data-unit);
       position: absolute;
       display: block;
+      box-sizing: border-box;
       border-radius: 5px;
       border: 5px solid var(--panel-border-color);
       inset: 1px;
-      padding: 0.2em;
+      padding: 5%;
     }
     &[data-weapon]::after {
       content: attr(data-weapon);
       position: absolute;
       display: block;
+      box-sizing: border-box;
       border-radius: 5px;
       border: 5px solid var(--panel-border-color);
       right: 1px;
       bottom: 1px;
-      width: 2em;
-      height: 2em;
+      width: calc(50% + 3px);
+      height: calc(50% + 3px);
       text-align: center;
       align-content: center;
+      padding: 0;
     }
     &.dragging {
       z-index: 10;
       transform: scale(1.2);
+      border-radius: 5px;
     }
   }
   & > [data-type=enemy],
@@ -75,14 +81,15 @@ body {
   & > svg {
     pointer-events: none;
     grid-area: 1 / 1 / 7 / 6;
-    z-index: 10;
+    z-index: 50;
     opacity: 0.5;
+    --arrow-color: #ff00ff;
     & marker {
-      fill: #ff00ff;
+      fill: var(--arrow-color);
     }
     & > polyline {
       fill: none;
-      stroke: #ff00ff;
+      stroke: var(--arrow-color);
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
@@ -102,6 +109,10 @@ label {
   & > input[type=checkbox] {
     margin-right: 0.5em;
   }
+}
+.unit-config {
+  margin-left: 1em;
+  line-height: 1.8;
 }
 @keyframes dash {
   to {
