@@ -86,6 +86,8 @@ class Cell{
     this.type = "";
     this.unit = "";
     this.oob = false;
+    this.horizontal = 1;
+    this.vertical = 1;
   }
   setOoB(oob){
     this.oob = oob;
@@ -103,6 +105,24 @@ class Cell{
     if(!this.unit) return;
     this.weapon = weapon;
   }
+  setHorizontal(value){
+    if(!this.unit || value < 0 || value > 4) return;
+    this.horizontal = value;
+  }
+  
+  setVertical(value){
+    if(!this.unit || value < 0 || value > 4) return;
+    this.vertical = value;
+  }
+  
+  setMovable(movable){
+    if(!this.unit) return;
+    this.movable = movable;
+  }
+}
+
+function* range(n){
+  for(let i = 0; i < n; ++i) yield i;
 }
 
 class Board{
@@ -111,9 +131,9 @@ class Board{
     this.enemyUnits = new Set();
     this.playerUnits = new Set();
     this.positionMap = new Map();
-    for(let y = 0; y < 6; ++y){
+    for(const y of range(6)){
       const current = [];
-      for(let x = 0; x < 5; ++x){
+      for(const x of range(5)){
         const pos = [x, y];
         const cell = new Cell(pos);
         current.push(cell);
@@ -124,14 +144,13 @@ class Board{
     this.setBoardSize(true, true);
   }
   setBoardSize(w, h){
-    this.range = [
+    this.area = [
       w ? 0 : 1,
       h ? 0 : 1,
       w ? 4 : 3,
       h ? 5 : 4,
     ];
     this.setPlayerUnits();
-    for(const cell of this.playerUnits) cell.setWeapon(WEAPONS[Math.floor(Math.random() * WEAPONS.length)]);
     for(const [y, row] of this.cells.entries()){
       if(!h && y % 5 === 0){
         for(const cell of row) this.setOoB(cell, true);
@@ -175,14 +194,15 @@ class Board{
         const cell = this.getCell(initialPositions.shift());
         this.playerUnits.add(cell);
         cell.setUnit(name);
+        cell.setWeapon(WEAPONS.at(-2));
       }
     }
   }
   updateLines(){
     const fn = (cell) => this.positionMap.get(cell)[1];
-    this.enemyLine = Math.max(...Array.from(this.enemyUnits, fn), this.range[1]) + 1;
+    this.enemyLine = Math.max(...Array.from(this.enemyUnits, fn), this.area[1]) + 1;
     this.playerLine = Math.min(...Array.from(this.playerUnits, fn));
-    this.movableRange = this.range.toSpliced(1, 1, this.enemyLine);
+    this.movableArea = this.area.toSpliced(1, 1, this.enemyLine);
   }
   updateArea(){
     this.updateLines();
@@ -271,28 +291,40 @@ const createLabel = (...items) => {
   return label;
 };
 
-const createCheck = (checked) => {
+const createCheck = (checked, className) => {
   const check = create("input");
   check.type = "checkbox";
   check.checked = checked;
+  if(className) check.className = className;
   return check;
+};
+
+const createSelect = (list, className) => {
+  const select = create("select");
+  for(const text of list){
+    const option = create("option");
+    option.textContent = text;
+    select.append(option);
+  }
+  if(className) select.className = className;
+  return select;
 };
 
 class BoardUI{
   constructor(){
     this.board = new Board();
     this.cells = [];
+    this.unitMap = new Map();
   }
   init(){
-    this.output = createDiv("output");
     const board = createDiv("board");
     const form = create("form");
     this.checkWide = createCheck(true);
     this.checkLong = createCheck(true);
     this.path = new SVGPath();
-    for(let y = 0; y < 6; ++y){
+    for(const y of range(6)){
       this.cells.push([]);
-      for(let x = 0; x < 5; ++x){
+      for(const x of range(5)){
         const cellElement = createDiv("cell");
         board.append(cellElement);
         this.moveCell(cellElement, [x, y]);
@@ -303,7 +335,7 @@ class BoardUI{
       createLabel(this.checkWide, "横長"),
       createLabel(this.checkLong, "縦長"),
     );
-    document.body.prepend(form, board, this.output);
+    document.body.prepend(form, board, this.createUnitConfig());
     board.addEventListener("pointerdown", this);
     board.addEventListener("pointermove", this, {passive: true});
     board.addEventListener("pointercancel", this);
@@ -311,6 +343,28 @@ class BoardUI{
     form.addEventListener("change", this);
     this.boardElement = board;
     this.update();
+  }
+  createUnitConfig(){
+    const unitConfig = createDiv("unit-config");
+    for(const data of this.board.playerUnits){
+      const form = create("form");
+      const weapon = createSelect(WEAPONS.map(x => x.name), "weapon");
+      const horizontal = createSelect(range(5), "horizontal");
+      const vertical = createSelect(range(5), "vertical");
+      const movable = createCheck(true, "movable");
+      weapon.selectedIndex = WEAPONS.indexOf(data.weapon);
+      horizontal.selectedIndex = vertical.selectedIndex = 1;
+      form.append(
+        createLabel(data.unit, weapon),
+        createLabel("横", horizontal),
+        createLabel("縦", vertical),
+        createLabel("移動可", movable),
+      );
+      form.addEventListener("change", this);
+      this.unitMap.set(form, data);
+      unitConfig.append(form);
+    }
+    return unitConfig;
   }
   update(){
     for(const [y, row] of this.cells.entries()){
@@ -361,9 +415,37 @@ class BoardUI{
     }
   }
   onChange(e){
-    this.board.setBoardSize(this.checkWide.checked, this.checkLong.checked);
+    const data = this.unitMap.get(e.currentTarget);
+    if(data){
+      switch(e.target.className){
+        case "weapon":
+          data.setWeapon(WEAPONS[e.target.selectedIndex]);
+        break;
+        case "horizontal":
+          data.setHorizontal(e.target.selectedIndex);
+        break;
+        case "vertical":
+          data.setVertical(e.target.selectedIndex);
+        break;
+        case "movable":
+          const elems = e.currentTarget.elements;
+          data.setMovable(e.target.checked);
+          if(e.target.checked){
+            elems[1].selectedIndex = data.horizontal;
+            elems[2].selectedIndex = data.vertical;
+            elems[1].disabled = elems[2].disabled = false;
+          }else{
+            elems[1].selectedIndex = 0;
+            elems[2].selectedIndex = 0;
+            elems[1].disabled = elems[2].disabled = true;
+          }
+        break;
+      }
+    }else{
+      this.board.setBoardSize(this.checkWide.checked, this.checkLong.checked);
+      this.path.clear();
+    }
     this.update();
-    this.path.clear();
   }
   pointerDown(e){
     const pos = this.posFromPoint(e.clientX, e.clientY);
@@ -398,7 +480,7 @@ class BoardUI{
     if(!this.draggingPos || this.pointerId !== e.pointerId) return;
     const x = e.clientX - this.offsetX;
     const y = e.clientY - this.offsetY;
-    const targetPos = this.posFromPoint(e.clientX, e.clientY, this.board.movableRange);
+    const targetPos = this.posFromPoint(e.clientX, e.clientY, this.board.movableArea);
     if(calcDistance(targetPos, this.draggingPos)){
       this.swapCells(targetPos, this.draggingPos);
       this.draggingPos = targetPos;
@@ -415,8 +497,8 @@ class BoardUI{
     this.update();
     this.path.clear();
   }
-  posFromPoint(x, y, range){
-    const [minCol, minRow, maxCol, maxRow] = range || [0, 0, 4, 5];
+  posFromPoint(x, y, area){
+    const [minCol, minRow, maxCol, maxRow] = area || [0, 0, 4, 5];
     const rect = this.boardElement.getBoundingClientRect();
     const col = Math.max(Math.min(Math.floor((x - rect.left) * 5 / rect.width), maxCol), minCol);
     const row = Math.max(Math.min(Math.floor((y - rect.top) * 6 / rect.height), maxRow), minRow);
