@@ -711,11 +711,12 @@ class BoardUI extends BoardView{
   }
 }
 
+const boardUI = new BoardUI();
+
 document.addEventListener("DOMContentLoaded", () => {
   try{
-    const boardUI = new BoardUI();
     boardUI.init();
   }catch(e){
     alert(e);
   }
-});
+}, {once: true});
