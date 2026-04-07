@@ -109,12 +109,10 @@ class Cell{
     if(!this.unit || value < 0 || value > 4) return;
     this.horizontal = value;
   }
-  
   setVertical(value){
     if(!this.unit || value < 0 || value > 4) return;
     this.vertical = value;
   }
-  
   setMovable(movable){
     if(!this.unit) return;
     this.movable = movable;
@@ -124,43 +122,125 @@ class Cell{
 function* range(n){
   for(let i = 0; i < n; ++i) yield i;
 }
+const isSamePos = (posA, posB) => (posA[0] === posB[0] && posA[1] === posB[1]);
 
-class Board{
-  constructor(){
-    this.cells = [];
-    this.enemyUnits = new Set();
-    this.playerUnits = new Set();
-    this.positionMap = new Map();
+class Grid{
+  #cells;
+  #positionMap;
+  
+  constructor(grid){
+    if(grid instanceof Grid){
+      this.#cells = grid.#cells.map(row => row.slice());
+      this.#positionMap = new Map(grid.#positionMap);
+    }else{
+      this.#init();
+    }
+  }
+  #init(){
+    this.#cells = [];
+    this.#positionMap = new Map();
     for(const y of range(6)){
       const current = [];
       for(const x of range(5)){
         const pos = [x, y];
         const cell = new Cell(pos);
         current.push(cell);
-        this.positionMap.set(cell, pos);
+        this.#positionMap.set(cell, pos);
       }
-      this.cells.push(current);
+      this.#cells.push(current);
     }
+  }
+  entries(){
+    return this.#cells.entries();
+  }
+  getPos(cell){
+    return this.#positionMap.get(cell);
+  }
+  getCell(pos){
+    return this.#cells[pos[1]][pos[0]];
+  }
+  swapCells(posA, posB){
+    const cellA = this.getCell(posA);
+    const cellB = this.getCell(posB);
+    this.#moveCell(cellA, posB);
+    this.#moveCell(cellB, posA);
+  }
+  #moveCell(cell, pos){
+    this.#cells[pos[1]][pos[0]] = cell;
+    this.#positionMap.set(cell, pos);
+  }
+}
+
+class MovePreviewBoard{
+  #realBoard;
+  #grid;
+  
+  constructor(board, route){
+    this.#realBoard = board;
+    this.#grid = board.cloneGrid();
+    if(route?.length > 1){
+      let from = route[0];
+      for(const to of route.slice(1)){
+        this.#grid.swapCells(from, to);
+        from = to;
+      }
+    }
+  }
+  getCell(pos){
+    return this.#grid.getCell(pos);
+  }
+}
+
+class ExplorationBoard{
+  #realBoard;
+  #grid;
+  
+  constructor(board){
+    this.#realBoard = board;
+    this.#grid = board.cloneGrid();
+  }
+  explore(){
+    if(this.#realBoard.enemyUnits.size === 0) return [0, [[]]];
+    return [0, [
+      [[1, 3], [2, 3], [2, 4]],
+      [[3, 3], [2, 3], [2, 4], [1, 4]],
+      [[1, 4], [1, 3], [0, 3]],
+      [[3, 4], [3, 3], [3, 4]],
+    ]];
+  }
+}
+
+class Board{
+  #grid;
+  #area;
+  
+  constructor(){
+    this.enemyUnits = new Set();
+    this.playerUnits = new Set();
+    this.#grid = new Grid();
     this.setBoardSize(true, true);
   }
+  cloneGrid(){
+    return new Grid(this.#grid);
+  }
   setBoardSize(w, h){
-    this.area = [
+    this.#area = [
       w ? 0 : 1,
       h ? 0 : 1,
       w ? 4 : 3,
       h ? 5 : 4,
     ];
-    this.setPlayerUnits();
-    for(const [y, row] of this.cells.entries()){
+    this.#setPlayerUnits();
+    for(const [y, row] of this.#grid.entries()){
       if(!h && y % 5 === 0){
-        for(const cell of row) this.setOoB(cell, true);
+        for(const cell of row) this.#setOoB(cell, true);
       }else{
-        for(const [x, cell] of row.entries()) this.setOoB(cell, (!w && x % 4 === 0));
+        for(const [x, cell] of row.entries()) this.#setOoB(cell, (!w && x % 4 === 0));
       }
     }
     this.updateArea();
   }
-  setOoB(cell, flag){
+  #setOoB(cell, flag){
     if(flag){
       this.enemyUnits.delete(cell);
       cell.setUnit("");
@@ -176,7 +256,7 @@ class Board{
       cell.setUnit("敵");
     }
   }
-  setPlayerUnits(){
+  #setPlayerUnits(){
     const initialPositions = [
       [1, 3],
       [3, 3],
@@ -185,7 +265,7 @@ class Board{
     ];
     if(this.playerUnits.size){
       for(const cell of this.playerUnits){
-        const posA = this.positionMap.get(cell);
+        const posA = this.#grid.getPos(cell);
         const posB = initialPositions.shift();
         this.swapCells(posA, posB);
       }
@@ -198,43 +278,55 @@ class Board{
       }
     }
   }
-  updateLines(){
-    const fn = (cell) => this.positionMap.get(cell)[1];
-    this.enemyLine = Math.max(...Array.from(this.enemyUnits, fn), this.area[1]) + 1;
-    this.playerLine = Math.min(...Array.from(this.playerUnits, fn));
-    this.movableArea = this.area.toSpliced(1, 1, this.enemyLine);
-  }
   updateArea(){
-    this.updateLines();
-    for(const [y, row] of this.cells.entries()){
+    const fn = (cell) => this.#grid.getPos(cell)[1];
+    this.enemyLine = Math.max(...Array.from(this.enemyUnits, fn), this.#area[1]) + 1;
+    this.playerLine = Math.min(...Array.from(this.playerUnits, fn));
+    this.movableArea = this.#area.with(1, this.enemyLine);
+    for(const [y, row] of this.#grid.entries()){
       const type = y < this.enemyLine ? "enemy" : y < this.playerLine ? "neutral" : "player";
       for(const cell of row) cell.setType(type);
     }
   }
   getCell(pos){
-    return this.cells[pos[1]][pos[0]];
+    return this.#grid.getCell(pos);
   }
   swapCells(posA, posB){
-    const cellA = this.getCell(posA);
-    const cellB = this.getCell(posB);
-    this.moveCell(cellA, posB);
-    this.moveCell(cellB, posA);
-  }
-  moveCell(cell, pos){
-    this.cells[pos[1]][pos[0]] = cell;
-    this.positionMap.set(cell, pos);
+    this.#grid.swapCells(posA, posB);
   }
 }
 
 const createSVG = (tag) => document.createElementNS("http://www.w3.org/2000/svg", tag);
 
 class SVGPath{
+  #points = [];
+  #lines;
+  
+  static #arrow = false;
+  
   constructor(){
     this.svg = createSVG("svg");
+    this.#lines = [
+      createSVG("polyline"),
+      createSVG("polyline"),
+    ];
+    this.svg.setAttributeNS(null, "viewBox", "0 0 50 60");
+    if(!SVGPath.#arrow) this.#appendDefs();
+    this.svg.append(...this.#lines);
+  }
+  #appendDefs(){
     const defs = createSVG("defs");
-    const marker = createSVG("marker");
+    defs.append(
+      this.#createMarker("arrow"),
+      this.#createMarker("thumbnail-arrow"),
+    );
+    this.svg.append(defs);
+    SVGPath.#arrow = true;
+  }
+  #createMarker(id){
+        const marker = createSVG("marker");
     const arrow = createSVG("path");
-    marker.id = "arrow";
+    marker.id = id;
     marker.setAttributeNS(null, "viewBox", "0 0 10 10");
     marker.setAttributeNS(null, "refX", 5);
     marker.setAttributeNS(null, "refY", 5);
@@ -243,37 +335,38 @@ class SVGPath{
     marker.setAttributeNS(null, "markerHeight", 5);
     marker.setAttributeNS(null, "orient", "auto");
     arrow.setAttributeNS(null, "d", "M 0 0 L 10 5 L 0 10 L 1 5 z");
-    this.lines = [
-      createSVG("polyline"),
-      createSVG("polyline"),
-    ];
-//    for(const line of this.lines) line.setAttributeNS(null, "pathLength", 100);
-    this.svg.setAttributeNS(null, "viewBox", "0 0 50 60");
     marker.append(arrow);
-    defs.append(marker);
-    this.svg.append(defs, ...this.lines);
-    this.points = [];
+    return marker;
   }
   get route(){
-    if(this.points.length > 1) return this.points.slice(-9).map(([x, y]) => `${x * 10 + 5},${y * 10 + 5}`).join(" ");
-    return "";
+    const f = (x, y, a, b) => `${x * 10 + a},${y * 10 + b}`;
+    if(this.#points.length === 3 && isSamePos(this.#points[0], this.#points[2])){
+      return this.#points.map((pos, i) => f(...pos, ...(this.#points[0][0] === this.#points[1][0] ? [i * 2 + 3, 5] : [5, i * 2 + 3]))).join(" ");
+    }else if(this.#points.length > 1){
+      return this.#points.slice(-9).map((pos) => f(...pos, 5, 5)).join(" ");
+    }else{
+      return "";
+    }
   }
   draw(){
-    for(const line of this.lines) line.setAttributeNS(null, "points", this.route);
+    for(const line of this.#lines) line.setAttributeNS(null, "points", this.route);
   }
   push(...points){
-    for(const point of points){
-      const prev = this.points.at(-2);
-      if(prev && prev[0] === point[0] && prev[1] === point[1]){
-        this.points.pop();
+    if(points.length > 1){
+      this.#points.push(...points);
+    }else{
+      const point = points[0];
+      const prev = this.#points.at(-2);
+      if(prev && isSamePos(prev, point)){
+        this.#points.pop();
       }else{
-        this.points.push(point);
+        this.#points.push(point);
       }
     }
   }
   clear(){
-    for(const line of this.lines) line.setAttributeNS(null, "points", "");
-    this.points.length = 0;
+    for(const line of this.#lines) line.setAttributeNS(null, "points", "");
+    this.#points.length = 0;
   }
 }
 
@@ -316,77 +409,82 @@ const createSpan = (...contents) => {
   return span;
 };
 
-class BoardDOM{
+class BoardView{
+  #panels = [];
+  
   constructor(board){
     this.board = board;
   }
   init(){
-    if(this.boardElement) return this.boardElement;
+    if(this.boardElement) return;
     const board = createDiv("board");
-    this.cells = [];
     this.path = new SVGPath();
     for(const y of range(6)){
-      this.cells.push([]);
+      this.#panels.push([]);
       for(const x of range(5)){
-        const cellElement = createDiv("cell");
-        board.append(cellElement);
-        this.moveCell(cellElement, [x, y]);
+        const panel = createDiv("panel");
+        board.append(panel);
+        this.#movePanel(panel, [x, y]);
       }
     }
     board.append(this.path.svg);
-    document.body.prepend(board);
     this.boardElement = board;
     this.update();
   }
   update(){
-    for(const [y, row] of this.cells.entries()){
-      for(const x of row.keys()) this.updateCell([x, y]);
+    for(const [y, row] of this.#panels.entries()){
+      for(const x of row.keys()) this.updatePanel([x, y]);
     }
   }
-  updateCell(pos){
-    const cell = this.getCell(pos);
+  updatePanel(pos){
+    const panel = this.getPanel(pos);
     const data = this.board.getCell(pos);
     if(data.oob){
-      cell.dataset.type = "oob";
+      panel.dataset.type = "oob";
     }else{
-      cell.dataset.type = data.type;
+      panel.dataset.type = data.type;
     }
     if(data.unit){
-      cell.dataset.unit = data.unit;
+      panel.dataset.unit = data.unit;
     }else{
-      delete cell.dataset.unit;
+      delete panel.dataset.unit;
     }
     if(data.weapon){
-      cell.dataset.weapon = data.weapon.name;
+      panel.dataset.weapon = data.weapon.name;
     }else{
-      delete cell.dataset.weapon;
+      delete panel.dataset.weapon;
     }
   }
-  getCell(pos){
-    return this.cells[pos[1]][pos[0]];
+  getPanel(pos){
+    return this.#panels[pos[1]][pos[0]];
   }
-  swapCells(posA, posB){
-    const cellA = this.getCell(posA);
-    const cellB = this.getCell(posB);
-    this.moveCell(cellA, posB);
-    this.moveCell(cellB, posA);
+  swapPanels(posA, posB){
+    const panelA = this.getPanel(posA);
+    const panelB = this.getPanel(posB);
+    this.#movePanel(panelA, posB);
+    this.#movePanel(panelB, posA);
     this.board.swapCells(posA, posB);
   }
-  moveCell(cell, pos){
-    this.cells[pos[1]][pos[0]] = cell;
-    cell.style.gridColumn = pos[0] + 1;
-    cell.style.gridRow = pos[1] + 1;
+  #movePanel(panel, pos){
+    this.#panels[pos[1]][pos[0]] = panel;
+    panel.style.gridColumn = pos[0] + 1;
+    panel.style.gridRow = pos[1] + 1;
   }
 }
 
-class BoardThumbnail extends BoardDOM{
-  constructor(board){
-    super(board);
+class BoardThumbnail extends BoardView{
+  constructor(board, route){
+    super(new MovePreviewBoard(board, route));
     this.init();
+    this.boardElement.classList.add("moving", "thumbnail");
+    if(route.length){
+      this.path.push(...route);
+      this.path.draw();
+    }
   }
 }
 
-class BoardUI extends BoardDOM{
+class BoardUI extends BoardView{
   constructor(){
     super(new Board());
   }
@@ -395,6 +493,9 @@ class BoardUI extends BoardDOM{
     const board = this.boardElement;
     const form = create("form");
     const button = create("button");
+    this.thumbnails = createDiv("flex");
+    this.output = create("output");
+    board.classList.add("draggable");
     button.textContent = "⚙️ ユニット設定";
     button.type = "button";
     form.append(
@@ -402,17 +503,24 @@ class BoardUI extends BoardDOM{
       createLabel(createCheck(true), "縦長"),
       button,
     );
-    board.before(form);
     this.createUnitConfigDialog();
+    document.body.prepend(
+      form,
+      board,
+      this.output,
+      this.thumbnails,
+      this.dialog,
+    );
     board.addEventListener("pointerdown", this);
     board.addEventListener("pointermove", this, {passive: true});
     board.addEventListener("pointercancel", this);
     board.addEventListener("pointerup", this);
     form.addEventListener("change", this);
     button.addEventListener("click", this);
+    this.explore();
   }
   createUnitConfigDialog(){
-    if(this.dialog) return this.dialog;
+    if(this.dialog) return;
     this.unitConfigMap = new Map();
     const unitConfig = create("dialog");
     const container = createDiv("dialog-container");
@@ -453,7 +561,6 @@ class BoardUI extends BoardDOM{
     container.append(create("hr"), dialogForm);
     unitConfig.append(container);
     unitConfig.addEventListener("click", this);
-    this.boardElement.after(unitConfig);
     this.dialog = unitConfig;
   }
   handleEvent(e){
@@ -522,31 +629,35 @@ class BoardUI extends BoardDOM{
       this.path.clear();
     }
     this.update();
+    this.explore();
   }
   pointerDown(e){
     const pos = this.posFromPoint(e.clientX, e.clientY);
     const data = this.board.getCell(pos);
-    const cell = this.getCell(pos);
+    const panel = this.getPanel(pos);
     switch(data.type){
       case "player":
-        this.dragStart(e, data, cell);
+        this.dragStart(e, data, panel);
       break;
       case "neutral":
       case "enemy":
         this.board.toggleUnit(data);
         this.board.updateArea();
-        this.updateCell(pos);
+        this.updatePanel(pos);
+        this.explore();
       break;
     }
   }
-  dragStart(e, data, cell){
+  dragStart(e, data, panel){
     if(this.draggingPos || e.button !== 0 || !data.unit) return;
+    this.boardElement.classList.remove("scrollable");
     this.offsetX = e.clientX;
     this.offsetY = e.clientY;
     this.draggingPos = this.posFromPoint(e.clientX, e.clientY);
     this.pointerId = e.pointerId;
-    cell.classList.add("dragging");
-    cell.setPointerCapture(e.pointerId);
+    this.boardElement.classList.add("moving");
+    panel.classList.add("dragging");
+    panel.setPointerCapture(e.pointerId);
     this.board.updateArea();
     this.update();
     this.path.clear();
@@ -557,8 +668,8 @@ class BoardUI extends BoardDOM{
     const x = e.clientX - this.offsetX;
     const y = e.clientY - this.offsetY;
     const targetPos = this.posFromPoint(e.clientX, e.clientY, this.board.movableArea);
-    if(targetPos[0] !== this.draggingPos[0] || targetPos[1] !== this.draggingPos[1]){
-      this.swapCells(targetPos, this.draggingPos);
+    if(!isSamePos(targetPos, this.draggingPos)){
+      this.swapPanels(targetPos, this.draggingPos);
       this.draggingPos = targetPos;
       this.path.push(targetPos);
       this.path.draw();
@@ -566,12 +677,14 @@ class BoardUI extends BoardDOM{
   }
   dragEnd(e){
     if(!this.draggingPos || this.pointerId !== e.pointerId) return;
-    const cell = this.getCell(this.draggingPos);
-    cell.classList.remove("dragging");
+    const panel = this.getPanel(this.draggingPos);
+    panel.classList.remove("dragging");
+    this.boardElement.classList.remove("moving");
     this.draggingPos = null;
     this.board.updateArea();
     this.update();
     this.path.clear();
+    this.explore();
   }
   posFromPoint(x, y, area){
     const [minCol, minRow, maxCol, maxRow] = area || [0, 0, 4, 5];
@@ -579,6 +692,22 @@ class BoardUI extends BoardDOM{
     const col = Math.max(Math.min(Math.floor((x - rect.left) * 5 / rect.width), maxCol), minCol);
     const row = Math.max(Math.min(Math.floor((y - rect.top) * 6 / rect.height), maxRow), minRow);
     return [col, row];
+  }
+  explore(){
+    const board = new ExplorationBoard(this.board);
+    const [score, routes] = board.explore();
+    const container = this.thumbnails;
+    while(container.firstChild) container.removeChild(container.firstChild);
+    for(const [n, route] of routes.entries()){
+      const block = createDiv("item");
+      const thumbnail = new BoardThumbnail(this.board, route);
+      block.append(
+        `#${n + 1}`,
+        thumbnail.boardElement, 
+      );
+      container.append(block);
+    }
+    this.output.value = routes.length > 1 ? score ||  "※ルート探索は未実装のため表示ルートは固定です" : "敵が配置されていません";
   }
 }
 
@@ -590,4 +719,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }catch(e){
     alert(e);
   }
-});
+}, {once: true});
