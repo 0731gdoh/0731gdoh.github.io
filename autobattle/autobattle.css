@@ -30,7 +30,6 @@ body {
   aspect-ratio: 5 / 6;
   &.draggable{
     border: 1px solid var(--color);
-    touch-action: none;
     margin: 0.5em;
     font-size: small;
     --border-width: 5px;
@@ -38,7 +37,6 @@ body {
     --arrow-marker: url(#arrow);
   }
   &.thumbnail {
-    touch-action: manipulation;
     margin: 0;
     font-size: xx-small;
     --border-width: 1px;
@@ -90,6 +88,7 @@ body {
     background-color: #5555ffaa;
     &[data-unit] {
       --panel-border-color: #0000aa;
+      touch-action: none;
     }
   }
   & > [data-type=oob] {
