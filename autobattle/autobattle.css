@@ -1,3 +1,8 @@
+:root {
+  --drag-arrow-color: #ff00ff;
+  --thumbnail-arrow-color: #88ff88;
+  --panel-border-color: #ffffff44;
+}
 *,
 *::before,
 *::after {
@@ -9,35 +14,56 @@ body {
   font-size: small;
   touch-action: manipulation;
 }
+#arrow > path {
+  fill: var(--drag-arrow-color);
+}
+#thumbnail-arrow > path {
+  fill: var(--thumbnail-arrow-color);
+}
 .board {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(6, 1fr);
-  touch-action: none;
   -webkit-user-select: none;
   user-select: none;
   max-width: 400px;
   aspect-ratio: 5 / 6;
-  border: 1px solid #000000;
-  margin: 0.5em;
-  --panel-border-color: #ffffff44;
-  & > .cell {
+  &.draggable{
+    border: 1px solid var(--color);
+    touch-action: none;
+    margin: 0.5em;
+    font-size: small;
+    --border-width: 5px;
+    --arrow-color: var(--drag-arrow-color);
+    --arrow-marker: url(#arrow);
+  }
+  &.thumbnail {
+    touch-action: manipulation;
+    margin: 0;
+    font-size: xx-small;
+    --border-width: 1px;
+    --arrow-color: var(--thumbnail-arrow-color);
+    --arrow-marker: url(#thumbnail-arrow);
+  }
+  & > .panel {
     position: relative;
     &::before {
       content: attr(data-unit);
+      overflow: hidden;
       position: absolute;
       display: block;
-      border-radius: 5px;
-      border: 5px solid var(--panel-border-color);
+      border-radius: var(--border-width);
+      border: var(--border-width) solid var(--panel-border-color);
       inset: 1px;
+      text-align: center;
       padding: 5%;
     }
-    &[data-weapon]::after {
+    .draggable &[data-weapon]::after {
       content: attr(data-weapon);
       position: absolute;
       display: block;
-      border-radius: 5px;
-      border: 5px solid var(--panel-border-color);
+      border-radius: var(--border-width);
+      border: var(--border-width) solid var(--panel-border-color);
       right: 1px;
       bottom: 1px;
       width: calc(50% + 3px);
@@ -49,7 +75,7 @@ body {
     &.dragging {
       z-index: 10;
       transform: scale(1.2);
-      border-radius: 5px;
+      border-radius: var(--border-width);
     }
   }
   & > [data-type=enemy],
@@ -60,7 +86,7 @@ body {
     }
   }
   & > [data-type=player],
-  &:has(.dragging) > [data-type=neutral] {
+  &.moving > [data-type=neutral] {
     background-color: #5555ffaa;
     &[data-unit] {
       --panel-border-color: #0000aa;
@@ -73,18 +99,14 @@ body {
     pointer-events: none;
     grid-area: 1 / 1 / 7 / 6;
     z-index: 50;
-    opacity: 0.5;
-    --arrow-color: #ff00ff;
-    & marker {
-      fill: var(--arrow-color);
-    }
+    opacity: 0.6;
     & > polyline {
       fill: none;
       stroke: var(--arrow-color);
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
-      marker-end: url(#arrow);
+      marker-end: var(--arrow-marker);
       & ~ polyline {
         stroke: #ffffff88;
         stroke-width: 1;
@@ -99,6 +121,20 @@ label {
   margin-right: 1em;
   & > input[type=checkbox] {
     margin-right: 0.5em;
+  }
+}
+.flex {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 0.5em;
+  gap: 0.5em;
+  max-width: 400px;
+  border: 1px solid var(--color);;
+  & > .item {
+    width: 40%;
+    flex-shrink: 0;
+    text-align: center;
   }
 }
 dialog {
