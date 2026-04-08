@@ -1,18 +1,39 @@
 :root {
-  --drag-arrow-color: #ff00ff;
-  --thumbnail-arrow-color: #88ff88;
-  --panel-border-color: #ffffff44;
+  --drag-arrow-color: #f0f;
+  --thumbnail-arrow-color: #8f8;
+  --panel-border-color: #fff4;
+  --enemy-panel-color: #f88;
+  --enemy-border-color: #a00;
+  --player-panel-color: #88f;
+  --player-border-color: #00a;
+  --locked-border-color: #80a;
+}
+:root[data-theme="0"].dark,
+:root[data-theme="2"] {
+  --drag-arrow-color: #a0a;
+  --panel-border-color: #fff1;
+  --enemy-panel-color: #733;
+  --enemy-border-color: #600;
+  --player-panel-color: #337;
+  --player-border-color: #006;
+  --locked-border-color: #406;
 }
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
+html:has(dialog[open]){
+  overflow: hidden;
+}
 body {
-  -webkit-text-size-adjust: 100%;
   font-family: "Courier", monospace;
   font-size: small;
-  touch-action: manipulation;
+  padding: 0 0.5em;
+  & > div {
+    margin: 0.5em 0;
+    max-width: 450px;
+  }
 }
 #arrow > path {
   fill: var(--drag-arrow-color);
@@ -20,24 +41,27 @@ body {
 #thumbnail-arrow > path {
   fill: var(--thumbnail-arrow-color);
 }
+label {
+  margin-right: 1em;
+  & > input[type=checkbox] {
+    margin-right: 0.5em;
+  }
+}
 .board {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(6, 1fr);
   -webkit-user-select: none;
   user-select: none;
-  max-width: 400px;
   aspect-ratio: 5 / 6;
   &.draggable{
     border: 1px solid var(--color);
-    margin: 0.5em;
     font-size: small;
     --border-width: 5px;
     --arrow-color: var(--drag-arrow-color);
     --arrow-marker: url(#arrow);
   }
   &.thumbnail {
-    margin: 0;
     font-size: xx-small;
     --border-width: 1px;
     --arrow-color: var(--thumbnail-arrow-color);
@@ -78,21 +102,24 @@ body {
   }
   & > [data-type=enemy],
   & > [data-type=neutral] {
-    background-color: #ff5555aa;
+    background-color: var(--enemy-panel-color);
     &[data-unit] {
-      --panel-border-color: #aa0000;
+      --panel-border-color: var(--enemy-border-color);
     }
   }
   & > [data-type=player],
   &.moving > [data-type=neutral] {
-    background-color: #5555ffaa;
+    background-color: var(--player-panel-color);
     &[data-unit] {
-      --panel-border-color: #0000aa;
+      --panel-border-color: var(--player-border-color);
       touch-action: none;
+      &.move-locked {
+        --panel-border-color: var(--locked-border-color);
+      }
     }
   }
   & > [data-type=oob] {
-    background-color: #88888822;
+    background-color: #8882;
   }
   & > svg {
     pointer-events: none;
@@ -107,7 +134,7 @@ body {
       stroke-linejoin: round;
       marker-end: var(--arrow-marker);
       & ~ polyline {
-        stroke: #ffffff88;
+        stroke: #fff8;
         stroke-width: 1;
         stroke-dasharray: 3 12;
         stroke-dashoffset: 60;
@@ -116,25 +143,28 @@ body {
     }
   }
 }
-label {
-  margin-right: 1em;
-  & > input[type=checkbox] {
-    margin-right: 0.5em;
-  }
+.message > span {
+  display: inline-block;
+  border-radius: 1em;
+  padding: 0 0.5em;
+  height: 1.5em;
+  align-content: center;
+  background-color: #8884;
+  margin: 0.2em;
 }
 .flex {
   display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  margin: 0.5em;
+  overflow: auto;
   gap: 0.5em;
-  max-width: 400px;
   border: 1px solid var(--color);;
   & > .item {
     width: 40%;
     flex-shrink: 0;
     text-align: center;
   }
+}
+.total {
+  text-align: right;
 }
 dialog {
   border-radius: 5px;
@@ -160,7 +190,7 @@ dialog {
   }
   &::backdrop {
     backdrop-filter: blur(3px);
-    background-color: #00002288;
+    background-color: #0028;
   }
 }
 @keyframes dash {
