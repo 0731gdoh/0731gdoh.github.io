@@ -2,8 +2,7 @@
 
 const WEAPONS = [
   {
-    name: "斬",
-    type: "relative",
+    name: "斬撃",
     offsets: [
       [-1, -1],
       [0, -1],
@@ -11,23 +10,20 @@ const WEAPONS = [
     ],
   },
   {
-    name: "突",
-    type: "relative",
+    name: "突撃",
     offsets: [
       [0, -1],
       [0, -2],
     ],
   },
   {
-    name: "打",
-    type: "relative",
+    name: "打撃",
     offsets: [
       [0, -1],
     ],
   },
   {
-    name: "射",
-    type: "relative",
+    name: "射撃",
     offsets: [
       [0, -1],
       [0, -2],
@@ -35,8 +31,7 @@ const WEAPONS = [
     ],
   },
   {
-    name: "魔",
-    type: "relative",
+    name: "魔法",
     offsets: [
       [0, -1],
       [-1, -2],
@@ -46,8 +41,7 @@ const WEAPONS = [
     ],
   },
   {
-    name: "横",
-    type: "relative",
+    name: "横一文字",
     offsets: [
       [-2, -1],
       [-1, -1],
@@ -57,8 +51,7 @@ const WEAPONS = [
     ],
   },
   {
-    name: "狙",
-    type: "relative",
+    name: "狙撃",
     offsets: [
       [0, -1],
       [0, -2],
@@ -69,15 +62,11 @@ const WEAPONS = [
   },
   {
     name: "無",
-    type: "none",
-    offsets: [
-    ],
+    offsets: [],
   },
   {
-    name: "全",
-    type: "all",
-    offsets: [
-    ],
+    name: "全域",
+    offsets: [],
   },
 ];
 
@@ -88,6 +77,7 @@ class Cell{
     this.oob = false;
     this.horizontal = 1;
     this.vertical = 1;
+    this.movable = true;
   }
   setOoB(oob){
     this.oob = oob;
@@ -157,7 +147,7 @@ class Grid{
     return this.#positionMap.get(cell);
   }
   getCell(pos){
-    return this.#cells[pos[1]][pos[0]];
+    return this.#cells[pos[1]]?.[pos[0]];
   }
   swapCells(posA, posB){
     const cellA = this.getCell(posA);
@@ -172,11 +162,9 @@ class Grid{
 }
 
 class MovePreviewBoard{
-  #realBoard;
   #grid;
   
   constructor(board, route){
-    this.#realBoard = board;
     this.#grid = board.cloneGrid();
     if(route?.length > 1){
       let from = route[0];
@@ -191,34 +179,163 @@ class MovePreviewBoard{
   }
 }
 
-class ExplorationBoard{
+class SearchBoard{
+  static #MOVES = [
+    [0, -1],
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+  ];
+  
   #realBoard;
   #grid;
+  #routes;
+  #frontlinePos;
+  #unit;
+  #unitIndex;
+  #highScore;
+  #counter;
   
   constructor(board){
     this.#realBoard = board;
-    this.#grid = board.cloneGrid();
   }
-  explore(){
-    if(this.#realBoard.enemyUnits.size === 0) return [0, [[]]];
-    return [0, [
-      [[1, 3], [2, 3], [2, 4]],
-      [[3, 3], [2, 3], [2, 4], [1, 4]],
-      [[1, 4], [1, 3], [0, 3]],
-      [[3, 4], [3, 3], [3, 4]],
-    ]];
+  #formatScore(score){
+    return [
+      `攻撃参加${score[0]}人`,
+      `合計${score[1]}ヒット`,
+      `移動枠攻撃${score[2] ? "可" : "不可"}`,
+      `敵まで${-score[3] - 1}マス`,
+      `上から${-score[4] - this.#realBoard.top + 1}マス`,
+      `${-score[5]}マス移動`,
+      `編成#${-score[6] + 1}`,
+    ];
+  }
+  search(){
+    let message = "移動できません";
+    this.#grid = this.#realBoard.cloneGrid();
+    this.#counter = 0;
+    this.#routes = [];
+    this.#highScore = null;
+    this.#frontlinePos = [];
+    for(const enemy of this.#realBoard.enemyUnits){
+      const pos = this.#grid.getPos(enemy);
+      if(pos[1] === this.#realBoard.enemyLine - 1) this.#frontlinePos.push(pos);
+    }
+    if(this.#frontlinePos.length){
+      this.#unitIndex = 0;
+      for(const unit of this.#realBoard.playerUnits){
+        this.#unit = unit;
+        const pos = this.#grid.getPos(unit);
+        if(unit.movable) this.#dfs([pos], 0, 0, pos);
+        this.#unitIndex++;
+      }
+    }else{
+      message = "敵が配置されていません";
+    }
+    if(this.#routes.length){
+      return [
+        this.#counter,
+        this.#formatScore(this.#highScore),
+        this.#routes
+      ];
+    }else{
+      return [
+        1,
+        [message],
+        [[]],
+      ];
+    }
+  }
+  #dfs(route, hd, vd, pos){
+    for(const [dx, dy] of SearchBoard.#MOVES){
+      const nx = pos[0] + dx;
+      const ny = pos[1] + dy;
+      const npos = [nx, ny];
+      if(dx){
+        if(
+          hd * dx < 0 ||
+          Math.abs(hd + dx) > this.#unit.horizontal ||
+          nx < this.#realBoard.movableArea[0] ||
+          nx > this.#realBoard.movableArea[2]
+        ) continue;
+      }else{
+        if(
+          vd * dy < 0 ||
+          Math.abs(vd + dy) > this.#unit.vertical ||
+          ny < this.#realBoard.movableArea[1] ||
+          ny > this.#realBoard.movableArea[3]
+        ) continue;
+      }
+      route.push(npos);
+      if(route.length === 2){
+        this.#evaluate(route.concat([pos]), 0, 0, pos);
+      }
+      this.#grid.swapCells(pos, npos);
+      const data = [route, hd + dx, vd + dy, npos];
+      this.#evaluate(...data);
+      this.#dfs(...data);
+      this.#grid.swapCells(pos, npos);
+      route.pop();
+    }
+  }
+  #evaluate(route, hd, vd, pos){
+    ++this.#counter;
+    let newRecord = false;
+    const current = [
+      0,
+      0,
+      this.#unit.weapon.name === "無" ? 0 : 1,
+      -Math.min(...this.#frontlinePos.map(epos => Math.abs(epos[0] - pos[0]) + Math.abs(epos[1] - pos[1]))),
+      -pos[1],
+      -(Math.abs(hd) + Math.abs(vd) || 2),
+      -this.#unitIndex,
+    ];
+    for(const unit of this.#realBoard.playerUnits){
+      const count = this.#hitCount(unit);
+      if(count) ++current[0];
+      current[1] += count;
+    }
+    if(this.#highScore){
+      for(const [index, score] of current.entries()){
+        const diff = score - this.#highScore[index];
+        if(!newRecord){
+          if(diff < 0) return;
+          if(diff > 0) newRecord = true;
+        }
+      }
+    }
+    this.#highScore = current;
+    if(newRecord) this.#routes = [];
+    this.#routes.push(route.slice());
+  }
+  #hitCount(unit){
+    const [x, y] = this.#grid.getPos(unit);
+    switch(unit.weapon.name){
+      case "無":
+        return 0;
+      break;
+      case "全域":
+        return this.#realBoard.enemyUnits.size;
+      break;
+      default:
+        let count = 0;
+        for(const [dx, dy] of unit.weapon.offsets){
+          if(this.#realBoard.enemyUnits.has(this.#grid.getCell([x + dx, y + dy]))) ++count;
+        }
+        return count;
+      break;
+    }
   }
 }
 
 class Board{
-  #grid;
+  #grid = new Grid();
   #area;
   
   constructor(){
     this.enemyUnits = new Set();
     this.playerUnits = new Set();
-    this.#grid = new Grid();
-    this.setBoardSize(true, true);
+    this.setBoardSize(false, false);
   }
   cloneGrid(){
     return new Grid(this.#grid);
@@ -239,6 +356,9 @@ class Board{
       }
     }
     this.updateArea();
+  }
+  get top(){
+    return this.#area[1];
   }
   #setOoB(cell, flag){
     if(flag){
@@ -409,26 +529,27 @@ const createSpan = (...contents) => {
   return span;
 };
 
+const removeChildren = (elem) => {
+  while(elem.firstChild) elem.removeChild(elem.firstChild);
+};
+
 class BoardView{
   #panels = [];
   
   constructor(board){
     this.board = board;
-  }
-  init(){
-    if(this.boardElement) return;
-    const board = createDiv("board");
+    const be = createDiv("board");
     this.path = new SVGPath();
     for(const y of range(6)){
       this.#panels.push([]);
       for(const x of range(5)){
         const panel = createDiv("panel");
-        board.append(panel);
+        be.append(panel);
         this.#movePanel(panel, [x, y]);
       }
     }
-    board.append(this.path.svg);
-    this.boardElement = board;
+    be.append(this.path.svg);
+    this.boardElement = be;
     this.update();
   }
   update(){
@@ -446,11 +567,13 @@ class BoardView{
     }
     if(data.unit){
       panel.dataset.unit = data.unit;
+      panel.classList.toggle("move-locked", !data.movable || (!data.vertical && !data.horizontal));
     }else{
       delete panel.dataset.unit;
+      panel.classList.remove("move-locked");
     }
     if(data.weapon){
-      panel.dataset.weapon = data.weapon.name;
+      panel.dataset.weapon = data.weapon.name[0];
     }else{
       delete panel.dataset.weapon;
     }
@@ -475,7 +598,6 @@ class BoardView{
 class BoardThumbnail extends BoardView{
   constructor(board, route){
     super(new MovePreviewBoard(board, route));
-    this.init();
     this.boardElement.classList.add("moving", "thumbnail");
     if(route.length){
       this.path.push(...route);
@@ -485,43 +607,54 @@ class BoardThumbnail extends BoardView{
 }
 
 class BoardUI extends BoardView{
+  #message;
+  #thumbnails;
+  #total;
+  #dialog;
+  #searchBoard;
+  #unitConfigMap;
+  #draggingPos;
+  #offsetX;
+  #offsetY;
+  #pointerId;
+  
   constructor(){
     super(new Board());
-  }
-  init(){
-    super.init();
-    const board = this.boardElement;
+    const be = this.boardElement;
     const form = create("form");
     const button = create("button");
-    this.thumbnails = createDiv("flex");
-    this.output = create("output");
-    board.classList.add("draggable");
+    this.#message = createDiv("message");
+    this.#thumbnails = createDiv("flex");
+    this.#total = createDiv("total");
+    be.classList.add("draggable");
     button.textContent = "⚙️ ユニット設定";
     button.type = "button";
     form.append(
-      createLabel(createCheck(true), "横長"),
-      createLabel(createCheck(true), "縦長"),
+      createLabel(createCheck(false), "横長"),
+      createLabel(createCheck(false), "縦長"),
       button,
     );
-    this.createUnitConfigDialog();
+    this.#createUnitConfigDialog();
     document.body.prepend(
       form,
-      board,
-      this.output,
-      this.thumbnails,
-      this.dialog,
+      be,
+      this.#message,
+      this.#thumbnails,
+      this.#total,
+      this.#dialog,
     );
-    board.addEventListener("pointerdown", this);
-    board.addEventListener("pointermove", this, {passive: true});
-    board.addEventListener("pointercancel", this);
-    board.addEventListener("pointerup", this);
+    be.addEventListener("pointerdown", this, {passive: true});
+    be.addEventListener("pointermove", this, {passive: true});
+    be.addEventListener("pointercancel", this);
+    be.addEventListener("pointerup", this);
     form.addEventListener("change", this);
     button.addEventListener("click", this);
-    this.explore();
+    this.#searchBoard = new SearchBoard(this.board);
+    this.#search();
   }
-  createUnitConfigDialog(){
-    if(this.dialog) return;
-    this.unitConfigMap = new Map();
+  #createUnitConfigDialog(){
+    if(this.#dialog) return;
+    this.#unitConfigMap = new Map();
     const unitConfig = create("dialog");
     const container = createDiv("dialog-container");
     const head = createDiv("head");
@@ -529,7 +662,7 @@ class BoardUI extends BoardView{
     const close = create("button");
     head.append(
       createSpan("#"),
-      createSpan("武器"),
+      createSpan("武器種"),
       createSpan("横移動"),
       createSpan("縦移動"),
       createSpan("移動可")
@@ -551,7 +684,7 @@ class BoardUI extends BoardView{
         createSpan(movable),
       );
       form.addEventListener("change", this);
-      this.unitConfigMap.set(form, data);
+      this.#unitConfigMap.set(form, data);
       container.append(form);
     }
     close.textContent = "❌ 閉じる";
@@ -561,44 +694,44 @@ class BoardUI extends BoardView{
     container.append(create("hr"), dialogForm);
     unitConfig.append(container);
     unitConfig.addEventListener("click", this);
-    this.dialog = unitConfig;
+    this.#dialog = unitConfig;
   }
   handleEvent(e){
     try{
-      this._handleEvent(e);
+      this.#handleEvent(e);
     }catch(err){
       alert(err);
     }
   }
-  _handleEvent(e){
+  #handleEvent(e){
     switch(e.type){
       case "pointerdown":
-        this.pointerDown(e);
+        this.#pointerDown(e);
       break;
       case "pointermove":
-        this.dragMove(e);
+        this.#dragMove(e);
       break;
       case "pointerup":
       case "pointercancel":
-        this.dragEnd(e);
+        this.#dragEnd(e);
       break;
       case "change":
-        this.onChange(e);
+        this.#onChange(e);
       break;
       case "click":
-        this.onClick(e);
+        this.#onClick(e);
       break;
     }
   }
-  onClick(e){
-    if(this.dialog.open){
-      if(!e.target.closest(".dialog-container")) this.dialog.close();
+  #onClick(e){
+    if(this.#dialog.open){
+      if(!e.target.closest(".dialog-container")) this.#dialog.close();
     }else{
-      this.dialog.showModal();
+      this.#dialog.showModal();
     }
   }
-  onChange(e){
-    const data = this.unitConfigMap.get(e.currentTarget);
+  #onChange(e){
+    const data = this.#unitConfigMap.get(e.currentTarget);
     const elems = e.currentTarget.elements;
     if(data){
       switch(e.target.className){
@@ -629,75 +762,73 @@ class BoardUI extends BoardView{
       this.path.clear();
     }
     this.update();
-    this.explore();
+    this.#search();
   }
-  pointerDown(e){
-    const pos = this.posFromPoint(e.clientX, e.clientY);
+  #pointerDown(e){
+    const pos = this.#posFromPoint(e.clientX, e.clientY);
     const data = this.board.getCell(pos);
     const panel = this.getPanel(pos);
     switch(data.type){
       case "player":
-        this.dragStart(e, data, panel);
+        this.#dragStart(e, data, panel);
       break;
       case "neutral":
       case "enemy":
         this.board.toggleUnit(data);
         this.board.updateArea();
         this.updatePanel(pos);
-        this.explore();
+        this.#search();
       break;
     }
   }
-  dragStart(e, data, panel){
-    if(this.draggingPos || e.button !== 0 || !data.unit) return;
+  #dragStart(e, data, panel){
+    if(this.#draggingPos || e.button !== 0 || !data.unit) return;
     this.boardElement.classList.remove("scrollable");
-    this.offsetX = e.clientX;
-    this.offsetY = e.clientY;
-    this.draggingPos = this.posFromPoint(e.clientX, e.clientY);
-    this.pointerId = e.pointerId;
+    this.#offsetX = e.clientX;
+    this.#offsetY = e.clientY;
+    this.#draggingPos = this.#posFromPoint(e.clientX, e.clientY);
+    this.#pointerId = e.pointerId;
     this.boardElement.classList.add("moving");
     panel.classList.add("dragging");
     panel.setPointerCapture(e.pointerId);
     this.board.updateArea();
     this.update();
     this.path.clear();
-    this.path.push(this.draggingPos);
+    this.path.push(this.#draggingPos);
   }
-  dragMove(e){
-    if(!this.draggingPos || this.pointerId !== e.pointerId) return;
-    const x = e.clientX - this.offsetX;
-    const y = e.clientY - this.offsetY;
-    const targetPos = this.posFromPoint(e.clientX, e.clientY, this.board.movableArea);
-    if(!isSamePos(targetPos, this.draggingPos)){
-      this.swapPanels(targetPos, this.draggingPos);
-      this.draggingPos = targetPos;
+  #dragMove(e){
+    if(!this.#draggingPos || this.#pointerId !== e.pointerId) return;
+    const x = e.clientX - this.#offsetX;
+    const y = e.clientY - this.#offsetY;
+    const targetPos = this.#posFromPoint(e.clientX, e.clientY, this.board.movableArea);
+    if(!isSamePos(targetPos, this.#draggingPos)){
+      this.swapPanels(targetPos, this.#draggingPos);
+      this.#draggingPos = targetPos;
       this.path.push(targetPos);
       this.path.draw();
     }
   }
-  dragEnd(e){
-    if(!this.draggingPos || this.pointerId !== e.pointerId) return;
-    const panel = this.getPanel(this.draggingPos);
+  #dragEnd(e){
+    if(!this.#draggingPos || this.#pointerId !== e.pointerId) return;
+    const panel = this.getPanel(this.#draggingPos);
     panel.classList.remove("dragging");
     this.boardElement.classList.remove("moving");
-    this.draggingPos = null;
+    this.#draggingPos = null;
     this.board.updateArea();
     this.update();
     this.path.clear();
-    this.explore();
+    this.#search();
   }
-  posFromPoint(x, y, area){
+  #posFromPoint(x, y, area){
     const [minCol, minRow, maxCol, maxRow] = area || [0, 0, 4, 5];
     const rect = this.boardElement.getBoundingClientRect();
     const col = Math.max(Math.min(Math.floor((x - rect.left) * 5 / rect.width), maxCol), minCol);
     const row = Math.max(Math.min(Math.floor((y - rect.top) * 6 / rect.height), maxRow), minRow);
     return [col, row];
   }
-  explore(){
-    const board = new ExplorationBoard(this.board);
-    const [score, routes] = board.explore();
-    const container = this.thumbnails;
-    while(container.firstChild) container.removeChild(container.firstChild);
+  #search(){
+    const [total, messages, routes] = this.#searchBoard.search();
+    removeChildren(this.#thumbnails);
     for(const [n, route] of routes.entries()){
       const block = createDiv("item");
       const thumbnail = new BoardThumbnail(this.board, route);
@@ -705,18 +836,22 @@ class BoardUI extends BoardView{
         `#${n + 1}`,
         thumbnail.boardElement, 
       );
-      container.append(block);
+      this.#thumbnails.append(block);
     }
-    this.output.value = routes.length > 1 ? score ||  "※ルート探索は未実装のため表示ルートは固定です" : "敵が配置されていません";
+    removeChildren(this.#message);
+    this.#message.append(...messages.map(s => createSpan(s)));
+    this.#total.textContent = `${routes.length}/${total}`;
   }
 }
 
-const boardUI = new BoardUI();
-
 document.addEventListener("DOMContentLoaded", () => {
   try{
-    boardUI.init();
+    new BoardUI();
   }catch(e){
     alert(e);
   }
 }, {once: true});
+
+document.addEventListener("dblclick", (e) => {
+  e.preventDefault();
+});
