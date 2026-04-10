@@ -7,6 +7,8 @@
   --player-panel-color: #88f;
   --player-border-color: #00a;
   --locked-border-color: #80a;
+  --tooltip-color: #ffc;
+  --tooltip-border-color: #cc9;
 }
 :root[data-theme="0"].dark,
 :root[data-theme="2"] {
@@ -17,6 +19,8 @@
   --player-panel-color: #337;
   --player-border-color: #006;
   --locked-border-color: #406;
+  --tooltip-color: #443;
+  --tooltip-border-color: #221;
 }
 *,
 *::before,
@@ -165,6 +169,41 @@ label {
 }
 .total {
   text-align: right;
+}
+[data-tooltip] {
+  position: relative;
+  &:hover::after {
+    content: "";
+    position: absolute;
+    display: block;
+    left: 50%;
+    bottom: calc(100% + 0.5em);
+    translate: -50% 50%;
+    rotate: 45deg;
+    border: 1px var(--tooltip-border-color);
+    border-style: none solid solid none;
+    background-color: var(--tooltip-color);
+    font-size: x-small;
+    width: 1em;
+    height: 1em;
+  }
+  &:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    display: block;
+    left: 50%;
+    bottom: calc(100% + 0.5em);
+    translate: -50% 0;
+    border: 1px solid var(--tooltip-border-color);
+    border-radius: 0.3em;
+    padding: 0.3em;
+    color: var(--color);
+    background-color: var(--tooltip-color);
+    font-size: x-small;
+    width: max-content;
+    max-width: max(calc(100% + 1rem), 8em);
+    white-space: pre-wrap;
+  }
 }
 dialog {
   border-radius: 5px;
