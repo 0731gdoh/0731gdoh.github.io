@@ -201,17 +201,17 @@ class SearchBoard{
   }
   #formatScore(score){
     return [
-      `攻撃参加${score[0]}人`,
-      `合計${score[1]}ヒット`,
-      `移動枠攻撃${score[2] ? "可" : "不可"}`,
-      `敵まで${-score[3] - 1}マス`,
-      `上から${-score[4] - this.#realBoard.top + 1}マス`,
-      `${-score[5]}マス移動`,
-      `編成#${-score[6] + 1}`,
+      [`空振り${-score[0]}人`, "攻撃を空振りする味方が少ないほど高得点"],
+      [`合計${score[1]}ヒット`, "各味方の「攻撃範囲内の敵の数」の合計が大きいほど高得点"],
+      [`移動枠攻撃${score[2] ? "可" : "不可"}`, "移動枠が「武器種：無」「魅了状態」「憑依状態」のいずれでもないなら加点"],
+      [`敵まで${-score[3] - 1}マス`, "移動枠が敵に隣接するために必要な移動マス数が少ないほど高得点"],
+      [`上から${-score[4] - this.#realBoard.top + 1}マス`, "移動枠が上にいるほど高得点"],
+      [`${-score[5]}マス移動`, "移動したマス数が少ないほど高得点"],
+      [`編成#${-score[6] + 1}`, "移動枠の編成順が左であるほど高得点"],
     ];
   }
   search(){
-    let message = "移動できません";
+    let message = ["移動できません", "全ユニット移動不可"];
     this.#grid = this.#realBoard.cloneGrid();
     this.#counter = 0;
     this.#routes = [];
@@ -230,7 +230,7 @@ class SearchBoard{
         this.#unitIndex++;
       }
     }else{
-      message = "敵が配置されていません";
+      message = ["敵が配置されていません", "クリック：敵を配置\nドラッグ：味方を移動"];
     }
     if(this.#routes.length){
       return [
@@ -280,7 +280,6 @@ class SearchBoard{
   }
   #evaluate(route, hd, vd, pos){
     ++this.#counter;
-    let newRecord = false;
     const current = [
       0,
       0,
@@ -292,20 +291,20 @@ class SearchBoard{
     ];
     for(const unit of this.#realBoard.playerUnits){
       const count = this.#hitCount(unit);
-      if(count) ++current[0];
+      if(!count) --current[0];
       current[1] += count;
     }
     if(this.#highScore){
       for(const [index, score] of current.entries()){
         const diff = score - this.#highScore[index];
-        if(!newRecord){
-          if(diff < 0) return;
-          if(diff > 0) newRecord = true;
+        if(diff < 0) return;
+        if(diff > 0){
+          this.#routes = [];
+          break;
         }
       }
     }
     this.#highScore = current;
-    if(newRecord) this.#routes = [];
     this.#routes.push(route.slice());
   }
   #hitCount(unit){
@@ -526,6 +525,12 @@ const createSelect = (list, className) => {
 const createSpan = (...contents) => {
   const span = create("span");
   span.append(...contents);
+  return span;
+};
+
+const createTooltip = (text, tooltip) => {
+  const span = createSpan(text);
+  span.dataset.tooltip = tooltip;
   return span;
 };
 
@@ -839,7 +844,7 @@ class BoardUI extends BoardView{
       this.#thumbnails.append(block);
     }
     removeChildren(this.#message);
-    this.#message.append(...messages.map(s => createSpan(s)));
+    this.#message.append(...messages.map(([text, tooltip]) => createTooltip(text, tooltip)));
     this.#total.textContent = `${routes.length}/${total}`;
   }
 }
@@ -851,6 +856,8 @@ document.addEventListener("DOMContentLoaded", () => {
     alert(e);
   }
 }, {once: true});
+
+document.addEventListener("touchstart", () => {}, {passive: true});
 
 document.addEventListener("dblclick", (e) => {
   e.preventDefault();
