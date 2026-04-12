@@ -191,6 +191,7 @@ class SearchBoard{
   #grid;
   #routes;
   #frontlinePos;
+  #skipFormation;
   #unit;
   #unitIndex;
   #highScore;
@@ -207,16 +208,17 @@ class SearchBoard{
       [`敵まで${-score[3] - 1}マス`, "移動枠が敵に隣接するために必要な移動マス数が少ないほど高得点"],
       [`上から${-score[4] - this.#realBoard.top + 1}マス`, "移動枠が上にいるほど高得点"],
       [`${-score[5]}マス移動`, "移動したマス数が少ないほど高得点"],
-      [`編成#${-score[6] + 1}`, "移動枠の編成順が左であるほど高得点"],
+      (this.#skipFormation ? ["編成#-", "編成順不明につき、「移動枠の編成順」による絞り込みをスキップ中"] : [`編成#${-score[6] + 1}`, "移動枠の編成順が左であるほど高得点"]),
     ];
   }
-  search(){
+  search(skipFormation){
     let message = ["移動できません", "全ユニット移動不可"];
     this.#grid = this.#realBoard.cloneGrid();
     this.#counter = 0;
     this.#routes = [];
     this.#highScore = null;
     this.#frontlinePos = [];
+    this.#skipFormation = skipFormation;
     for(const enemy of this.#realBoard.enemyUnits){
       const pos = this.#grid.getPos(enemy);
       if(pos[1] === this.#realBoard.enemyLine - 1) this.#frontlinePos.push(pos);
@@ -287,7 +289,7 @@ class SearchBoard{
       -Math.min(...this.#frontlinePos.map(epos => Math.abs(epos[0] - pos[0]) + Math.abs(epos[1] - pos[1]))),
       -pos[1],
       -(Math.abs(hd) + Math.abs(vd) || 2),
-      -this.#unitIndex,
+      this.#skipFormation ? 0 : -this.#unitIndex,
     ];
     for(const unit of this.#realBoard.playerUnits){
       const count = this.#hitCount(unit);
@@ -396,6 +398,10 @@ class Board{
         cell.setWeapon(WEAPONS.at(-2));
       }
     }
+  }
+  setPlayerUnitNames(names){
+    names = names.slice();
+    for(const unit of this.playerUnits) unit.setUnit(names.shift());
   }
   updateArea(){
     const fn = (cell) => this.#grid.getPos(cell)[1];
@@ -522,9 +528,10 @@ const createSelect = (list, className) => {
   return select;
 };
 
-const createSpan = (...contents) => {
+const createSpan = (content, className) => {
   const span = create("span");
-  span.append(...contents);
+  span.append(content);
+  if(className) span.className = className;
   return span;
 };
 
@@ -682,7 +689,7 @@ class BoardUI extends BoardView{
       weapon.selectedIndex = WEAPONS.indexOf(data.weapon);
       horizontal.selectedIndex = vertical.selectedIndex = 1;
       form.append(
-        createSpan(data.unit),
+        createSpan(data.unit, "unit-name"),
         createSpan(weapon),
         createSpan(horizontal),
         createSpan(vertical),
@@ -695,10 +702,15 @@ class BoardUI extends BoardView{
     close.textContent = "❌ 閉じる";
     close.autofocus = true;
     dialogForm.method = "dialog",
-    dialogForm.append(close);
+    dialogForm.append(
+      createLabel(createCheck(false), "編成順を指定しない"),
+      close,
+    );
+    dialogForm.addEventListener("change", this);
     container.append(create("hr"), dialogForm);
     unitConfig.append(container);
     unitConfig.addEventListener("click", this);
+    this.skipFormation = false;
     this.#dialog = unitConfig;
   }
   handleEvent(e){
@@ -762,6 +774,11 @@ class BoardUI extends BoardView{
           }
         break;
       }
+    }else if(e.currentTarget.closest("dialog")){
+      const names = e.target.checked ? ["[A]", "[B]", "[C]", "[D]"] : ["1st", "2nd", "3rd", "4th"];
+      this.skipFormation = e.target.checked;
+      this.board.setPlayerUnitNames(names);
+      for(const key of this.#unitConfigMap.keys()) key.querySelector(".unit-name").textContent = names.shift();
     }else{
       this.board.setBoardSize(elems[0].checked, elems[1].checked);
       this.path.clear();
@@ -832,7 +849,7 @@ class BoardUI extends BoardView{
     return [col, row];
   }
   #search(){
-    const [total, messages, routes] = this.#searchBoard.search();
+    const [total, messages, routes] = this.#searchBoard.search(this.skipFormation);
     removeChildren(this.#thumbnails);
     for(const [n, route] of routes.entries()){
       const block = createDiv("item");

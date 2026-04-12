@@ -221,9 +221,9 @@ dialog {
         align-content: center;
       }
       &:has(button) {
-        display: block;
+        display: flex;
         grid-template-columns: none;
-        text-align: right;
+        justify-content: space-between;
       }
     }
   }
