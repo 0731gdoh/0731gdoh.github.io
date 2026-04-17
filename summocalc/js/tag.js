@@ -1285,4 +1285,5 @@ var TAG = Tag.createList(
   ,[1004, "天属性弱点", "てんし", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "属性弱点系/防御減少系", , [TAG_FLAG_NUM.BONUS_D, "天", "属性弱点[2.0]", true]]
   ,[1005, "*マイノグーラ/Mynoghra", "ま", "被ダメx0.3\n[@$]/Take 0.3x\n[@$]/暴走", TAG_TYPE.IRREMOVABLE_BUFF, "暴走時強化/防御増加系"]
   ,[1006, "*マイノグーラ/Mynoghra", "ま", "被ダメx0.3\n[@$]/Take 0.3x\n[@$]/暴走+", TAG_TYPE.IRREMOVABLE_BUFF, "暴走+時強化/防御増加系"]
+  ,[1007, "幻惑特攻[サンダユウ]", "", "", TAG_TYPE.IRREMOVABLE_BUFF, "幻惑特攻/特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "幻惑", "特攻[1.5]"]]
 ]);
