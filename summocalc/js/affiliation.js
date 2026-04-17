@@ -109,6 +109,8 @@ var TEAM = Affiliation.createList(
   ,"<MMA>ファイトクラブ（<裏>）"
   ,"神宿<ワン>ダーフォー<ゲル>部/Shinjuku Academy Mountaineers"
   ,"世耕<山岳部>/Setagaya Mountaineering Club"
+  ,"中迦野<アオハル>部"
+  ,"人間<スキスキ>クラブ"
   ,"<バズ>ル<ドリ>ーマーズ/Viral Influence"
   ,"八犬士/Eight Dog Warriors"
 ]);

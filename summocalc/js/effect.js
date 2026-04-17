@@ -869,6 +869,7 @@ var EFFECT = Effect.createList(
   ,[481, "天属性弱点", "てん", 1, 2, TARGET_FLAG.AETHER, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.ATTRIBUTE_WEAKNESS]
   ,[482, "<*暴走>時強化[マイノグーラ]/Berserk Strengthening[Mynoghra]", "ほうそしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[483, "<*暴走+>時強化[マイノグーラ]/Berserk+ Strengthening[Mynoghra]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[484, "幻惑特攻[サンダユウ]/Advantage vs Dazzle[Sandayu]", "けんわくと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
