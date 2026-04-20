@@ -191,16 +191,13 @@ const csv2table = (data, s, compareTable) => {
     input,
   );
   scrollCheck.type = check.type = "checkbox";
-  scrollLabel.htmlFor = scrollCheck.id = "scroll";
-  label.htmlFor = check.id = "check";
-  scrollLabel.textContent = "表を横スクロール可能にする";
-  label.textContent = "フィルタウインドウを表示";
+  scrollLabel.append(scrollCheck, "表を横スクロール可能にする");
+  label.append(check, "フィルタウインドウを表示");
+  container.className = "container";
   container.append(table);
   form.append(
-    scrollCheck,
     scrollLabel,
     document.createElement("br"),
-    check,
     label,
     searchbox,
     caption,
