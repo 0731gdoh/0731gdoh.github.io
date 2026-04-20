@@ -99,11 +99,15 @@ const parseCsv = (text) => {
 
 const csv2table = (data, s, compareTable) => {
   const form = document.createElement("form");
+  const scrollCheck = document.createElement("input");
+  const scrollLabel = document.createElement("label");
   const check = document.createElement("input");
   const label = document.createElement("label");
   const searchbox = document.createElement("div");
   const select = document.createElement("select");
   const input = document.createElement("input");
+  const caption = document.createElement("div");
+  const container = document.createElement("div");
   const table = document.createElement("table");
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
@@ -119,12 +123,12 @@ const csv2table = (data, s, compareTable) => {
         const th = document.createElement("th");
         const option = document.createElement("option");
         th.textContent = v;
-        tr.appendChild(th);
+        tr.append(th);
         option.textContent = v;
-        select.appendChild(option);
+        select.append(option);
         checkables.push([]);
       }
-      thead.appendChild(tr);
+      thead.append(tr);
       header = false;
     }else{
       tr.className = (n++ & 1) ? "odd" : "";
@@ -136,8 +140,8 @@ const csv2table = (data, s, compareTable) => {
           for(const p of kwds){
             const span = document.createElement("span");
             span.textContent = p;
-            if(i++) td.appendChild(document.createTextNode(s));
-            td.appendChild(span);
+            if(i++) td.append(s);
+            td.append(span);
           }
         }else{
           const check = document.createElement("input");
@@ -145,13 +149,13 @@ const csv2table = (data, s, compareTable) => {
           check.checked = v.value;
           v.checkbox = check;
           td.className = "checkable";
-          td.appendChild(check);
+          td.append(check);
           checkables[tr.childElementCount].push(v);
           hasCheckable = true;
         }
-        tr.appendChild(td);
+        tr.append(td);
       }
-      tbody.appendChild(tr);
+      tbody.append(tr);
     }
   }
   if(hasCheckable){
@@ -163,7 +167,7 @@ const csv2table = (data, s, compareTable) => {
         const check = document.createElement("input");
         const notify = () => {updateCheckAll(check, list)};
         check.type = "checkbox";
-        th.appendChild(check);
+        th.append(check);
         updateCheckAll(check, list);
         check.addEventListener("change", () => {for(const v of list) v.checkbox.checked = check.checked});
         for(const v of list){
@@ -171,30 +175,39 @@ const csv2table = (data, s, compareTable) => {
           v.checkbox.addEventListener("change", notify);
         }
       }
-      tr.appendChild(th);
+      tr.append(th);
     }
-    thead.appendChild(tr);
+    thead.append(tr);
   }
-  table.appendChild(thead);
-  table.appendChild(tbody);
-  table.createCaption().textContent = `${tbody.rows.length}件`;
+  table.append(thead, tbody);
+  caption.className = "caption";
+  caption.textContent = `${tbody.rows.length}件`;
   input.type = "search";
   searchbox.id = "searchbox";
   searchbox.className = "hide";
-  searchbox.appendChild(select);
-  searchbox.appendChild(document.createElement("br"));
-  searchbox.appendChild(input);
-  check.type = "checkbox";
-  label.htmlFor = check.id = "check";
-  label.textContent = "フィルタウインドウを表示";
-  form.appendChild(check);
-  form.appendChild(label);
-  form.appendChild(searchbox);
-  form.appendChild(table);
+  searchbox.append(
+    select,
+    document.createElement("br"),
+    input,
+  );
+  scrollCheck.type = check.type = "checkbox";
+  scrollLabel.append(scrollCheck, "表を横スクロール可能にする");
+  label.append(check, "フィルタウインドウを表示");
+  container.className = "container";
+  container.append(table);
+  form.append(
+    scrollLabel,
+    document.createElement("br"),
+    label,
+    searchbox,
+    caption,
+    container,
+  );
   thead.addEventListener("click", _thClick(table, compareTable));
   tbody.addEventListener("click", _tdClick(filter));
   select.addEventListener("change", _select(filter));
   input.addEventListener("input", _input(filter));
+  scrollCheck.addEventListener("change", _toggle(container));
   check.addEventListener("change", _check(searchbox));
   return form;
 };
@@ -208,6 +221,12 @@ const updateCheckAll = (checkAll, list) => {
     checkAll.checked = false;
     checkAll.indeterminate = !!count;
   }
+};
+
+const _toggle = (container) => {
+  return (evt) => {
+    container.classList.toggle("scrollable", evt.target.checked);
+  };
 };
 
 const _check = (searchbox) => {
@@ -239,7 +258,7 @@ const _thClick = (table, compareTable) => {
       n = i;
       for(const tr of rows){
         tbody.removeChild(tr);
-        tbody.appendChild(tr);
+        tbody.append(tr);
         if(tr.className !== "hide"){
           tr.className = (count++ & 1) ? "odd" : "";
         }
@@ -277,7 +296,7 @@ const _input = (filter) => {
 
 const csvViewer = (tid, url, data, compareTable, s) => {
   const target = document.getElementById(tid);
-  const fragment = document.createDocumentFragment();
+  const fragment = [];
   const p1 = document.createElement("p");
   s = s || "|";
   if(url){
@@ -290,25 +309,26 @@ const csvViewer = (tid, url, data, compareTable, s) => {
     }else{
       link.href = url;
     }
-    p1.appendChild(link);
-    p1.appendChild(hr);
+    p1.append(link, hr);
   }
-  p1.appendChild(document.createTextNode("ヘッダセルをクリックでソート"));
-  p1.appendChild(document.createElement("br"));
-  p1.appendChild(document.createTextNode("データセルをクリックでフィルタ"));
-  fragment.appendChild(p1);
+  p1.append(
+    "ヘッダセルをクリックでソート",
+    document.createElement("br"),
+    "データセルをクリックでフィルタ",
+  );
+  fragment.push(p1);
   if(data){
     const table = csv2table(data, s, compareTable);
-    fragment.appendChild(table);
-    document.body.replaceChild(fragment, target);
+    fragment.push(table);
+    target.replaceWith(...fragment);
   }else{
     fetchCsv(url).then((text) => {
       const table = csv2table(parseCsv(text), s, compareTable);
-      fragment.appendChild(table);
-      document.body.replaceChild(fragment, target);
+      fragment.push(table);
+      target.replaceWith(...fragment);
     }).catch((e) => {
-      fragment.appendChild(document.createTextNode(e));
-      document.body.replaceChild(fragment, target);
+      fragment.push(e);
+      target.replaceWith(...fragment);
     });
   }
 };
