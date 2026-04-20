@@ -2,10 +2,20 @@
   font-family: monospace, serif;
   font-size: small;
 }
+.caption {
+  text-align: center;
+  margin-top: 1rem;
+}
+.scrollable {
+  overflow-x: auto;
+}
+.scrollable th,
+.scrollable td {
+  width: max-content;
+}
 table {
   text-align: center;
   border-collapse: collapse;
-  margin-top: 1rem;
 }
 thead {
   background-color: var(--color-header);
