@@ -43,7 +43,7 @@ td.highlight span.highlight {
 tr.hide, #searchbox.hide {
   display: none;
 }
-table + p {
+.container + p {
   margin-top: 1.5rem;
 }
 #searchbox {
