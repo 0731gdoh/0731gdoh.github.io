@@ -1125,6 +1125,7 @@ var calc = {
     school: 0,
     schoolMode: 0,
     team: 0,
+    teamMode: 0,
     ef: [
       new EffectFilter(1, ["stf", "srf", "scf", "sef"]),
       new EffectFilter(2, ["stf", "srf", "scf", "sef"]),
@@ -1149,6 +1150,7 @@ var calc = {
         ["obtainMode", "obf_mode"],
         ["guildMode", "gf_mode"],
         ["schoolMode", "sf_mode"],
+        ["teamMode", "of_mode"],
         ["external", "egf"],
         ["evolved", "evf"],
         ["exclude", "ccf"]
@@ -1199,7 +1201,7 @@ var calc = {
       this.updateEquipableOptions(ar);
       setCheckGroup("gf", GUILD, {select: OR_AND_NOT});
       setCheckGroup("sf", SCHOOL, {select: OR_AND_NOT});
-      setCheckGroup("of", TEAM);
+      setCheckGroup("of", TEAM, {select: OR_AND_NOT});
       this.ef.forEach(function(ef){
         ef.updateTexts();
       });
@@ -1291,7 +1293,7 @@ var calc = {
         }
         if(check(x.guilds, p.guild, p.guildMode)) return false;
         if(check(x.schools, p.school, p.schoolMode)) return false;
-        if(p.team && !(x.teams & p.team)) return false;
+        if(check(x.teams, p.team, p.teamMode)) return false;
         if(p.ar && !x.canEquip(AR[p.ar], p.external)) return false;
         if(fs.some(function(f){
           return f && f(x);

@@ -792,7 +792,7 @@ var TAG = Tag.createList(
   ,[511, "特防[0.65]/D.Advantage[0.65]", "とくほ065", "0.65", TAG_TYPE.D_BONUS, "特防"]
   ,[512, "武器種弱点系/Weapon Weakness", "ふきしや", "", TAG_TYPE.CATEGORY]
   ,[513, "魔法弱点/Magic Weakness", "まほし", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "武器種弱点系/防御減少系", , [TAG_FLAG_NUM.BONUS_D, "魔法", "武器種弱点[2.5]", true]]
-  ,[514, "確率マヒ/Latent Paralysis", "かくりつまひ", "確率で敵に$/Chance of $ on target/マヒ", TAG_TYPE.IRREMOVABLE_BUFF, "[攻撃時]"]
+  ,[514, "*ヨリトモ/Yoritomo", "よ", "確率で敵に$/Chance of $ on target/マヒ", TAG_TYPE.IRREMOVABLE_BUFF, "確率マヒ/[攻撃時]"]
   ,[515, "魅了時強化/Charm Strengthening", "みりしき", "被ダメx0.3\n[@$]/Take 0.3x\n[@$]/魅了", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,[516, "確率強化解除/Latent Buff Removal", "かくりつきようかか", "確率で自身に$/Chance of $ from self/強化解除(単)", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ダメージ時]"]
   ,[517, "ダメージ時HP激減/Major HP Decrease when attacked", "ためしHPけき", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ダメージ時]"]
@@ -1286,4 +1286,7 @@ var TAG = Tag.createList(
   ,[1005, "*マイノグーラ/Mynoghra", "ま", "被ダメx0.3\n[@$]/Take 0.3x\n[@$]/暴走", TAG_TYPE.IRREMOVABLE_BUFF, "暴走時強化/防御増加系"]
   ,[1006, "*マイノグーラ/Mynoghra", "ま", "被ダメx0.3\n[@$]/Take 0.3x\n[@$]/暴走+", TAG_TYPE.IRREMOVABLE_BUFF, "暴走+時強化/防御増加系"]
   ,[1007, "幻惑特攻[サンダユウ]", "", "", TAG_TYPE.IRREMOVABLE_BUFF, "幻惑特攻/特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "幻惑", "特攻[1.5]"]]
+  ,[1008, "確率マヒ/Latent Paralysis", "かくりつまひ", "", TAG_TYPE.UNKNOWN]
+  ,[1009, "*セト/Seth", "せ", "確率で自身に$/Chance of $ on self/マヒ", TAG_TYPE.IRREMOVABLE_DEBUFF, "確率マヒ/[ダメージ時]"]
+  ,[1010, "*ヤスヨリ/Yasuyori", "や", "被ダメx0.35\n[@$]/Take 0.35x\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/防御増加系"]
 ]);

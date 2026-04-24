@@ -46,7 +46,7 @@ EffectFilter.prototype = {
       return !x.index || (x.type === TAG_TYPE.CATEGORY && checkFlag(x));
     }, text: "カテゴリ：/Category: "});
     c = this.category;
-    s = c && TAG[c].reading[0] !== "ん";
+    s = c && (TAG[c].reading[0] !== "ん" || TAG[c].name[0] === "[");
     setOptions(this.ids[3], TAG, {filter: function(x){
       return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && checkFlag(x));
     }, labels: TAG.LABELS[0]});
