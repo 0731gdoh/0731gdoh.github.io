@@ -870,7 +870,7 @@ var EFFECT = Effect.createList(
   ,[482, "<*暴走>時強化[マイノグーラ]/Berserk Strengthening[Mynoghra]", "ほうそしき", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[483, "<*暴走+>時強化[マイノグーラ]/Berserk+ Strengthening[Mynoghra]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[484, "幻惑特攻[サンダユウ]/Advantage vs Dazzle[Sandayu]", "けんわくと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
-  ,[485, "祝福時強化[ヤスヨリ]/Blessing Strengthening[Yasuyori]", "しゆく", 1, 0.35, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[485, "祝福時強化[ヤスヨリ]/Blessing Strengthening[Yasuyori]", "しゆく", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
