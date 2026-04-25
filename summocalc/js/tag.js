@@ -1288,5 +1288,5 @@ var TAG = Tag.createList(
   ,[1007, "幻惑特攻[サンダユウ]", "", "", TAG_TYPE.IRREMOVABLE_BUFF, "幻惑特攻/特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "幻惑", "特攻[1.5]"]]
   ,[1008, "確率マヒ/Latent Paralysis", "かくりつまひ", "", TAG_TYPE.UNKNOWN]
   ,[1009, "*セト/Seth", "せ", "確率で自身に$/Chance of $ on self/マヒ", TAG_TYPE.IRREMOVABLE_DEBUFF, "確率マヒ/[ダメージ時]"]
-  ,[1010, "*ヤスヨリ/Yasuyori", "や", "被ダメx0.35\n[@$]/Take 0.35x\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/防御増加系"]
+  ,[1010, "*ヤスヨリ/Yasuyori", "や", "被ダメx0.5\n[@$]/Take 0.5x\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/防御増加系"]
 ]);
