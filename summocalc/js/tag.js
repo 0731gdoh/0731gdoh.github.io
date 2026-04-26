@@ -157,8 +157,7 @@ Tag.createList = function(a){
   a.forEach(function(v, i){
     if(v.shift() !== i) throw new Error("タグのインデックスが正しくありません（" + i + "）");
     if(v[0][0] === "*"){
-      const key = t(v[4], 0) + "[" + t(v[0].slice(1), 0) + "]";
-      table.set(key, i);
+      table.set(t(v[4], 0) + "[" + t(v[0].slice(1), 0) + "]", i);
     }else{
       table.set(t(v[0], 0), i);
     }
