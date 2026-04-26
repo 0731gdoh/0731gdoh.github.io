@@ -41,14 +41,21 @@ EffectFilter.prototype = {
         return x.checkFlag(r + n, b);
       });
     };
-    var c, s;
+    var c, m;
     if(!skip) setOptions(this.ids[2], TAG, {filter: function(x){
       return !x.index || (x.type === TAG_TYPE.CATEGORY && checkFlag(x));
     }, text: "カテゴリ：/Category: "});
     c = this.category;
-    s = c && (TAG[c].reading[0] !== "ん" || TAG[c].name[0] === "[");
+    m = new Set(TAG.map(function(x){
+      if(x.type !== TAG_TYPE.CATEGORY && x.checkCategory(c) && checkFlag(x)) return x.index;
+      return 0;
+    }));
     setOptions(this.ids[3], TAG, {filter: function(x){
-      return !x.index || (x.type !== TAG_TYPE.CATEGORY && (s || x.reading.indexOf(" ") === -1) && x.checkCategory(c) && checkFlag(x));
+      if(m.has(x.index)){
+        if(x.reading.includes(" ")) return !x.category.some(ct => m.has(ct));
+        return true;
+      }
+      return false;
     }, labels: TAG.LABELS[0]});
   },
   updateTexts: function(){
