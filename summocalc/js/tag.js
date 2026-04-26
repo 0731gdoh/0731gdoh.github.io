@@ -1230,7 +1230,7 @@ var TAG = Tag.createList(
   ,[945, "*ヨウル/Yule", "よ", "(HPが30%以下の時)\n味方全体に$\n(5000)\n(発動時解除)/(when HP is 30% or lower)\n$ of all allies\n(5000)\n(remove upon activation)/HP回復", TAG_TYPE.IRREMOVABLE_BUFF, "ターン開始時HP大回復/[ターン開始時]"]
   ,[946, "*ダゴン/Dagon", "た", "(3ターン毎)\n自身に$\n(1000)/(every 3 turns)\n$ of self\n(1000)/HP回復", TAG_TYPE.IRREMOVABLE_BUFF, "ターン開始時HP大回復/[ターン開始時]"]
   ,[947, "*シパクトリ/Cipactli", "し", "与ダメx2.0\n[@$]/Deal 2.0x\n[@$]/熱情", TAG_TYPE.IRREMOVABLE_BUFF, "熱情時強化/攻撃増加系"]
-  ,[948, "強化後HP減少", "きようかこHPけん", "", TAG_TYPE.UNKNOWN, "[強化後]", "", "", "強化後HP減少[強化]/強化後HP減少[弱体]"]
+  ,[948, "強化後HP減少", "きようかこHPけん", "", TAG_TYPE.UNKNOWN, "[強化後]"]
   ,[949, "*5%", "2", "自身に$\n(5%)/$ of self\n(5%)/HP減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "強化後HP減少/強化後HP減少[弱体]/[強化後]"]
   ,[950, "*10%", "3", "自身に$\n(10%)/$ of self\n(10%)/HP減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "強化後HP減少/強化後HP減少[弱体]/[強化後]"]
   ,[951, "閃き時弱化/Glint Weakening", "ひらしし", "与ダメx0.7\n[@$]/Deal 0.7x\n[@$]/閃き", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃減少系"]
