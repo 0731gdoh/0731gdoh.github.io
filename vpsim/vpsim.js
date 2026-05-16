@@ -170,6 +170,11 @@ class Action extends BaseItem {
     if(this.unit) value = this.unit.get(key);
     return value || this.params.get(key) || 0;
   }
+  set(key, value){
+    const linked = this.constructor.linked.get(key);
+    if(linked) this.params.set(linked, value);
+    return this.params.set(key, value);
+  }
   static skipFlagMap = new Map([
     ["刻印", "刻印を適用"],
   ]);
@@ -184,6 +189,12 @@ class Action extends BaseItem {
     ["追加コスト", DISABLE.ALWAYS],
     ["消費後VP", DISABLE.ALWAYS],
     ["ヤスヒコ装備", DISABLE.IF_NOT_UNIT],
+    ["発破(行動後)", DISABLE.IF_NOT_UNIT],
+    ["注目(行動後)", DISABLE.IF_NOT_UNIT],
+  ]);
+  static linked = new Map([
+    ["発破/発破+", "発破(行動後)"],
+    ["注目", "注目(行動後)"],
   ]);
   static defaultParams = new Map([
     ["View", 1500],
@@ -197,7 +208,7 @@ class Action extends BaseItem {
     ["消費VP", 0],
     ["刻印を適用", false],
     ["ショウエン常時", 0],
-    ["誓約（付与数）", 0],
+    ["誓約(付与数)", 0],
     ["引力", false],
     ["消費減少", 0],
     ["覚醒", false],
@@ -212,6 +223,8 @@ class Action extends BaseItem {
     ["協奏", false],
     ["行動後View", true],
     ["ヤスヒコ装備", false],
+    ["発破(行動後)", 0],
+    ["注目(行動後)", false],
     ["COMBO", 0],
     ["COMBO継続", true],
     ["COMBO加算", 1],
@@ -220,16 +233,18 @@ class Action extends BaseItem {
     ["View", 9999],
     ["発破/発破+", 1000],
     ["消費VP", 99999],
-    ["誓約（付与数）", 99],
+    ["誓約(付与数)", 99],
     ["消費減少", 99999],
     ["消費増加", 99999],
     ["追加消費VP", 99999],
     ["VP獲得", 99999],
+    ["発破(行動後)", 1000],
     ["COMBO", 99],
     ["COMBO加算", 9],
   ]);
   static suggests = new Map([
     ["発破/発破+", [0, [500, "発破"], [1000, "発破+"]]],
+    ["発破(行動後)", [0, [500, "発破"], [1000, "発破+"]]],
     ["消費減少", [0, 500, 1000, 1250, 1500, 2000, 3000]],
   ]);
   static select = new Map([
@@ -936,14 +951,17 @@ class TimelineManager extends BaseManager{
     ["消費後VP", "spend"],
     ["追加最大", "max"],
     ["追加コスト", "additional"],
+    ["発破(行動後)", "detonate"],
+    ["注目(行動後)", "spotlight"],
   ]);
   calc(item, currentVP, comboCount, block){
     let view = item.get("View");
+    let afterView = 0;
     let gain = item.get("VP獲得");
     let combo = 10;
     let cost = item.get("消費VP");
     let div = 1;
-    let vow = item.get("誓約（付与数）");
+    let vow = item.get("誓約(付与数)");
     let additional = item.get("追加消費VP");
     const seal = item.get("刻印");
     const viewUp = 100 + item.getEquip("モクダイ") + item.getEquip("コウキ") + item.getEquip("ナリヒト") * 2;
@@ -957,6 +975,8 @@ class TimelineManager extends BaseManager{
     const after = item.get("行動後View");
     const color = item.get("color");
     const comboInput = block.querySelector(".combo input");
+    const afterDetonate = item.get("発破(行動後)");
+    const afterSpotlight = item.get("注目(行動後)");
     if(item.get("COMBO継続")){
       comboInput.value = comboCount;
       item.set("COMBO", comboCount);
@@ -970,11 +990,16 @@ class TimelineManager extends BaseManager{
     view += item.get("SK View");
     if(item.unit) block.querySelector(".view input").value = view;
     view *= viewUp;
+    afterView = view;
     if(item.get("注目")) view = view * 3 / 2;
+    if(afterSpotlight) afterView = afterView * 3 / 2;
     view = Math.floor(view / 100);
-    view += item.get("ファン数");
-    view += item.get("発破/発破+");
+    afterView = Math.floor(afterView / 100);
+    view += item.get("ファン数") + item.get("発破/発破+");
+    afterView += item.get("ファン数") + afterDetonate;
     block.querySelector(".modview input").value = view;
+    block.querySelector(".detonate input").value = afterDetonate;
+    block.querySelector(".spotlight input").checked = afterSpotlight;
     if(0 > currentVP){
       block.querySelector(".header output").value = "\u2937 VPが足りません";
     }else{
@@ -1024,8 +1049,8 @@ class TimelineManager extends BaseManager{
     combo = this.combo(comboCount);
     if(after){
       let afterVP = 0;
-      if(yohack) afterVP += Math.floor(view * yohack / 1000);
-      if(yasuhiko) afterVP += Math.floor(view * yasuhiko / 1000);
+      if(yohack) afterVP += Math.floor(afterView * yohack / 1000);
+      if(yasuhiko) afterVP += Math.floor(afterView * yasuhiko / 1000);
       if(afterVP) currentVP += Math.floor(afterVP * combo / 10);
     }
     block.querySelector(".footer output").value = `\u2937 ViewPower ${currentVP}`;
