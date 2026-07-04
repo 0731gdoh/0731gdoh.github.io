@@ -769,7 +769,7 @@ class BoardUI extends BoardView{
     }
   }
   #onChange(e){
-    if(e.target.closest(".dialog-container")){
+    if(e.currentTarget.closest(".dialog-container")){
       this.#onChangeDialog(e);
     }else if(e.currentTarget.className === "switcher"){
       this.#onChangeSwitcher(e);
