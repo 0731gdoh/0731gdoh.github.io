@@ -9,6 +9,10 @@
   --locked-border-color: #80a;
   --tooltip-color: #ffc;
   --tooltip-border-color: #cc9;
+  --selected-color: #ff8;
+  &:not(#_):has(.dragging) * {
+    cursor: grabbing;
+  }
 }
 :root[data-theme="0"].dark,
 :root[data-theme="2"] {
@@ -21,6 +25,7 @@
   --locked-border-color: #406;
   --tooltip-color: #443;
   --tooltip-border-color: #221;
+  --selected-color: #663;
 }
 *,
 *::before,
@@ -34,7 +39,8 @@ body {
   font-family: "Courier", monospace;
   font-size: small;
   padding: 0 0.5em;
-  & > div {
+  & > div,
+  & > form {
     margin: 0.5em 0;
     max-width: 450px;
   }
@@ -58,7 +64,7 @@ label {
   -webkit-user-select: none;
   user-select: none;
   aspect-ratio: 5 / 6;
-  &.draggable{
+  &.draggable {
     border: 1px solid var(--color);
     font-size: small;
     --border-width: 5px;
@@ -110,6 +116,9 @@ label {
     &[data-unit] {
       --panel-border-color: var(--enemy-border-color);
     }
+    .draggable & {
+      cursor: pointer;
+    }
   }
   & > [data-type=player],
   &.moving > [data-type=neutral] {
@@ -119,6 +128,9 @@ label {
       touch-action: none;
       &.move-locked {
         --panel-border-color: var(--locked-border-color);
+      }
+      .draggable & {
+        cursor: grab;
       }
     }
   }
@@ -172,6 +184,7 @@ label {
 }
 [data-tooltip] {
   position: relative;
+  cursor: help;
   &:hover::after {
     content: "";
     position: absolute;
@@ -230,6 +243,39 @@ dialog {
   &::backdrop {
     backdrop-filter: blur(3px);
     background-color: #0028;
+  }
+}
+.switcher {
+  border: 1px solid var(--color);
+  text-align: center;
+  background-color: #8881;
+  label {
+    position: relative;
+    display: inline-block;
+    border: 1px solid var(--color);
+    border-radius: 100%;
+    font-size: medium;
+    width: 2.5em;
+    height: 2.5em;
+    margin: 0.5em;
+    align-content: center;
+    cursor: pointer;
+    opacity: 0.3;
+    background-color: #8882;
+    &:has(:checked) {
+      background-color: var(--selected-color);
+      opacity: 1;
+      font-weight: bold;
+    }
+    input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      opacity: 0;
+      overflow: hidden;
+    }
   }
 }
 @keyframes dash {

@@ -179,7 +179,7 @@ class MovePreviewBoard{
   }
 }
 
-class SearchBoard{
+class Searcher{
   static #MOVES = [
     [0, -1],
     [1, 0],
@@ -197,8 +197,7 @@ class SearchBoard{
   #highScore;
   #counter;
   
-  constructor(board){
-    this.#realBoard = board;
+  constructor(){
   }
   #formatScore(score){
     return [
@@ -211,8 +210,9 @@ class SearchBoard{
       (this.#skipFormation ? ["編成#-", "編成順不明につき、「移動枠の編成順」による絞り込みをスキップ中"] : [`編成#${-score[6] + 1}`, "移動枠の編成位置が左であるほど高得点"]),
     ];
   }
-  search(skipFormation){
+  search(board, skipFormation){
     let message = ["移動できません", "全ユニット移動不可"];
+    this.#realBoard = board;
     this.#grid = this.#realBoard.cloneGrid();
     this.#counter = 0;
     this.#routes = [];
@@ -249,7 +249,7 @@ class SearchBoard{
     }
   }
   #dfs(route, hd, vd, pos){
-    for(const [dx, dy] of SearchBoard.#MOVES){
+    for(const [dx, dy] of Searcher.#MOVES){
       const nx = pos[0] + dx;
       const ny = pos[1] + dy;
       const npos = [nx, ny];
@@ -335,7 +335,7 @@ class Board{
   
   constructor(){
     this.enemyUnits = new Set();
-    this.playerUnits = new Set();
+    this.playerUnits = [];
     this.setBoardSize(false, false);
   }
   cloneGrid(){
@@ -384,7 +384,7 @@ class Board{
       [1, 4],
       [3, 4],
     ];
-    if(this.playerUnits.size){
+    if(this.playerUnits.length){
       for(const cell of this.playerUnits){
         const posA = this.#grid.getPos(cell);
         const posB = initialPositions.shift();
@@ -393,7 +393,7 @@ class Board{
     }else{
       for(const name of ["1st", "2nd", "3rd", "4th"]){
         const cell = this.getCell(initialPositions.shift());
-        this.playerUnits.add(cell);
+        this.playerUnits.push(cell);
         cell.setUnit(name);
         cell.setWeapon(WEAPONS.at(-2));
       }
@@ -406,7 +406,7 @@ class Board{
   updateArea(){
     const fn = (cell) => this.#grid.getPos(cell)[1];
     this.enemyLine = Math.max(...Array.from(this.enemyUnits, fn), this.#area[1]) + 1;
-    this.playerLine = Math.min(...Array.from(this.playerUnits, fn));
+    this.playerLine = Math.min(...this.playerUnits.map(fn));
     this.movableArea = this.#area.with(1, this.enemyLine);
     for(const [y, row] of this.#grid.entries()){
       const type = y < this.enemyLine ? "enemy" : y < this.playerLine ? "neutral" : "player";
@@ -623,15 +623,17 @@ class BoardUI extends BoardView{
   #thumbnails;
   #total;
   #dialog;
-  #searchBoard;
+  #searcher;
   #unitConfigMap;
   #draggingPos;
   #offsetX;
   #offsetY;
   #pointerId;
+  #boards
   
   constructor(){
-    super(new Board());
+    const boards = Array.from({length: 4}, () => new Board());
+    super(boards[0]);
     const be = this.boardElement;
     const form = create("form");
     const button = create("button");
@@ -649,6 +651,7 @@ class BoardUI extends BoardView{
     this.#createUnitConfigDialog();
     document.body.prepend(
       form,
+      this.#createTabSwitcher(),
       be,
       this.#message,
       this.#thumbnails,
@@ -661,8 +664,25 @@ class BoardUI extends BoardView{
     be.addEventListener("pointerup", this);
     form.addEventListener("change", this);
     button.addEventListener("click", this);
-    this.#searchBoard = new SearchBoard(this.board);
+    this.#boards = boards;
+    this.#searcher = new Searcher();
     this.#search();
+  }
+  #createTabSwitcher(){
+    const switcher = create("form");
+    for(const i of range(4)){
+      const label = create("label");
+      const radio = create("input");
+      radio.type = "radio";
+      radio.name = "tab";
+      radio.value = i;
+      if(!i) radio.checked = true;
+      label.append(radio, i + 1);
+      switcher.append(label);
+    }
+    switcher.className = "switcher";
+    switcher.addEventListener("change", this);
+    return switcher;
   }
   #createUnitConfigDialog(){
     if(this.#dialog) return;
@@ -680,12 +700,13 @@ class BoardUI extends BoardView{
       createSpan("移動可")
     );
     container.append(head);
-    for(const data of this.board.playerUnits){
+    for(const index of range(4)){
       const form = create("form");
       const weapon = createSelect(WEAPONS.map(x => x.name), "weapon");
       const horizontal = createSelect(range(5), "horizontal");
       const vertical = createSelect(range(5), "vertical");
       const movable = createCheck(true, "movable");
+      const data = this.board.playerUnits[index];
       weapon.selectedIndex = WEAPONS.indexOf(data.weapon);
       horizontal.selectedIndex = vertical.selectedIndex = 1;
       form.append(
@@ -696,7 +717,7 @@ class BoardUI extends BoardView{
         createSpan(movable),
       );
       form.addEventListener("change", this);
-      this.#unitConfigMap.set(form, data);
+      this.#unitConfigMap.set(form, index);
       container.append(form);
     }
     close.textContent = "❌ 閉じる";
@@ -748,43 +769,50 @@ class BoardUI extends BoardView{
     }
   }
   #onChange(e){
-    const data = this.#unitConfigMap.get(e.currentTarget);
-    const elems = e.currentTarget.elements;
-    if(data){
-      switch(e.target.className){
-        case "weapon":
-          data.setWeapon(WEAPONS[e.target.selectedIndex]);
-        break;
-        case "horizontal":
-          data.setHorizontal(e.target.selectedIndex);
-        break;
-        case "vertical":
-          data.setVertical(e.target.selectedIndex);
-        break;
-        case "movable":
-          data.setMovable(e.target.checked);
-          if(e.target.checked){
-            elems[1].selectedIndex = data.horizontal;
-            elems[2].selectedIndex = data.vertical;
-            elems[1].disabled = elems[2].disabled = false;
-          }else{
-            elems[1].selectedIndex = 0;
-            elems[2].selectedIndex = 0;
-            elems[1].disabled = elems[2].disabled = true;
-          }
-        break;
-      }
-    }else if(e.currentTarget.closest("dialog")){
-      const names = e.target.checked ? ["[A]", "[B]", "[C]", "[D]"] : ["1st", "2nd", "3rd", "4th"];
-      this.skipFormation = e.target.checked;
-      this.board.setPlayerUnitNames(names);
-      for(const key of this.#unitConfigMap.keys()) key.querySelector(".unit-name").textContent = names.shift();
+    if(e.currentTarget.closest("dialog")){
+      this.#onChangeDialog(e);
+    }else if(e.currentTarget.className === "switcher"){
+      this.#onChangeSwitcher(e);
     }else{
-      this.board.setBoardSize(elems[0].checked, elems[1].checked);
-      this.path.clear();
+      this.#onChangeBoard(e);
     }
     this.update();
     this.#search();
+  }
+  #onChangeBoard(e){
+    const elems = e.currentTarget.elements;
+    for(const board of this.#boards) board.setBoardSize(elems[0].checked, elems[1].checked);
+    this.path.clear();
+  }
+  #unitConfigFunction(e){
+    switch(e.target.className){
+      case "weapon":
+        return (data) => data.setWeapon(WEAPONS[e.target.selectedIndex]);
+      case "horizontal":
+        return (data) => data.setHorizontal(e.target.selectedIndex);
+      case "vertical":
+        return (data) => data.setVertical(e.target.selectedIndex);
+      break;
+      case "movable":
+        const elems = e.currentTarget.elements;
+        elems[1].disabled = elems[2].disabled = !e.target.checked;
+        return (data) => data.setMovable(e.target.checked);
+    }
+  }
+  #onChangeDialog(e){
+    if(this.#unitConfigMap.has(e.currentTarget)){
+      const index = this.#unitConfigMap.get(e.currentTarget);
+      const func = this.#unitConfigFunction(e);
+      for(const board of this.#boards) func(board.playerUnits[index]);
+    }else{
+      const names = e.target.checked ? ["[A]", "[B]", "[C]", "[D]"] : ["1st", "2nd", "3rd", "4th"];
+      this.skipFormation = e.target.checked;
+      for(const board of this.#boards) board.setPlayerUnitNames(names);
+      for(const key of this.#unitConfigMap.keys()) key.querySelector(".unit-name").textContent = names.shift();
+    }
+  }
+  #onChangeSwitcher(e){
+    this.board = this.#boards[e.target.value];
   }
   #pointerDown(e){
     const pos = this.#posFromPoint(e.clientX, e.clientY);
@@ -849,7 +877,7 @@ class BoardUI extends BoardView{
     return [col, row];
   }
   #search(){
-    const [total, messages, routes] = this.#searchBoard.search(this.skipFormation);
+    const [total, messages, routes] = this.#searcher.search(this.board, this.skipFormation);
     removeChildren(this.#thumbnails);
     for(const [n, route] of routes.entries()){
       const block = createDiv("item");
