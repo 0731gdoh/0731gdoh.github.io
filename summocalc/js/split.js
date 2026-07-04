@@ -12,6 +12,9 @@ function SkillData(k, v){
       k = "c" + k;
     }
   }
+  if(v[2] & TIMING_FLAG.TEMPORARY){
+    k = "z" + k;
+  }
   if(v[7]){
     k += v[7];
   }
@@ -108,6 +111,8 @@ function generateTagData(s, flagNum, ar){
       var tag = TAG[v];
       var g = 0;
       var compound = timing & TIMING_FLAG.COMPOUND;
+      var tmpV = timing & TIMING_FLAG.TEMPORARY ? TAG_MAX * 2 : 0;
+      var subV = flagNum < 3 ? TAG_MAX * 4 : 0;
       if(timing & TIMING_FLAG.CS){
         g = TAG_MAX;
         if(!compound && timing & TIMING_FLAG.NOT_CS){
@@ -138,7 +143,7 @@ function generateTagData(s, flagNum, ar){
             break;
         }
         if(tag.type !== TAG_TYPE.SKIP){
-          var key = (v + g) + sd.condition;
+          var key = (v + g + tmpV) + sd.condition;
           if(table.has(key)){
             table.get(key).update(timing, bv);
           }else{
@@ -154,7 +159,7 @@ function generateTagData(s, flagNum, ar){
         }
         ex.forEach(function(c){
           var subtiming = timing;
-          var subkey = (c + g + (flagNum < 3 ? TAG_MAX * 10 : 0)) + sd.condition;
+          var subkey = (c + g + tmpV + subV) + sd.condition;
           if(TAG[c].type === TAG_TYPE.STATIC){
             subtiming &= ~TIMING_FLAG.NOT_CS;
             if(!(subtiming & TIMING_FLAG.STATIC)) subtiming |= TIMING_FLAG.TEMPORARY_STATIC;
@@ -201,7 +206,7 @@ function splitSkills(s){
         if(cur === "x"){
           salv = -1;
         }else if(cur === "z"){
-          flag = TIMING_FLAG.TEMPORARY_STATIC;
+          flag = TIMING_FLAG.TEMPORARY;
         }else{
           var n = TIMING.table.get(cur);
           if(n === undefined) throw new Error("キーワード「" + cur + "」は未定義です\n（" + s + "）");

@@ -20,7 +20,8 @@ var TAG_TYPE = {
   SPECIAL: 16,
   UNKNOWN: 17,
   REWARD: 18,
-  ATTRIBUTE: 19
+  ATTRIBUTE: 19,
+  RAINBOW: 20
 };
 
 var TAG_FLAG_NUM = {
@@ -37,6 +38,7 @@ var TAG_BDI = {
   BUFF: 1,
   DEBUFF: 2,
   IRREMOVABLE: 4,
+  RAINBOW: 3,
   IRREMOVABLE_BUFF: 5,
   IRREMOVABLE_DEBUFF: 6
 };
@@ -240,6 +242,9 @@ Tag.createList = function(a){
         c.push(tget("弱体"));
         c.push(tget("弱体(解除不可)"));
         bdi = TAG_BDI.IRREMOVABLE_DEBUFF
+        break;
+      case TAG_TYPE.RAINBOW:
+        bdi = TAG_BDI.RAINBOW;
         break;
     }
     tag = new Tag(i, v, c, s, targetType, target, variant, bonus, timing, link, bdi, name, demerit);
@@ -1106,7 +1111,7 @@ var TAG = Tag.createList(
   ,[821, "虚飾時弱化/Flamboyance Weakening", "きよしよしし", "被ダメx2.0\n[@$]/Take 2.0x\n[@$]/虚飾", TAG_TYPE.IRREMOVABLE_DEBUFF, "防御減少系"]
   ,[822, "ダメージ時HP超激減/Enormously deplete HP when attacked", "ためしHPちよ", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ダメージ時]"]
   ,[823, "*スズカ/Suzuka", "す", "与ダメx2.0\n[非@$]/Deal 2.0x\n[Not @$]/弱体(解除可)", TAG_TYPE.IRREMOVABLE_BUFF, "非弱体時強化/攻撃増加系"]
-  ,[824, "攻撃時HP激減/Major HP Decrease When Attacking", "こうけきしHP", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[攻撃時]"]
+  ,[824, "*クリスティーヌ/Christine", "く", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃時HP激減/[攻撃時]"]
   ,[825, "非移動後クリティカル/Bestow Crit after not moving", "ひいとうく", "自身に$/$ on self/クリティカル", TAG_TYPE.IRREMOVABLE_BUFF, "[非移動後]"]
   ,[826, "弱点時強化/Weakness Strengthening", "しやくてしき", "被ダメx0.4\n[@$]/Take 0.4x\n[@$]/弱点", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,[827, "*ジブリール/Gabriel", "し", "$\n[@$]/$\n[@$]/CP増加,滋養", TAG_TYPE.IRREMOVABLE_BUFF, "滋養時強化/CP増加系"]
@@ -1258,7 +1263,7 @@ var TAG = Tag.createList(
   ,[973, "*シノ/Shino", "し", "与ダメx3.0\n[@$]/Deal 3.0x\n[@$]/結縁：愛", TAG_TYPE.IRREMOVABLE_BUFF, "愛時強化/攻撃増加系"]
   ,[974, "金剛時強化/Adamantine Strengthening", "こんこしき", "", TAG_TYPE.IRREMOVABLE_BUFF]
   ,[975, "*ザオウ/Zao", "さ", "発動率+30%\n[@$]/Skill Rate +30%\n[@$]/金剛", TAG_TYPE.IRREMOVABLE_BUFF, "金剛時強化/発動率増加系"]
-  ,[976, "陣形：ワンダーフォーゲル", "しんけ", "左右1マスと前1マス内に$(1000)&$&$/$(1000) and $ and $ on self, 1 square left and right, and 1 square forward/HP回復,CP増加,弱体無効", TAG_TYPE.IRREMOVABLE_BUFF, "[移動フェーズ終了後]"]
+  ,[976, "陣形：ワンダーフォーゲル", "しんけ", "左右1マスと前1マス内に$(1000)&$&$/$(1000), $, and $ on self, 1 square left and right, and 1 square forward/HP回復,CP増加,弱体無効", TAG_TYPE.IRREMOVABLE_BUFF, "[移動フェーズ終了後]"]
   ,[977, "全弱体特攻/Advantage vs all debuffs", "せんし", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系"]
   ,[978, "全弱体特攻[メリュジーヌ]", "", "", TAG_TYPE.IRREMOVABLE_BUFF, "全弱体特攻/特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "すべての解除可能な弱体", "特攻[1.5]"]]
   ,[979, "斬横", "", "", TAG_TYPE.SKIP, "", "斬撃/横一文字"]
@@ -1293,6 +1298,22 @@ var TAG = Tag.createList(
   ,[1008, "確率マヒ/Latent Paralysis", "かくりつまひ", "", TAG_TYPE.UNKNOWN]
   ,[1009, "*セト/Seth", "せ", "確率で自身に$/Chance of $ on self/マヒ", TAG_TYPE.IRREMOVABLE_DEBUFF, "確率マヒ/[ダメージ時]"]
   ,[1010, "*ヤスヨリ/Yasuyori", "や", "被ダメx0.5\n[@$]/Take 0.5x\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/防御増加系"]
-  ,[1011, "*弱体", "し", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "強化後HP減少/[強化後]"]
-  ,[1012, "*強化", "き", "", TAG_TYPE.IRREMOVABLE_BUFF, "強化後HP減少/[強化後]"]
+  ,[1011, "*弱体/Debuff", "し", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "強化後HP減少/[強化後]"]
+  ,[1012, "*強化/Buff", "き", "", TAG_TYPE.IRREMOVABLE_BUFF, "強化後HP減少/[強化後]"]
+  ,[1013, "*ゴルム#1/Reprobus", "こ1", "与ダメx1.5\n[@$]/Deal 1.5x\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/攻撃増加系"]
+  ,[1014, "*ゴルム#2/Reprobus", "こ2", "被ダメx0.7\n[@$]/Take 0.7x\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/防御増加系"]
+  ,[1015, "*ゴルム/Reprobus", "こ", "与ダメx2.0\n[@$]/Deal 2.0x\n[@$]/係留", TAG_TYPE.IRREMOVABLE_BUFF, "係留時強化/攻撃増加系"]
+  ,[1016, "*ホテイ/Hotei", "ほ", "与ダメx1.5\n[@$]/Deal 1.5x\n[@$]/注目", TAG_TYPE.IRREMOVABLE_BUFF, "注目時強化/攻撃増加系"]
+  ,[1017, "*ホテイ/Hotei", "ほ", "$\n[@$]/$\n[@$]/CP増加,祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/CP増加系"]
+  ,[1018, "ターン開始時自身に脱力", "たあし", "自身に$/$ on self/脱力", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ターン開始時]"]
+  ,[1019, "無敵系/Invincible", "むて", "", TAG_TYPE.CATEGORY]
+  ,[1020, "無敵《遮閉》", "むて1", "あらゆるHP変動を拒絶", TAG_TYPE.RAINBOW, "無敵系/防御増加系"]
+  ,[1021, "無敵《越境》", "むて2", "自身に$/$ of self/HP倍加", TAG_TYPE.RAINBOW, "[敵ターン開始時]/無敵系/HP回復系"]
+  ,[1022, "HP倍加", "HPは", "現在HPと最大HPを2倍にする/Double current and max HP", TAG_TYPE.ONE_SHOT, "HP回復系"]
+  ,[1023, "*サロモニス/Salomonis", "さ", "被ダメx0.8\n[非@$]/Take 0.8x\n[Not @$]/弱体(解除可)", TAG_TYPE.IRREMOVABLE_BUFF, "非弱体時強化/防御増加系"]
+  ,[1024, "執事長の加護", "しつ", "確率で周囲1マスに$&$(5%)&$/Chance of $, $(5%), and $ on 1 square in all directions/CP増加,HP回復,守護", TAG_TYPE.IRREMOVABLE_BUFF, "[攻撃時]"]
+  ,[1025, "攻撃時HP激減/Major HP Decrease When Attacking", "こうけきしHP", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[攻撃時]"]
+  ,[1026, "*アンゴルモワ#1/Angolmois", "あ1", "周囲1マス内に$/$ of self and 1 square in all directions/HP減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃時HP激減/[攻撃時]"]
+  ,[1027, "*アンゴルモワ#2/Angolmois", "あ2", "味方全体に$/$ of all allies/HP減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃時HP激減/[攻撃時]"]
+  ,[1028, "攻撃力激減[アン・ダーザイン]", "", "与ダメx0.01/Deal 0.01x", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃力激減/攻撃減少系"]
 ]);

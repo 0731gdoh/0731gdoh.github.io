@@ -91,6 +91,7 @@ var calc = {
     }else{
       _("sr").style.display = "none";
       _("su").style.display = "none";
+      _("ssh").style.display = "none";
     }
     if(navigator.standalone !== false) _("ms").style.display = "none";
     this.skillTable = new SkillTable("sd", "hc");
@@ -207,6 +208,14 @@ var calc = {
     };
     _("nxb").onclick = function(){
       selectNext("pc");
+    };
+    _("sh").onclick = function(){
+      var card = CARD[c.card];
+      share({
+        title: card,
+        text: card,
+        url: location.href + card.toSkillTableHash()
+      });
     };
     _("fv").onclick = function(){
       c.cardfilter.toggle();
@@ -411,7 +420,7 @@ var calc = {
   load: function(x, skipSave){
     var overwrite = 0;
     if(x[0] === "."){
-      var match = decodeURIComponent(x).match(/^\.(\.)?(.+?)(?:_(\d+))?$/);
+      var match = decodeURIComponent(x).match(/^\.(\.)?(.*?)(?:_(\d+))?$/);
       var chara = CARD.table.get(match[2]);
       if(chara){
         if(!match[3]){
@@ -426,7 +435,7 @@ var calc = {
           });
         }
       }
-      if(overwrite){
+      if(overwrite || (!match[2] && !match[3])){
         x = this.defaultHash;
         setValue("sci", match[1] ? 0 : 1);
       }else{
@@ -691,6 +700,7 @@ var calc = {
       ["ldm", "テーマ/Theme"],
       ["lsci", "スキルテーブルを表示/Show Skill Table"],
       ["rcb", "ランダム/Random"],
+      ["sh", "URLを共有/Share URL"],
       ["lpc", "カード/Card"],
       ["lpl", "カードLv/Card Lv"],
       ["lw", "武器/Weapon"],

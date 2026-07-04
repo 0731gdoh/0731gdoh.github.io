@@ -100,7 +100,8 @@ SkillTable.prototype = {
     var nullify = function(name){
       return t(name + "無効/Nullify " + name);
     };
-    var push = function(map, name, td, tooltip, tag, bonus){
+    var indirect = TIMING.table.get("id");
+    var push = function(map, name, td, tooltip, tag, bonus, temporary){
       var cls = [];
       var split = details & LABEL_FLAG.SPLIT;
       var key = 0;
@@ -108,7 +109,7 @@ SkillTable.prototype = {
         cls.push("salv");
         key |= 1;
       }
-      if(td.timing & TIMING_FLAG.TEMPORARY){
+      if(temporary || td.timing & TIMING_FLAG.TEMPORARY){
         cls.push("temporary");
         key |= 2;
       }
@@ -193,10 +194,12 @@ SkillTable.prototype = {
           }
           if(tag.bdi & TAG_BDI.IRREMOVABLE){
             tooltip = (tooltip || name) + "\n\n" + t("解除不可/Irremovable");
+          }else if(tag.bdi === TAG_BDI.RAINBOW){
+            tooltip = (tooltip || name) + "\n\n" + t("強化でも弱体でもない/Neither a buff nor a debuff");
           }
           bits(td.timing & TIMING_FLAG.ANY).forEach(function(n){
           
-            push(data[n][i + 1], name, td, tooltip, tag, bonus);
+            push(data[n][i + 1], name, td, tooltip, tag, bonus, n === indirect);
           });
         }else if(td.timing || i !== 5){
           if(i === 3 && tag.type !== TAG_TYPE.SKILL && tag.type !== TAG_TYPE.ATTRIBUTE) i = 6;
@@ -258,7 +261,7 @@ SkillTable.prototype = {
             });
             div.className = "tooltip";
             div.dataset.tooltip = x[3] || x[0];
-            if(x[4]) div.classList.add(["", "buff", "debuff"][x[4]]);
+            if(x[4]) div.classList.add(["", "buff", "debuff", "rainbow"][x[4]]);
             div.appendChild(span);
             cell.appendChild(div);
           });
