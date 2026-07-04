@@ -28,6 +28,9 @@
   --bgcolor-buff: #225e;
   --border-debuff: #f00;
   --bgcolor-debuff: #422e;
+  --border-rainbow: #ff0;
+  --bgcolor-rainbow: #442e;
+/*  --bg-rainbow: conic-gradient(from -45deg, #624e, #662e, #266e, #426e, #624e);*/
   --color-form: #17e;
 }
 [data-theme="0"].dark,
@@ -65,6 +68,9 @@
   --bgcolor-buff: #99be;
   --border-debuff: #b00;
   --bgcolor-debuff: #b99e;
+  --border-rainbow: #bb0;
+  --bgcolor-rainbow: #bb9e;
+/*  --bg-rainbow: conic-gradient(from -45deg, #b79e, #bb7e, #7bbe, #97be, #b79e);*/
   --color-form: #08f;
 }
 * {
@@ -548,4 +554,9 @@ caption {
 .debuff:hover::after {
   border-color: var(--border-debuff);
   background-color: var(--bgcolor-debuff);
+}
+.rainbow:hover::after {
+  border-color: var(--border-rainbow);
+  background-color: var(--bgcolor-rainbow);
+/*  background: var(--bg-rainbow);*/
 }
