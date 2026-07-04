@@ -871,6 +871,12 @@ var EFFECT = Effect.createList(
   ,[483, "<*暴走+>時強化[マイノグーラ]/Berserk+ Strengthening[Mynoghra]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[484, "幻惑特攻[サンダユウ]/Advantage vs Dazzle[Sandayu]", "けんわくと", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
   ,[485, "祝福時強化[ヤスヨリ]/Blessing Strengthening[Yasuyori]", "しゆく", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[486, "祝福時強化[ゴルム#1]/Blessing Strengthening[Reprobus]", "しゆくふくしき", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[487, "祝福時強化[ゴルム#2]/Blessing Strengthening[Reprobus]", "しゆく", 1, 0.7, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[488, "係留時強化[ゴルム]/Anchor Strengthening[Reprobus]", "けい", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[489, "注目時強化[ホテイ]/Taunt Strengthening[Hotei]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[490, "非弱体時強化[サロモニス]/Non-Debuff Strengthening[Salomonis]", "ひしやくたいしき", 1, [1, 0.8], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
+  ,[491, "攻撃力激減[アン・ダーザイン=ボヘミオ]/ATK Vastly Down[アン・ダーザイン]", "こうけけき", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]

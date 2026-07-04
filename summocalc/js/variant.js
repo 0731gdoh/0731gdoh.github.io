@@ -111,6 +111,7 @@ var VARIANT = Variant.createList(
   ,"2026"
   ,["スタリオン・ニューイヤー", "新年26/NewYear26"]
   ,["バレンタイントキメキ青春白書", "バレ26/Valentine26"]
+  ,["ブライダル・ブートキャンプ！", "婚活26/Wedding26"]
   ,"スロット/Slot"
   ,["[1枚目]/[1st Variant]", , 1]
   ,["[2枚目]/[2nd Variant]", , 2]
