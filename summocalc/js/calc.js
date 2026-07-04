@@ -214,7 +214,7 @@ var calc = {
       share({
         title: card,
         text: card,
-        url: location.href + card.toSkillTableHash()
+        url: location.origin + location.pathname + card.toSkillTableHash()
       });
     };
     _("fv").onclick = function(){
