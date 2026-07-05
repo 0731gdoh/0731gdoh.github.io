@@ -772,20 +772,22 @@ class BoardUI extends BoardView{
     }
   }
   #onChange(e){
-    if(e.currentTarget.closest("dialog")){
-      this.#onChangeDialog(e);
-    }else if(e.currentTarget.className === "switcher"){
-      this.#onChangeSwitcher(e);
+    if(e.currentTarget.className === "switcher"){
+      this.#switchTab(e.target.value);
     }else{
-      this.#onChangeBoard(e);
+      if(e.currentTarget.closest("dialog")){
+        this.#onChangeDialog(e);
+      }else{
+        this.#onChangeBoard(e);
+      }
+      this.update();
+      this.#search();
     }
-    this.#search();
   }
   #onChangeBoard(e){
     const elems = e.currentTarget.elements;
     for(const board of this.#boards) board.setBoardSize(elems[0].checked, elems[1].checked);
     this.path.clear();
-    this.update();
   }
   #unitConfigFunction(e){
     switch(e.target.className){
@@ -813,24 +815,20 @@ class BoardUI extends BoardView{
       for(const board of this.#boards) board.setPlayerUnitNames(names);
       for(const key of this.#unitConfigMap.keys()) key.querySelector(".unit-name").textContent = names.shift();
     }
-    this.update();
-  }
-  #onChangeSwitcher(e){
-    this.#switchTab(e.target.value);
   }
   #switchTab(n){
     if(n < 0 || n >= this.#boards.length || n - this.#currentTab === 0) return;
-    const types = [this.#currentTab < n ? "to-left" : "to-right"];
     this.board = this.#boards[n];
-    this.#currentTab = n;
     if(!document.startViewTransition){
       this.update();
-      return;
+    }else{
+      document.startViewTransition({
+        update: () => this.update(),
+        types: [this.#currentTab < n ? "to-left" : "to-right"],
+      });
     }
-    document.startViewTransition({
-      update: () => this.update(),
-      types,
-    });
+    this.#currentTab = n;
+    this.#search();
   }
   #pointerDown(e){
     const pos = this.#posFromPoint(e.clientX, e.clientY);
