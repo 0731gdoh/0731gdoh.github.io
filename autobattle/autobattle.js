@@ -629,12 +629,14 @@ class BoardUI extends BoardView{
   #offsetX;
   #offsetY;
   #pointerId;
-  #boards
+  #boards;
+  #currentTab = 0;
   
   constructor(){
     const boards = Array.from({length: 4}, () => new Board());
     super(boards[0]);
     const be = this.boardElement;
+    const container = createDiv("board-container");
     const form = create("form");
     const button = create("button");
     this.#message = createDiv("message");
@@ -649,10 +651,11 @@ class BoardUI extends BoardView{
       button,
     );
     this.#createUnitConfigDialog();
+    container.append(be);
     document.body.prepend(
       form,
       this.#createTabSwitcher(),
-      be,
+      container,
       this.#message,
       this.#thumbnails,
       this.#total,
@@ -769,15 +772,17 @@ class BoardUI extends BoardView{
     }
   }
   #onChange(e){
-    if(e.currentTarget.closest("dialog")){
-      this.#onChangeDialog(e);
-    }else if(e.currentTarget.className === "switcher"){
-      this.#onChangeSwitcher(e);
+    if(e.currentTarget.className === "switcher"){
+      this.#switchTab(+e.target.value);
     }else{
-      this.#onChangeBoard(e);
+      if(e.currentTarget.closest("dialog")){
+        this.#onChangeDialog(e);
+      }else{
+        this.#onChangeBoard(e);
+      }
+      this.update();
+      this.#search();
     }
-    this.update();
-    this.#search();
   }
   #onChangeBoard(e){
     const elems = e.currentTarget.elements;
@@ -811,8 +816,19 @@ class BoardUI extends BoardView{
       for(const key of this.#unitConfigMap.keys()) key.querySelector(".unit-name").textContent = names.shift();
     }
   }
-  #onChangeSwitcher(e){
-    this.board = this.#boards[e.target.value];
+  #switchTab(n){
+    if(n < 0 || n >= this.#boards.length || n === this.#currentTab) return;
+    this.board = this.#boards[n];
+    if(!document.startViewTransition){
+      this.update();
+    }else{
+      document.startViewTransition({
+        update: () => this.update(),
+        types: [this.#currentTab < n ? "to-left" : "to-right"],
+      });
+    }
+    this.#currentTab = n;
+    this.#search();
   }
   #pointerDown(e){
     const pos = this.#posFromPoint(e.clientX, e.clientY);

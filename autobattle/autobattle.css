@@ -13,6 +13,9 @@
   &:not(#_):has(.dragging) * {
     cursor: grabbing;
   }
+  --animation-path: dash 1s linear infinite;
+  --animation-slide-out: var(--slide-out) 0.2s ease both;
+  --animation-slide-in: var(--slide-in) 0.2s ease both;
 }
 :root[data-theme="0"].dark,
 :root[data-theme="2"] {
@@ -26,6 +29,13 @@
   --tooltip-color: #443;
   --tooltip-border-color: #221;
   --selected-color: #663;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root{
+    --animation-path: none;
+    --animation-slide-out: none;
+    --animation-slide-in: none;
+  }
 }
 *,
 *::before,
@@ -57,6 +67,9 @@ label {
     margin-right: 0.5em;
   }
 }
+.board-container {
+  border: 1px solid var(--color);
+}
 .board {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -64,8 +77,8 @@ label {
   -webkit-user-select: none;
   user-select: none;
   aspect-ratio: 5 / 6;
+  contain: paint;
   &.draggable {
-    border: 1px solid var(--color);
     font-size: small;
     --border-width: 5px;
     --arrow-color: var(--drag-arrow-color);
@@ -154,7 +167,7 @@ label {
         stroke-width: 1;
         stroke-dasharray: 3 12;
         stroke-dashoffset: 60;
-        animation: dash 1s linear infinite;
+        animation: var(--animation-path);
       }
     }
   }
@@ -278,8 +291,54 @@ dialog {
     }
   }
 }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+:active-view-transition {
+  .board.draggable {
+    view-transition-name: tab;
+  }
+}
+:active-view-transition-type(to-left) {
+  --slide-out: slide-out-to-left;
+  --slide-in: slide-in-from-right;
+}
+:active-view-transition-type(to-right) {
+  --slide-out: slide-out-to-right;
+  --slide-in: slide-in-from-left;
+}
+::view-transition-group(tab) {
+  overflow: hidden;
+}
+::view-transition-old(tab) {
+  animation: var(--animation-slide-out);
+}
+::view-transition-new(tab) {
+  animation: var(--animation-slide-in);
+}
 @keyframes dash {
   to {
     stroke-dashoffset: 0;
+  }
+}
+@keyframes slide-out-to-left {
+  to {
+    transform: translateX(-100%);
+  }
+}
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes slide-out-to-right {
+  to {
+    transform: translateX(100%);
+  }
+}
+@keyframes slide-in-from-left {
+  from {
+    transform: translateX(-100%);
   }
 }
