@@ -773,7 +773,7 @@ class BoardUI extends BoardView{
   }
   #onChange(e){
     if(e.currentTarget.className === "switcher"){
-      this.#switchTab(e.target.value);
+      this.#switchTab(+e.target.value);
     }else{
       if(e.currentTarget.closest("dialog")){
         this.#onChangeDialog(e);
@@ -817,7 +817,7 @@ class BoardUI extends BoardView{
     }
   }
   #switchTab(n){
-    if(n < 0 || n >= this.#boards.length || n - this.#currentTab === 0) return;
+    if(n < 0 || n >= this.#boards.length || n === this.#currentTab) return;
     this.board = this.#boards[n];
     if(!document.startViewTransition){
       this.update();
