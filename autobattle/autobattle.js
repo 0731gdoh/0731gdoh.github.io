@@ -629,12 +629,14 @@ class BoardUI extends BoardView{
   #offsetX;
   #offsetY;
   #pointerId;
-  #boards
+  #boards;
+  #currentTab = 0;
   
   constructor(){
     const boards = Array.from({length: 4}, () => new Board());
     super(boards[0]);
     const be = this.boardElement;
+    const container = createDiv("board-container");
     const form = create("form");
     const button = create("button");
     this.#message = createDiv("message");
@@ -649,10 +651,11 @@ class BoardUI extends BoardView{
       button,
     );
     this.#createUnitConfigDialog();
+    container.append(be);
     document.body.prepend(
       form,
       this.#createTabSwitcher(),
-      be,
+      container,
       this.#message,
       this.#thumbnails,
       this.#total,
@@ -776,13 +779,13 @@ class BoardUI extends BoardView{
     }else{
       this.#onChangeBoard(e);
     }
-    this.update();
     this.#search();
   }
   #onChangeBoard(e){
     const elems = e.currentTarget.elements;
     for(const board of this.#boards) board.setBoardSize(elems[0].checked, elems[1].checked);
     this.path.clear();
+    this.update();
   }
   #unitConfigFunction(e){
     switch(e.target.className){
@@ -810,9 +813,24 @@ class BoardUI extends BoardView{
       for(const board of this.#boards) board.setPlayerUnitNames(names);
       for(const key of this.#unitConfigMap.keys()) key.querySelector(".unit-name").textContent = names.shift();
     }
+    this.update();
   }
   #onChangeSwitcher(e){
-    this.board = this.#boards[e.target.value];
+    this.#switchTab(e.target.value);
+  }
+  #switchTab(n){
+    if(n < 0 || n >= this.#boards.length || n - this.#currentTab === 0) return;
+    const types = [this.#currentTab < n ? "to-left" : "to-right"];
+    this.board = this.#boards[n];
+    this.#currentTab = n;
+    if(!document.startViewTransition){
+      this.update();
+      return;
+    }
+    document.startViewTransition({
+      update: () => this.update(),
+      types,
+    });
   }
   #pointerDown(e){
     const pos = this.#posFromPoint(e.clientX, e.clientY);
