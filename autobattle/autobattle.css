@@ -106,7 +106,7 @@ label {
       text-align: center;
       padding: 5%;
     }
-    .draggable &[data-weapon]{
+    .draggable &[data-weapon] {
       &::after {
         content: attr(data-weapon);
         position: absolute;
@@ -121,7 +121,7 @@ label {
         align-content: center;
         padding: 0;
       }
-      :has(.icon:checked) &::after {
+      .use-icon &::after {
         color: transparent;
         background-image: var(--sprite-url);
         background-size: 300% auto;

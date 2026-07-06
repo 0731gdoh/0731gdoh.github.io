@@ -653,7 +653,7 @@ class BoardUI extends BoardView{
     this.#message = createDiv("message");
     this.#thumbnails = createDiv("flex");
     this.#total = createDiv("total");
-    be.classList.add("draggable");
+    be.classList.add("draggable", "use-icon");
     button.textContent = "⚙️ ユニット設定";
     button.type = "button";
     form.append(
@@ -789,7 +789,7 @@ class BoardUI extends BoardView{
     }else{
       if(e.currentTarget.closest("dialog")){
         this.#onChangeDialog(e);
-      }else if(!e.target.className){
+      }else{
         this.#onChangeBoard(e);
       }
       this.update();
@@ -797,9 +797,13 @@ class BoardUI extends BoardView{
     }
   }
   #onChangeBoard(e){
-    const elems = e.currentTarget.elements;
-    for(const board of this.#boards) board.setBoardSize(elems[0].checked, elems[1].checked);
-    this.path.clear();
+    if(e.target.className === "icon"){
+      this.boardElement.classList.toggle("use-icon", e.target.checked);
+    }else{
+      const elems = e.currentTarget.elements;
+      for(const board of this.#boards) board.setBoardSize(elems[0].checked, elems[1].checked);
+      this.path.clear();
+    }
   }
   #unitConfigFunction(e){
     switch(e.target.className){
