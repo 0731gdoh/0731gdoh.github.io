@@ -8,6 +8,7 @@ const WEAPONS = [
       [0, -1],
       [1, -1],
     ],
+    position: "0 0",
   },
   {
     name: "突撃",
@@ -15,12 +16,14 @@ const WEAPONS = [
       [0, -1],
       [0, -2],
     ],
+    position: "50% 0",
   },
   {
     name: "打撃",
     offsets: [
       [0, -1],
     ],
+    position: "100% 0",
   },
   {
     name: "射撃",
@@ -29,6 +32,7 @@ const WEAPONS = [
       [0, -2],
       [0, -3],
     ],
+    position: "0 50%",
   },
   {
     name: "魔法",
@@ -39,6 +43,7 @@ const WEAPONS = [
       [1, -2],
       [0, -3],
     ],
+    position: "50% 50%",
   },
   {
     name: "横一文字",
@@ -49,6 +54,7 @@ const WEAPONS = [
       [1, -1],
       [2, -1],
     ],
+    position: "100% 50%",
   },
   {
     name: "狙撃",
@@ -59,14 +65,17 @@ const WEAPONS = [
       [0, -4],
       [0, -5],
     ],
+    position: "0 100%",
   },
   {
     name: "無",
     offsets: [],
+    position: "50% 100%",
   },
   {
     name: "全域",
     offsets: [],
+    position: "100% 100%",
   },
 ];
 
@@ -586,8 +595,10 @@ class BoardView{
     }
     if(data.weapon){
       panel.dataset.weapon = data.weapon.name[0];
+      panel.style.setProperty("--sprite-position", data.weapon.position);
     }else{
       delete panel.dataset.weapon;
+      panel.style.removeProperty("--sprite-position");
     }
   }
   getPanel(pos){
@@ -648,6 +659,7 @@ class BoardUI extends BoardView{
     form.append(
       createLabel(createCheck(false), "横長"),
       createLabel(createCheck(false), "縦長"),
+      createLabel(createCheck(true, "icon"), "アイコン"),
       button,
     );
     this.#createUnitConfigDialog();
@@ -777,7 +789,7 @@ class BoardUI extends BoardView{
     }else{
       if(e.currentTarget.closest("dialog")){
         this.#onChangeDialog(e);
-      }else{
+      }else if(!e.target.className){
         this.#onChangeBoard(e);
       }
       this.update();

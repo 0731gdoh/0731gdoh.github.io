@@ -16,6 +16,8 @@
   --animation-path: dash 1s linear infinite;
   --animation-slide-out: var(--slide-out) 0.2s ease both;
   --animation-slide-in: var(--slide-in) 0.2s ease both;
+  --sprite-url: url("/img/weapon_a.png");
+  --sprite-position: 50% 100%;
 }
 :root[data-theme="0"].dark,
 :root[data-theme="2"] {
@@ -29,6 +31,7 @@
   --tooltip-color: #443;
   --tooltip-border-color: #221;
   --selected-color: #663;
+  --sprite-url: url("/img/weapon_b.png");
 }
 @media (prefers-reduced-motion: reduce) {
   :root{
@@ -103,19 +106,28 @@ label {
       text-align: center;
       padding: 5%;
     }
-    .draggable &[data-weapon]::after {
-      content: attr(data-weapon);
-      position: absolute;
-      display: block;
-      border-radius: var(--border-width);
-      border: var(--border-width) solid var(--panel-border-color);
-      right: 1px;
-      bottom: 1px;
-      width: calc(50% + 3px);
-      height: calc(50% + 3px);
-      text-align: center;
-      align-content: center;
-      padding: 0;
+    .draggable &[data-weapon]{
+      &::after {
+        content: attr(data-weapon);
+        position: absolute;
+        display: block;
+        border-radius: var(--border-width);
+        border: var(--border-width) solid var(--panel-border-color);
+        right: 1px;
+        bottom: 1px;
+        width: calc(50% + 3px);
+        height: calc(50% + 3px);
+        text-align: center;
+        align-content: center;
+        padding: 0;
+      }
+      :has(.icon:checked) &::after {
+        color: transparent;
+        background-image: var(--sprite-url);
+        background-size: 300% auto;
+        background-position: var(--sprite-position);
+        background-repeat: no-repeat;
+      }
     }
     &.dragging {
       z-index: 10;
