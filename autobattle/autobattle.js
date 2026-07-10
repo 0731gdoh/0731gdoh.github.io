@@ -68,12 +68,12 @@ const WEAPONS = [
     position: "0 100%",
   },
   {
-    name: "無",
+    name: "全域",
     offsets: [],
     position: "50% 100%",
   },
   {
-    name: "全域",
+    name: "無",
     offsets: [],
     position: "100% 100%",
   },
@@ -404,7 +404,7 @@ class Board{
         const cell = this.getCell(initialPositions.shift());
         this.playerUnits.push(cell);
         cell.setUnit(name);
-        cell.setWeapon(WEAPONS.at(-2));
+        cell.setWeapon(WEAPONS.at(-1));
       }
     }
   }
