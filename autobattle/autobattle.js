@@ -253,7 +253,7 @@ class Searcher{
       return [
         1,
         [message],
-        [[]],
+        [[0, [], -1]],
       ];
     }
   }
@@ -316,7 +316,7 @@ class Searcher{
       }
     }
     this.#highScore = current;
-    this.#routes.push(route.slice());
+    this.#routes.push([this.#routes.length, route.slice(), this.#unitIndex]);
   }
   #hitCount(unit){
     const [x, y] = this.#grid.getPos(unit);
@@ -911,13 +911,14 @@ class BoardUI extends BoardView{
   #search(){
     const [total, messages, routes] = this.#searcher.search(this.board, this.skipFormation);
     removeChildren(this.#thumbnails);
-    for(const [n, route] of routes.entries()){
+    for(const [n, route, moveIndex] of routes){
       const block = createDiv("item");
       const thumbnail = new BoardThumbnail(this.board, route);
       block.append(
         `#${n + 1}`,
-        thumbnail.boardElement, 
+        thumbnail.boardElement,
       );
+      if(this.skipFormation) block.append(`移動：${"ABCD-".at(moveIndex)}`);
       this.#thumbnails.append(block);
     }
     removeChildren(this.#message);
