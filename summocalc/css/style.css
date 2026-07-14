@@ -32,6 +32,8 @@
   --bgcolor-rainbow: #442e;
 /*  --bg-rainbow: conic-gradient(from -45deg, #624e, #662e, #266e, #426e, #624e);*/
   --color-form: #17e;
+  --bg-position: 75% 100%;
+  --sprite-weapon: url("/img/weapon_a.png");
 }
 [data-theme="0"].dark,
 [data-theme="2"] {
@@ -72,6 +74,8 @@
   --bgcolor-rainbow: #bb9e;
 /*  --bg-rainbow: conic-gradient(from -45deg, #b79e, #bb7e, #7bbe, #97be, #b79e);*/
   --color-form: #08f;
+  --bg-position: 100% 100%;
+  --sprite-weapon: url("/img/weapon_b.png");
 }
 * {
   margin: 0;
@@ -559,4 +563,27 @@ caption {
   border-color: var(--border-rainbow);
   background-color: var(--bgcolor-rainbow);
 /*  background: var(--bg-rainbow);*/
+}
+.showicon #ef .cb label::before {
+  content: "";
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  width: 1em;
+  height: 1em;
+  background-image: url("/img/attribute.svg"), url("/img/attribute.svg");
+  background-size: 500% 300%;
+  background-position: var(--sprite-position), var(--bg-position);
+}
+.showicon #wf .cb label::before,
+.showicon #cf .cb label::before {
+  content: "";
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  width: 1em;
+  height: 1em;
+  background-image: var(--sprite-weapon), url("/img/attribute.svg");
+  background-size: 300% 300%, 500% 300%;
+  background-position: var(--sprite-position), var(--bg-position);
 }

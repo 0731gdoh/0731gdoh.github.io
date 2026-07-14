@@ -1,0 +1,82 @@
+<svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="icon-bg" viewBox="0 0 100 100">
+      <rect x="5" y="5" width="90" height="90" rx="9" ry="9" stroke-width="9" />
+    </symbol>
+    <symbol id="icon-frame" viewBox="0 0 100 100" fill="none" stroke-opacity="0.3">
+      <rect x="5" y="5" width="90" height="90" rx="9" ry="9" stroke-width="9" />
+      <rect x="16" y="16" width="68" height="68" stroke-width="6" />
+    </symbol>
+    <symbol id="icon-allround" viewBox="0 0 100 100" stroke="#999" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 50 20 L 80 60 H 20 Z M 20 80 H 80" />
+    </symbol>
+    <symbol id="icon-fire" viewBox="0 0 100 100" stroke="#e55" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 20 20 L 80 80 H 20 L 80 20" />
+    </symbol>
+    <symbol id="icon-water" viewBox="0 0 100 100" stroke="#2ae" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 20 20 L 80 80 V 20 L 20 80 Z" />
+    </symbol>
+    <symbol id="icon-wood" viewBox="0 0 100 100" stroke="#5e0" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 50 20 L 85 85 H 15 Z" />
+    </symbol>
+    <symbol id="icon-aether" viewBox="0 0 100 100" stroke="#aa1" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 20 85 L 80 25 H 20 L 80 85" />
+    </symbol>
+    <symbol id="icon-nether" viewBox="0 0 100 100" stroke="#b2e" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 20 50 V 20 H 80 V 50 M 20 80 L 50 50 L 80 80" />
+    </symbol>
+    <symbol id="icon-infernal" viewBox="0 0 100 100" stroke="#556" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 50 15 L 80 55 H 20 V 80 M 30 85 H 70" />
+    </symbol>
+    <symbol id="icon-valiant" viewBox="0 0 100 100" stroke="#bcd" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 10 20 H 90 M 19 35 H 81 L 50 80 Z M 50 20 V 80" />
+    </symbol>
+    <symbol id="icon-world" viewBox="0 0 100 100" stroke="#a74" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 15 20 V 75 H 85 V 20 M 35 25 H 65 V 55 H 35 Z" />
+    </symbol>
+    <symbol id="icon-infinity" viewBox="0 0 100 100" stroke="#f70" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <path d="M 44 39 A 20 20 0 1 0 44 61 L 56 39 A 20 20 0 1 1 56 61 Z" />
+    </symbol>
+    <symbol id="icon-null" viewBox="0 0 100 100" stroke="#f1f" stroke-width="9" fill="none">
+      <use href="#icon-frame" width="100" height="100" />
+      <circle cx="50" cy="50" r="36" />
+      <path d="M 75 25 L 25 75" />
+    </symbol>
+    <symbol id="icon-devine-star">
+      <path d="M 50 10 A 45 45 0 0 1 10 50 A 45 45 0 0 1 50 90 A 45 45 0 0 1 90 50 A 45 45 0 0 1 50 10 Z" />
+    </symbol>
+    <mask id="icon-devine-mask">
+      <rect width="100" height="100" stroke="#fff" fill="#fff" />
+      <use href="#icon-devine-star" width="100" height="100" stroke-width="11" stroke="#000" fill="#000" />
+    </mask>
+    <symbol id="icon-devine" viewBox="0 0 100 100" stroke="#3bb">
+      <use href="#icon-frame" width="100" height="100" />
+      <circle cx="50" cy="50" r="36" stroke-width="9" fill="none" mask="url(#icon-devine-mask)" />
+      <use href="#icon-devine-star" width="100" height="100" stroke-width="1" fill="#3bb" />
+    </symbol>
+  </defs>
+  <use href="#icon-allround" x="0" y="0" width="100" height="100" />
+  <use href="#icon-fire" x="100" y="0" width="100" height="100" />
+  <use href="#icon-water" x="200" y="0" width="100" height="100" />
+  <use href="#icon-wood" x="300" y="0" width="100" height="100" />
+  <use href="#icon-aether" x="400" y="0" width="100" height="100" />
+  <use href="#icon-nether" x="0" y="100" width="100" height="100" />
+  <use href="#icon-infernal" x="100" y="100" width="100" height="100" />
+  <use href="#icon-valiant" x="200" y="100" width="100" height="100" />
+  <use href="#icon-world" x="300" y="100" width="100" height="100" />
+  <use href="#icon-infinity" x="400" y="100" width="100" height="100" />
+  <use href="#icon-null" x="0" y="200" width="100" height="100" />
+  <use href="#icon-devine" x="100" y="200" width="100" height="100" />
+  <use href="#icon-bg" x="300" y="200" width="100" height="100" stroke="#fff" fill="#fff" />
+  <use href="#icon-bg" x="400" y="200" width="100" height="100" stroke="#222" fill="#222" />
+</svg>

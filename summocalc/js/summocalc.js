@@ -287,12 +287,13 @@ function setCheckGroupLink(listener, obj, key, id, fn){
 function setCheckGroup(id, list, params){
   var fieldset = _(id);
   var value = 0;
-  var filter, order, sel, chk;
+  var filter, order, sel, chk, sprites;
   if(params){
     filter = params.filter;
     order = params.order;
     sel = params.select;
     chk = params.check;
+    sprites = params.sprites;
   }
   if(!order) order = list.LOCALE_ORDER ? list.LOCALE_ORDER[language] : list.ORDER || list.map(function(v, i){return i});
   if(fieldset.hasChildNodes()){
@@ -324,6 +325,10 @@ function setCheckGroup(id, list, params){
         div.className = "cb";
         value |= 1 << v;
         appendCheck(div, id + i, 1 << v, x);
+        if(sprites){
+          var pos = container.children.length;
+          div.style.setProperty("--sprite-position", (pos % sprites[0] * 100 / (sprites[0] - 1)) + "% " + (Math.floor(pos / sprites[0]) * 100 / (sprites[1] - 1)) + "%");
+        }
         if(list.BR && list.BR.indexOf(v) !== -1) container.appendChild(document.createElement("br"));
         container.appendChild(div);
       }

@@ -1147,6 +1147,7 @@ var calc = {
     exclude: 0,
     defaultValues: new Map(),
     active: 0,
+    icon: 1,
     init: function(){
       var c = this;
       this.tabs = [
@@ -1154,6 +1155,12 @@ var calc = {
         new Tab("ltb2"),
         new Tab("ltb3")
       ];
+      c.icon = getStorageItem("icon") !== "0";
+      document.body.classList.toggle("showicon", c.icon);
+      linkInput(c, "icon", "ic", function(){
+        setStorageItem("icon", c.icon ? "1" : "0");
+        document.body.classList.toggle("showicon", c.icon);
+      });
       linkAll(c, [
         ["weaponChange", "wf_c"],
         ["csChange", "cf_c"],
@@ -1201,9 +1208,9 @@ var calc = {
       var active = this.active;
       this.active = 0;
       this.updateToggleText();
-      setCheckGroup("ef", ATTRIBUTE);
-      setCheckGroup("wf", WEAPON, {check: "武器種変更を含む/Include Weapon Change"});
-      setCheckGroup("cf", WEAPON, {check: "CS変更を含む/Include Change CS"});
+      setCheckGroup("ef", ATTRIBUTE, {sprites: [5, 3]});
+      setCheckGroup("wf", WEAPON, {check: "武器種変更を含む/Include Weapon Change", sprites: [3, 3]});
+      setCheckGroup("cf", WEAPON, {check: "CS変更を含む/Include Change CS", sprites: [3, 3]});
       setCheckGroup("rf", RARITY);
       setCheckGroup("obf", OBTAIN, {select: OR_AND_NOT});
       setOptions("lmf", LIMITED);
@@ -1235,6 +1242,7 @@ var calc = {
         ["legf", "ギルド制限を無視/Ignore Guild Limitations"],
         ["levf", "進化前の効果を除外する/Exclude Pre-Evolution Effects"],
         ["lccf", "CSの効果を除外する/Exclude CS Effects"],
+        ["lic", "アイコンを表示/Show Icon"],
         ["rd", "ランダムカード/Random Card"],
         ["fr", "リセット/Reset"]
       ]);

@@ -1,4 +1,4 @@
-var CACHE_NAME = "sc-260704-2";
+var CACHE_NAME = "sc-260714-1";
 var urlsToCache = [
   ".",
   "index.html",
@@ -18,7 +18,10 @@ var urlsToCache = [
   "js/effectfilter.js",
   "js/skilltable.js",
   "js/calc.js",
-  "css/style.css"
+  "css/style.css",
+  "/img/weapon_a.png",
+  "/img/weapon_b.png",
+  "/img/attribute.svg"
 ];
 
 self.addEventListener("install", function(e){
