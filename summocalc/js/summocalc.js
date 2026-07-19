@@ -9,7 +9,7 @@ function tsplit(str){
   return str.indexOf("/") === -1 ? [str, str] : str.split("/");
 }
 function t(str, x){
-  return (str.indexOf("/") === -1 ? str : str.split("/")[x === undefined ? language : x] || "").replace(/%%/g, "/");
+  return (str.indexOf("/") === -1 ? str : str.split("/")[x === undefined ? language : x] || "").replace(/¡/g, "/");
 }
 function separate(n){
   return ("" + n).replace(/^-?\d+/, function(match){
@@ -50,12 +50,12 @@ function loopPrompt(text, initial, min, max){
   return value;
 }
 function toLowerKatakana(str){
-  return str.toLowerCase().replace(/\x2f/g, "%%").replace(/[\u3041-\u3094]/g, function(match){
+  return str.toLowerCase().replace(/\x2f/g, "¡").replace(/[\u3041-\u3094]/g, function(match){
     return String.fromCharCode(match.charCodeAt(0) + 0x60);
   });
 }
 function toLowerHiragana(str){
-  return str.toLowerCase().replace(/\x2f/g, "%%").replace(/[\u30a1-\u30f4]/g, function(match){
+  return str.toLowerCase().replace(/\x2f/g, "¡").replace(/[\u30a1-\u30f4]/g, function(match){
     return String.fromCharCode(match.charCodeAt(0) - 0x60);
   });
 }

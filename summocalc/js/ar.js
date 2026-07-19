@@ -170,7 +170,7 @@ Record.createList = function(a){
     return new Record(i, id, v);
   });
   result.ORDER = order;
-  result.LABELS = ["クエスト報酬/Quest Reward", "ショップ・イベント/Shop%%Event", "AR召喚/AR Summons"];
+  result.LABELS = ["クエスト報酬/Quest Reward", "ショップ・イベント/Shop¡Event", "AR召喚/AR Summons"];
   return result;
 };
 Record.csv = function(list, x){
@@ -540,7 +540,7 @@ var AR = Record.createList(
   ,[1203, "召しませ世耕夏の幸！/Setagaya's Finest Summer Food!/めしませせたがやなつのさち！", false, ["p滋養大特攻", "p滋養大特攻", "a滋養"], 5, 500, 0, 0, EQUIP.SLASH|EQUIP.THRUST|EQUIP.SHOT, "@ヴォルフ・フセスラフ/ヤマサチヒコ", 0, ""]
   ,[1204, "栄光があなたを照らす/Glory Smiles on You/えいこうがあなたをてらす", false, ["pCP増加", "pa弱体解除(単)", ""], 4, 200, 0, EQUIP.FIRE|EQUIP.WATER|EQUIP.WOOD, 0, "ヘラクレス/@エーコー", 0, ""]
   ,[1205, "今宵釣られてすくわれて/Hooked and Scooped Tonight/こよいつられてすくわれて", false, ["", "pHP回復", "cd幻惑"], 4, 100, 0, 0, EQUIP.SLASH|EQUIP.LONGSLASH, "スモーキーゴッド/@ヤマサチヒコ", 0, ""]
-  ,[1206, "煽られ乗せられ流されLUV%%U！/Played, Swayed, and Inflamed for Love!/あおられのせられながされLUV%%U！", false, ["pCP増加/係留に特攻[1.3]", "", ""], 3, 150, 0, 0, EQUIP.SHOT|EQUIP.MAGIC, "ヨルムンガンド/@オズ/ゴロウザエモン", 0, ""]
+  ,[1206, "煽られ乗せられ流されLUV¡U！/Played, Swayed, and Inflamed for Love!/あおられのせられながされLUV¡U！", false, ["pCP増加/係留に特攻[1.3]", "", ""], 3, 150, 0, 0, EQUIP.SHOT|EQUIP.MAGIC, "ヨルムンガンド/@オズ/ゴロウザエモン", 0, ""]
   ,[1207, "シーサイド・アテンション/Seaside Attention/しーさいど・あてんしょん", false, ["p連撃", "emCP増加", ""], 5, 250, 0, EQUIP.FIRE|EQUIP.WOOD|EQUIP.NETHER, 0, "@ティンダロス/カトブレパス", 0, ""]
   ,[1208, "ホット・サマーレスキュー/Hot Summer Rescue/ほっと・さまーれすきゅー", false, ["paCP増加/em束縛大特攻", "em束縛大特攻", "paCP吸収"], 5, 400, 0, 0, EQUIP.SHOT|EQUIP.MAGIC|EQUIP.SNIPE, "@アキハゴンゲン/ウランバートル", 0, ""]
   ,[1209, "ブルーランドボーイズ/Blueland Boys/ぶるーらんどぼーいず", false, ["p弱体解除(単)/j弱体反射", "", ""], 4, 200, 0, 0, EQUIP.THRUST|EQUIP.SHOT|EQUIP.MAGIC, "コロポックル/@ベイブ・バニヤン", 0, ""]
@@ -561,4 +561,9 @@ var AR = Record.createList(
   ,[1224, "笑って転げて名コンビ！？/笑って転げて名コンビ！？/わらってころげてめいこんび！？", false, ["突撃に特防[0.8]/pd閃き", "", ""], 4, 0, 0, EQUIP.WOOD|EQUIP.AETHER|EQUIP.INFERNAL, 0, "ホテイ/@ギリメカラ", 0, ""]
   ,[1225, "エンカウントさるの湯！/エンカウントさるの湯！/えんかうんとさるのゆ！", false, ["j再生/emCP増加", "", ""], 4, 200, 0, EQUIP.WATER|EQUIP.AETHER|EQUIP.NETHER, 0, "タイシャクテン/@サルタヒコ", 0, ""]
   ,[1226, "グア・グア・ホリデイ/グア・グア・ホリデイ/ぐあ・ぐあ・ほりでい", false, ["根性に特攻[1.3]/t極限", "", ""], 3, 150, 0, EQUIP.FIRE|EQUIP.WATER, 0, "ツァトグァ/@クトゥグァ", 0, ""]
+  ,[1227, "背中越しのエール/背中越しのエール/せなかごしのえーる", false, ["jスキルが封印される状態変化耐性/bHP回復(%)", "bHP回復(%)", ""], 5, 100, 0, 0, EQUIP.SHOT|EQUIP.MAGIC|EQUIP.LONGSLASH, "グンゾウ/@エーギル", 0, ""]
+  ,[1228, "エンドレス・ブルーサマー/エンドレス・ブルーサマー/えんどれす・ぶるーさまー", false, ["a闘志", "", "p引き寄せ(1マス)"], 5, 400, 0, 0, EQUIP.BLOW|EQUIP.MAGIC|EQUIP.LONGSLASH, "サナト・クマラ/@ベオウルフ", 0, ""]
+  ,[1229, "キッチン最前線！/キッチン最前線！/きっちんさいぜんせん！", false, ["pm被回復増加", "", "cdCP減少"], 4, 100, 0, EQUIP.WOOD|EQUIP.AETHER|EQUIP.NULL, 0, "タングリスニル/@エニグマ", 0, ""]
+  ,[1230, "その愛は常闇を超え/その愛は常闇を超え/そのあいはとこやみをこえ", false, ["pHP回復", "", "cdHP減少"], 4, 300, 0, EQUIP.WATER|EQUIP.WOOD|EQUIP.NETHER, 0, "@マーナガルム/マリア", 0, ""]
+  ,[1231, "ビートオン・ハーフコート！/ビートオン・ハーフコート！/びーとおん・はーふこーと！", false, ["p加速/射撃に特防[0.8]", "", ""], 3, 150, 0, 0, EQUIP.SHOT|EQUIP.MAGIC|EQUIP.NONE, "アールプ/@クルシャ", 0, ""]
 ]);
