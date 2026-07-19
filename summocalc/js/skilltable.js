@@ -26,9 +26,9 @@ TableLabel.createList = function(a){
 
 var TABLE_LABEL = TableLabel.createList(
   [["発動条件/Condition", ["fomula", ""]]
-  ,["0%", ["zero", "zeroline"]]
+  ,["0%¡2%", ["zero", "zeroline"]]
   ,["Copy", ["copy", ""]]
-  ,["Skill+%%CS+", ["plus", ""]]
+  ,["Skill+¡CS+", ["plus", ""]]
   ,["進化前/Pre-Evolution", ["", "del"]]
 ]);
 TABLE_LABEL.BR = [4];
@@ -312,6 +312,7 @@ function parseCondition(s){
     case "v":
       return [LABEL_TYPE.COPY, "Copy"];
     case "z":
+      if(s[1] === "2") return [LABEL_TYPE.ZERO, "2%"];
       return [LABEL_TYPE.ZERO, "0%"];
   }
   switch(s[1]){
