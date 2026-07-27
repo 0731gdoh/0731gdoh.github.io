@@ -293,7 +293,6 @@ SkillTable.prototype = {
   }
 };
 
-
 function parseCondition(s){
   var value = s.slice(2);
   var type = "";
