@@ -589,6 +589,6 @@ caption {
   background-size: 300% 300%, 500% 300%;
   background-position: var(--sprite-position), var(--bg-position);
 }
-.skilldata caption .cardname {
+.cardname {
   margin-left: 0.5em;
 }
