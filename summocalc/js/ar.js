@@ -237,7 +237,7 @@ Thumbnail.createList = function(m, a){
   });
   set("");
   CARD.table.forEach(function(v, k){
-    var x = CARD[v[0]].name;
+    var x = CARD[v[0]].getName();
     if(x.indexOf("&") !== -1) x = x.replace(/ (and|&) /, "&").split("/").map(function(s){
       return s.split("&")[0] + (s[0] === "[" ? "]" : "");
     }).join("/");
