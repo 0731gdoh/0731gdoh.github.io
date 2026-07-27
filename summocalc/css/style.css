@@ -515,7 +515,7 @@ caption {
 }
 #dw {
   position: relative;
-  display: none;
+  display: block;
   background-image: linear-gradient(var(--bgcolor-sub-from), var(--bgcolor-sub-to));
   background-color: var(--bgcolor-sub-from);
   border: solid 1px;
@@ -564,6 +564,7 @@ caption {
   background-color: var(--bgcolor-rainbow);
 /*  background: var(--bg-rainbow);*/
 }
+.attribute::before,
 .showicon #ef .cb label::before {
   content: "";
   display: inline-block;
@@ -575,6 +576,7 @@ caption {
   background-size: 500% 300%;
   background-position: var(--sprite-position), var(--bg-position);
 }
+.weapon::before,
 .showicon #wf .cb label::before,
 .showicon #cf .cb label::before {
   content: "";
@@ -586,4 +588,7 @@ caption {
   background-image: var(--sprite-weapon), url("/img/attribute.svg");
   background-size: 300% 300%, 500% 300%;
   background-position: var(--sprite-position), var(--bg-position);
+}
+.skilldata caption .cardname {
+  margin-left: 0.5em;
 }
