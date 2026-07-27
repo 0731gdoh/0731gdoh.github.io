@@ -284,6 +284,9 @@ function setCheckGroupLink(listener, obj, key, id, fn){
     if(listener.active) listener.update();
   };
 }
+function setSpritePosition(elem, pos, size){
+  elem.style.setProperty("--sprite-position", (pos % size[0] * 100 / (size[0] - 1)) + "% " + (Math.floor(pos / size[0]) * 100 / (size[1] - 1)) + "%");
+}
 function setCheckGroup(id, list, params){
   var fieldset = _(id);
   var value = 0;
@@ -325,10 +328,7 @@ function setCheckGroup(id, list, params){
         div.className = "cb";
         value |= 1 << v;
         appendCheck(div, id + i, 1 << v, x);
-        if(sprites){
-          var pos = container.children.length;
-          div.style.setProperty("--sprite-position", (pos % sprites[0] * 100 / (sprites[0] - 1)) + "% " + (Math.floor(pos / sprites[0]) * 100 / (sprites[1] - 1)) + "%");
-        }
+        if(sprites) setSpritePosition(div, container.children.length, sprites);
         if(list.BR && list.BR.indexOf(v) !== -1) container.appendChild(document.createElement("br"));
         container.appendChild(div);
       }

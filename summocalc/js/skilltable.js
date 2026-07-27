@@ -210,15 +210,18 @@ SkillTable.prototype = {
     data = data.concat(st);
     data.unshift(header);
     if(!table.firstChild){
-      var caption = document.createElement("caption");
-      table.appendChild(caption);
+      var caption = table.createCaption();
+      ["attribute", "weapon", "weapon", "cardname"].forEach(function(c){
+        var span = document.createElement("span");
+        if(c) span.className = c;
+        caption.appendChild(span);
+      });
       data.forEach(function(row, ri){
-        var tr = document.createElement("tr");
+        var tr = table.insertRow();
         row.forEach(function(d, ci){
           var cell = document.createElement(ri && ci ? "td" : "th");
           tr.appendChild(cell);
         });
-        table.appendChild(tr);
       });
     }
     order.forEach(function(index, ri){
@@ -272,10 +275,24 @@ SkillTable.prototype = {
       });
       tr.className = ri && hide ? "hide" : (count++ & 1) ? "odd" : "even";
     });
-    table.caption.textContent = card;
+    this.setCaption(card);
     return table;
+  },
+  setCaption: function(card){
+    var spans = this.table.caption.children;
+    if(card.index){
+      setSpritePosition(spans[0], card.attribute - 1, [5, 3]);
+      setSpritePosition(spans[1], WEAPON.ORDER.indexOf(card.weapon[0]) - 1, [3, 3]);
+      setSpritePosition(spans[2], WEAPON.ORDER.indexOf(card.weapon[1]) - 1, [3, 3]);
+    }else{
+      setSpritePosition(spans[0], 0, [5, 3]);
+      setSpritePosition(spans[1], 8, [3, 3]);
+      setSpritePosition(spans[2], 8, [3, 3]);
+    }
+    spans[3].textContent = card;
   }
 };
+
 
 function parseCondition(s){
   var value = s.slice(2);
