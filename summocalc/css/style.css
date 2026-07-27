@@ -515,7 +515,7 @@ caption {
 }
 #dw {
   position: relative;
-  display: block;
+  display: none;
   background-image: linear-gradient(var(--bgcolor-sub-from), var(--bgcolor-sub-to));
   background-color: var(--bgcolor-sub-from);
   border: solid 1px;
