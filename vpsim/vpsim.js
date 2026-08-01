@@ -75,7 +75,6 @@ class Unit extends BaseItem {
     ["メリデLv.", 100],
     ["メリデ装備", false],
     ["ヨハックLv.", 100],
-    ["ヨハック装備", false],
     ["ヤスヒコLv.", 100],
     ["ノーモンLv.", 100],
   ]);
@@ -188,6 +187,7 @@ class Action extends BaseItem {
     ["最終コスト", DISABLE.ALWAYS],
     ["追加コスト", DISABLE.ALWAYS],
     ["消費後VP", DISABLE.ALWAYS],
+    ["ヨハック装備", DISABLE.IF_NOT_UNIT],
     ["ヤスヒコ装備", DISABLE.IF_NOT_UNIT],
     ["発破(行動後)", DISABLE.IF_NOT_UNIT],
     ["注目(行動後)", DISABLE.IF_NOT_UNIT],
@@ -222,12 +222,13 @@ class Action extends BaseItem {
     ["VP獲得", 0],
     ["協奏", false],
     ["行動後View", true],
-    ["ヤスヒコ装備", false],
-    ["発破(行動後)", 0],
-    ["注目(行動後)", false],
     ["COMBO", 0],
     ["COMBO継続", true],
     ["COMBO加算", 1],
+    ["発破(行動後)", 0],
+    ["注目(行動後)", false],
+    ["ヨハック装備", false],
+    ["ヤスヒコ装備", false],
   ]);
   static maxValue = new Map([
     ["View", 9999],
@@ -957,6 +958,7 @@ class TimelineManager extends BaseManager{
   calc(item, currentVP, comboCount, block){
     let view = item.get("View");
     let afterView = 0;
+    let afterVP = 0;
     let gain = item.get("VP獲得");
     let combo = 10;
     let cost = item.get("消費VP");
@@ -1047,12 +1049,9 @@ class TimelineManager extends BaseManager{
     currentVP += Math.floor(gain * combo / 10);
     comboCount += item.get("COMBO加算");
     combo = this.combo(comboCount);
-    if(after){
-      let afterVP = 0;
-      if(yohack) afterVP += Math.floor(afterView * yohack / 1000);
-      if(yasuhiko) afterVP += Math.floor(afterView * yasuhiko / 1000);
-      if(afterVP) currentVP += Math.floor(afterVP * combo / 10);
-    }
+    if(yohack) afterVP += Math.floor(afterView * yohack / 1000);
+    if(yasuhiko) afterVP += Math.floor(afterView * yasuhiko / 1000);
+    if(afterVP) currentVP += Math.floor(afterVP * combo / 10);
     block.querySelector(".footer output").value = `\u2937 ViewPower ${currentVP}`;
     return [currentVP, comboCount];
   }
