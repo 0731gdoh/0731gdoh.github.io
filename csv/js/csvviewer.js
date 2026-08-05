@@ -192,8 +192,10 @@ const csv2table = (data, s, compareTable) => {
   );
   scrollCheck.type = check.type = "checkbox";
   scrollLabel.append(scrollCheck, "表を横スクロール可能にする");
+  scrollCheck.checked = localStorage.getItem("hscroll") === "1";
   label.append(check, "フィルタウインドウを表示");
   container.className = "container";
+  if(scrollCheck.checked) container.classList.add("scrollable");
   container.append(table);
   form.append(
     scrollLabel,
@@ -226,6 +228,7 @@ const updateCheckAll = (checkAll, list) => {
 const _toggle = (container) => {
   return (evt) => {
     container.classList.toggle("scrollable", evt.target.checked);
+    localStorage.setItem("hscroll", evt.target.checked ? "1" : "0");
   };
 };
 
