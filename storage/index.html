@@ -58,6 +58,8 @@ const getStorageDescription = (key) => {
       return "ダメージ計算機のスキルテーブル詳細表示設定";
     case "icon":
       return "ダメージ計算機のアイコン表示設定";
+    case "hscroll":
+      return "CSVビューアの横スクロール設定";
     default:
       if(/slot\d/.test(key)){
         return getSlotDescription(key);
