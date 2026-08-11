@@ -191,9 +191,9 @@ class MovePreviewBoard{
 class Searcher{
   static #MOVES = [
     [0, -1],
-    [1, 0],
-    [0, 1],
     [-1, 0],
+    [0, 1],
+    [1, 0],
   ];
   
   #realBoard;
@@ -205,6 +205,7 @@ class Searcher{
   #unitIndex;
   #highScore;
   #counter;
+  #stayChecked;
   
   constructor(){
   }
@@ -236,6 +237,7 @@ class Searcher{
       this.#unitIndex = 0;
       for(const unit of this.#realBoard.playerUnits){
         this.#unit = unit;
+        this.#stayChecked = false;
         const pos = this.#grid.getPos(unit);
         if(unit.movable) this.#dfs([pos], 0, 0, pos);
         this.#unitIndex++;
@@ -278,8 +280,9 @@ class Searcher{
         ) continue;
       }
       route.push(npos);
-      if(route.length === 2){
+      if(!this.#stayChecked && route.length === 2){
         this.#evaluate(route.concat([pos]), 0, 0, pos);
+        this.#stayChecked = true;
       }
       this.#grid.swapCells(pos, npos);
       const data = [route, hd + dx, vd + dy, npos];
