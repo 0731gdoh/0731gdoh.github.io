@@ -157,12 +157,14 @@ Tag.createList = function(a){
     return x.reading < y.reading ? -1 : 1;
   };
   a.forEach(function(v, i){
+    var key;
     if(v.shift() !== i) throw new Error("タグのインデックスが正しくありません（" + i + "）");
     if(v[0][0] === "*"){
-      table.set(t(v[4], 0) + "[" + t(v[0].slice(1), 0) + "]", i);
+      key = t(v[4], 0) + "[" + t(v[0].slice(1), 0) + "]";
     }else{
-      table.set(t(v[0], 0), i);
+      key = t(v[0], 0);
     }
+    table.set(key.replace("クリティカル", "CT"), i);
     switch(v[3]){
       case TAG_TYPE.BUFF:
         buff.push(i);
@@ -351,7 +353,7 @@ var TAG = Tag.createList(
   ,[61, "暗闇/Darkness", "くら", "与ダメx0.9~0.45\nCS封印/Deal 0.9~0.45x\nCS Lock", TAG_TYPE.DEBUFF, "攻撃減少系/CS封印系"]
   ,[62, "*シヴァ/Shiva", "しう", "与ダメx2.5\n被ダメx0.7\n[@$]/Deal 2.5x\nTake 0.7x\n[@$]/暗闇", TAG_TYPE.IRREMOVABLE_BUFF, "暗闇時強化/攻撃増加系/防御増加系"]
   ,[63, "クリティカル/Critical", "くり", "与ダメx2.0~4.0/Deal 2.0~4.0x", TAG_TYPE.BUFF, "攻撃増加系"]
-  ,[64, "クリティカル強化/Critical Strengthening", "くりき", "与ダメx2.5\n[@$]/Deal 2.5x\n[@$]/クリティカル", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
+  ,[64, "クリティカル強化/Critical Strengthening", "くりき", "与ダメx2.5\n[@$]/Deal 2.5x\n[@$]/CT", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃増加系"]
   ,[65, "クリティカル+/Critical+", "くり+", "与ダメx2.5~5.0/Deal 2.5~5.0x", TAG_TYPE.BUFF, "攻撃増加系"]
   ,[66, "クリティカル++/Critical++", "くり++", "与ダメx3.0~6.0/Deal 3.0~6.0x", TAG_TYPE.BUFF, "攻撃増加系"]
   ,[67, "契約の代償/Contractual Dues", "けいやた", "被ダメ+10000\n発動率-100%\n[非@$]/Take +10000\nSkill Rate -100%\n[Not @$]/悪魔の契約", TAG_TYPE.IRREMOVABLE_DEBUFF, "被ダメージ追加系/発動率減少系"]
@@ -698,7 +700,7 @@ var TAG = Tag.createList(
   ,[408, "次ターン引き寄せ[敵味方]/Draw in next turn[enemies & allies]", "つきひき", "", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]"]
   ,[409, "*桜の山AR/Mountain AR", "Aさ", "$\n[@$]/$\n[@$]/CP増加,根性", TAG_TYPE.IRREMOVABLE_BUFF, "根性時強化/CP増加系"]
   ,[410, "挺身の構え/Stance of the Volunteer", "てい", "", TAG_TYPE.IRREMOVABLE_BUFF, "[ダメージ時]"]
-  ,[411, "攻撃力が上昇する状態(解除可能)/Status that raise attack (removable)", "こうりよくしよ", "", TAG_TYPE.STATUS_GROUP, "", "意気/疑念/極限/クリティカル/クリティカル+/クリティカル++/激怒/激怒+/攻撃強化/剛力/集中/滋養/闘志/毒反転/熱情/暴走/暴走+/無窮"]
+  ,[411, "攻撃力が上昇する状態(解除可能)/Status that raise attack (removable)", "こうりよくしよ", "", TAG_TYPE.STATUS_GROUP, "", "意気/疑念/極限/CT/CT+/CT++/激怒/激怒+/攻撃強化/剛力/集中/滋養/闘志/毒反転/熱情/暴走/暴走+/無窮"]
   ,[412, "移動力増加(縦+2)/Increase movement (vertical +2)", "いとそう12", "", TAG_TYPE.STATIC, "移動力増加/移動力増加(縦)"]
   ,[413, "移動力増加(横+2)/Increase movement (horizontal +2)", "いとそう22", "", TAG_TYPE.STATIC, "移動力増加/移動力増加(横)"]
   ,[414, "横移動力減少/Reduced horizontal movement range", "よこけん1", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "移動力減少系"]
@@ -810,7 +812,7 @@ var TAG = Tag.createList(
   ,[520, "確率強化単体解除/Latent Remove one buff", "かくりつきようかた", "確率で隣接1マス内に$/Chance of $ from self and adjacent squares/強化解除(単)", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ダメージ時]"]
   ,[521, "継続ダメージの発生する状態/Status that inflict Continuous Damage", "けいのは", "", TAG_TYPE.STATUS_GROUP, "", "告死/凍結/毒/トドメ/無窮/猛毒/火傷/烙印"]
   ,[522, "確率弱体単体解除/Latent Remove one debuff", "かくりつしや", "確率で自身に$/Chance of $ from self/弱体解除(単)", TAG_TYPE.IRREMOVABLE_BUFF, "[弱体後]"]
-  ,[523, "クリティカル耐性/Critical Resistance", "くりたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "クリティカル"]]
+  ,[523, "クリティカル耐性/Critical Resistance", "くりたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "CT"]]
   ,[524, "*ノブミチ/Nobumichi", "の", "被ダメx0.3\n[@$]/Take 0.3x\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/防御増加系"]
   ,[525, "*アムブスキアス/Amduscias", "あむ", "被ダメx1.4\n[@$]/Take 1.4x\n[@$]/魅了", TAG_TYPE.IRREMOVABLE_DEBUFF, "魅了時弱化/防御減少系"]
   ,[526, "注目時回復/Heal when Taunt", "ちゆしか", "$600\n[@$]/$ 600\n[@$]/HP回復,注目", TAG_TYPE.IRREMOVABLE_BUFF, "HP回復系"]
@@ -869,7 +871,7 @@ var TAG = Tag.createList(
   ,[579, "脱力特攻/Advantage vs Drain", "たつと", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "脱力", "特攻[1.5]"]]
   ,[580, "暗闇特攻[アステリオス]", "", "", TAG_TYPE.IRREMOVABLE_BUFF, "暗闇特攻/特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "暗闇", "特攻[1.5]"]]
   ,[581, "*アステリオス/Asterius", "あ", "発動率+30%\n[@$]/Skill Rate +30%\n[@$]/祝福", TAG_TYPE.IRREMOVABLE_BUFF, "祝福時強化/発動率増加系"]
-  ,[582, "クリティカル++耐性/Critical++ Resistance", "くり++たい", "", TAG_TYPE.IRREMOVABLE_BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "クリティカル++"]]
+  ,[582, "クリティカル++耐性/Critical++ Resistance", "くり++たい", "", TAG_TYPE.IRREMOVABLE_BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "CT++"]]
   ,[583, "秘島に生きる怪物/Hidden Island Monster", "ひと", "", TAG_TYPE.SKILL]
   ,[584, "*レイヴ/Leib", "れ", "与ダメx2.0\n[@$]/Deal 2.0x\n[@$]/根性", TAG_TYPE.IRREMOVABLE_BUFF, "根性時強化/攻撃増加系"]
   ,[585, "告死時弱化/Countdown Weakening", "こくしし", "", TAG_TYPE.IRREMOVABLE_DEBUFF]
@@ -1112,7 +1114,7 @@ var TAG = Tag.createList(
   ,[822, "ダメージ時HP超激減/Enormously deplete HP when attacked", "ためしHPちよ", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ダメージ時]"]
   ,[823, "*スズカ/Suzuka", "す", "与ダメx2.0\n[非@$]/Deal 2.0x\n[Not @$]/弱体(解除可)", TAG_TYPE.IRREMOVABLE_BUFF, "非弱体時強化/攻撃増加系"]
   ,[824, "*クリスティーヌ/Christine", "く", "", TAG_TYPE.IRREMOVABLE_DEBUFF, "攻撃時HP激減/[攻撃時]"]
-  ,[825, "非移動後クリティカル/Bestow Crit after not moving", "ひいとうく", "自身に$/$ on self/クリティカル", TAG_TYPE.IRREMOVABLE_BUFF, "[非移動後]"]
+  ,[825, "非移動後クリティカル/Bestow Crit after not moving", "ひいとうく", "自身に$/$ on self/CT", TAG_TYPE.IRREMOVABLE_BUFF, "[非移動後]"]
   ,[826, "弱点時強化/Weakness Strengthening", "しやくてしき", "被ダメx0.4\n[@$]/Take 0.4x\n[@$]/弱点", TAG_TYPE.IRREMOVABLE_BUFF, "防御増加系"]
   ,[827, "*ジブリール/Gabriel", "し", "$\n[@$]/$\n[@$]/CP増加,滋養", TAG_TYPE.IRREMOVABLE_BUFF, "滋養時強化/CP増加系"]
   ,[828, "恐怖時弱化/Fear Weakening", "きようふしし", "", TAG_TYPE.IRREMOVABLE_DEBUFF]
@@ -1185,7 +1187,7 @@ var TAG = Tag.createList(
   ,[895, "スキル封印時防御弱化/Skill Lock Weakened Defense", "すきるふしほ", "被ダメ+2000\n[@$]/Take +2000\n[@$]/スキル封印", TAG_TYPE.IRREMOVABLE_DEBUFF, "被ダメージ追加系"]
   ,[896, "滋養大特攻/Big Advantage vs Nourishment", "しようた", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "滋養", "特攻[2.0]"]]
   ,[897, "外壁時強化/Outer Wall Strengthening", "かいへしき", "発動率+10%\n[@$]/Skill Rate +10%\n[@$]/外壁", TAG_TYPE.IRREMOVABLE_BUFF, "発動率増加系"]
-  ,[898, "ターン開始時クリティカル", "たあくり", "(HPが最大値の時)\n自身に$/(when HP is at max)\n$ on self/クリティカル", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]"]
+  ,[898, "ターン開始時クリティカル", "たあくり", "(HPが最大値の時)\n自身に$/(when HP is at max)\n$ on self/CT", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]"]
   ,[899, "ダメージ後HP激減", "ためこHPけき", "自身に$/$ of self/HP減少", TAG_TYPE.IRREMOVABLE_DEBUFF, "[ダメージ後]"]
   ,[900, "混乱特攻/Advantage vs Confusion", "こんらと", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "混乱", "特攻[1.5]"]]
   ,[901, "*ヴァプラ/Vapula", "う", "与ダメx2.0\n[@$]/Deal 2.0x\n[@$]/暴走+", TAG_TYPE.IRREMOVABLE_BUFF, "暴走+時強化/攻撃増加系"]
@@ -1284,7 +1286,7 @@ var TAG = Tag.createList(
   ,[994, "属性弱点[2.0]/Attribute Weakness[2.0]", "そく20", "2.0", TAG_TYPE.D_BONUS, "属性弱点"]
   ,[995, "属性弱点系/Attribute Weakness", "そくしや", "", TAG_TYPE.CATEGORY]
   ,[996, "*レッドフード/Red Hood", "れ", "被ダメx2.0\n[@$]/Take 2.0x\n[@$]/注目", TAG_TYPE.IRREMOVABLE_DEBUFF, "注目時弱化/防御減少系"]
-  ,[997, "属性特攻", "そくせ", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "神以外のすべての属性", "特攻[1.5]"]]
+  ,[997, "属性特攻", "そくせとつ", "", TAG_TYPE.IRREMOVABLE_BUFF, "特攻付与系/攻撃増加系", , [TAG_FLAG_NUM.BONUS_A, "神以外のすべての属性", "特攻[1.5]"]]
   ,[998, "*シーサァ/Shisa", "し", "被ダメx0.5\n[@$]/Take 0.5x\n[@$]/不動", TAG_TYPE.IRREMOVABLE_BUFF, "不動時強化/防御増加系"]
   ,[999, "*シーサァ/Shisa", "し", "発動率+30%\n[非@$]/Skill Rate +30%\n[Not @$]/弱体(解除可)", TAG_TYPE.IRREMOVABLE_BUFF, "非弱体時強化/発動率増加系"]
   ,[1000, "ダメージ後確率弱体解除", "ためこかく", "確率で自身に$/Chance of $ from self/弱体解除(単)", TAG_TYPE.IRREMOVABLE_BUFF, "[ダメージ後]"]
@@ -1319,4 +1321,7 @@ var TAG = Tag.createList(
   ,[1029, "強化奪取(全)/Steal buff (all)", "きようかた3", "", TAG_TYPE.ONE_SHOT, "強化奪取/強化解除/強化解除(全)/強化を複製/状態解除系/複製・貼付系"]
   ,[1030, "スキルが封印される状態変化耐性", "すきるかたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "スキルが封印される状態"]]
   ,[1031, "ターン開始時覚醒", "たあかく", "自身に$/$ on self/覚醒", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]"]
+  ,[1032, "*オニワカ/Oniwaka", "お", "与ダメx2.0\n[非@$]/Deal 2.0x\n[Not @$]/弱体(解除可)", TAG_TYPE.IRREMOVABLE_BUFF, "非弱体時強化/攻撃増加系"]
+  ,[1033, "*トゥーアルシェン/Tu'er Shen", "と", "被ダメx0.6\n[@$]/Take 0.6x\n[@$]/注目", TAG_TYPE.IRREMOVABLE_BUFF, "注目時強化/防御増加系"]
+  ,[1034, "属性特防", "そくせとく", "", TAG_TYPE.IRREMOVABLE_BUFF, "特防付与系/防御増加系", , [TAG_FLAG_NUM.BONUS_D, "神以外のすべての属性", "特防[0.7]"]]
 ]);
