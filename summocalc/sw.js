@@ -1,4 +1,4 @@
-var CACHE_NAME = "sc-260903-1";
+var CACHE_NAME = "sc-260904-1";
 var urlsToCache = [
   ".",
   "index.html",
@@ -43,7 +43,7 @@ self.addEventListener("activate", function(e){
 
 self.addEventListener("fetch", function(e){
   e.respondWith(caches.match(e.request).then(function(response){
-    return response || fetch(e.request);
+    return response || fetch(e.request, {cache: "no-cache"});
   }));
 });
 
