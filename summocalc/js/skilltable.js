@@ -348,7 +348,7 @@ function parseCondition(s){
       break;
     case "b":
       value = value.split("-");
-      return [LABEL_TYPE.FOMULA, value[0] + suffix + " ≤ ", type + " ≤ " + value[1] + suffix];
+      return [LABEL_TYPE.FOMULA, value[0] + suffix + " ≤ " + type + " ≤ " + value[1] + suffix];
   }
   return [LABEL_TYPE.FOMULA, type + op + value + suffix];
 }

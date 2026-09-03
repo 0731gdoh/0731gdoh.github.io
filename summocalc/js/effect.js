@@ -246,7 +246,7 @@ Effect.createList = function(a, pd){
     var tagIndex = TAG.table.get(key);
     if(v[2]) key = "*" + key;
     if(table.has(key)) throw Error(["攻撃", "防御"][v[2]] + "側補正効果「" + key + "」が重複しています\n（" + v[0] + "）");
-    table.set(key, i);
+    table.set(key.replace("クリティカル", "CT"), i);
     if(tagIndex){
       switch(TAG[tagIndex].type){
         case TAG_TYPE.BUFF:
@@ -523,7 +523,7 @@ var EFFECT = Effect.createList(
   ,[135, "祝福時強化[チョウジ]/Blessing Strengthening[Choji]", "しゆくふくしき", 0, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[136, "金剛時強化[ヤスヨリ]/Adamantine Strengthening[Yasuyori]", "こんこ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[137, "悪い子弱体/Naughty Kid Weakening", "わる", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
-  ,[138, "<クリティカル>強化/Critical Strengthening", "くり", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[138, "クリティカル強化-<CT>/Critical Strengthening", "くり", 0, 2.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[139, "被ダメージ増加[2.0]/Increased Incoming Damage[2.0]", "ひた", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.GIMMICK]
   ,[140, "滋養時強化[一杯AR]/Nourishment Strengthening[Ventures AR]", "しようしき", 1, 0.8, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[141, "根性時強化[浅草AR]/Guts Strengthening[Asakusa AR]", "こんし", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
@@ -861,7 +861,7 @@ var EFFECT = Effect.createList(
   ,[473, "<*暴走+>時強化[ガンダルヴァ#2]/Berserk+ Strengthening[Gandharva]", "ほうそしき+", 1, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[474, "愛時強化[シノ]/Love Strengthening[Shino]", "あい", 0, 3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[475, "全弱体特攻[メリュジーヌ]/Advantage vs all debuffs[Melusine]", "せん", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BONUS_TO_DEBUFF]
-  ,[476, "属性弱点[2.0]/Attribute Weakness[2.0]", "そくせ", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
+  ,[476, "属性弱点[2.0]/Attribute Weakness[2.0]", "そくせいし", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.STACKABLE, TYPE.BONUS]
   ,[477, "注目時弱化[レッドフード]/Taunt Weakening[Red Hood]", "ちゆうもくしし", 1, 2, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[478, "属性特攻", "そくせ", 0, 1.5, TARGET_FLAG.ANY_ATTRIBUTE & ~TARGET_FLAG.DIVINE, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.ATTRIBUTE_BONUS]
   ,[479, "不動時強化[シーサァ]/Immobility Strengthening[Shisa]", "ふと", 1, 0.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
@@ -877,6 +877,9 @@ var EFFECT = Effect.createList(
   ,[489, "注目時強化[ホテイ]/Taunt Strengthening[Hotei]", "ちゆ", 0, 1.5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[490, "非弱体時強化[サロモニス]/Non-Debuff Strengthening[Salomonis]", "ひしやくたいしき", 1, [1, 0.8], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
   ,[491, "攻撃力激減[アン・ダーザイン=ボヘミオ]/ATK Vastly Down[アン・ダーザイン]", "こうけけき", 0, 0.01, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
+  ,[492, "非弱体時強化[オニワカ]/Non-Debuff Strengthening[Oniwaka]", "ひしやくたいしき", 0, [1, 2], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
+  ,[493, "注目時強化[トゥーアルシェン]/Taunt Strengthening[Tu'er Shen]", "ちゆうもくしき", 1, 0.6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
+  ,[494, "属性特防", "そくせいと", 1, 0.7, TARGET_FLAG.ANY_ATTRIBUTE & ~TARGET_FLAG.DIVINE, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.ATTRIBUTE_WEAKNESS]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
