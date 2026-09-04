@@ -1,4 +1,4 @@
-var CACHE_NAME = "sc-260904-1";
+var CACHE_NAME = "sc-260904-2";
 var urlsToCache = [
   ".",
   "index.html",
@@ -35,14 +35,16 @@ self.addEventListener("install", function(e){
 
 self.addEventListener("activate", function(e){
   e.waitUntil(caches.keys().then(function(keyList){
-    return Promise.all(keyList.map(function(name){
-      if(CACHE_NAME.indexOf(name) === -1) return caches.delete(name);
+    return Promise.all(keyList.filter(function(name){
+      return name !== CACHE_NAME;
+    }).map(function(name){
+      return caches.delete(name);
     }));
   }));
 });
 
 self.addEventListener("fetch", function(e){
-  e.respondWith(caches.match(e.request).then(function(response){
+  e.respondWith(caches.match(e.request, {cacheName: CACHE_NAME}).then(function(response){
     return response || fetch(e.request, {cache: "no-cache"});
   }));
 });
