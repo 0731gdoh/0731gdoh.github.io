@@ -37,9 +37,17 @@ const getDescription = (title, key) => {
     case "caches":
       if(/sc-\d{6}-\d/.test(key)) return `${key}：ダメージ計算機のオフライン用キャッシュ`;
     case "serviceWorker":
-      if(/summocalc/.test(key)) return "ダメージ計算機用サービスワーカー";
+      if(/summocalc/.test(key.scope)) return `ダメージ計算機用サービスワーカー(${getStateText(key)})`;
   }
   return key;
+};
+
+const getStateText = (reg) => {
+  const state = [];
+  if(reg.active) state.push("アクティブ");
+  if(reg.waiting) state.push("待機中");
+  if(reg.installing) state.push("インストール中");
+  return state.join("/");
 };
 
 const getStorageDescription = (key) => {
@@ -105,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     appendFieldset(cacheDiv, "caches", "削除", list, (key) => caches.delete(key));
   });
   if("serviceWorker" in navigator) navigator.serviceWorker.getRegistrations().then((list) => {
-    appendFieldset(workerDiv, "serviceWorker", "登録解除", list.map((reg) => reg.scope), (scope) => navigator.serviceWorker.getRegistration(scope).then((reg) => {
+    appendFieldset(workerDiv, "serviceWorker", "登録解除", list, (scope) => navigator.serviceWorker.getRegistration(scope).then((reg) => {
       if(reg) reg.unregister();
     }));
   });
@@ -124,7 +132,7 @@ const appendFieldset = (parent, title, action, list, callback) => {
     check.type = "checkbox";
     label.textContent = getDescription(title, key);
     label.htmlFor = check.id = `check_${title}_${i}`;
-    check.dataset.key = key;
+    check.dataset.key = (title === "serviceWorker") ? key.scope : key;
     div.append(check, label);
     fieldset.append(div);
   }
