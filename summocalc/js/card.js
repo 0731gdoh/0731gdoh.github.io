@@ -158,6 +158,13 @@ Card.createList = function(a){
     same.push(i);
     return new Card(i, id, name, variant, guilds, schools, teams, obtain, e, v.slice(6));
   });
+  result.SPRITE = {
+    name: "attribute",
+    x: 5, 
+    y: 3,
+    key: "attribute",
+    offset: 1
+  };
   result.table = table;
   return result;
 };

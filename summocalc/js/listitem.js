@@ -32,6 +32,12 @@ var WEAPON = ListItem.createList(
   ,["無/None", 0]
 ]);
 WEAPON.ORDER = [0, 1, 2, 3, 4, 5, 7, 6, 8, 9];
+WEAPON.SPRITE = {
+  name: "weapon",
+  x: 3,
+  y: 3,
+  offset: 1
+};
 
 var ATTRIBUTE = ListItem.createList(
   [["", 0]
@@ -49,6 +55,11 @@ var ATTRIBUTE = ListItem.createList(
   ,["神/Divine", 4096]
 ]);
 ATTRIBUTE.ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+ATTRIBUTE.SPRITE = {
+  name: "attribute",
+  x: 5, 
+  y: 3
+};
 
 var MULTIPLIER = ListItem.createList(
   [[""]
@@ -56,21 +67,28 @@ var MULTIPLIER = ListItem.createList(
   ,["x1.5/1.5x", 1.5]
   ,["x1.0/1.0x", 1]
   ,["x0.5/0.5x", 0.5]
-  ,["→全/ → All-round", 1]
-  ,["→火/ → Fire", 2]
-  ,["→水/ → Water", 3]
-  ,["→木/ → Wood", 4]
-  ,["→天/ → Aether", 5]
-  ,["→冥/ → Nether", 6]
-  ,["→魔/ → Infernal", 7]
-  ,["→英雄/ → Valiant", 8]
-  ,["→世界/ → World", 9]
-  ,["→無限/ → Infinity", 10]
-  ,["→零/ → Null", 11]
-  ,["→神/ → Divine", 12]
+  ,["全/All-round", 1]
+  ,["火/Fire", 2]
+  ,["水/Water", 3]
+  ,["木/Wood", 4]
+  ,["天/Aether", 5]
+  ,["冥/Nether", 6]
+  ,["魔/Infernal", 7]
+  ,["英雄/Valiant", 8]
+  ,["世界/World", 9]
+  ,["無限/Infinity", 10]
+  ,["零/Null", 11]
+  ,["神/Divine", 12]
 ]);
 MULTIPLIER.ORDER = [0, 1, 2, 3, 4, 0, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116];
 MULTIPLIER.LABELS = ["倍率/Multiplier", "属性/Attribute"];
+MULTIPLIER.SPRITE = {
+  name: "attribute",
+  x: 5, 
+  y: 3,
+  offset: 6
+};
+
 
 var RARITY = ListItem.createList(
   [[""]
