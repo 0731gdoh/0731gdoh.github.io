@@ -90,9 +90,9 @@ calc.cardfilter = {
     var active = this.active;
     this.active = 0;
     this.updateToggleText();
-    setCheckGroup("ef", ATTRIBUTE, {sprites: [5, 3]});
-    setCheckGroup("wf", WEAPON, {check: "武器種変更を含む/Include Weapon Change", sprites: [3, 3]});
-    setCheckGroup("cf", WEAPON, {check: "CS変更を含む/Include Change CS", sprites: [3, 3]});
+    setCheckGroup("ef", ATTRIBUTE);
+    setCheckGroup("wf", WEAPON, {check: "武器種変更を含む/Include Weapon Change"});
+    setCheckGroup("cf", WEAPON, {check: "CS変更を含む/Include Change CS"});
     setCheckGroup("rf", RARITY);
     setCheckGroup("obf", OBTAIN, {select: OR_AND_NOT});
     setOptions("lmf", LIMITED);
@@ -150,7 +150,6 @@ calc.cardfilter = {
     });
     this.active = active;
     this.update();
-    setValue("pc", 0);
   },
   checkWeapon: function(mode, x){
     var bit = [this.weapon, this.cs][mode];
@@ -315,7 +314,6 @@ calc.arfilter = {
     });
     this.active = active;
     this.update();
-    setValue("rc", 0);
   },
   updateThumbnail: function(){
     var s = toLowerKatakana(this.thumbnailText);

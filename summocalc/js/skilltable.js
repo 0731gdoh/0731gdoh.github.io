@@ -63,6 +63,7 @@ SkillTable.prototype = {
   },
   setCard: function(card){
     this.value = CARD[card];
+    this.update();
   },
   updateSettingTexts: function(){
     setCheckGroup(this.setting, TABLE_LABEL);
@@ -281,13 +282,13 @@ SkillTable.prototype = {
   setCaption: function(card){
     var spans = this.table.caption.children;
     if(card.index){
-      setSpritePosition(spans[0], card.attribute - 1, [5, 3]);
-      setSpritePosition(spans[1], WEAPON.ORDER.indexOf(card.weapon[0]) - 1, [3, 3]);
-      setSpritePosition(spans[2], WEAPON.ORDER.indexOf(card.weapon[1]) - 1, [3, 3]);
+      setSpritePosition(spans[0], card.attribute - 1, ATTRIBUTE.SPRITE);
+      setSpritePosition(spans[1], WEAPON.ORDER.indexOf(card.weapon[0]), WEAPON.SPRITE);
+      setSpritePosition(spans[2], WEAPON.ORDER.indexOf(card.weapon[1]), WEAPON.SPRITE);
     }else{
-      setSpritePosition(spans[0], 0, [5, 3]);
-      setSpritePosition(spans[1], 8, [3, 3]);
-      setSpritePosition(spans[2], 8, [3, 3]);
+      setSpritePosition(spans[0], 0, ATTRIBUTE.SPRITE);
+      setSpritePosition(spans[1], 9, WEAPON.SPRITE);
+      setSpritePosition(spans[2], 9, WEAPON.SPRITE);
     }
     spans[3].textContent = card;
   }

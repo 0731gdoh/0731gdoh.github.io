@@ -116,7 +116,7 @@ var calc = {
       setText("sax", "+" + r2n(CARD[c.card].rarity, c.cs));
       if(c.card) c.skillTable.setCard(c.card);
       c.cardfilter.updateNavigate();
-      c.skillTable.update();
+//      c.skillTable.update();
     });
     _("pl").max = 70 + MAX_LEVEL_SEED;
     linkInput(c, "lv", "pl");
@@ -222,6 +222,8 @@ var calc = {
     };
     _("fr").onclick = function(){
       c.cardfilter.reset();
+      setValue("pc", 0);
+      c.skillTable.setCard(0);
     };
     _("rrd").onclick = function(){
       selectRandomly("rc");
@@ -231,6 +233,7 @@ var calc = {
     };
     _("rfr").onclick = function(){
       c.arfilter.reset();
+      setValue("rc", 0);
     };
     _("lm").onclick = function(){
       setValue("pl", CARD[c.card].maxLv);
@@ -826,7 +829,7 @@ var calc = {
     var possible = new Set(attr ? ATTRIBUTE_CHART[attr - 1] : [1, 2, 3, 4]);
     setOptions("am", MULTIPLIER, {filter: function(x){
       return x.index > 4 || !x.index || possible.has(x.index);
-    }, labels: MULTIPLIER.LABELS, divisor: 100, prefixes: ["", this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？"]});
+    }, labels: MULTIPLIER.LABELS, divisor: 100, prefixes: ["", (this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？") + " → "]});
   },
   checkCardSelected: function(){
     if(this.card){

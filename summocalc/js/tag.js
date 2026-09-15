@@ -183,7 +183,7 @@ Tag.createList = function(a){
     var target = 0;
     var bonus = 0;
     var demerit;
-    var match = re.exec(t(v[0], 0));
+    var match;
     var timing = 0;
     var bdi = 0;
     var link = v[2].split("/")[2] || 0;
@@ -208,10 +208,10 @@ Tag.createList = function(a){
       var suffix = tsplit(name.slice(1));
       name = bname[0] + "[" + suffix[0] + "]/" + bname[1] + "[" + suffix[1] + "]";
       if(v[1]) v[1] = base[1] + " " + v[1];
-//      table.set(t(name, 0), i);
     }
     if(v[5]) s = v[5].split("/").map(tget);
     if(v[7]) variant = v[7].split("/").map(tget);
+    match = re.exec(t(name, 0));
     if(match && v[3] !== TAG_TYPE.CATEGORY){
       if(match[2]){
         c.push(tget((match[1] || "") + "○○時" + (match[3] ? "弱化" : "強化")));
