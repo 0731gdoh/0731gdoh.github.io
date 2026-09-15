@@ -609,7 +609,6 @@ select .weapon::before,
     background-color: var(--bgcolor-ms);
     padding: 0.2rem 0.5rem;
     border-radius: 1rem;
-    color: var(--color-form);
   }
   ::picker(select) {
     font-family: "Courier", monospace;
