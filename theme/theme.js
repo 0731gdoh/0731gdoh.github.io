@@ -52,7 +52,16 @@ const createThemeSelector = () => {
     }
     select.addEventListener("change", updateTheme);
   }
-  
+  apendThemeBar();
+};
+
+const apendThemeBar = () => {
+  const meta = document.querySelector("meta[name=theme-color]");
+  if(!meta) return;
+  const bar = document.createElement("div");
+  bar.classList.add("theme_bar");
+  bar.style.backgroundColor = meta.content;
+  document.body.append(bar);
 };
 
 const updateTheme = (e) => {
