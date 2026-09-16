@@ -2,7 +2,7 @@
 
 const initTheme = () => {
   const m = window.matchMedia("(prefers-color-scheme: dark)");
-  const theme = localStorage.getItem("theme");
+  const theme = localStorage ? localStorage.getItem("theme") : "";
   if(theme === "0") localStorage.removeItem("theme");
   document.documentElement.dataset.theme = theme || 0;
   if(m.matches){
@@ -52,21 +52,12 @@ const createThemeSelector = () => {
     }
     select.addEventListener("change", updateTheme);
   }
-  apendThemeBar();
-};
-
-const apendThemeBar = () => {
-  const meta = document.querySelector("meta[name=theme-color]");
-  if(!meta) return;
-  const bar = document.createElement("div");
-  bar.classList.add("theme_bar");
-  bar.style.backgroundColor = meta.content;
-  document.body.append(bar);
 };
 
 const updateTheme = (e) => {
   const n = e.currentTarget.selectedIndex;
   document.documentElement.dataset.theme = n;
+  if(!localStorage) return;
   if(n){
     localStorage.setItem("theme", n);
   }else{
@@ -75,6 +66,7 @@ const updateTheme = (e) => {
 };
 
 const checkStorageUpdate = (e) => {
+  if(!localStorage) return;
   const newValue = (e ? e.newValue : localStorage.getItem("theme")) || 0;
   if(!e || e.key === "theme" || !e.key){
     const select = document.getElementById("theme_select");
