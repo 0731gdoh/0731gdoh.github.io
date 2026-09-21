@@ -2,24 +2,31 @@
 
 const initTheme = () => {
   const m = window.matchMedia("(prefers-color-scheme: dark)");
-  const theme = localStorage ? localStorage.getItem("theme") : "";
-  if(theme === "0") localStorage.removeItem("theme");
-  document.documentElement.dataset.theme = theme || 0;
+  loadTheme();
   if(m.matches){
     document.documentElement.classList.add("dark");
   }
-  m.addEventListener("change", function(){
+  m.addEventListener("change", () => {
     if(m.matches){
       document.documentElement.classList.add("dark");
     }else{
       document.documentElement.classList.remove("dark");
     }
   });
-  document.addEventListener("DOMContentLoaded", createThemeSelector);
+  document.addEventListener("DOMContentLoaded", initThemeDOM);
   window.addEventListener("storage", checkStorageUpdate);
-  window.addEventListener("pageshow", function(e){
-    if(e.persisted) checkStorageUpdate();
-  });
+  window.addEventListener("pageshow", checkStorageUpdate);
+};
+
+const loadTheme () => {
+  const theme = localStorage ? localStorage.getItem("theme") : "";
+  if(theme === "0") localStorage.removeItem("theme");
+  document.documentElement.dataset.theme = theme || 0;
+};
+
+const initThemeDOM = () => {
+  createThemeSelector();
+  if(navigator.standalone) appendThemeBlock();
 };
 
 const createThemeSelector = () => {
@@ -54,6 +61,15 @@ const createThemeSelector = () => {
   }
 };
 
+const appendThemeBlock = () => {
+  const meta = document.querySelector("meta[name=theme-color]");
+  const color = meta ? meta.content : "#000";
+  const bar = document.createElement("div");
+  bar.id = "theme_block";
+  bar.style.backgroundColor = color;
+  document.body.append(bar);
+};
+
 const updateTheme = (e) => {
   const n = e.currentTarget.selectedIndex;
   document.documentElement.dataset.theme = n;
@@ -67,7 +83,8 @@ const updateTheme = (e) => {
 
 const checkStorageUpdate = (e) => {
   if(!localStorage) return;
-  const newValue = (e ? e.newValue : localStorage.getItem("theme")) || 0;
+  if(e.type === "pageshow" && !e.persisted) return;
+  const newValue = (e.type === "storage" ? e.newValue : localStorage.getItem("theme")) || 0;
   if(!e || e.key === "theme" || !e.key){
     const select = document.getElementById("theme_select");
     if(select) select.selectedIndex = newValue;

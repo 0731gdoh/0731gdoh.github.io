@@ -78,3 +78,15 @@ input[type="checkbox"] {
   margin: 0;
   padding: 1.5rem 3rem;
 }
+#theme_block {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 100%;
+  background-clip: content-box;
+  pointer-events: none;
+  z-index: 100;
+}
