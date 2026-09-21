@@ -24,7 +24,7 @@ const loadTheme = () => {
 
 const initThemeDOM = () => {
   createThemeSelector();
-  if(navigator.standalone) appendThemeBlock();
+  appendThemeBlock();
 };
 
 const createThemeSelector = () => {
@@ -61,10 +61,9 @@ const createThemeSelector = () => {
 
 const appendThemeBlock = () => {
   const meta = document.querySelector("meta[name=theme-color]");
-  const color = meta ? meta.content : "#000";
   const bar = document.createElement("div");
   bar.id = "theme_block";
-  bar.style.backgroundColor = color;
+  if(meta) bar.style.backgroundColor = meta.content;
   document.body.append(bar);
 };
 
