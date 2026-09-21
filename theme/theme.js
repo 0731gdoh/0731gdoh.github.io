@@ -3,9 +3,7 @@
 const initTheme = () => {
   const m = window.matchMedia("(prefers-color-scheme: dark)");
   loadTheme();
-  if(m.matches){
-    document.documentElement.classList.add("dark");
-  }
+  if(m.matches) document.documentElement.classList.add("dark");
   m.addEventListener("change", () => {
     if(m.matches){
       document.documentElement.classList.add("dark");
@@ -18,7 +16,7 @@ const initTheme = () => {
   window.addEventListener("pageshow", checkStorageUpdate);
 };
 
-const loadTheme () => {
+const loadTheme = () => {
   const theme = localStorage ? localStorage.getItem("theme") : "";
   if(theme === "0") localStorage.removeItem("theme");
   document.documentElement.dataset.theme = theme || 0;
