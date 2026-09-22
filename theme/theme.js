@@ -24,7 +24,7 @@ const loadTheme = () => {
 
 const initThemeDOM = () => {
   createThemeSelector();
-  appendThemeBlock();
+  if(CSS.supports("background-clip", "text")) appendThemeBlock();
 };
 
 const createThemeSelector = () => {
