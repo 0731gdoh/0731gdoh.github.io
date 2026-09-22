@@ -1,4 +1,4 @@
-var CACHE_NAME = "sc-260915-2";
+var CACHE_NAME = "sc-260922-1";
 var urlsToCache = [
   ".",
   "index.html",
