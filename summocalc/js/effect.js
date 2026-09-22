@@ -880,6 +880,7 @@ var EFFECT = Effect.createList(
   ,[492, "非弱体時強化[オニワカ]/Non-Debuff Strengthening[Oniwaka]", "ひしやくたいしき", 0, [1, 2], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
   ,[493, "注目時強化[トゥーアルシェン]/Taunt Strengthening[Tu'er Shen]", "ちゆうもくしき", 1, 0.6, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
   ,[494, "属性特防", "そくせいと", 1, 0.7, TARGET_FLAG.ANY_ATTRIBUTE & ~TARGET_FLAG.DIVINE, EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.ATTRIBUTE_WEAKNESS]
+  ,[495, "回避時強化[マクロイヒ]/Evasion Strengthening[MacRoich]", "かい", 0, 5, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE|EFFECT_FLAG.BUFF]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]
