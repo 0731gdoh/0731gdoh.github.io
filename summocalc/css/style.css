@@ -595,6 +595,25 @@ select .weapon::before,
 .cardname {
   margin-left: 0.5em;
 }
+#bc {
+  display: none;
+}
+@supports (background-clip: text) {
+  #bc {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    margin: 0;
+    padding: 0;
+    background-color: #004;
+    background-clip: text;
+    pointer-events: none;
+    z-index: 100;
+  }
+}
 
 @supports (appearance: base-select) {
   select {
@@ -622,7 +641,9 @@ select .weapon::before,
     border-color: var(--color-ms);
     backdrop-filter: blur(1rem);
     overflow-anchor: none;
+    -webkit-user-select: none;
     user-select: none;
+    contain: content;
   }
   ::picker-icon {
     flex: 0 0 auto;
