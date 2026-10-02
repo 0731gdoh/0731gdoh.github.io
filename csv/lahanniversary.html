@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset=UTF-8>
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LAH 恒常☆4チェックリスト">
+<meta name=viewport content="width=device-width,maximum-scale=1">
+<meta name=theme-color content="#004">
+<link rel=stylesheet href="/theme/theme.css">
+<script src="/theme/theme.js"></script>
+<link rel=stylesheet href="css/csvviewer.css">
+<script>
+"use strict";
+
+window.addEventListener("load", () => {
+  const ac = (a, b) => ATTR.indexOf(a) - ATTR.indexOf(b);
+  const rc = (a, b) => ROLE.indexOf(a) - ROLE.indexOf(b);
+  csvViewer("loading", "lahanniversary.csv", data, [undefined, undefined, ac, rc, undefined, undefined]);
+  initChecker("share");
+});
+</script>
+<script src="js/csvviewer.js"></script>
+<script src="js/checker.js"></script>
+<script src="js/lahanniversary.js"></script>
+<title>LAH 恒常☆4チェックリスト</title>
+<p id=loading>Now loading...</p>
+<p>
+  <input type=button value="結果を共有" id=share>
+</p>
+<p><a href="/">戻る</a></p>
