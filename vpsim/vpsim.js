@@ -76,6 +76,7 @@ class Unit extends BaseItem {
     ["ヨハックLv.", 100],
     ["ヤスヒコLv.", 100],
     ["ノーモンLv.", 100],
+    ["ケフLv.", 100],
   ]);
   static maxValue = new Map([
     ["View", 9999],
@@ -191,6 +192,7 @@ class Action extends BaseItem {
     ["注目(行動後)", DISABLE.IF_NOT_UNIT],
     ["ヨハック装備", DISABLE.IF_NOT_UNIT],
     ["ヤスヒコ装備", DISABLE.IF_NOT_UNIT],
+    ["ケフ装備", DISABLE.IF_NOT_UNIT],
   ]);
   static linked = new Map([
     ["発破/発破+", "発破(行動後)"],
@@ -202,6 +204,7 @@ class Action extends BaseItem {
     ["発破/発破+", 0],
     ["ナリヒト装備", false],
     ["補正後View", 0],
+    ["ケフ装備", 0],
     ["メリデ装備", false],
     ["ノーモン装備", false],
     ["ウェイト", false],
@@ -252,6 +255,7 @@ class Action extends BaseItem {
   static select = new Map([
     ["ショウエン常時", ["0%", "4%", "8%", "12%", "16%", "20%"]],
     ["追加最大", ["0回", "1回", "2回", "3回", "4回", "5回"]],
+    ["ケフ装備", ["なし", "VP充填1", "VP充填2", "VP充填3", "VP充填4", "VP充填5"]],
   ]);
 }
 
@@ -958,6 +962,7 @@ class TimelineManager extends BaseManager{
   ]);
   calc(item, currentVP, comboCount, block){
     let view = item.get("View");
+    let beforeVP = 0;
     let afterView = 0;
     let afterVP = 0;
     let gain = item.get("VP獲得");
@@ -970,6 +975,8 @@ class TimelineManager extends BaseManager{
     const viewUp = 100 + item.getEquip("モクダイ") + item.getEquip("コウキ") + item.getEquip("ナリヒト") * 2;
     const gainUp = 100 + item.getEquip("ボレアリス") + item.getEquip("ダンゾー");
     const melide = item.getEquip("メリデ") * 25;
+    const ceph = item.getEquip("ケフ") * 10;
+    const cephCharge = item.get("ケフ装備");
     const yohack = item.getEquip("ヨハック") * 30;
     const yasuhiko = item.getEquip("ヤスヒコ") * 40;
     const gnomon = item.getEquip("ノーモン") * 25;
@@ -1006,7 +1013,11 @@ class TimelineManager extends BaseManager{
     if(0 > currentVP){
       block.querySelector(".header output").value = "\u2937 VPが足りません";
     }else{
-      if(melide && !gnomon) currentVP += Math.floor(Math.floor(view * melide / 1000) * combo / 10);
+      if(!gnomon) {
+        if(melide) beforeVP += Math.floor(view * melide / 1000);
+        if(ceph) beforeVP += Math.floor(view * ceph / 1000) * cephCharge;
+        if(beforeVP) currentVP += Math.floor(beforeVP * combo / 10);
+      }
       block.querySelector(".header output").value = `\u2937 ViewPower ${currentVP}`;
     }
     if(item.get("ウェイト") || gnomon){
