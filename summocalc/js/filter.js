@@ -29,7 +29,7 @@ calc.cardfilter = {
   exclude: 0,
   defaultValues: new Map(),
   active: 0,
-  icon: 1,
+  baseSelect: 1,
   init: function(){
     var c = this;
     this.tabs = [
@@ -37,12 +37,6 @@ calc.cardfilter = {
       new Tab("ltb2"),
       new Tab("ltb3")
     ];
-    c.icon = getStorageItem("icon") !== "0";
-    document.body.classList.toggle("showicon", c.icon);
-    linkInput(c, "icon", "ic", function(){
-      setStorageItem("icon", c.icon ? "1" : "0");
-      document.body.classList.toggle("showicon", c.icon);
-    });
     linkAll(c, [
       ["weaponChange", "wf_c"],
       ["csChange", "cf_c"],
@@ -124,7 +118,6 @@ calc.cardfilter = {
       ["legf", "ギルド制限を無視/Ignore Guild Limitations"],
       ["levf", "進化前の効果を除外する/Exclude Pre-Evolution Effects"],
       ["lccf", "CSの効果を除外する/Exclude CS Effects"],
-      ["lic", "アイコンを表示/Show Icon"],
       ["rd", "ランダムカード/Random Card"],
       ["fr", "リセット/Reset"]
     ]);
@@ -134,11 +127,7 @@ calc.cardfilter = {
     _("fv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
   },
   toggle: function(){
-    if(this.active = 1 - this.active){
-      _("sw").style.display = "block";
-    }else{
-      _("sw").style.display = "none";
-    }
+    _("sw").classList.toggle("open", this.active = 1 - this.active);
     this.update();
     this.updateToggleText();
   },
@@ -198,7 +187,7 @@ calc.cardfilter = {
         return f && f(x);
       })) return false;
       return true;
-    }, output: "cx"});
+    }, output: "cx", sprite: p.baseSelect});
     this.updateNavigate();
   },
   updateNavigate: function(){
@@ -232,6 +221,7 @@ calc.arfilter = {
   external: 1,
   defaultValues: new Map(),
   active: 0,
+  baseSelect: 1,
   init: function(){
     var c = this;
     this.tabs = [
@@ -296,11 +286,7 @@ calc.arfilter = {
     _("rv").value = t("フィルタ/Filter ") + (this.active ? "▲" : "▼");
   },
   toggle: function(){
-    if(this.active = 1 - this.active){
-      _("rw").style.display = "block";
-    }else{
-      _("rw").style.display = "none";
-    }
+    _("rw").classList.toggle("open", this.active = 1 - this.active);
     this.update();
     this.updateToggleText();
   },

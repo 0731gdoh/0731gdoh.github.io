@@ -37,7 +37,7 @@ const getDescription = (title, key) => {
     case "caches":
       if(/sc-\d{6}-\d/.test(key)) return `${key}：ダメージ計算機のオフライン用キャッシュ`;
     case "serviceWorker":
-      if(/summocalc/.test(key.scope)) return `ダメージ計算機用サービスワーカー(${getStateText(key)})`;
+      if(/summocalc/.test(key.scope)) return `ダメージ計算機用サービスワーカー（${getStateText(key)}）`;
   }
   return key;
 };
@@ -59,13 +59,15 @@ const getStorageDescription = (key) => {
     case "offline":
       return "ダメージ計算機のオフライン対応モード";
     case "last":
-      return "ダメージ計算機のオフライン起動時復元用の計算結果";
+      return "ダメージ計算機のオートセーブ情報";
     case "separator":
       return "ダメージ計算機の桁区切り設定";
     case "details":
       return "ダメージ計算機のスキルテーブル詳細表示設定";
     case "icon":
       return "ダメージ計算機のアイコン表示設定";
+    case "select":
+      return "ダメージ計算機のカスタムドロップダウン設定";
     case "hscroll":
       return "CSVビューアの横スクロール設定";
     default:

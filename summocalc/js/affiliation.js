@@ -17,7 +17,7 @@ Affiliation.createList = function(a){
   var table = new Map();
   var order = [[], []];
   var q = [];
-  var br = 0;
+  var br = [];
   var k = [];
   var exists = 0;
   var result = a.map(function(x, i){
@@ -28,13 +28,13 @@ Affiliation.createList = function(a){
       return p1;
     });
     table.set(key || t(x, 0), v);
-    if("？未無".indexOf(x[0]) !== -1){
+    if(key.length === 1){
       q.push(i);
+      if(key !== "未") br.push(i);
     }else{
       order[0].push(i);
       order[1].push(i);
       exists |= v;
-      ++br;
     }
     k.push(t(x, 1));
     return new Affiliation(i, x, v);
@@ -47,7 +47,7 @@ Affiliation.createList = function(a){
   result.table = table;
   result.exists = exists;
   result.LOCALE_ORDER = order;
-  result.BR = [br];
+  result.BR = br;
   return result;
 };
 
@@ -71,6 +71,7 @@ var GUILD = Affiliation.createList(
   ,"ルールメイカーズ/Rule Makers"
   ,"ワイズメン/The Wisemen"
   ,"ワンダラーズ/Wanderers"
+  ,"<？>？？？？？？"
   ,"<無>所属/Independent"
   ,"<未>所属/Unaffiliated"
 ]);
@@ -78,6 +79,7 @@ var GUILD = Affiliation.createList(
 var SCHOOL = Affiliation.createList(
   ["<秋波原>学園/Akihabara Academy"
   ,"<天横>服飾アカデミア/Ameyoko Fashion Academy"
+  ,"<医多橋>メディカルスクール"
   ,"<飢野>学園/Ueno Academy"
   ,"<得真道>学園/Umamichi Academy"
   ,"<王子坊>学園/Ojimachi Academy"
@@ -111,6 +113,7 @@ var TEAM = Affiliation.createList(
   ,"神宿<ワン>ダーフォー<ゲル>部/Shinjuku Academy Mountaineers"
   ,"世耕<山岳部>/Setagaya Mountaineering Club"
   ,"<公安>外事課"
+  ,"<七福>の使い"
   ,"中迦野<アオハル>部"
   ,"人間<スキスキ>クラブ"
   ,"<バズ>ル<ドリ>ーマーズ/Viral Influence"
