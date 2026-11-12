@@ -215,6 +215,10 @@ textarea {
   border-radius: 0.2rem;
   margin-left: 0.7rem;
   overflow-x: auto;
+  contain: content;
+}
+.sb.open {
+  display: block;
 }
 table {
   line-height: 1.5;
@@ -349,9 +353,6 @@ a:active {
 }
 a:visited {
   color: var(--color-link-visited);
-}
-#ldm {
-  margin-left: 0.7rem;
 }
 .tl {
   display: flex;
@@ -592,9 +593,26 @@ select .weapon::before,
   background-size: 300% 300%, 500% 300%;
   background-position: var(--sprite-position), var(--bg-position);
 }
+select:disabled .attribute::before,
+select:disabled .weapon::before {
+  opacity: 0.5;
+}
 .cardname {
   margin-left: 0.5em;
 }
+#sg {
+  padding: 0.4rem 0.4rem 0;
+  margin: 0 0.4rem 0.4rem;
+}
+#sg th {
+  font-weight: bold;
+  text-align: right;
+  padding: 0.2rem;
+}
+#sg th::after {
+  content: ":";
+}
+
 #bc {
   display: none;
 }
@@ -615,53 +633,61 @@ select .weapon::before,
   }
 }
 
+#rdp {
+  display: none;
+}
 @supports (appearance: base-select) {
-  select {
-    font-family: "Courier", monospace;
-    appearance: base-select;
-    font-size: x-small;
-    min-height: auto;
-    height: 1rem;
-    line-height: initial;
-    display: inline-flex;
-    align-items: center;
-    background-color: var(--bgcolor-ms);
-    padding: 0.2rem 0.5rem;
-    border-radius: 1rem;
+  #rdp {
+    display: revert;
   }
-  ::picker(select) {
-    font-family: "Courier", monospace;
-    appearance: base-select;
-    font-size: small;
-    background-color: var(--bgcolor-picker);
-    margin: 0.2rem;
-    padding: 0;
-    border-radius: 1rem;
-    color: var(--color);
-    border-color: var(--color-ms);
-    backdrop-filter: blur(1rem);
-    overflow-anchor: none;
-    -webkit-user-select: none;
-    user-select: none;
-    contain: content;
-  }
-  ::picker-icon {
-    flex: 0 0 auto;
-  }
-  optgroup {
-    font-size: x-small;
-  }
-  optgroup:empty {
-    display: none;
-  }
-  option {
-    font-size: small;
-    padding: 0.8rem 1rem;
-    display: block;
-    text-wrap: wrap;
-  }
-  option:checked {
-    font-weight: bold;
-    background-color: #88f3;
+  .baseselect {
+    select {
+      font-family: "Courier", monospace;
+      appearance: base-select;
+      font-size: x-small;
+      min-height: auto;
+      height: 1rem;
+      line-height: initial;
+      display: inline-flex;
+      align-items: center;
+      background-color: var(--bgcolor-ms);
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+    }
+    ::picker(select) {
+      font-family: "Courier", monospace;
+      appearance: base-select;
+      font-size: small;
+      background-color: var(--bgcolor-picker);
+      margin: 0.2rem;
+      padding: 0;
+      border-radius: 1rem;
+      color: var(--color);
+      border-color: var(--color-ms);
+      backdrop-filter: blur(1rem);
+      overflow-anchor: none;
+      -webkit-user-select: none;
+      user-select: none;
+      contain: content;
+    }
+    ::picker-icon {
+      flex: 0 0 auto;
+    }
+    optgroup {
+      font-size: x-small;
+    }
+    optgroup:empty {
+      display: none;
+    }
+    option {
+      font-size: small;
+      padding: 0.8rem 1rem;
+      display: block;
+      text-wrap: wrap;
+    }
+    option:checked {
+      font-weight: bold;
+      background-color: #88f3;
+    }
   }
 }
