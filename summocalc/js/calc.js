@@ -79,7 +79,11 @@ var calc = {
   ar: 0,
   arLv: 1,
   multiplier: 0,
+  settings: 0,
   separator: 0,
+  icon: 1,
+  baseSelect: 1,
+  autoSave: 1,
   active: 1,
   defaultHash: "",
   lastHash: "",
@@ -95,6 +99,7 @@ var calc = {
     }
     if(navigator.standalone !== false) _("ms").style.display = "none";
     this.skillTable = new SkillTable("sd", "hc");
+    this.baseSelect = this.cardfilter.baseSelect = this.arfilter.baseSelect = getStorageItem("select") !== "0";
     this.loadLanguage();
     this.cardfilter.init();
     this.arfilter.init();
@@ -126,6 +131,15 @@ var calc = {
       setText("rx", "+" + r2n(AR[c.ar].arRarity));
     });
     linkInput(c, "arLv", "rl");
+    linkInput(c, "baseSelect", "cz", function(){
+      c.updateBaseSelect();
+    });
+    this.icon = getStorageItem("icon") !== "0";
+    document.body.classList.toggle("showicon", this.icon);
+    linkInput(c, "icon", "ic", function(){
+      setStorageItem("icon", c.icon ? "1" : "0");
+      document.body.classList.toggle("showicon", c.icon);
+    });
     this.separator = getStorageItem("separator") !== "0";
     linkInput(c, "separator", "ts", function(){
       setStorageItem("separator", c.separator ? "1" : "0");
@@ -138,16 +152,26 @@ var calc = {
       if(e.persisted) c.updateSaveMenu();
     });
     if(window.matchMedia("(display-mode: standalone)").matches && getStorageItem("offline") === "1"){
+      this.autoSave = getStorageItem("last") !== "0";
+      linkInput(c, "autoSave", "wa", function(){
+        setStorageItem("last", c.autoSave ? c.lastHash : "0");
+      });
       document.addEventListener("visibilitychange", function(){
-         if(document.visibilityState === "hidden") setStorageItem("last", c.lastHash);
+         if(c.autoSave && document.visibilityState === "hidden") setStorageItem("last", c.lastHash);
       });
       window.addEventListener("pageshow", function(e){
         if(!e.persisted){
           var hash = getStorageItem("last");
-          if(hash) c.load(hash);
+          if(hash && hash !== "0") c.load(hash);
         }
       });
+    }else{
+      _("ras").style.display = "none";
     }
+    _("so").onclick = function(){
+      _("sg").classList.toggle("open", c.settings = 1 - c.settings);
+      c.updateToggleText();
+    };
     _("svd").onclick = function(){
       c.saveToStorage();
     };
@@ -690,17 +714,39 @@ var calc = {
     this.active = 1;
     this.update();
   },
+  updateBaseSelect: function(){
+    setStorageItem("select", this.baseSelect ? "1" : "0");
+    this.cardfilter.baseSelect = this.arfilter.baseSelect = this.baseSelect;
+    this.updateTexts();
+    this.active = 0;
+    this.cardfilter.update();
+    this.arfilter.update();
+    this.active = 1;
+  },
+  updateToggleText: function(){
+    _("so").value = t("設定/Settings ") + (this.settings ? "▲" : "▼");
+  },
   updateTexts: function(){
     this.active = 0;
+    document.body.classList.toggle("baseselect", this.baseSelect);
     setOptions("sv", VERSION);
     setOptions("dm", THEME);
-    setOptions("w", WEAPON, {filter: FILTER.NAME});
+    setOptions("w", WEAPON, {filter: FILTER.NAME, sprite: this.baseSelect});
     setOptions("cs", CS, {filter: FILTER.VALUE});
     this.updateMultiplierOptions();
     this.updateEffectOptions();
+    this.updateToggleText();
     setTextAll([
       ["lsv", "モード/Mode"],
       ["ldm", "テーマ/Theme"],
+      ["ldp", "ドロップダウン/Dropdown"],
+      ["lcz", "カスタムドロップダウン/Custom Dropdown"],
+      ["lfi", "カードフィルタ/Card Filter"],
+      ["lic", "アイコンを表示/Show Icon"],
+      ["lnb", "数値フォーマット/Number Format"],
+      ["lts", "3桁区切り/Thousands Separator"],
+      ["las", "オートセーブ/Auto Save"],
+      ["lwa", "起動時に復元/Restore On Startup"],
       ["lsci", "スキルテーブルを表示/Show Skill Table"],
       ["rcb", "ランダム/Random"],
       ["sh", "URLを共有/Share URL"],
@@ -720,7 +766,6 @@ var calc = {
       ["lel", "効果Lv/Effect Lv"],
       ["lal", "毎回尋ねる/Ask Each Time"],
       ["lam", "属性相性/Attribute"],
-      ["lts", "3桁区切り/Thousands Separator"],
       ["cc", "コピー/Copy"],
       ["sr", "結果を共有/Share Result" ],
       ["su", "URLを共有/Share URL"],
@@ -829,7 +874,7 @@ var calc = {
     var possible = new Set(attr ? ATTRIBUTE_CHART[attr - 1] : [1, 2, 3, 4]);
     setOptions("am", MULTIPLIER, {filter: function(x){
       return x.index > 4 || !x.index || possible.has(x.index);
-    }, labels: MULTIPLIER.LABELS, divisor: 100, prefixes: ["", (this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？") + " → "]});
+    }, labels: MULTIPLIER.LABELS, divisor: 100, prefixes: ["", (this.card ? ATTRIBUTE[CARD[this.card].attribute] : "？") + " → "], sprite: this.baseSelect});
   },
   checkCardSelected: function(){
     if(this.card){

@@ -110,7 +110,7 @@ function setOptions(id, list, params){
   var zeroCount = 0;
   var containers = [document.createDocumentFragment()];
   var ci = 0;
-  var filter, order, ogl, d, text, output;
+  var filter, order, ogl, d, text, output, sprite;
   if(params){
     filter = params.filter;
     order = params.order;
@@ -118,6 +118,7 @@ function setOptions(id, list, params){
     d = params.divisor;
     text = params.text;
     output = params.output;
+    sprite = params.sprite;
   }
   if(!order) order = list.LOCALE_ORDER ? list.LOCALE_ORDER[language] : list.ORDER || list.map(function(v, i){return i});
   if(ogl){
@@ -159,21 +160,25 @@ function setOptions(id, list, params){
         if(!i && text){
           o.textContent = t(text);
         }else{
-          var span = document.createElement("span");
-          span.textContent = x;
-          if(list.SPRITE) setSpritePosition(span, list.SPRITE.key ? x[list.SPRITE.key] : i, list.SPRITE);
           if(d) o.append(params.prefixes[Math.floor(v / d)]);
-          o.append(span);
+          if(sprite){
+            var span = document.createElement("span");
+            span.textContent = x;
+            setSpritePosition(span, list.SPRITE.key ? x[list.SPRITE.key] : i, list.SPRITE);
+            o.append(span);
+          }else{
+            o.append(x);
+          }
         }
         o.value = v;
-        containers[ci].appendChild(o);
+        containers[ci].append(o);
       }
       if(!v && ogl) ++ci;
     }
   });
-  appendButton(elem);
+  if(sprite) appendButton(elem);
   containers.forEach(function(x){
-    if(x) elem.appendChild(x);
+    if(x) elem.append(x);
   });
   elem.selectedIndex = 0;
   setValue(id, value, true, zeroCount);
