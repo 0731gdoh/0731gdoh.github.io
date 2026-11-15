@@ -318,7 +318,7 @@ function registerBonusEffect(i, sd){
       ,[0, "与ダメージ減少/Decrease"]
       ].some(function(x){
         if(o.baseValue[0] >= x[0]){
-          o.name = sd.targetName + "に" + x[1] + " damage against " + t(tag.name, 1);
+          o.name = t(tag.name, 0) + "に" + x[1] + " damage against " + t(tag.name, 1);
           return true;
         }
         return false;

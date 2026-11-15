@@ -28,9 +28,9 @@
   --bgcolor-buff: #225e;
   --border-debuff: #f00;
   --bgcolor-debuff: #422e;
-  --border-rainbow: #ff0;
-  --bgcolor-rainbow: #442e;
-/*  --bg-rainbow: conic-gradient(from -45deg, #624e, #662e, #266e, #426e, #624e);*/
+  --border-yellow: #ff0;
+  --bgcolor-yellow: #442e;
+/*  --bg-yellow: conic-gradient(from -45deg, #624e, #662e, #266e, #426e, #624e);*/
   --color-form: #17e;
   --bg-position: 75% 100%;
   --sprite-weapon: url("/img/weapon_a.png");
@@ -71,9 +71,9 @@
   --bgcolor-buff: #99be;
   --border-debuff: #b00;
   --bgcolor-debuff: #b99e;
-  --border-rainbow: #bb0;
-  --bgcolor-rainbow: #bb9e;
-/*  --bg-rainbow: conic-gradient(from -45deg, #b79e, #bb7e, #7bbe, #97be, #b79e);*/
+  --border-yellow: #bb0;
+  --bgcolor-yellow: #bb9e;
+/*  --bg-yellow: conic-gradient(from -45deg, #b79e, #bb7e, #7bbe, #97be, #b79e);*/
   --color-form: #08f;
   --bg-position: 100% 100%;
   --sprite-weapon: url("/img/weapon_b.png");
@@ -542,7 +542,7 @@ caption {
   content: attr(data-tooltip);
   display: block;
   left: 50%;
-  bottom: 100%;
+  top: 100%;
   translate: -50% 0;
   border: 1px solid var(--border-tooltip);
   border-radius: 0.3rem;
@@ -553,6 +553,27 @@ caption {
   white-space: pre-wrap;
   font-style: normal;
   font-weight: normal;
+  z-index: 3;
+  pointer-events: none;
+}
+@supports (anchor-scope: --a) {
+  .tooltip {
+    anchor-name: --tooltip-anchor;
+    anchor-scope: --tooltip-anchor;
+  }
+  .tooltip:hover::after {
+    position: fixed;
+    left: revert;
+    top: revert;
+    translate: revert;
+    position-anchor: --tooltip-anchor;
+    position-area: bottom;
+    position-try-fallbacks: flip-block;
+    min-width: 6rem;
+    max-width: 12rem;
+    width: auto;
+    margin: 0 0.3rem;
+  }
 }
 .buff:hover::after {
   border-color: var(--border-buff);
@@ -562,10 +583,10 @@ caption {
   border-color: var(--border-debuff);
   background-color: var(--bgcolor-debuff);
 }
-.rainbow:hover::after {
-  border-color: var(--border-rainbow);
-  background-color: var(--bgcolor-rainbow);
-/*  background: var(--bg-rainbow);*/
+.yellow:hover::after {
+  border-color: var(--border-yellow);
+  background-color: var(--bgcolor-yellow);
+/*  background: var(--bg-yellow);*/
 }
 caption .attribute::before,
 select .attribute::before,
