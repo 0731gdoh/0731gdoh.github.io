@@ -888,6 +888,7 @@ var EFFECT = Effect.createList(
   ,[499, "<マヒ>時弱化[フーシャン]/Paralysis Weakening[Huxian]", "まひしし", 0, 0.3, , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE]
   ,[500, "非弱体時強化[ビシャモンテン]/Non-Debuff Strengthening[Vaisravana]", "ひしやくたいしき", 0, [1, 2], , EFFECT_FLAG.FIXED|EFFECT_FLAG.IRREMOVABLE, TYPE.NOT_DEBUFFED]
   ,[501, "指輪効果[ATK]/Ring Effects[ATK]", "", 0, , 1000, EFFECT_FLAG.FIXED, TYPE.ATK]
+  ,[502, "神属性特防", "かみ", 1, 0.3, TARGET_FLAG.DIVINE, EFFECT_FLAG.FIXED, TYPE.ATTRIBUTE_WEAKNESS]
 ],[
   ["攻撃力増加[ターン毎減少]", "TOTAL TURN", PROMPT_TYPE.TURN,
     [[1, 1.6]

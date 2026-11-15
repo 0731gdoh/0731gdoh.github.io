@@ -38,7 +38,7 @@ var TAG_BDI = {
   BUFF: 1,
   DEBUFF: 2,
   IRREMOVABLE: 4,
-  RAINBOW: 3,
+  YELLOW: 3,
   IRREMOVABLE_BUFF: 5,
   IRREMOVABLE_DEBUFF: 6
 };
@@ -56,7 +56,7 @@ function Tag(index, x, category, subset, targetType, target, variant, bonus, tim
   this.variant = variant;
   this.bonus = bonus;
   if(demerit) this.demerit = true;
-  this.timing = timing;
+  this.timing = timing.length ? timing : 0;
   this.link = link;
   this.bdi = bdi;
   this.flags = [];
@@ -164,7 +164,7 @@ Tag.createList = function(a){
     }else{
       key = t(v[0], 0);
     }
-    table.set(key.replace("クリティカル", "CT"), i);
+    table.set(key.replace("クリティカル", "CT").replace("武器種変更：", "："), i);
     switch(v[3]){
       case TAG_TYPE.BUFF:
         buff.push(i);
@@ -184,7 +184,7 @@ Tag.createList = function(a){
     var bonus = 0;
     var demerit;
     var match;
-    var timing = 0;
+    var timing = [];
     var bdi = 0;
     var link = v[2].split("/")[2] || 0;
     var name = v[0];
@@ -198,7 +198,7 @@ Tag.createList = function(a){
     if(v[4]){
       c = v[4].split("/").map(function(x){
         var n = tget(x);
-        if(x[0] === "[") timing = n;
+        if(x[0] === "[") timing.push(n);
         return n;
       });
     }
@@ -246,7 +246,8 @@ Tag.createList = function(a){
         bdi = TAG_BDI.IRREMOVABLE_DEBUFF
         break;
       case TAG_TYPE.RAINBOW:
-        bdi = TAG_BDI.RAINBOW;
+      case TAG_TYPE.UNKNOWN:
+        bdi = TAG_BDI.YELLOW;
         break;
     }
     tag = new Tag(i, v, c, s, targetType, target, variant, bonus, timing, link, bdi, name, demerit);
@@ -277,7 +278,7 @@ Tag.createList = function(a){
   result.table = table;
   WEAPON.forEach(function(w, i){
     var wn = t(w.name, 0);
-    var wc = tget("武器種変更：" + wn);
+    var wc = tget("：" + wn);
     var cc = tget("CS変更：" + wn);
     if(wc) wcs[0][i] = wc;
     if(cc) wcs[1][i] = cc;
@@ -458,7 +459,7 @@ var TAG = Tag.createList(
   ,[166, "憑依/Possession", "ひよ", "味方を攻撃/Attack allies", TAG_TYPE.DEBUFF, "攻撃不可系"]
   ,[167, "*エリイ/Ellie", "え", "与ダメx91.0\n[@$]/Deal 91.0x\n[@$]/憑依", TAG_TYPE.IRREMOVABLE_BUFF, "憑依時強化/攻撃増加系"]
   ,[168, "閃き/Glint", "ひら", "発動率+10%/Skill Rate +10%", TAG_TYPE.BUFF, "発動率増加系", "", "", "閃き[重複可]"]
-  ,[169, "武器種変更/Weapon Change", "ふきし", "", TAG_TYPE.BUFF, "", "武器種変更：打撃", "", "武器種変更[弱体]"]
+  ,[169, "武器種変更/Weapon Change", "ふきし", "", TAG_TYPE.BUFF, "", "：打撃", "", "武器種変更[弱体]"]
   ,[170, "武器種変更：斬撃/Weapon Change: Slash", "ふきし1", "", TAG_TYPE.BUFF, "武器種変更"]
   ,[171, "武器種変更：突撃/Weapon Change: Trust", "ふきし2", "", TAG_TYPE.BUFF, "武器種変更"]
   ,[172, "武器種変更：打撃/Weapon Change: Blow", "ふきし3", "", TAG_TYPE.BUFF, "武器種変更"]
@@ -635,7 +636,7 @@ var TAG = Tag.createList(
   ,[343, "*トウジ/Toji", "と", "与ダメx6.0\n[@$]/Deal 6.0x\n[@$]/呪い", TAG_TYPE.IRREMOVABLE_BUFF, "呪い時強化/攻撃増加系"]
   ,[344, "*限定アールプ/Limited Alp", "ああ3", "与ダメx1.5\n発動率+20%\n[@$ 1つにつき]/Deal 1.5x\nSkill Rate +20%\n[for each @$]/注目", TAG_TYPE.IRREMOVABLE_BUFF, "注目時強化/攻撃増加系/発動率増加系"]
   ,[345, "注目全解除/Remove all Taunt", "ちゆせん", "", TAG_TYPE.UNKNOWN, "状態耐性系/状態解除系"]
-  ,[346, "武器種変更：横一文字[弱体]/Weapon Change: Long Slash[Debuff]", "ふきし61", "", TAG_TYPE.DEBUFF, "武器種変更/武器種変更[弱体]/武器種変更：横一文字"]
+  ,[346, "武器種変更：横一文字[弱体]/Weapon Change: Long Slash[Debuff]", "ふきし61", "", TAG_TYPE.DEBUFF, "武器種変更/武器種変更[弱体]/：横一文字"]
   ,[347, "攻撃力微増[アザトース]", "", "与ダメx1.2\n[重複可x6]/Deal 1.2x\n[Stackable 6x]", TAG_TYPE.IRREMOVABLE_BUFF, "攻撃力微増/攻撃増加系"]
   ,[348, "根性解除/Remove Guts", "こんしかい", "", TAG_TYPE.UNKNOWN, "状態耐性系/状態解除系"]
   ,[349, "根性耐性/Guts Resistance", "こんしたい", "", TAG_TYPE.BUFF, "状態耐性系", , [TAG_FLAG_NUM.NULLIFY, "根性"]]
@@ -1351,4 +1352,9 @@ var TAG = Tag.createList(
   ,[1059, "*フーシャン/Huxian", "ふ", "与ダメx0.3\n[@$]/Deal 0.3x\n[@$]/マヒ", TAG_TYPE.IRREMOVABLE_DEBUFF, "マヒ時弱化/攻撃減少系"]
   ,[1060, "*ビシャモンテン/Vaisravana", "ひ", "与ダメx2.0\n[非@$]/Deal 2.0x\n[Not @$]/弱体(解除可)", TAG_TYPE.IRREMOVABLE_BUFF, "非弱体時強化/攻撃増加系"]
   ,[1061, "HP減少(HP基準)/Decrease HP (HP基準)", "HPけH", "", TAG_TYPE.ONE_SHOT, "HP減少/HP減少系"]
+  ,[1062, "神属性特防", "かみ", "", TAG_TYPE.BUFF, "特防付与系/防御増加系", , [TAG_FLAG_NUM.BONUS_D, "神", "特防[0.3]"]]
+  ,[1063, "望鏡の影写", "ほうきよう", "確率で自身に$\n\n(HPが最大値の時)\n確率で自身に$_確率で敵に$\n(20%)_確率で前1マスの敵に$\n(20%)/Chance of $ from self\n\n(when HP is at max)\nChance of $ on self_Chance of $ of enemy\n(20%)_Chance of $ of enemy 1 square forward\n(20%)/弱体解除(単),回避,HP減少,HP減少", TAG_TYPE.IRREMOVABLE_BUFF, "[ターン開始時]/[攻撃時]/[空振り時]"]
+  ,[1064, "*プロポーズAR/Proposal AR", "Aふ", "", TAG_TYPE.IRREMOVABLE_BUFF, "愛時強化/HP回復系"]
+  ,[1065, "*奇跡AR/Wildest AR", "Aき", "", TAG_TYPE.IRREMOVABLE_BUFF, "愛時強化/発動率増加系"]
+  ,[1066, "メテオピース獲得率アップ/Increase drop rate of Meteor Piece", "めて", "", TAG_TYPE.REWARD]
 ]);

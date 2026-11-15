@@ -130,7 +130,12 @@ SkillTable.prototype = {
         var ei = td.value > TAG_MAX ? 1 : 0;
         var tooltip = t(tag.description);
         var bonus = "";
-        if(tag.timing) tooltip = t(TAG[tag.timing].name) + "\n" + (tooltip || t("追加スキル/Additional Skill"));
+        if(tag.timing.length){
+          var splitted = tooltip.split("_");
+          tooltip = tag.timing.map(function(ti){
+            return t(TAG[ti].name) + "\n" + (splitted.shift() || t("追加スキル/Additional Skill"));
+          }).join("\n\n");
+        }
         if(tag.link){
           var nth = 0;
           tooltip = tooltip.replace(/\$/g, function(){
@@ -195,7 +200,7 @@ SkillTable.prototype = {
           }
           if(tag.bdi & TAG_BDI.IRREMOVABLE){
             tooltip = (tooltip || name) + "\n\n" + t("解除不可/Irremovable");
-          }else if(tag.bdi === TAG_BDI.RAINBOW){
+          }else if(tag.bdi === TAG_BDI.YELLOW){
             tooltip = (tooltip || name) + "\n\n" + t("強化でも弱体でもない/Neither a buff nor a debuff");
           }
           bits(td.timing & TIMING_FLAG.ANY).forEach(function(n){
@@ -265,7 +270,7 @@ SkillTable.prototype = {
             });
             div.className = "tooltip";
             div.dataset.tooltip = x[3] || x[0];
-            if(x[4]) div.classList.add(["", "buff", "debuff", "rainbow"][x[4]]);
+            if(x[4]) div.classList.add(["", "buff", "debuff", "yellow"][x[4]]);
             div.appendChild(span);
             cell.appendChild(div);
           });
